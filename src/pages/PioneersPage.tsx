@@ -515,38 +515,99 @@ interface FounderWelcomeSectionProps {
   onOpenStatus: () => void;
 }
 
+// Global declaration for YouTube Iframe API
+declare global {
+  interface Window {
+    YT: any;
+    onYouTubeIframeAPIReady: () => void;
+  }
+}
+
 const FounderWelcomeSection: React.FC<FounderWelcomeSectionProps> = ({ onNavigate, onOpenStatus }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
-  const [totalDuration, setTotalDuration] = useState(0);
+  const [totalDuration, setTotalDuration] = useState(82);
   const [isHovered, setIsHovered] = useState(false);
   const [isPlayerReady, setIsPlayerReady] = useState(false);
   
   const containerRef = useRef<HTMLDivElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const playerRef = useRef<any>(null);
   const isInViewRef = useRef(false);
+  const YOUTUBE_VIDEO_ID = '9CzUSsyVQfc'; // Founder's Welcome Note
 
-  // Supabase CDN Video Delivery with fallback
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-  const isSupabaseValid = Boolean(
-    supabaseUrl &&
-    !supabaseUrl.includes('your-project') &&
-    !supabaseUrl.includes('placeholder')
-  );
-  const defaultSupabaseCdnUrl = isSupabaseValid
-    ? `${supabaseUrl}/storage/v1/object/public/videos/founder-welcome.mp4`
-    : '';
-  const cdnVideoUrl = (import.meta.env.VITE_FOUNDER_VIDEO_URL || defaultSupabaseCdnUrl).trim();
-
-  // Ensure video DOM muted property stays synchronized
+  // Load YouTube Iframe API
   useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.muted = isMuted;
-      videoRef.current.defaultMuted = isMuted;
+    const initPlayer = () => {
+      if (!window.YT || !window.YT.Player) return;
+      playerRef.current = new window.YT.Player('yt-founder-player', {
+        videoId: YOUTUBE_VIDEO_ID,
+        playerVars: {
+          autoplay: 0,
+          mute: 1,
+          controls: 0,
+          rel: 0,
+          showinfo: 0,
+          modestbranding: 1,
+          loop: 1,
+          playlist: YOUTUBE_VIDEO_ID,
+          playsinline: 1,
+          disablekb: 1,
+          fs: 0,
+          iv_load_policy: 3
+        },
+        events: {
+          onReady: (event: any) => {
+            setIsPlayerReady(true);
+            try {
+              event.target.mute();
+              const dur = event.target.getDuration();
+              if (dur && dur > 0) setTotalDuration(Math.floor(dur));
+              if (isInViewRef.current) {
+                event.target.playVideo();
+                setIsPlaying(true);
+              } else {
+                event.target.pauseVideo();
+                setIsPlaying(false);
+              }
+            } catch (err) {
+              console.error("YouTube onReady error:", err);
+            }
+          },
+          onStateChange: (event: any) => {
+            if (window.YT) {
+              if (event.data === window.YT.PlayerState.PLAYING) {
+                setIsPlaying(true);
+              } else if (event.data === window.YT.PlayerState.PAUSED || event.data === window.YT.PlayerState.ENDED) {
+                setIsPlaying(false);
+              }
+            }
+          }
+        }
+      });
+    };
+
+    if (!window.YT) {
+      const tag = document.createElement('script');
+      tag.src = 'https://www.youtube.com/iframe_api';
+      const firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag?.parentNode?.insertBefore(tag, firstScriptTag);
+      window.onYouTubeIframeAPIReady = initPlayer;
+    } else if (window.YT && window.YT.Player) {
+      initPlayer();
     }
-  }, [isMuted]);
+
+    return () => {
+      if (playerRef.current && playerRef.current.destroy) {
+        try {
+          playerRef.current.destroy();
+        } catch {
+          // ignore
+        }
+      }
+    };
+  }, []);
 
   // Autoplay video when scrolled into view, pause when scrolled away
   useEffect(() => {
@@ -559,17 +620,17 @@ const FounderWelcomeSection: React.FC<FounderWelcomeSectionProps> = ({ onNavigat
           const inView = entry.isIntersecting;
           isInViewRef.current = inView;
 
-          if (videoRef.current) {
-            if (inView) {
-              videoRef.current.muted = true;
-              videoRef.current.play().then(() => {
+          if (playerRef.current && typeof playerRef.current.playVideo === 'function') {
+            try {
+              if (inView) {
+                playerRef.current.playVideo();
                 setIsPlaying(true);
-              }).catch(() => {
+              } else {
+                playerRef.current.pauseVideo();
                 setIsPlaying(false);
-              });
-            } else {
-              videoRef.current.pause();
-              setIsPlaying(false);
+              }
+            } catch (err) {
+              // ignore
             }
           }
         });
@@ -584,65 +645,79 @@ const FounderWelcomeSection: React.FC<FounderWelcomeSectionProps> = ({ onNavigat
     return () => {
       observer.disconnect();
     };
-  }, []);
+  }, [isPlayerReady]);
 
-  const handleTimeUpdate = () => {
-    if (videoRef.current) {
-      const cur = videoRef.current.currentTime;
-      const dur = videoRef.current.duration || totalDuration;
-      setCurrentTime(Math.floor(cur));
-      if (dur > 0) {
-        setProgress((cur / dur) * 100);
-      }
+  // Poll progress from YouTube player
+  useEffect(() => {
+    let timer: any;
+    if (isPlaying) {
+      timer = setInterval(() => {
+        if (playerRef.current && typeof playerRef.current.getCurrentTime === 'function') {
+          try {
+            const cur = playerRef.current.getCurrentTime();
+            const dur = playerRef.current.getDuration() || totalDuration;
+            if (dur > 0) {
+              setCurrentTime(Math.floor(cur));
+              setProgress((cur / dur) * 100);
+            }
+          } catch {
+            // ignore
+          }
+        }
+      }, 500);
     }
-  };
-
-  const handleLoadedMetadata = () => {
-    if (videoRef.current) {
-      const dur = videoRef.current.duration;
-      if (dur && !isNaN(dur) && dur > 0) {
-        setTotalDuration(Math.floor(dur));
-      }
-      setIsPlayerReady(true);
-      if (isInViewRef.current) {
-        videoRef.current.muted = true;
-        videoRef.current.play().then(() => setIsPlaying(true)).catch(() => {
-          setIsPlaying(false);
-        });
-      }
-    }
-  };
+    return () => clearInterval(timer);
+  }, [isPlaying, totalDuration]);
 
   const handleTogglePlay = (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
-    if (videoRef.current) {
-      if (videoRef.current.paused) {
-        videoRef.current.play().then(() => setIsPlaying(true)).catch((err) => {
-          console.error("Video play failed:", err);
-        });
-      } else {
-        videoRef.current.pause();
-        setIsPlaying(false);
+    if (playerRef.current && typeof playerRef.current.getPlayerState === 'function') {
+      try {
+        if (isPlaying) {
+          playerRef.current.pauseVideo();
+          setIsPlaying(false);
+        } else {
+          playerRef.current.playVideo();
+          setIsPlaying(true);
+        }
+      } catch {
+        setIsPlaying(!isPlaying);
       }
+    } else {
+      setIsPlaying(!isPlaying);
     }
   };
 
   const handleToggleMute = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (videoRef.current) {
-      const nextMuted = !videoRef.current.muted;
-      videoRef.current.muted = nextMuted;
-      setIsMuted(nextMuted);
+    if (playerRef.current && typeof playerRef.current.isMuted === 'function') {
+      try {
+        if (isMuted) {
+          playerRef.current.unMute();
+          setIsMuted(false);
+        } else {
+          playerRef.current.mute();
+          setIsMuted(true);
+        }
+      } catch {
+        setIsMuted(!isMuted);
+      }
+    } else {
+      setIsMuted(!isMuted);
     }
   };
 
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = Number(e.target.value);
     setProgress(val);
-    if (videoRef.current && totalDuration > 0) {
-      const newTime = (val / 100) * totalDuration;
-      videoRef.current.currentTime = newTime;
-      setCurrentTime(Math.floor(newTime));
+    const newTime = Math.floor((val / 100) * totalDuration);
+    setCurrentTime(newTime);
+    if (playerRef.current && typeof playerRef.current.seekTo === 'function') {
+      try {
+        playerRef.current.seekTo(newTime, true);
+      } catch {
+        // ignore
+      }
     }
   };
 
@@ -718,7 +793,7 @@ const FounderWelcomeSection: React.FC<FounderWelcomeSectionProps> = ({ onNavigat
           ref={containerRef}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
-          onClick={() => handleTogglePlay()}
+          onClick={handleTogglePlay}
           style={{
             position: 'relative',
             width: '100%',
@@ -735,36 +810,40 @@ const FounderWelcomeSection: React.FC<FounderWelcomeSectionProps> = ({ onNavigat
             userSelect: 'none'
           }}
         >
-          {/* Native HTML5 Video Element */}
-          <video
-            ref={videoRef}
-            poster="/images/founder-welcome-poster.jpg"
-            playsInline
-            autoPlay
-            muted
-            loop
-            preload="metadata"
-            onTimeUpdate={handleTimeUpdate}
-            onLoadedMetadata={handleLoadedMetadata}
-            onPlay={() => setIsPlaying(true)}
-            onPause={() => setIsPlaying(false)}
-            onEnded={() => setIsPlaying(false)}
-            onError={(e) => {
-              console.error("Founder video playback error:", e.currentTarget.error);
-            }}
+          {/* YouTube IFrame Mount Container */}
+          <div
             style={{
               position: 'absolute',
-              inset: 0,
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover'
+              inset: '-20px -20px -20px -20px', // slightly offset to prevent YouTube borders
+              pointerEvents: 'none',
+              overflow: 'hidden'
             }}
           >
-            {cdnVideoUrl && (
-              <source src={cdnVideoUrl} type="video/mp4" />
-            )}
-            <source src="/videos/founder-welcome.mp4" type="video/mp4" />
-          </video>
+            <div
+              id="yt-founder-player"
+              style={{
+                width: '100%',
+                height: '100%',
+                pointerEvents: 'none'
+              }}
+            />
+          </div>
+
+          {/* Cinematic Poster Fallback while loading */}
+          {!isPlayerReady && (
+            <div
+              style={{
+                position: 'absolute',
+                inset: 0,
+                backgroundImage: 'url(https://img.youtube.com/vi/9CzUSsyVQfc/maxresdefault.jpg), url(/images/founder-welcome-poster.jpg)',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                zIndex: 1,
+                transition: 'opacity 0.6s ease',
+                pointerEvents: 'none'
+              }}
+            />
+          )}
 
           {/* Cinematic Periphery Vignette Layer (Edges of the Video) */}
           <div
