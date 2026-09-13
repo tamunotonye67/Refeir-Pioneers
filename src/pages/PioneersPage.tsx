@@ -539,9 +539,30 @@ const FounderWelcomeSection: React.FC<FounderWelcomeSectionProps> = ({ onNavigat
 
   // Load YouTube Iframe API
   useEffect(() => {
+    const setHighestQuality = (player: any) => {
+      if (!player) return;
+      try {
+        if (typeof player.getAvailableQualityLevels === 'function') {
+          const levels: string[] = player.getAvailableQualityLevels();
+          if (levels && levels.length > 0) {
+            const best = levels.find(l => ['highres', 'hd1440', 'hd1080', 'hd720'].includes(l)) || levels[0];
+            if (best && typeof player.setPlaybackQuality === 'function') {
+              player.setPlaybackQuality(best);
+            }
+          }
+        } else if (typeof player.setPlaybackQuality === 'function') {
+          player.setPlaybackQuality('hd1080');
+        }
+      } catch {
+        // ignore
+      }
+    };
+
     const initPlayer = () => {
       if (!window.YT || !window.YT.Player) return;
       playerRef.current = new window.YT.Player('yt-founder-player', {
+        width: '100%',
+        height: '100%',
         videoId: YOUTUBE_VIDEO_ID,
         playerVars: {
           autoplay: 0,
@@ -555,13 +576,15 @@ const FounderWelcomeSection: React.FC<FounderWelcomeSectionProps> = ({ onNavigat
           playsinline: 1,
           disablekb: 1,
           fs: 0,
-          iv_load_policy: 3
+          iv_load_policy: 3,
+          vq: 'hd1080' // Request 1080p HD stream
         },
         events: {
           onReady: (event: any) => {
             setIsPlayerReady(true);
             try {
               event.target.mute();
+              setHighestQuality(event.target);
               const dur = event.target.getDuration();
               if (dur && dur > 0) setTotalDuration(Math.floor(dur));
               if (isInViewRef.current) {
@@ -575,10 +598,17 @@ const FounderWelcomeSection: React.FC<FounderWelcomeSectionProps> = ({ onNavigat
               console.error("YouTube onReady error:", err);
             }
           },
+          onPlaybackQualityChange: (event: any) => {
+            // Nudge back to highest available if YouTube defaults to low resolution
+            if (['small', 'tiny', 'medium'].includes(event.data)) {
+              setHighestQuality(event.target);
+            }
+          },
           onStateChange: (event: any) => {
             if (window.YT) {
               if (event.data === window.YT.PlayerState.PLAYING) {
                 setIsPlaying(true);
+                setHighestQuality(event.target);
               } else if (event.data === window.YT.PlayerState.PAUSED || event.data === window.YT.PlayerState.ENDED) {
                 setIsPlaying(false);
               }
@@ -3501,6 +3531,12 @@ const KeyframeStyles: React.FC = () => (
         grid-template-columns: 1fr !important;
         gap: 18px !important;
       }
+    }
+    #yt-founder-player {
+      width: 100% !important;
+      height: 100% !important;
+      border: none !important;
+      pointer-events: none !important;
     }
     input:focus, select:focus, textarea:focus {
       outline: none !important;
