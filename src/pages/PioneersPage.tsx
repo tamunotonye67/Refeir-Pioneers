@@ -2383,7 +2383,7 @@ const MoreThanCommunity: React.FC = () => (
         </p>
       </div>
 
-      <div className="rp-quad-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: 16 }}>
+      <div className="rp-quad-grid">
         {[
           { l: 'COMMUNITY', d: 'Connect with talented builders across Africa', dark: true },
           { l: 'CONTRIBUTION', d: 'Work on real platform missions and code', dark: false },
@@ -2392,22 +2392,26 @@ const MoreThanCommunity: React.FC = () => (
         ].map(({ l, d, dark }) => (
           <div
             key={l}
+            className="rp-quad-card"
             style={{
               background: dark ? RF_DEEP_GREEN : '#F4F7F5',
-              border: dark ? 'none' : '1px solid rgba(18, 43, 26, 0.1)',
-              borderRadius: 20, padding: '28px 24px'
+              border: dark ? 'none' : '1px solid rgba(18, 43, 26, 0.1)'
             }}
           >
-            <p style={{
-              fontSize: 11, fontWeight: 900, letterSpacing: '0.15em',
-              color: dark ? RF_MINT_ACCENT : RF_GREEN, marginBottom: 10
-            }}>
+            <p
+              className="rp-quad-title"
+              style={{
+                color: dark ? RF_MINT_ACCENT : RF_GREEN
+              }}
+            >
               {l}
             </p>
-            <p style={{
-              fontSize: 13, color: dark ? 'rgba(255,255,255,0.75)' : '#475569',
-              lineHeight: 1.65
-            }}>
+            <p
+              className="rp-quad-desc"
+              style={{
+                color: dark ? 'rgba(255,255,255,0.75)' : '#475569'
+              }}
+            >
               {d}
             </p>
           </div>
