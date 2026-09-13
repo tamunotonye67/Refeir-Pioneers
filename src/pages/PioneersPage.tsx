@@ -768,7 +768,7 @@ const FounderWelcomeSection: React.FC<FounderWelcomeSectionProps> = ({ onNavigat
           </div>
 
           <h2 style={{
-            fontSize: 'clamp(30px, 4.2vw, 52px)', fontWeight: 800,
+            fontSize: 'clamp(30px, 4.2vw, 52px)', fontWeight: 600,
             lineHeight: 1.14, color: '#FFFFFF', letterSpacing: '-0.03em',
             marginBottom: 16, fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif"
           }}>
