@@ -19,8 +19,32 @@ interface StoryPageProps {
 }
 
 export const StoryPage: React.FC<StoryPageProps> = ({ onNavigate }) => {
+  const [activeChapter, setActiveChapter] = React.useState<string>('all');
+
+  const chapters = [
+    { id: 'all', label: 'All Chapters', anchor: '#top', icon: Compass },
+    { id: 'genesis', label: '1. The Catalyst', anchor: '#genesis', icon: Flame },
+    { id: 'founder', label: '2. The Architect', anchor: '#founder', icon: Shield },
+    { id: 'why-refeir', label: '3. Why Refeir', anchor: '#why-refeir', icon: Zap },
+    { id: 'history', label: '4. Milestones', anchor: '#history', icon: Milestone },
+    { id: 'future', label: '5. The Horizon', anchor: '#future', icon: Globe },
+    { id: 'manifesto', label: '6. Manifesto', anchor: '#manifesto', icon: Quote }
+  ];
+
+  const handlePillClick = (ch: typeof chapters[0]) => {
+    setActiveChapter(ch.id);
+    if (ch.id === 'all') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      const el = document.getElementById(ch.id);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  };
+
   return (
-    <div style={{ minHeight: '100vh', background: '#05120B', color: '#F8FAFC', paddingTop: 72 }}>
+    <div id="top" style={{ minHeight: '100vh', background: '#05120B', color: '#F8FAFC', paddingTop: 72 }}>
       {/* Hero Section */}
       <section style={{
         background: `linear-gradient(145deg, ${RF_DEEP_GREEN} 0%, #07180F 40%, ${RF_FOREST_DARK} 100%)`,
@@ -75,39 +99,52 @@ export const StoryPage: React.FC<StoryPageProps> = ({ onNavigate }) => {
             From grassroots university chatrooms and broken freelance bidding boards to an unstoppable economic engine. Discover why Founder <strong style={{ color: '#FFFFFF', fontWeight: 600 }}>Tonye Taylor</strong> built Refeir, the untold history of our first cohorts, and the sovereign roadmap ahead.
           </p>
 
-          {/* Quick jump navigation */}
+          {/* Chapter Category Filter Pills (Horizontal swipeable on mobile) */}
           <div className="rp-story-anchors">
-            {[
-              { label: 'The Genesis', anchor: '#genesis' },
-              { label: 'Meet the Founder', anchor: '#founder' },
-              { label: 'Why Refeir Was Built', anchor: '#why-refeir' },
-              { label: 'Milestones & History', anchor: '#history' },
-              { label: 'The Future Roadmap', anchor: '#future' },
-              { label: "Founder's Manifesto", anchor: '#manifesto' }
-            ].map(item => (
-              <a
-                key={item.anchor}
-                href={item.anchor}
-                style={{
-                  fontSize: 12.5, fontWeight: 500, color: 'rgba(255,255,255,0.7)',
-                  background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)',
-                  padding: '8px 16px', borderRadius: 100, textDecoration: 'none',
-                  transition: 'all 0.2s', display: 'inline-flex', alignItems: 'center', gap: 6
-                }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.color = RF_MINT_ACCENT;
-                  e.currentTarget.style.borderColor = `${RF_MINT_ACCENT}55`;
-                  e.currentTarget.style.background = 'rgba(24, 252, 92, 0.08)';
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.color = 'rgba(255,255,255,0.7)';
-                  e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)';
-                  e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
-                }}
-              >
-                {item.label}
-              </a>
-            ))}
+            {chapters.map(item => {
+              const IconComp = item.icon;
+              const isSelected = activeChapter === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => handlePillClick(item)}
+                  style={{
+                    fontSize: 12.5,
+                    fontWeight: isSelected ? 600 : 500,
+                    color: isSelected ? RF_DEEP_GREEN : 'rgba(255,255,255,0.8)',
+                    background: isSelected
+                      ? RF_LEAF_GREEN
+                      : 'rgba(255,255,255,0.05)',
+                    border: `1px solid ${isSelected ? RF_LEAF_GREEN : 'rgba(255,255,255,0.12)'}`,
+                    padding: '8px 16px',
+                    borderRadius: 100,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    boxShadow: isSelected ? `0 4px 14px ${RF_LEAF_GREEN}40` : 'none'
+                  }}
+                  onMouseEnter={e => {
+                    if (!isSelected) {
+                      e.currentTarget.style.color = RF_MINT_ACCENT;
+                      e.currentTarget.style.borderColor = `${RF_MINT_ACCENT}55`;
+                      e.currentTarget.style.background = 'rgba(24, 252, 92, 0.08)';
+                    }
+                  }}
+                  onMouseLeave={e => {
+                    if (!isSelected) {
+                      e.currentTarget.style.color = 'rgba(255,255,255,0.8)';
+                      e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)';
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
+                    }
+                  }}
+                >
+                  <IconComp size={13} color={isSelected ? RF_DEEP_GREEN : RF_MINT_ACCENT} />
+                  {item.label}
+                </button>
+              );
+            })}
           </div>
         </div>
       </section>
