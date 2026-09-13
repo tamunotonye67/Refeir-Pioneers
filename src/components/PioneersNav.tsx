@@ -57,7 +57,8 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
   }, []);
 
   useEffect(() => {
-    if (mobileMenuOpen) {
+    const isMobileViewport = typeof window !== 'undefined' && window.innerWidth <= 768;
+    if (mobileMenuOpen || (profileMenuOpen && isMobileViewport)) {
       document.body.style.overflow = 'hidden';
       document.body.style.touchAction = 'none';
     } else {
@@ -68,7 +69,7 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
       document.body.style.overflow = '';
       document.body.style.touchAction = '';
     };
-  }, [mobileMenuOpen]);
+  }, [mobileMenuOpen, profileMenuOpen]);
 
   const handleLinkClick = (target: string, isHash: boolean = false) => {
     setMobileMenuOpen(false);
@@ -572,130 +573,134 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
                 <ChevronDown size={13} style={{ color: 'rgba(255,255,255,0.6)', marginLeft: 2 }} />
               </button>
 
-              {/* Profile Menu Dropdown */}
+              {/* Profile Menu Dropdown / Mobile Bottom Sheet Docker */}
               {profileMenuOpen && (
-                <div style={{
-                  position: 'absolute', top: '100%', right: 0, marginTop: 10,
-                  background: 'rgba(7, 24, 15, 0.98)', backdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(102, 187, 42, 0.3)', borderRadius: 16,
-                  padding: '12px', minWidth: 230, zIndex: 300,
-                  boxShadow: '0 20px 50px rgba(0, 0, 0, 0.8), 0 0 25px rgba(24, 252, 92, 0.1)'
-                }}>
-                  <div style={{ padding: '4px 8px 10px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: '#FFFFFF' }}>
-                      {contributor.full_name}
-                    </div>
-                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {contributor.email}
-                    </div>
-                    {contributor.application_number && (
-                      <span style={{
-                        display: 'inline-block', marginTop: 4, fontSize: 9.5,
-                        background: 'rgba(24, 252, 92, 0.12)', color: RF_MINT_ACCENT,
-                        padding: '1px 6px', borderRadius: 4, fontWeight: 600
-                      }}>
-                        {contributor.application_number}
-                      </span>
-                    )}
-                  </div>
+                <>
+                  {/* Backdrop Overlay for mobile */}
+                  <div
+                    className="rp-profile-docker-overlay"
+                    onClick={() => setProfileMenuOpen(false)}
+                    aria-hidden="true"
+                  />
+                  <div className="rp-profile-menu-box">
+                    {/* Mobile Sheet Handle Pill */}
+                    <div className="rp-docker-handle" />
 
-                  <div style={{ padding: '8px 0 4px' }}>
-                    {!contributor.is_profile_completed ? (
+                    <div style={{ padding: '4px 8px 12px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div>
+                          <div style={{ fontSize: 14, fontWeight: 700, color: '#FFFFFF' }}>
+                            {contributor.full_name}
+                          </div>
+                          <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.5)', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {contributor.email}
+                          </div>
+                        </div>
+                        <span style={{
+                          fontSize: 10,
+                          background: 'rgba(24, 252, 92, 0.12)', color: RF_MINT_ACCENT,
+                          padding: '3px 8px', borderRadius: 6, fontWeight: 700,
+                          border: '1px solid rgba(24, 252, 92, 0.25)',
+                          textTransform: 'uppercase', letterSpacing: '0.04em'
+                        }}>
+                          {contributor.contributor_level.replace('_', ' ')}
+                        </span>
+                      </div>
+                      {contributor.application_number && (
+                        <div style={{ marginTop: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <span style={{
+                            display: 'inline-block', fontSize: 10,
+                            background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.7)',
+                            padding: '2px 8px', borderRadius: 4, fontWeight: 600,
+                            letterSpacing: '0.03em'
+                          }}>
+                            ID: {contributor.application_number}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div style={{ padding: '10px 0 4px', display: 'flex', flexDirection: 'column', gap: 2 }}>
+                      {!contributor.is_profile_completed ? (
+                        <button
+                          className="rp-docker-btn"
+                          onClick={() => { setProfileMenuOpen(false); onNavigate('/complete-profile'); }}
+                          style={{
+                            background: 'rgba(255, 184, 0, 0.15)', border: '1px solid rgba(255, 184, 0, 0.4)',
+                            color: '#FDE68A', fontWeight: 700, marginBottom: 6
+                          }}
+                        >
+                          <span style={{ width: 22, height: 22, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            <User size={16} color={RF_GOLD_YELLOW} />
+                          </span>
+                          <span>Complete Profile (Mint ID)</span>
+                        </button>
+                      ) : (
+                        <button
+                          className="rp-docker-btn"
+                          onClick={() => { setProfileMenuOpen(false); onNavigate('/profile'); }}
+                          onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
+                          onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                        >
+                          <span style={{ width: 22, height: 22, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            <User size={16} color={RF_MINT_ACCENT} />
+                          </span>
+                          <span>Profile</span>
+                        </button>
+                      )}
                       <button
-                        onClick={() => { setProfileMenuOpen(false); onNavigate('/complete-profile'); }}
-                        style={{
-                          width: '100%', textAlign: 'left', padding: '8px 10px', borderRadius: 8,
-                          background: 'rgba(255, 184, 0, 0.15)', border: '1px solid rgba(255, 184, 0, 0.4)',
-                          color: '#FDE68A', fontSize: 12.5,
-                          fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6
-                        }}
-                      >
-                        <User size={14} color={RF_GOLD_YELLOW} /> Complete Profile (Mint ID)
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => { setProfileMenuOpen(false); onNavigate('/profile'); }}
-                        style={{
-                          width: '100%', textAlign: 'left', padding: '8px 10px', borderRadius: 8,
-                          background: 'none', border: 'none', color: '#FFFFFF', fontSize: 12.5,
-                          fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10
+                        className="rp-docker-btn"
+                        onClick={() => {
+                          setProfileMenuOpen(false);
+                          window.location.hash = '#certificates';
+                          onNavigate('/profile');
                         }}
                         onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
                         onMouseLeave={e => (e.currentTarget.style.background = 'none')}
                       >
-                        <span style={{ width: 18, height: 18, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <User size={14} color={RF_MINT_ACCENT} />
+                        <span style={{ width: 22, height: 22, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <FileCheck size={16} color={RF_GOLD_YELLOW} />
                         </span>
-                        <span>Profile</span>
+                        <span>My Certificates</span>
                       </button>
-                    )}
-                    <button
-                      onClick={() => {
-                        setProfileMenuOpen(false);
-                        window.location.hash = '#certificates';
-                        onNavigate('/profile');
-                      }}
-                      style={{
-                        width: '100%', textAlign: 'left', padding: '8px 10px', borderRadius: 8,
-                        background: 'none', border: 'none', color: '#FFFFFF', fontSize: 12.5,
-                        fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10
-                      }}
-                      onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
-                      onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-                    >
-                      <span style={{ width: 18, height: 18, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        <FileCheck size={14} color={RF_GOLD_YELLOW} />
-                      </span>
-                      <span>My Certificates</span>
-                    </button>
-                    <button
-                      onClick={() => { setProfileMenuOpen(false); handleLinkClick('/submit-task', false); }}
-                      style={{
-                        width: '100%', textAlign: 'left', padding: '8px 10px', borderRadius: 8,
-                        background: 'none', border: 'none', color: '#FFFFFF', fontSize: 12.5,
-                        fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10
-                      }}
-                      onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
-                      onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-                    >
-                      <span style={{ width: 18, height: 18, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        <Award size={14} color={RF_MINT_ACCENT} />
-                      </span>
-                      <span>Submit Task Proof</span>
-                    </button>
-                    <button
-                      onClick={() => { setProfileMenuOpen(false); handleLinkClick('/rewards', false); }}
-                      style={{
-                        width: '100%', textAlign: 'left', padding: '8px 10px', borderRadius: 8,
-                        background: 'none', border: 'none', color: '#FFFFFF', fontSize: 12.5,
-                        fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10
-                      }}
-                      onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
-                      onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-                    >
-                      <span style={{ width: 18, height: 18, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        <Zap size={14} color={RF_GOLD_YELLOW} />
-                      </span>
-                      <span>Rewards & Ladder</span>
-                    </button>
-                    <div style={{ height: 1, background: 'rgba(255,255,255,0.08)', margin: '6px 0' }} />
-                    <button
-                      onClick={() => { setProfileMenuOpen(false); signOutContributor(); }}
-                      style={{
-                        width: '100%', textAlign: 'left', padding: '8px 10px', borderRadius: 8,
-                        background: 'none', border: 'none', color: '#FCA5A5', fontSize: 12.5,
-                        fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10
-                      }}
-                      onMouseEnter={e => (e.currentTarget.style.background = 'rgba(239,68,68,0.1)')}
-                      onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-                    >
-                      <span style={{ width: 18, height: 18, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        <LogOut size={14} color="#FCA5A5" />
-                      </span>
-                      <span>Sign Out</span>
-                    </button>
+                      <button
+                        className="rp-docker-btn"
+                        onClick={() => { setProfileMenuOpen(false); handleLinkClick('/submit-task', false); }}
+                        onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
+                        onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                      >
+                        <span style={{ width: 22, height: 22, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <Award size={16} color={RF_MINT_ACCENT} />
+                        </span>
+                        <span>Submit Task Proof</span>
+                      </button>
+                      <button
+                        className="rp-docker-btn"
+                        onClick={() => { setProfileMenuOpen(false); handleLinkClick('/rewards', false); }}
+                        onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
+                        onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                      >
+                        <span style={{ width: 22, height: 22, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <Zap size={16} color={RF_GOLD_YELLOW} />
+                        </span>
+                        <span>Rewards & Ladder</span>
+                      </button>
+                      <div style={{ height: 1, background: 'rgba(255,255,255,0.08)', margin: '6px 0' }} />
+                      <button
+                        className="rp-docker-btn"
+                        onClick={() => { setProfileMenuOpen(false); signOutContributor(); }}
+                        style={{ color: '#FCA5A5' }}
+                        onMouseEnter={e => (e.currentTarget.style.background = 'rgba(239,68,68,0.12)')}
+                        onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                      >
+                        <span style={{ width: 22, height: 22, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <LogOut size={16} color="#FCA5A5" />
+                        </span>
+                        <span>Sign Out</span>
+                      </button>
+                    </div>
                   </div>
-                </div>
+                </>
               )}
             </div>
           ) : (
