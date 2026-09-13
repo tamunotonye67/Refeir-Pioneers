@@ -196,19 +196,46 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
         maxWidth: 1240, margin: '0 auto', padding: '0 24px',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 72
       }}>
-        {/* Brand Logo */}
-        <div
-          style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}
-          onClick={() => handleLinkClick('/', false)}
-        >
-          <img src="/Refeir-LogoWhite.png" alt="Refeir" style={{ height: 26, width: 'auto' }} />
-          <span style={{
-            fontSize: 9, fontWeight: 600, letterSpacing: '0.14em', color: RF_MINT_ACCENT,
-            padding: '2px 7px', border: `1px solid ${RF_LEAF_GREEN}33`, borderRadius: 100,
-            background: `${RF_LEAF_GREEN}14`, textTransform: 'uppercase'
-          }}>
-            PIONEERS
-          </span>
+        {/* Left Side: Mobile Hamburger (shown only on mobile) + Brand Logo */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          {/* Mobile Menu Toggle (Positioned at the left of the logo for mobile/tablet) */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="rp-nav-hamburger"
+            aria-label="Toggle navigation menu"
+            style={{
+              background: 'rgba(24, 252, 92, 0.08)',
+              border: '1px solid rgba(24, 252, 92, 0.28)',
+              color: '#FFFFFF',
+              cursor: 'pointer',
+              padding: 0,
+              width: 38,
+              height: 38,
+              borderRadius: 10,
+              display: 'none',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.2s ease',
+              flexShrink: 0
+            }}
+          >
+            {mobileMenuOpen ? <X size={21} color={RF_MINT_ACCENT} /> : <Menu size={21} color="#FFFFFF" />}
+          </button>
+
+          {/* Brand Logo */}
+          <div
+            style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}
+            onClick={() => handleLinkClick('/', false)}
+          >
+            <img src="/Refeir-LogoWhite.png" alt="Refeir" style={{ height: 26, width: 'auto' }} />
+            <span style={{
+              fontSize: 9, fontWeight: 600, letterSpacing: '0.14em', color: RF_MINT_ACCENT,
+              padding: '2px 7px', border: `1px solid ${RF_LEAF_GREEN}33`, borderRadius: 100,
+              background: `${RF_LEAF_GREEN}14`, textTransform: 'uppercase'
+            }}>
+              PIONEERS
+            </span>
+          </div>
         </div>
 
         {/* Desktop Navigation Links */}
@@ -685,30 +712,6 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
               Sign In
             </button>
           )}
-
-          {/* Mobile Menu Toggle (Always on the right for mobile/tablet) */}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="rp-nav-hamburger"
-            aria-label="Toggle navigation menu"
-            style={{
-              background: 'rgba(24, 252, 92, 0.08)',
-              border: '1px solid rgba(24, 252, 92, 0.28)',
-              color: '#FFFFFF',
-              cursor: 'pointer',
-              padding: 0,
-              width: 40,
-              height: 40,
-              borderRadius: 10,
-              display: 'none',
-              alignItems: 'center',
-              justifyContent: 'center',
-              transition: 'all 0.2s ease',
-              flexShrink: 0
-            }}
-          >
-            {mobileMenuOpen ? <X size={22} color={RF_MINT_ACCENT} /> : <Menu size={22} color="#FFFFFF" />}
-          </button>
         </div>
       </div>
 
