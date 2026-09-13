@@ -239,7 +239,7 @@ const HeroSection: React.FC = () => {
         position: 'relative', zIndex: 2, maxWidth: 1240, margin: '0 auto',
         padding: '16px 24px 20px', width: '100%'
       }}>
-        <div style={{
+        <div className="rp-hero-grid" style={{
           display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
           gap: 48, alignItems: 'center'
         }}>
@@ -270,7 +270,7 @@ const HeroSection: React.FC = () => {
             </p>
 
             {/* CTAs */}
-            <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', alignItems: 'center' }}>
+            <div className="rp-hero-cta-group" style={{ display: 'flex', gap: 14, flexWrap: 'wrap', alignItems: 'center' }}>
               <button
                 onClick={() => scrollToId('apply')}
                 style={{
@@ -317,7 +317,7 @@ const HeroSection: React.FC = () => {
             </div>
 
             {/* Stats Bar */}
-            <div style={{
+            <div className="rp-stats-grid" style={{
               display: 'flex', gap: 36, marginTop: 24, paddingTop: 18,
               borderTop: '1px solid rgba(102, 187, 42, 0.2)', flexWrap: 'wrap'
             }}>
@@ -3289,22 +3289,12 @@ const KeyframeStyles: React.FC = () => (
       0%, 100% { transform: translateX(-50%) translateY(0); }
       50% { transform: translateX(-50%) translateY(8px); }
     }
-    .p-desk-nav { display: flex !important; }
-    .p-mob-toggle { display: none !important; }
-    .rp-squad-cards-grid {
+    .rp-trio {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 24px;
-    }
-    @media (max-width: 960px) {
-      .rp-squad-cards-grid {
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 20px !important;
-      }
+      gap: 20px;
     }
     @media (max-width: 768px) {
-      .p-desk-nav { display: none !important; }
-      .p-mob-toggle { display: flex !important; }
       .rp-trio { grid-template-columns: 1fr !important; }
       .rp-vline { left: 23px !important; }
     }

@@ -275,6 +275,108 @@ img, svg {
   }
 }
 
+@media (max-width: 540px) {
+  .rp-sticky-card-body {
+    padding: 18px 16px 18px;
+  }
+  .rp-sticky-card-tab {
+    padding: 10px 16px;
+  }
+  .rp-sticky-card-visual svg,
+  .rp-sticky-card-visual img {
+    max-height: 180px;
+  }
+}
+
+/* ─── NAVIGATION RESPONSIVE STYLES ─────────────────────────────────────── */
+.rp-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.rp-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rp-nav-hamburger {
+  display: none !important;
+}
+
+@media (max-width: 880px) {
+  .rp-nav-links {
+    display: none !important;
+  }
+  .rp-nav-cta-desk {
+    display: none !important;
+  }
+  .rp-nav-hamburger {
+    display: flex !important;
+  }
+}
+
+/* ─── HERO SECTION MOBILE RESPONSIVENESS ───────────────────────────────── */
+@media (max-width: 880px) {
+  /* Hide the animated rotating & glowing centerpiece on mobile */
+  .rp-hero-stage {
+    display: none !important;
+  }
+
+  .rp-hero-grid {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+  }
+}
+
+/* ─── RESPONSIVE BUTTONS & TOUCH TARGETS ────────────────────────────────── */
+@media (max-width: 640px) {
+  .rp-hero-cta-group {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    width: 100% !important;
+    gap: 10px !important;
+  }
+
+  .rp-hero-cta-group button {
+    width: 100% !important;
+    justify-content: center !important;
+    padding: 12px 18px !important;
+  }
+
+  .rp-btn-responsive {
+    width: 100% !important;
+    justify-content: center !important;
+    padding: 12px 18px !important;
+  }
+
+  .rp-stats-grid {
+    gap: 18px !important;
+  }
+}
+
+/* ─── SQUAD CARDS & GRID RESPONSIVENESS ────────────────────────────────── */
+.rp-squad-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+@media (max-width: 960px) {
+  .rp-squad-cards-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 20px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .rp-squad-cards-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+}
+
 /* ─── SQUAD TASKS 2-COLUMN GRID ────────────────────────────────────────── */
 .rp-tasks-grid {
   display: grid;
@@ -286,5 +388,18 @@ img, svg {
 @media (max-width: 860px) {
   .rp-tasks-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ─── MOBILE FORM INPUTS (PREVENT IOS AUTO-ZOOM) ───────────────────────── */
+@media (max-width: 768px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="search"],
+  select,
+  textarea {
+    font-size: 16px !important;
   }
 }

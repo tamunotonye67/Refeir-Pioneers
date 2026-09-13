@@ -198,7 +198,7 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
         </div>
 
         {/* Desktop Navigation Links */}
-        <div className="p-desk-nav" style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+        <div className="rp-nav-links" style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
           {/* Pioneers */}
           <button
             onClick={() => handleLinkClick('pioneers-about', true)}
@@ -432,10 +432,14 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
               </div>
             )}
           </div>
+        </div>
 
-          {/* "Become a Pioneer" Button (Restored to the left of Sign In) */}
+        {/* Action Controls & Mobile Hamburger Toggle */}
+        <div className="rp-nav-actions" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          {/* "Become a Pioneer" Button (Desktop/Tablet CTA) */}
           <button
             onClick={() => handleLinkClick('apply', true)}
+            className="rp-nav-cta-desk"
             style={{
               background: RF_LEAF_GREEN,
               color: RF_DEEP_GREEN,
@@ -667,17 +671,28 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
             </button>
           )}
 
-          {/* Mobile Menu Toggle */}
+          {/* Mobile Menu Toggle (Always on the right for mobile/tablet) */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            style={{
-              background: 'none', border: 'none', color: '#FFFFFF',
-              cursor: 'pointer', display: 'none', padding: 8
-            }}
-            className="pioneers-mobile-menu-btn"
+            className="rp-nav-hamburger"
             aria-label="Toggle navigation menu"
+            style={{
+              background: 'rgba(24, 252, 92, 0.08)',
+              border: '1px solid rgba(24, 252, 92, 0.28)',
+              color: '#FFFFFF',
+              cursor: 'pointer',
+              padding: 0,
+              width: 40,
+              height: 40,
+              borderRadius: 10,
+              display: 'none',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.2s ease',
+              flexShrink: 0
+            }}
           >
-            {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+            {mobileMenuOpen ? <X size={22} color={RF_MINT_ACCENT} /> : <Menu size={22} color="#FFFFFF" />}
           </button>
         </div>
       </div>
