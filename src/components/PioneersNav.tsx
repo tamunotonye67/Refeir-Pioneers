@@ -198,20 +198,17 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
       }}>
         {/* Left Side: Mobile Hamburger (shown only on mobile) + Brand Logo */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          {/* Mobile Menu Toggle (Positioned at the left of the logo for mobile/tablet) */}
+          {/* Mobile Menu Toggle (Clean icon without box/overlay background) */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="rp-nav-hamburger"
             aria-label="Toggle navigation menu"
             style={{
-              background: 'rgba(24, 252, 92, 0.08)',
-              border: '1px solid rgba(24, 252, 92, 0.28)',
+              background: 'transparent',
+              border: 'none',
               color: '#FFFFFF',
               cursor: 'pointer',
-              padding: 0,
-              width: 38,
-              height: 38,
-              borderRadius: 10,
+              padding: '6px 4px 6px 0',
               display: 'none',
               alignItems: 'center',
               justifyContent: 'center',
@@ -219,7 +216,7 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
               flexShrink: 0
             }}
           >
-            {mobileMenuOpen ? <X size={21} color={RF_MINT_ACCENT} /> : <Menu size={21} color="#FFFFFF" />}
+            {mobileMenuOpen ? <X size={26} color={RF_MINT_ACCENT} /> : <Menu size={26} color="#FFFFFF" />}
           </button>
 
           {/* Brand Logo */}
