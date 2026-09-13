@@ -1488,7 +1488,7 @@ const WhoWeAreLookingFor: React.FC = () => {
   return (
     <section id="divisions" style={{
       background: `linear-gradient(180deg, ${RF_DEEP_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
-      padding: '90px 20px 100px',
+      padding: '90px 20px 48px',
       position: 'relative',
       overflow: 'visible'
     }}>
@@ -1830,7 +1830,7 @@ const BENEFITS_DATA = [
 ];
 
 const WhyBecomePioneer: React.FC = () => (
-  <section style={{ background: '#FFFFFF', padding: '100px 24px' }}>
+  <section style={{ background: '#FFFFFF', padding: '80px 24px' }}>
     <div style={{ maxWidth: 1240, margin: '0 auto' }}>
       <div style={{ textAlign: 'center', marginBottom: 64 }}>
         <p style={{ fontSize: 11, fontWeight: 900, color: RF_GREEN, letterSpacing: '0.22em', marginBottom: 16 }}>

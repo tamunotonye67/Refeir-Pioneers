@@ -181,7 +181,7 @@ img, svg {
   position: relative;
   max-width: 1060px;
   margin: 0 auto;
-  padding: 0 16px 80px;
+  padding: 0 16px 24px;
 }
 
 .rp-sticky-card-wrapper {
@@ -191,6 +191,10 @@ img, svg {
   transform-origin: center top;
   transition: transform 0.15s ease-out, filter 0.15s ease-out;
   will-change: transform, filter;
+}
+
+.rp-sticky-card-wrapper:last-child {
+  margin-bottom: 0 !important;
 }
 
 .rp-sticky-card-shell {
@@ -254,6 +258,9 @@ img, svg {
   .rp-sticky-card-wrapper {
     top: calc(66px + var(--card-index, 0) * 18px);
     margin-bottom: 25vh;
+  }
+  .rp-sticky-card-wrapper:last-child {
+    margin-bottom: 0 !important;
   }
   .rp-sticky-card-shell {
     grid-template-columns: 1fr;
