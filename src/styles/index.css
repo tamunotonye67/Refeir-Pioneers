@@ -670,14 +670,14 @@ img, svg {
   }
 }
 
-/* ─── WHY BECOME PIONEER (BENEFITS) MOBILE MARQUEE ────────────────────── */
+/* ─── WHY BECOME PIONEER (BENEFITS) MOBILE MARQUEE / SWIPER ───────────── */
 .rp-benefits-desktop-grid {
   display: grid !important;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 24px;
 }
 
-.rp-benefits-mobile-marquee {
+.rp-benefits-mobile-wrapper {
   display: none !important;
 }
 
@@ -686,29 +686,39 @@ img, svg {
     display: none !important;
   }
 
-  .rp-benefits-mobile-marquee {
+  .rp-benefits-mobile-wrapper {
     display: block !important;
     position: relative;
     width: 100vw;
     margin-left: calc(-50vw + 50%);
     margin-right: calc(-50vw + 50%);
     overflow: hidden;
-    padding: 10px 0 20px 0;
-    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
-    mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
   }
 
-  .rp-benefits-marquee-track {
-    display: flex;
+  .rp-benefits-mobile-marquee {
+    display: flex !important;
+    position: relative;
+    width: 100%;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 10px 24px 24px 24px !important;
     gap: 16px;
-    width: max-content;
-    will-change: transform;
-    animation: rp-marquee-rtl 28s linear infinite;
+    box-sizing: border-box;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: pan-x;
   }
 
-  .rp-benefits-mobile-marquee:hover .rp-benefits-marquee-track,
-  .rp-benefits-mobile-marquee:active .rp-benefits-marquee-track {
-    animation-play-state: paused;
+  .rp-benefits-mobile-marquee:active {
+    cursor: grabbing;
+  }
+
+  .rp-benefits-mobile-marquee::-webkit-scrollbar {
+    display: none;
   }
 
   .rp-benefit-card-mobile {
@@ -722,14 +732,5 @@ img, svg {
     flex-direction: column;
     box-sizing: border-box;
     box-shadow: 0 4px 15px rgba(10, 30, 17, 0.04);
-  }
-}
-
-@keyframes rp-marquee-rtl {
-  0% {
-    transform: translate3d(0, 0, 0);
-  }
-  100% {
-    transform: translate3d(-50%, 0, 0);
   }
 }

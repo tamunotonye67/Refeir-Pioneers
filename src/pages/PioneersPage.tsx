@@ -1898,104 +1898,240 @@ const BENEFITS_DATA = [
   },
 ];
 
-const WhyBecomePioneer: React.FC = () => (
-  <section style={{ background: '#FFFFFF', padding: '80px 24px' }}>
-    <div style={{ maxWidth: 1240, margin: '0 auto' }}>
-      <div style={{ textAlign: 'center', marginBottom: 64 }}>
-        <p style={{ fontSize: 11, fontWeight: 900, color: RF_GREEN, letterSpacing: '0.22em', marginBottom: 16 }}>
-          WHY BECOME A PIONEER?
-        </p>
-        <h2 style={{
-          fontSize: 'clamp(28px, 4.5vw, 48px)', fontWeight: 900, color: RF_DARK_GREEN,
-          lineHeight: 1.1, letterSpacing: '-0.02em', fontFamily: 'Plus Jakarta Sans, sans-serif'
-        }}>
-          BUILD SOMETHING REAL.<br />
-          <span style={{ color: RF_GREEN }}>GROW WHILE YOU DO IT.</span>
-        </h2>
-      </div>
+const WhyBecomePioneer: React.FC = () => {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const isInteractingRef = useRef<boolean>(false);
+  const resumeTimerRef = useRef<any>(null);
+  const animFrameRef = useRef<number | null>(null);
 
-      {/* Desktop Grid View */}
-      <div className="rp-benefits-desktop-grid">
-        {BENEFITS_DATA.map(({ Icon, title, desc }) => (
-          <div
-            key={title}
-            style={{
-              background: '#F4F7F5', border: '1px solid rgba(18, 43, 26, 0.1)',
-              borderRadius: 20, padding: 32, transition: 'all 0.25s'
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.background = RF_DEEP_GREEN;
-              e.currentTarget.style.borderColor = RF_DEEP_GREEN;
-              (e.currentTarget.querySelector('.bt') as HTMLElement).style.color = RF_MINT_ACCENT;
-              (e.currentTarget.querySelector('.bd') as HTMLElement).style.color = 'rgba(255,255,255,0.75)';
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.background = '#F4F7F5';
-              e.currentTarget.style.borderColor = 'rgba(18, 43, 26, 0.1)';
-              (e.currentTarget.querySelector('.bt') as HTMLElement).style.color = RF_DARK_GREEN;
-              (e.currentTarget.querySelector('.bd') as HTMLElement).style.color = '#475569';
-            }}
-          >
-            <div style={{
-              width: 48, height: 48, borderRadius: 12, background: `${RF_LEAF_GREEN}20`,
-              display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20
-            }}>
-              <Icon size={22} color={RF_GREEN} />
-            </div>
-            <p className="bt" style={{
-              fontSize: 12, fontWeight: 900, color: RF_DARK_GREEN, letterSpacing: '0.12em',
-              marginBottom: 10, transition: 'color 0.25s'
-            }}>
-              {title}
-            </p>
-            <p className="bd" style={{
-              fontSize: 14, color: '#475569', lineHeight: 1.72, transition: 'color 0.25s'
-            }}>
-              {desc}
-            </p>
-          </div>
-        ))}
-      </div>
+  // For mouse drag support on desktop emulators
+  const isDownRef = useRef(false);
+  const startXRef = useRef(0);
+  const startScrollLeftRef = useRef(0);
 
-      {/* Mobile Right-to-Left Marquee Track */}
-      <div className="rp-benefits-mobile-marquee">
-        <div className="rp-benefits-marquee-track">
-          {[...BENEFITS_DATA, ...BENEFITS_DATA].map(({ Icon, title, desc }, idx) => (
+  // Triple set of benefits so users can swipe infinitely left or right with wrap-around
+  const tripleBenefits = [
+    ...BENEFITS_DATA,
+    ...BENEFITS_DATA,
+    ...BENEFITS_DATA
+  ];
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    let lastTime = performance.now();
+    const speed = 0.045; // pixels per millisecond (~45px/s, smooth reading pace)
+
+    const step = (time: number) => {
+      const delta = Math.min(time - lastTime, 100);
+      lastTime = time;
+
+      if (el) {
+        const oneThird = el.scrollWidth / 3;
+
+        // Auto-glide from right to left (scrollLeft increases) when user is not touching/interacting
+        if (!isInteractingRef.current) {
+          el.scrollLeft += speed * delta;
+        }
+
+        // Seamless wrap-around for both auto-motion and left/right manual swipe
+        if (oneThird > 0) {
+          if (el.scrollLeft >= oneThird * 2) {
+            el.scrollLeft -= oneThird;
+            if (isDownRef.current) startScrollLeftRef.current -= oneThird;
+          } else if (el.scrollLeft <= 5) {
+            el.scrollLeft += oneThird;
+            if (isDownRef.current) startScrollLeftRef.current += oneThird;
+          }
+        }
+      }
+
+      animFrameRef.current = requestAnimationFrame(step);
+    };
+
+    // Center scroll initially at 1/3 (start of middle set) so user can swipe backwards right away!
+    const initTimer = setTimeout(() => {
+      if (el) {
+        const oneThird = el.scrollWidth / 3;
+        if (oneThird > 0 && el.scrollLeft < 10) {
+          el.scrollLeft = oneThird;
+        }
+      }
+    }, 150);
+
+    animFrameRef.current = requestAnimationFrame(step);
+
+    return () => {
+      clearTimeout(initTimer);
+      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+      if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+    };
+  }, []);
+
+  const pauseInteraction = () => {
+    isInteractingRef.current = true;
+    if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+  };
+
+  const scheduleResume = () => {
+    if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+    resumeTimerRef.current = setTimeout(() => {
+      isInteractingRef.current = false;
+    }, 2500);
+  };
+
+  const handleTouchStart = () => {
+    pauseInteraction();
+  };
+
+  const handleTouchEnd = () => {
+    scheduleResume();
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    pauseInteraction();
+    isDownRef.current = true;
+    startXRef.current = e.pageX;
+    if (scrollRef.current) {
+      startScrollLeftRef.current = scrollRef.current.scrollLeft;
+    }
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDownRef.current || !scrollRef.current) return;
+    const walk = (e.pageX - startXRef.current) * 1.2;
+    scrollRef.current.scrollLeft = startScrollLeftRef.current - walk;
+  };
+
+  const handleMouseUpOrLeave = () => {
+    if (isDownRef.current) {
+      isDownRef.current = false;
+      scheduleResume();
+    }
+  };
+
+  return (
+    <section style={{ background: '#FFFFFF', padding: '80px 24px', overflow: 'hidden' }}>
+      <div style={{ maxWidth: 1240, margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: 64 }}>
+          <p style={{ fontSize: 11, fontWeight: 900, color: RF_GREEN, letterSpacing: '0.22em', marginBottom: 16 }}>
+            WHY BECOME A PIONEER?
+          </p>
+          <h2 style={{
+            fontSize: 'clamp(28px, 4.5vw, 48px)', fontWeight: 900, color: RF_DARK_GREEN,
+            lineHeight: 1.1, letterSpacing: '-0.02em', fontFamily: 'Plus Jakarta Sans, sans-serif'
+          }}>
+            BUILD SOMETHING REAL.<br />
+            <span style={{ color: RF_GREEN }}>GROW WHILE YOU DO IT.</span>
+          </h2>
+        </div>
+
+        {/* Desktop Grid View */}
+        <div className="rp-benefits-desktop-grid">
+          {BENEFITS_DATA.map(({ Icon, title, desc }) => (
             <div
-              key={`${title}-${idx}`}
-              className="rp-benefit-card-mobile"
+              key={title}
+              style={{
+                background: '#F4F7F5', border: '1px solid rgba(18, 43, 26, 0.1)',
+                borderRadius: 20, padding: 32, transition: 'all 0.25s'
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.background = RF_DEEP_GREEN;
+                e.currentTarget.style.borderColor = RF_DEEP_GREEN;
+                (e.currentTarget.querySelector('.bt') as HTMLElement).style.color = RF_MINT_ACCENT;
+                (e.currentTarget.querySelector('.bd') as HTMLElement).style.color = 'rgba(255,255,255,0.75)';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = '#F4F7F5';
+                e.currentTarget.style.borderColor = 'rgba(18, 43, 26, 0.1)';
+                (e.currentTarget.querySelector('.bt') as HTMLElement).style.color = RF_DARK_GREEN;
+                (e.currentTarget.querySelector('.bd') as HTMLElement).style.color = '#475569';
+              }}
             >
               <div style={{
-                width: 44, height: 44, borderRadius: 12, background: `${RF_LEAF_GREEN}20`,
-                display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16
+                width: 48, height: 48, borderRadius: 12, background: `${RF_LEAF_GREEN}20`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20
               }}>
-                <Icon size={20} color={RF_GREEN} />
+                <Icon size={22} color={RF_GREEN} />
               </div>
-              <p style={{
+              <p className="bt" style={{
                 fontSize: 12, fontWeight: 900, color: RF_DARK_GREEN, letterSpacing: '0.12em',
-                marginBottom: 8
+                marginBottom: 10, transition: 'color 0.25s'
               }}>
                 {title}
               </p>
-              <p style={{
-                fontSize: 13.5, color: '#475569', lineHeight: 1.65, margin: 0
+              <p className="bd" style={{
+                fontSize: 14, color: '#475569', lineHeight: 1.72, transition: 'color 0.25s'
               }}>
                 {desc}
               </p>
             </div>
           ))}
         </div>
-      </div>
 
-      <p style={{
-        textAlign: 'center', marginTop: 40, fontSize: 13,
-        color: '#64748B', fontStyle: 'italic', maxWidth: 700, margin: '40px auto 0'
-      }}>
-        Pioneer membership is a community contributor program. Future opportunities may become available based on meaningful contribution. No employment, payment, or equity is guaranteed.
-      </p>
-    </div>
-  </section>
-);
+        {/* Mobile Swipeable + Auto-gliding Carousel (Right to Left & Swipable Left/Right) */}
+        <div className="rp-benefits-mobile-wrapper">
+          {/* Edge Fades */}
+          <div style={{
+            position: 'absolute', left: 0, top: 0, bottom: 0, width: 28,
+            background: 'linear-gradient(to right, #FFFFFF 20%, rgba(255,255,255,0))',
+            pointerEvents: 'none', zIndex: 3
+          }} />
+          <div style={{
+            position: 'absolute', right: 0, top: 0, bottom: 0, width: 28,
+            background: 'linear-gradient(to left, #FFFFFF 20%, rgba(255,255,255,0))',
+            pointerEvents: 'none', zIndex: 3
+          }} />
+
+          <div
+            ref={scrollRef}
+            className="rp-benefits-mobile-marquee"
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUpOrLeave}
+            onMouseLeave={handleMouseUpOrLeave}
+            onScroll={() => { if (isInteractingRef.current) scheduleResume(); }}
+          >
+            {tripleBenefits.map(({ Icon, title, desc }, idx) => (
+              <div
+                key={`${title}-${idx}`}
+                className="rp-benefit-card-mobile"
+              >
+                <div style={{
+                  width: 44, height: 44, borderRadius: 12, background: `${RF_LEAF_GREEN}20`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16
+                }}>
+                  <Icon size={20} color={RF_GREEN} />
+                </div>
+                <p style={{
+                  fontSize: 12, fontWeight: 900, color: RF_DARK_GREEN, letterSpacing: '0.12em',
+                  marginBottom: 8
+                }}>
+                  {title}
+                </p>
+                <p style={{
+                  fontSize: 13.5, color: '#475569', lineHeight: 1.65, margin: 0
+                }}>
+                  {desc}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <p style={{
+          textAlign: 'center', marginTop: 40, fontSize: 13,
+          color: '#64748B', fontStyle: 'italic', maxWidth: 700, margin: '40px auto 0'
+        }}>
+          Pioneer membership is a community contributor program. Future opportunities may become available based on meaningful contribution. No employment, payment, or equity is guaranteed.
+        </p>
+      </div>
+    </section>
+  );
+};
 
 // ─── HOW IT WORKS (6-STEP TIMELINE) ───────────────────────────────────────────
 const HOW_IT_WORKS_STEPS = [
