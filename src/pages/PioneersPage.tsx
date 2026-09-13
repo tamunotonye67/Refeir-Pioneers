@@ -1914,9 +1914,8 @@ const WhyBecomePioneer: React.FC = () => (
         </h2>
       </div>
 
-      <div style={{
-        display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 24
-      }}>
+      {/* Desktop Grid View */}
+      <div className="rp-benefits-desktop-grid">
         {BENEFITS_DATA.map(({ Icon, title, desc }) => (
           <div
             key={title}
@@ -1956,6 +1955,36 @@ const WhyBecomePioneer: React.FC = () => (
             </p>
           </div>
         ))}
+      </div>
+
+      {/* Mobile Right-to-Left Marquee Track */}
+      <div className="rp-benefits-mobile-marquee">
+        <div className="rp-benefits-marquee-track">
+          {[...BENEFITS_DATA, ...BENEFITS_DATA].map(({ Icon, title, desc }, idx) => (
+            <div
+              key={`${title}-${idx}`}
+              className="rp-benefit-card-mobile"
+            >
+              <div style={{
+                width: 44, height: 44, borderRadius: 12, background: `${RF_LEAF_GREEN}20`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16
+              }}>
+                <Icon size={20} color={RF_GREEN} />
+              </div>
+              <p style={{
+                fontSize: 12, fontWeight: 900, color: RF_DARK_GREEN, letterSpacing: '0.12em',
+                marginBottom: 8
+              }}>
+                {title}
+              </p>
+              <p style={{
+                fontSize: 13.5, color: '#475569', lineHeight: 1.65, margin: 0
+              }}>
+                {desc}
+              </p>
+            </div>
+          ))}
+        </div>
       </div>
 
       <p style={{
