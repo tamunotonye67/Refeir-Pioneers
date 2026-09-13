@@ -528,6 +528,14 @@ const FounderWelcomeSection: React.FC<FounderWelcomeSectionProps> = ({ onNavigat
   const videoRef = useRef<HTMLVideoElement>(null);
   const isInViewRef = useRef(false);
 
+  // Ensure video DOM muted property stays synchronized
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.muted = isMuted;
+      videoRef.current.defaultMuted = isMuted;
+    }
+  }, [isMuted]);
+
   // Autoplay video when scrolled into view, pause when scrolled away
   useEffect(() => {
     const target = containerRef.current;
@@ -541,9 +549,12 @@ const FounderWelcomeSection: React.FC<FounderWelcomeSectionProps> = ({ onNavigat
 
           if (videoRef.current) {
             if (inView) {
+              videoRef.current.muted = true;
               videoRef.current.play().then(() => {
                 setIsPlaying(true);
-              }).catch(() => {});
+              }).catch(() => {
+                setIsPlaying(false);
+              });
             } else {
               videoRef.current.pause();
               setIsPlaying(false);
@@ -582,15 +593,21 @@ const FounderWelcomeSection: React.FC<FounderWelcomeSectionProps> = ({ onNavigat
       }
       setIsPlayerReady(true);
       if (isInViewRef.current) {
-        videoRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+        videoRef.current.muted = true;
+        videoRef.current.play().then(() => setIsPlaying(true)).catch(() => {
+          setIsPlaying(false);
+        });
       }
     }
   };
 
-  const handleTogglePlay = () => {
+  const handleTogglePlay = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
     if (videoRef.current) {
       if (videoRef.current.paused) {
-        videoRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+        videoRef.current.play().then(() => setIsPlaying(true)).catch((err) => {
+          console.error("Video play failed:", err);
+        });
       } else {
         videoRef.current.pause();
         setIsPlaying(false);
@@ -689,7 +706,7 @@ const FounderWelcomeSection: React.FC<FounderWelcomeSectionProps> = ({ onNavigat
           ref={containerRef}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
-          onClick={handleTogglePlay}
+          onClick={() => handleTogglePlay()}
           style={{
             position: 'relative',
             width: '100%',
@@ -709,17 +726,20 @@ const FounderWelcomeSection: React.FC<FounderWelcomeSectionProps> = ({ onNavigat
           {/* Native HTML5 Video Element */}
           <video
             ref={videoRef}
-            src="/videos/founder-welcome.mp4"
             poster="/images/founder-welcome-poster.jpg"
             playsInline
-            muted={isMuted}
+            autoPlay
+            muted
             loop
-            preload="auto"
+            preload="metadata"
             onTimeUpdate={handleTimeUpdate}
             onLoadedMetadata={handleLoadedMetadata}
             onPlay={() => setIsPlaying(true)}
             onPause={() => setIsPlaying(false)}
             onEnded={() => setIsPlaying(false)}
+            onError={(e) => {
+              console.error("Founder video playback error:", e.currentTarget.error);
+            }}
             style={{
               position: 'absolute',
               inset: 0,
@@ -727,7 +747,9 @@ const FounderWelcomeSection: React.FC<FounderWelcomeSectionProps> = ({ onNavigat
               height: '100%',
               objectFit: 'cover'
             }}
-          />
+          >
+            <source src="/videos/founder-welcome.mp4" type="video/mp4" />
+          </video>
 
           {/* Cinematic Periphery Vignette Layer (Edges of the Video) */}
           <div
@@ -742,28 +764,28 @@ const FounderWelcomeSection: React.FC<FounderWelcomeSectionProps> = ({ onNavigat
             }}
           />
 
-          {/* Big Center Play/Pause indicator: Only shows on hover, appears slower and disappears faster */}
+          {/* Big Center Play/Pause indicator: Shows on hover OR whenever paused */}
           <div
             style={{
               position: 'absolute',
               top: '50%',
               left: '50%',
-              transform: isHovered ? 'translate(-50%, -50%) scale(1)' : 'translate(-50%, -50%) scale(0.88)',
+              transform: isHovered || !isPlaying ? 'translate(-50%, -50%) scale(1)' : 'translate(-50%, -50%) scale(0.88)',
               zIndex: 10,
               pointerEvents: 'none',
-              opacity: isHovered ? 0.95 : 0,
-              transition: isHovered
-                ? 'opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1)'
-                : 'opacity 0.15s ease-out, transform 0.15s ease-out',
+              opacity: isHovered || !isPlaying ? 0.95 : 0,
+              transition: isHovered || !isPlaying
+                ? 'opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1)'
+                : 'opacity 0.2s ease-out, transform 0.2s ease-out',
               willChange: 'opacity, transform'
             }}
           >
             <div
               style={{
-                width: 72,
-                height: 72,
+                width: 76,
+                height: 76,
                 borderRadius: '50%',
-                background: 'rgba(7, 24, 15, 0.8)',
+                background: 'rgba(7, 24, 15, 0.85)',
                 backdropFilter: 'blur(16px)',
                 WebkitBackdropFilter: 'blur(16px)',
                 border: '2px solid rgba(24, 252, 92, 0.85)',
@@ -774,9 +796,9 @@ const FounderWelcomeSection: React.FC<FounderWelcomeSectionProps> = ({ onNavigat
               }}
             >
               {isPlaying ? (
-                <Pause size={28} color="#FFFFFF" />
+                <Pause size={30} color="#FFFFFF" />
               ) : (
-                <Play size={28} fill="#18FC5C" color="#18FC5C" style={{ marginLeft: 3 }} />
+                <Play size={30} fill="#18FC5C" color="#18FC5C" style={{ marginLeft: 3 }} />
               )}
             </div>
           </div>
