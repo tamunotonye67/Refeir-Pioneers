@@ -56,6 +56,20 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.touchAction = 'none';
+    } else {
+      document.body.style.overflow = '';
+      document.body.style.touchAction = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.touchAction = '';
+    };
+  }, [mobileMenuOpen]);
+
   const handleLinkClick = (target: string, isHash: boolean = false) => {
     setMobileMenuOpen(false);
     setMoreDropdownOpen(false);
@@ -647,6 +661,7 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
           ) : (
             <button
               onClick={() => onNavigate('/signin')}
+              className="rp-nav-signin-desk"
               style={{
                 background: 'rgba(255, 255, 255, 0.08)',
                 border: '1px solid rgba(255, 255, 255, 0.16)',
@@ -697,15 +712,24 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
         </div>
       </div>
 
-      {/* Mobile Drawer */}
+      {/* Mobile Drawer - Full Screen Overlay */}
       {mobileMenuOpen && (
         <div
           style={{
-            background: `linear-gradient(180deg, ${RF_DARK_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
+            position: 'fixed',
+            top: 72,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            width: '100vw',
+            height: 'calc(100vh - 72px)',
+            background: `linear-gradient(180deg, ${RF_DARK_GREEN} 0%, #030a06 100%)`,
             borderBottom: `1px solid ${RF_LEAF_GREEN}33`,
-            padding: '20px 24px 30px',
-            maxHeight: 'calc(100vh - 72px)',
-            overflowY: 'auto'
+            padding: '20px 24px 40px',
+            overflowY: 'auto',
+            overscrollBehavior: 'contain',
+            WebkitOverflowScrolling: 'touch',
+            zIndex: 999
           }}
         >
           {/* Contributor Profile or Sign In */}

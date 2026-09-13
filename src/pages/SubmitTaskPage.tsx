@@ -1528,12 +1528,12 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                 {submitting ? (
                   <>
                     <RefreshCw size={18} className="animate-spin" style={{ flexShrink: 0 }} />
-                    Submitting Mission Proof...
+                    Submitting for Verification...
                   </>
                 ) : (
                   <>
                     <Zap size={18} style={{ flexShrink: 0 }} />
-                    Submit Mission Proof for Verification
+                    Submit for Verification
                   </>
                 )}
               </button>

@@ -318,6 +318,9 @@ img, svg {
   .rp-nav-cta-desk {
     display: none !important;
   }
+  .rp-nav-signin-desk {
+    display: none !important;
+  }
   .rp-nav-hamburger {
     display: flex !important;
   }
