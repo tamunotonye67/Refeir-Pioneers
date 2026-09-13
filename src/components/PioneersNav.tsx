@@ -200,7 +200,13 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           {/* Mobile Menu Toggle (Minimalist icon) */}
           <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            onClick={() => {
+              const nextState = !mobileMenuOpen;
+              setMobileMenuOpen(nextState);
+              if (nextState) {
+                setProfileMenuOpen(false);
+              }
+            }}
             className="rp-nav-hamburger"
             aria-label="Toggle navigation menu"
             style={{
@@ -514,7 +520,13 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
           {contributor ? (
             <div ref={profileMenuRef} style={{ position: 'relative' }}>
               <button
-                onClick={() => setProfileMenuOpen(!profileMenuOpen)}
+                onClick={() => {
+                  const nextState = !profileMenuOpen;
+                  setProfileMenuOpen(nextState);
+                  if (nextState) {
+                    setMobileMenuOpen(false);
+                  }
+                }}
                 style={{
                   background: 'rgba(24, 252, 92, 0.08)',
                   border: '1px solid rgba(24, 252, 92, 0.28)',
