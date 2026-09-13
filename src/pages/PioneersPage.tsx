@@ -528,6 +528,18 @@ const FounderWelcomeSection: React.FC<FounderWelcomeSectionProps> = ({ onNavigat
   const videoRef = useRef<HTMLVideoElement>(null);
   const isInViewRef = useRef(false);
 
+  // Supabase CDN Video Delivery with fallback
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  const isSupabaseValid = Boolean(
+    supabaseUrl &&
+    !supabaseUrl.includes('your-project') &&
+    !supabaseUrl.includes('placeholder')
+  );
+  const defaultSupabaseCdnUrl = isSupabaseValid
+    ? `${supabaseUrl}/storage/v1/object/public/videos/founder-welcome.mp4`
+    : '';
+  const cdnVideoUrl = (import.meta.env.VITE_FOUNDER_VIDEO_URL || defaultSupabaseCdnUrl).trim();
+
   // Ensure video DOM muted property stays synchronized
   useEffect(() => {
     if (videoRef.current) {
@@ -748,6 +760,9 @@ const FounderWelcomeSection: React.FC<FounderWelcomeSectionProps> = ({ onNavigat
               objectFit: 'cover'
             }}
           >
+            {cdnVideoUrl && (
+              <source src={cdnVideoUrl} type="video/mp4" />
+            )}
             <source src="/videos/founder-welcome.mp4" type="video/mp4" />
           </video>
 
