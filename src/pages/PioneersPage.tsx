@@ -498,7 +498,7 @@ declare global {
 }
 
 const FounderWelcomeSection: React.FC<FounderWelcomeSectionProps> = ({ onNavigate, onOpenStatus }) => {
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
@@ -508,6 +508,7 @@ const FounderWelcomeSection: React.FC<FounderWelcomeSectionProps> = ({ onNavigat
   
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<any>(null);
+  const isInViewRef = useRef(false);
   const YOUTUBE_VIDEO_ID = 'PgK4lSlbb2U'; // "The A.S.K Principle with Tonye Taylor"
 
   // Load YouTube Iframe API
@@ -517,7 +518,7 @@ const FounderWelcomeSection: React.FC<FounderWelcomeSectionProps> = ({ onNavigat
       playerRef.current = new window.YT.Player('yt-founder-player', {
         videoId: YOUTUBE_VIDEO_ID,
         playerVars: {
-          autoplay: 1,
+          autoplay: 0,
           mute: 1,
           controls: 0,
           rel: 0,
@@ -535,9 +536,15 @@ const FounderWelcomeSection: React.FC<FounderWelcomeSectionProps> = ({ onNavigat
             setIsPlayerReady(true);
             try {
               event.target.mute();
-              event.target.playVideo();
               const dur = event.target.getDuration();
               if (dur && dur > 0) setTotalDuration(Math.floor(dur));
+              if (isInViewRef.current) {
+                event.target.playVideo();
+                setIsPlaying(true);
+              } else {
+                event.target.pauseVideo();
+                setIsPlaying(false);
+              }
             } catch (err) {
               console.error(err);
             }
@@ -575,6 +582,44 @@ const FounderWelcomeSection: React.FC<FounderWelcomeSectionProps> = ({ onNavigat
       }
     };
   }, []);
+
+  // Autoplay video when scrolled into view, pause when scrolled away
+  useEffect(() => {
+    const target = containerRef.current;
+    if (!target) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const inView = entry.isIntersecting;
+          isInViewRef.current = inView;
+
+          if (playerRef.current && typeof playerRef.current.playVideo === 'function') {
+            try {
+              if (inView) {
+                playerRef.current.playVideo();
+                setIsPlaying(true);
+              } else {
+                playerRef.current.pauseVideo();
+                setIsPlaying(false);
+              }
+            } catch (err) {
+              // ignore
+            }
+          }
+        });
+      },
+      {
+        threshold: 0.25
+      }
+    );
+
+    observer.observe(target);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [isPlayerReady]);
 
   // Poll progress from player
   useEffect(() => {
@@ -785,42 +830,44 @@ const FounderWelcomeSection: React.FC<FounderWelcomeSectionProps> = ({ onNavigat
             }}
           />
 
-          {/* Big Center Play/Pause indicator on hover or when paused */}
-          {(!isPlaying || isHovered) && (
+          {/* Big Center Play/Pause indicator: Only shows on hover, appears slower and disappears faster */}
+          <div
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: isHovered ? 'translate(-50%, -50%) scale(1)' : 'translate(-50%, -50%) scale(0.88)',
+              zIndex: 10,
+              pointerEvents: 'none',
+              opacity: isHovered ? 0.95 : 0,
+              transition: isHovered
+                ? 'opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1)'
+                : 'opacity 0.15s ease-out, transform 0.15s ease-out',
+              willChange: 'opacity, transform'
+            }}
+          >
             <div
               style={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                zIndex: 10,
-                pointerEvents: 'none',
-                transition: 'opacity 0.25s ease',
-                opacity: !isPlaying ? 1 : isHovered ? 0.85 : 0
+                width: 72,
+                height: 72,
+                borderRadius: '50%',
+                background: 'rgba(7, 24, 15, 0.8)',
+                backdropFilter: 'blur(16px)',
+                WebkitBackdropFilter: 'blur(16px)',
+                border: '2px solid rgba(24, 252, 92, 0.85)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 0 35px rgba(24, 252, 92, 0.45)'
               }}
             >
-              <div
-                style={{
-                  width: 72,
-                  height: 72,
-                  borderRadius: '50%',
-                  background: 'rgba(7, 24, 15, 0.75)',
-                  backdropFilter: 'blur(16px)',
-                  border: '2px solid rgba(24, 252, 92, 0.8)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  boxShadow: '0 0 35px rgba(24, 252, 92, 0.4)'
-                }}
-              >
-                {isPlaying ? (
-                  <Pause size={28} color="#FFFFFF" />
-                ) : (
-                  <Play size={28} fill="#18FC5C" color="#18FC5C" style={{ marginLeft: 3 }} />
-                )}
-              </div>
+              {isPlaying ? (
+                <Pause size={28} color="#FFFFFF" />
+              ) : (
+                <Play size={28} fill="#18FC5C" color="#18FC5C" style={{ marginLeft: 3 }} />
+              )}
             </div>
-          )}
+          </div>
 
           {/* Minimalist Bottom Control Bar */}
           <div
