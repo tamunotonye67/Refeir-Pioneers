@@ -689,17 +689,18 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
           ) : (
             <button
               onClick={() => onNavigate('/signin')}
-              className="rp-nav-signin-desk"
+              className="rp-nav-signin"
               style={{
                 background: 'rgba(255, 255, 255, 0.08)',
-                border: '1px solid rgba(255, 255, 255, 0.16)',
+                border: '1px solid rgba(255, 255, 255, 0.18)',
                 color: '#FFFFFF',
-                fontSize: 13,
+                fontSize: 12.5,
                 fontWeight: 600,
                 cursor: 'pointer',
-                padding: '7px 16px',
+                padding: '6px 14px',
                 borderRadius: 100,
-                transition: 'all 0.15s'
+                transition: 'all 0.15s',
+                whiteSpace: 'nowrap'
               }}
               onMouseEnter={e => {
                 e.currentTarget.style.background = 'rgba(255, 255, 255, 0.14)';
@@ -830,7 +831,7 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
                 marginBottom: 14
               }}
             >
-              <User size={14} color={RF_MINT_ACCENT} /> Contributor Sign In / Register
+              <User size={14} color={RF_MINT_ACCENT} /> Sign In / Register
             </button>
           )}
 
