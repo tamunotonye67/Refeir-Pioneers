@@ -208,6 +208,24 @@ const DEMO_APPLICATIONS: ApplicationRecord[] = [
 ];
 
 export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) => {
+  // Mobile Lockout Detection
+  const [isMobile, setIsMobile] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    const isSmallScreen = window.innerWidth < 1024;
+    const isTouchMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    return isSmallScreen || isTouchMobile;
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      const isSmallScreen = window.innerWidth < 1024;
+      const isTouchMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      setIsMobile(isSmallScreen || isTouchMobile);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   // Authentication State
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
     return sessionStorage.getItem('refeir_admin_auth') === 'true';
@@ -1173,6 +1191,125 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
         );
     }
   };
+
+  // ─── MOBILE LOCKOUT GUARD ──────────────────────────────────────────────────
+  if (isMobile) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: `linear-gradient(135deg, ${RF_DEEP_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
+        padding: '30px 20px',
+        color: '#FFFFFF',
+        fontFamily: 'Plus Jakarta Sans, sans-serif'
+      }}>
+        <div style={{
+          maxWidth: 460,
+          width: '100%',
+          background: 'rgba(15, 42, 26, 0.85)',
+          borderRadius: 24,
+          padding: '44px 28px',
+          border: `1px solid ${RF_LEAF_GREEN}40`,
+          boxShadow: '0 25px 60px rgba(0,0,0,0.7)',
+          textAlign: 'center',
+          backdropFilter: 'blur(20px)'
+        }}>
+          <div style={{
+            width: 64,
+            height: 64,
+            borderRadius: 20,
+            background: `${RF_LEAF_GREEN}18`,
+            border: `1px solid ${RF_LEAF_GREEN}50`,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto 22px',
+            color: RF_MINT_ACCENT,
+            boxShadow: `0 0 25px ${RF_LEAF_GREEN}25`
+          }}>
+            <Shield size={32} />
+          </div>
+
+          <span style={{
+            fontSize: 11,
+            fontWeight: 700,
+            letterSpacing: '0.12em',
+            textTransform: 'uppercase',
+            color: RF_MINT_ACCENT,
+            background: `${RF_LEAF_GREEN}20`,
+            border: `1px solid ${RF_LEAF_GREEN}40`,
+            padding: '4px 12px',
+            borderRadius: 100,
+            display: 'inline-block',
+            marginBottom: 14
+          }}>
+            Desktop Workstation Required
+          </span>
+
+          <h2 style={{
+            fontSize: 22,
+            fontWeight: 600,
+            color: '#FFFFFF',
+            margin: '0 0 12px',
+            lineHeight: 1.3
+          }}>
+            Admissions Portal Not Supported on Mobile
+          </h2>
+
+          <p style={{
+            fontSize: 14,
+            color: 'rgba(255,255,255,0.75)',
+            lineHeight: 1.65,
+            margin: '0 0 24px'
+          }}>
+            The Refeir Admissions & Staff Suite contains extensive applicant dossiers, proof-of-work inspection tools, and batch verification matrices that require a desktop display (minimum 1024px width).
+          </p>
+
+          <div style={{
+            background: 'rgba(0,0,0,0.25)',
+            borderRadius: 12,
+            padding: '12px 16px',
+            border: '1px solid rgba(255,255,255,0.08)',
+            marginBottom: 28,
+            fontSize: 12.5,
+            color: 'rgba(255,255,255,0.6)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8
+          }}>
+            <Lock size={14} color={RF_MINT_ACCENT} />
+            <span>Please log in from your computer or laptop workstation.</span>
+          </div>
+
+          <button
+            onClick={() => onNavigate('/')}
+            style={{
+              width: '100%',
+              background: RF_LEAF_GREEN,
+              color: RF_DEEP_GREEN,
+              border: 'none',
+              padding: '14px 24px',
+              borderRadius: 100,
+              fontSize: 14.5,
+              fontWeight: 700,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 8,
+              boxShadow: `0 4px 18px ${RF_LEAF_GREEN}40`,
+              transition: 'all 0.2s'
+            }}
+          >
+            Return to Refeir Pioneers <ArrowRight size={16} />
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   // ─── LOGIN SCREEN ────────────────────────────────────────────────────────────
   if (!isAuthenticated) {

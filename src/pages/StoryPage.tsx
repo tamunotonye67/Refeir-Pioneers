@@ -76,10 +76,7 @@ export const StoryPage: React.FC<StoryPageProps> = ({ onNavigate }) => {
           </p>
 
           {/* Quick jump navigation */}
-          <div style={{
-            display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap',
-            maxWidth: 860, margin: '0 auto'
-          }}>
+          <div className="rp-story-anchors">
             {[
               { label: 'The Genesis', anchor: '#genesis' },
               { label: 'Meet the Founder', anchor: '#founder' },
@@ -604,7 +601,7 @@ export const StoryPage: React.FC<StoryPageProps> = ({ onNavigate }) => {
           <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.7)', lineHeight: 1.6, marginBottom: 28 }}>
             Whether you are an engineer, community builder, writer, or strategist—there is a squad waiting for your skills in the Founding 100 Pioneers.
           </p>
-          <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
+          <div className="rp-responsive-btn-group" style={{ maxWidth: 640, margin: '0 auto' }}>
             <button
               onClick={() => onNavigate('/#apply')}
               style={{

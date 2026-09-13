@@ -93,7 +93,7 @@ export const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onNavigate, onOp
             From application to mainnet privileges, here is everything you need to know about joining the Founding 100 and co-building Africa’s referral freelance protocol.
           </p>
 
-          <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
+          <div className="rp-responsive-btn-group" style={{ maxWidth: 640, margin: '0 auto' }}>
             <button
               onClick={() => onNavigate('/#apply')}
               style={{
@@ -258,6 +258,7 @@ export const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onNavigate, onOp
             Do not wait for public launch to claim your builder seat.
           </p>
           <button
+            className="rp-btn-responsive"
             onClick={() => onNavigate('/#apply')}
             style={{
               background: RF_LEAF_GREEN, color: RF_DEEP_GREEN, border: 'none',

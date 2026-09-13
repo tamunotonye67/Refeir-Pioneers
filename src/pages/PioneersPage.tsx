@@ -3242,7 +3242,7 @@ const FinalCTA: React.FC<{ onNavigate: (path: string) => void }> = ({ onNavigate
         That means there is still time to be one of the people who helped shape it.
       </p>
 
-      <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
+      <div className="rp-responsive-btn-group" style={{ maxWidth: 640, margin: '0 auto' }}>
         <button
           onClick={() => scrollToId('apply')}
           style={{

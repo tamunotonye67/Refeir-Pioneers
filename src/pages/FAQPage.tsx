@@ -200,7 +200,7 @@ export const FAQPage: React.FC<FAQPageProps> = ({ onNavigate }) => {
 
       {/* Categories Bar */}
       <section style={{ padding: '30px 24px 10px', background: '#F8FAF9', borderBottom: '1px solid #E2E8F0' }}>
-        <div style={{ maxWidth: 840, margin: '0 auto', display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
+        <div className="rp-category-pill-bar" style={{ maxWidth: 840, margin: '0 auto', display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
           {categories.map(cat => {
             const isSelected = selectedCategory === cat;
             return (
@@ -305,7 +305,7 @@ export const FAQPage: React.FC<FAQPageProps> = ({ onNavigate }) => {
               </p>
             </div>
 
-            <div style={{ display: 'flex', gap: 12 }}>
+            <div className="rp-responsive-btn-group" style={{ display: 'flex', gap: 12 }}>
               <button
                 onClick={() => onNavigate('/contact')}
                 style={{
