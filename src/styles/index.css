@@ -337,6 +337,19 @@ img, svg {
     grid-template-columns: 1fr !important;
     gap: 24px !important;
   }
+
+  .rp-hero-headline {
+    font-size: clamp(40px, 9.5vw, 54px) !important;
+    line-height: 1.1 !important;
+    letter-spacing: -0.03em !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .rp-hero-headline {
+    font-size: clamp(38px, 10vw, 46px) !important;
+    line-height: 1.12 !important;
+  }
 }
 
 /* ─── RESPONSIVE BUTTONS & TOUCH TARGETS ────────────────────────────────── */

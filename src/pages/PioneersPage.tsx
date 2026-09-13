@@ -246,11 +246,14 @@ const HeroSection: React.FC = () => {
           {/* Left Column: Core Message */}
           <div>
             {/* Headline */}
-            <h1 style={{
-              fontSize: 'clamp(36px, 5.4vw, 68px)', fontWeight: 800, lineHeight: 1.08,
-              color: '#FFFFFF', letterSpacing: '-0.035em', marginBottom: 20,
-              fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif"
-            }}>
+            <h1
+              className="rp-hero-headline"
+              style={{
+                fontSize: 'clamp(36px, 5.4vw, 68px)', fontWeight: 800, lineHeight: 1.08,
+                color: '#FFFFFF', letterSpacing: '-0.035em', marginBottom: 20,
+                fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif"
+              }}
+            >
               Don't wait for Africa's future.<br />
               <span style={{
                 fontWeight: 800,
