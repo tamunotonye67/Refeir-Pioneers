@@ -316,21 +316,44 @@ const HeroSection: React.FC = () => {
               </button>
             </div>
 
-            {/* Stats Bar */}
+            {/* Stats Bar (Always 1 Single Line across Mobile and Desktop) */}
             <div className="rp-stats-grid" style={{
-              display: 'flex', gap: 36, marginTop: 24, paddingTop: 18,
-              borderTop: '1px solid rgba(102, 187, 42, 0.2)', flexWrap: 'wrap'
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: 'clamp(8px, 2.5vw, 32px)',
+              marginTop: 24,
+              paddingTop: 18,
+              borderTop: '1px solid rgba(102, 187, 42, 0.2)',
+              width: '100%'
             }}>
               {[
                 { val: 'EARLY', label: 'Community Stage' },
                 { val: '6 SQUADS', label: 'Pioneer Divisions' },
                 { val: '100 SEATS', label: 'Founding Pioneer Cohort' },
               ].map(s => (
-                <div key={s.label}>
-                  <div style={{ fontSize: 22, fontWeight: 900, color: RF_MINT_ACCENT, letterSpacing: '-0.01em' }}>
+                <div key={s.label} style={{ minWidth: 0, overflow: 'hidden' }}>
+                  <div style={{
+                    fontSize: 'clamp(14px, 3.8vw, 22px)',
+                    fontWeight: 900,
+                    color: RF_MINT_ACCENT,
+                    letterSpacing: '-0.02em',
+                    whiteSpace: 'nowrap',
+                    textOverflow: 'ellipsis',
+                    overflow: 'hidden',
+                    lineHeight: 1.15
+                  }}>
                     {s.val}
                   </div>
-                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', letterSpacing: '0.06em', marginTop: 2 }}>
+                  <div style={{
+                    fontSize: 'clamp(8.5px, 2.2vw, 11px)',
+                    color: 'rgba(255,255,255,0.65)',
+                    letterSpacing: '0.04em',
+                    marginTop: 3,
+                    lineHeight: 1.25,
+                    whiteSpace: 'nowrap',
+                    textOverflow: 'ellipsis',
+                    overflow: 'hidden'
+                  }}>
                     {s.label}
                   </div>
                 </div>
@@ -1517,8 +1540,8 @@ const WhoWeAreLookingFor: React.FC = () => {
     const card = cardRefs.current[index];
     if (card) {
       const isMobile = window.innerWidth <= 880;
-      const baseTop = isMobile ? 66 : 82;
-      const step = isMobile ? 18 : 28;
+      const baseTop = isMobile ? 78 : 86;
+      const step = isMobile ? 12 : 24;
       const targetTop = baseTop + index * step;
       const elementY = card.getBoundingClientRect().top + window.scrollY;
       window.scrollTo({
@@ -1573,10 +1596,10 @@ const WhoWeAreLookingFor: React.FC = () => {
           </p>
         </div>
 
-        {/* Floating Squad Tracker Pills */}
-        <div style={{
+        {/* Floating Squad Tracker Pills (Floats cleanly below fixed 72px navbar) */}
+        <div className="rp-squad-tracker-pills" style={{
           position: 'sticky',
-          top: 14,
+          top: 80,
           zIndex: 40,
           display: 'flex',
           justifyContent: 'center',
@@ -2098,8 +2121,9 @@ const Founding100: React.FC = () => {
         {/* Counter Box */}
         <div style={{
           background: 'rgba(255,255,255,0.06)', border: `1.5px solid rgba(102, 187, 42, 0.35)`,
-          borderRadius: 24, padding: '40px 48px', marginBottom: 44,
-          display: 'inline-block', minWidth: 320, boxShadow: '0 20px 50px rgba(0,0,0,0.5)'
+          borderRadius: 24, padding: 'clamp(24px, 5vw, 40px) clamp(18px, 4vw, 48px)', marginBottom: 44,
+          display: 'inline-block', width: '100%', maxWidth: 360, boxSizing: 'border-box',
+          boxShadow: '0 20px 50px rgba(0,0,0,0.5)'
         }}>
           <p style={{ fontSize: 11, fontWeight: 800, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.18em', marginBottom: 14 }}>
             FOUNDING PIONEERS
@@ -2165,8 +2189,8 @@ const MoreThanCommunity: React.FC = () => (
   <section style={{ background: '#FFFFFF', padding: '100px 24px' }}>
     <div style={{
       maxWidth: 1240, margin: '0 auto',
-      display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-      gap: 64, alignItems: 'center'
+      display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))',
+      gap: 'clamp(32px, 5vw, 64px)', alignItems: 'center'
     }}>
       <div>
         <p style={{ fontSize: 11, fontWeight: 900, color: RF_GREEN, letterSpacing: '0.22em', marginBottom: 16 }}>
@@ -2191,7 +2215,7 @@ const MoreThanCommunity: React.FC = () => (
         </p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+      <div className="rp-quad-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: 16 }}>
         {[
           { l: 'COMMUNITY', d: 'Connect with talented builders across Africa', dark: true },
           { l: 'CONTRIBUTION', d: 'Work on real platform missions and code', dark: false },
