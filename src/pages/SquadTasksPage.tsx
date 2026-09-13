@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import {
   Zap, Calendar, Clock, Share2, Check, Copy, ExternalLink,
   Gift, Wifi, DollarSign, Award, ArrowRight, Shield, CheckCircle2,
-  Users, Filter, MessageSquare, AlertCircle, ChevronRight, Phone,
+  Users, Filter, MessageSquare, AlertCircle, ChevronRight, ChevronDown, Phone,
   FileCheck, Radio, Lock, X
 } from 'lucide-react';
 import {
@@ -469,46 +469,127 @@ export const SquadTasksPage: React.FC<SquadTasksPageProps> = ({ onNavigate, onOp
           flexDirection: 'column',
           gap: 16
         }}>
-          {/* Squad Selectors */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-            <span style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 6 }}>
-              <Filter size={14} /> Filter Squad:
-            </span>
+          {/* Squad Selectors - Desktop: Pills, Mobile: Styled Selection Box */}
+          <div>
+            {/* Desktop View */}
+            <div className="rp-squad-filter-desktop" style={{ alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+              <span style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <Filter size={14} /> Filter Squad:
+              </span>
 
-            <button
-              onClick={() => setSelectedSquad('ALL')}
-              style={{
-                background: selectedSquad === 'ALL' ? RF_LEAF_GREEN : 'rgba(255,255,255,0.06)',
-                color: selectedSquad === 'ALL' ? RF_DEEP_GREEN : '#FFFFFF',
-                border: 'none', padding: '6px 14px', borderRadius: 100, fontSize: 12, fontWeight: 700,
-                cursor: 'pointer', transition: 'all 0.2s'
-              }}
-            >
-              All Squads ({tasks.length})
-            </button>
+              <button
+                onClick={() => setSelectedSquad('ALL')}
+                style={{
+                  background: selectedSquad === 'ALL' ? RF_LEAF_GREEN : 'rgba(255,255,255,0.06)',
+                  color: selectedSquad === 'ALL' ? RF_DEEP_GREEN : '#FFFFFF',
+                  border: 'none', padding: '6px 14px', borderRadius: 100, fontSize: 12, fontWeight: 700,
+                  cursor: 'pointer', transition: 'all 0.2s'
+                }}
+              >
+                All Squads ({tasks.length})
+              </button>
 
-            {(Object.keys(SQUAD_INFO) as SquadDivision[]).map(squadKey => {
-              const info = SQUAD_INFO[squadKey];
-              const isSelected = selectedSquad === squadKey;
-              const count = tasks.filter(t => t.squad === squadKey && t.status === 'ACTIVE').length;
+              {(Object.keys(SQUAD_INFO) as SquadDivision[]).map(squadKey => {
+                const info = SQUAD_INFO[squadKey];
+                const isSelected = selectedSquad === squadKey;
+                const count = tasks.filter(t => t.squad === squadKey && t.status === 'ACTIVE').length;
 
-              return (
-                <button
-                  key={squadKey}
-                  onClick={() => setSelectedSquad(squadKey)}
+                return (
+                  <button
+                    key={squadKey}
+                    onClick={() => setSelectedSquad(squadKey)}
+                    style={{
+                      background: isSelected ? info.color : 'rgba(255,255,255,0.06)',
+                      color: isSelected ? '#000000' : 'rgba(255,255,255,0.85)',
+                      border: `1px solid ${isSelected ? info.color : 'rgba(255,255,255,0.12)'}`,
+                      padding: '6px 14px', borderRadius: 100, fontSize: 12, fontWeight: 700,
+                      cursor: 'pointer', transition: 'all 0.2s', display: 'inline-flex', alignItems: 'center', gap: 6
+                    }}
+                  >
+                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: isSelected ? '#000000' : info.color }} />
+                    {info.tag} {count > 0 ? `(${count})` : ''}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Mobile View: Clean Custom Selection Box */}
+            <div className="rp-squad-filter-mobile" style={{ flexDirection: 'column', gap: 8, width: '100%' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <label
+                  htmlFor="rp-mobile-squad-select"
                   style={{
-                    background: isSelected ? info.color : 'rgba(255,255,255,0.06)',
-                    color: isSelected ? '#000000' : 'rgba(255,255,255,0.85)',
-                    border: `1px solid ${isSelected ? info.color : 'rgba(255,255,255,0.12)'}`,
-                    padding: '6px 14px', borderRadius: 100, fontSize: 12, fontWeight: 700,
-                    cursor: 'pointer', transition: 'all 0.2s', display: 'inline-flex', alignItems: 'center', gap: 6
+                    fontSize: 12,
+                    fontWeight: 700,
+                    color: 'rgba(255,255,255,0.7)',
+                    textTransform: 'uppercase',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    letterSpacing: '0.04em'
                   }}
                 >
-                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: isSelected ? '#000000' : info.color }} />
-                  {info.tag} {count > 0 ? `(${count})` : ''}
-                </button>
-              );
-            })}
+                  <Filter size={13} color={RF_MINT_ACCENT} /> Filter by Squad:
+                </label>
+                <span style={{ fontSize: 11.5, color: RF_MINT_ACCENT, fontWeight: 600 }}>
+                  {selectedSquad === 'ALL' ? `${tasks.length} total tasks` : SQUAD_INFO[selectedSquad as SquadDivision]?.name}
+                </span>
+              </div>
+
+              <div style={{ position: 'relative', width: '100%' }}>
+                <select
+                  id="rp-mobile-squad-select"
+                  value={selectedSquad}
+                  onChange={e => setSelectedSquad(e.target.value as SquadDivision | 'ALL')}
+                  style={{
+                    width: '100%',
+                    appearance: 'none',
+                    WebkitAppearance: 'none',
+                    MozAppearance: 'none',
+                    background: 'rgba(6, 20, 13, 0.95)',
+                    border: `1px solid ${selectedSquad === 'ALL' ? 'rgba(102, 187, 42, 0.35)' : SQUAD_INFO[selectedSquad as SquadDivision]?.color || RF_LEAF_GREEN}`,
+                    borderRadius: 12,
+                    padding: '12px 38px 12px 14px',
+                    color: '#FFFFFF',
+                    fontSize: 14,
+                    fontWeight: 600,
+                    outline: 'none',
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 16px rgba(0,0,0,0.3)',
+                    boxSizing: 'border-box'
+                  }}
+                >
+                  <option value="ALL" style={{ background: '#07180F', color: '#FFFFFF' }}>
+                    All Squads ({tasks.length} Active Missions)
+                  </option>
+                  {(Object.keys(SQUAD_INFO) as SquadDivision[]).map(squadKey => {
+                    const info = SQUAD_INFO[squadKey];
+                    const count = tasks.filter(t => t.squad === squadKey && t.status === 'ACTIVE').length;
+                    return (
+                      <option
+                        key={squadKey}
+                        value={squadKey}
+                        style={{ background: '#07180F', color: '#FFFFFF' }}
+                      >
+                        {info.name} ({info.tag}) — {count} {count === 1 ? 'mission' : 'missions'}
+                      </option>
+                    );
+                  })}
+                </select>
+
+                <div style={{
+                  position: 'absolute',
+                  right: 14,
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  pointerEvents: 'none',
+                  display: 'flex',
+                  alignItems: 'center'
+                }}>
+                  <ChevronDown size={17} color={RF_MINT_ACCENT} />
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Timeframe Filter */}

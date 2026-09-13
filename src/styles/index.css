@@ -510,6 +510,25 @@ img, svg {
   }
 }
 
+/* ─── SQUAD FILTER SELECT BOX FOR MOBILE ───────────────────────────────── */
+.rp-squad-filter-desktop {
+  display: flex !important;
+}
+
+.rp-squad-filter-mobile {
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+  .rp-squad-filter-desktop {
+    display: none !important;
+  }
+  .rp-squad-filter-mobile {
+    display: flex !important;
+    width: 100% !important;
+  }
+}
+
 /* ─── MOBILE FORM INPUTS (PREVENT IOS AUTO-ZOOM) ───────────────────────── */
 @media (max-width: 768px) {
   input[type="text"],
