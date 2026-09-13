@@ -1508,49 +1508,79 @@ const SquadFlatVectorArt: React.FC<{ squadId: string; color: string; title: stri
 const WhoWeAreLookingFor: React.FC = () => {
   const [activeSquadIndex, setActiveSquadIndex] = useState<number>(0);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const shellRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
     let animId: number;
 
     const handleScroll = () => {
       const isMobile = window.innerWidth <= 880;
-      const baseTop = isMobile ? 66 : 82;
-      const step = isMobile ? 18 : 28;
+      const isSmall = window.innerWidth <= 540;
+      const baseTop = isMobile ? (isSmall ? 64 : 70) : 130;
+      const step = isMobile ? (isSmall ? 12 : 14) : 26;
 
       let highestStuckIndex = 0;
 
       DIVISIONS_DATA.forEach((_, i) => {
         const card = cardRefs.current[i];
-        if (!card) return;
+        const shell = shellRefs.current[i];
+        if (!card || !shell) return;
 
         const targetTop = baseTop + i * step;
-        const rect = card.getBoundingClientRect();
+        const cardRect = card.getBoundingClientRect();
 
         // Check if card has reached its sticky offset
-        if (rect.top <= targetTop + 4) {
+        if (cardRect.top <= targetTop + 8) {
           highestStuckIndex = i;
+        }
 
-          // Apple-style parallax depth: scale down and dim card underneath as next card stacks over it
+        // Apple-style stacking depth physics:
+        // Calculate cumulative compression based on all cards stacking over it
+        let stackProgress = 0;
+
+        // 1. Primary approach from the card directly below it (i + 1)
+        if (i < DIVISIONS_DATA.length - 1) {
           const nextCard = cardRefs.current[i + 1];
           if (nextCard) {
             const nextTargetTop = baseTop + (i + 1) * step;
             const nextRect = nextCard.getBoundingClientRect();
-            const overlap = nextTargetTop - nextRect.top;
+            // Distance of next card from its dock position
+            const dist = nextRect.top - nextTargetTop;
+            const stackRange = isMobile ? 260 : 380;
 
-            if (overlap > 0) {
-              const progress = Math.min(1, Math.max(0, overlap / 380));
-              const scale = 1 - progress * 0.05;
-              const brightness = 1 - progress * 0.28;
-              card.style.transform = `scale(${scale})`;
-              card.style.filter = `brightness(${brightness})`;
-            } else {
-              card.style.transform = 'scale(1)';
-              card.style.filter = 'brightness(1)';
+            if (dist < stackRange) {
+              const p = Math.min(1, Math.max(0, 1 - (dist / stackRange)));
+              stackProgress += p;
             }
           }
+
+          // 2. Progressive subtle depth from secondary subsequent cards (i + 2, i + 3...)
+          for (let k = i + 2; k < DIVISIONS_DATA.length; k++) {
+            const furtherCard = cardRefs.current[k];
+            if (furtherCard) {
+              const furtherTargetTop = baseTop + k * step;
+              const furtherRect = furtherCard.getBoundingClientRect();
+              const furtherDist = furtherRect.top - furtherTargetTop;
+              const furtherRange = isMobile ? 260 : 380;
+              if (furtherDist < furtherRange) {
+                const p = Math.min(1, Math.max(0, 1 - (furtherDist / furtherRange)));
+                stackProgress += p * 0.4;
+              }
+            }
+          }
+        }
+
+        if (stackProgress > 0.005) {
+          const scale = Math.max(isMobile ? 0.88 : 0.84, 1 - stackProgress * (isMobile ? 0.045 : 0.052));
+          const translateY = -(stackProgress * (isMobile ? 8 : 12));
+          const brightness = Math.max(0.42, 1 - stackProgress * (isMobile ? 0.22 : 0.28));
+          shell.style.transform = `scale(${scale}) translateY(${translateY}px)`;
+          shell.style.filter = `brightness(${brightness})`;
+          shell.style.boxShadow = `0 -8px 25px rgba(0, 0, 0, ${0.45 + stackProgress * 0.3}), 0 ${20 + stackProgress * 15}px ${50 + stackProgress * 25}px rgba(0, 0, 0, 0.92)`;
         } else {
-          card.style.transform = 'scale(1)';
-          card.style.filter = 'brightness(1)';
+          shell.style.transform = 'scale(1) translateY(0px)';
+          shell.style.filter = 'brightness(1)';
+          shell.style.boxShadow = '';
         }
       });
 
@@ -1575,8 +1605,9 @@ const WhoWeAreLookingFor: React.FC = () => {
     const card = cardRefs.current[index];
     if (card) {
       const isMobile = window.innerWidth <= 880;
-      const baseTop = isMobile ? 78 : 86;
-      const step = isMobile ? 12 : 24;
+      const isSmall = window.innerWidth <= 540;
+      const baseTop = isMobile ? (isSmall ? 64 : 70) : 130;
+      const step = isMobile ? (isSmall ? 12 : 14) : 26;
       const targetTop = baseTop + index * step;
       const elementY = card.getBoundingClientRect().top + window.scrollY;
       window.scrollTo({
@@ -1631,26 +1662,8 @@ const WhoWeAreLookingFor: React.FC = () => {
           </p>
         </div>
 
-        {/* Floating Squad Tracker Pills (Floats cleanly below fixed 72px navbar) */}
-        <div className="rp-squad-tracker-pills" style={{
-          position: 'sticky',
-          top: 80,
-          zIndex: 40,
-          display: 'flex',
-          justifyContent: 'center',
-          gap: 6,
-          overflowX: 'auto',
-          padding: '8px 12px',
-          marginBottom: 36,
-          background: 'rgba(7, 24, 15, 0.85)',
-          backdropFilter: 'blur(16px)',
-          WebkitBackdropFilter: 'blur(16px)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          borderRadius: 100,
-          maxWidth: 860,
-          margin: '0 auto 36px auto',
-          scrollbarWidth: 'none'
-        }}>
+        {/* Floating Squad Tracker Pills */}
+        <div className="rp-squad-tracker-pills">
           {DIVISIONS_DATA.map((item, i) => {
             const isActive = activeSquadIndex === i;
             return (
@@ -1693,6 +1706,7 @@ const WhoWeAreLookingFor: React.FC = () => {
               } as React.CSSProperties}
             >
               <div
+                ref={el => (shellRefs.current[index] = el)}
                 className="rp-sticky-card-shell"
                 style={{
                   borderColor: `${item.color}35`,

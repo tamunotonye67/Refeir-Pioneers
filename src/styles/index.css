@@ -187,16 +187,13 @@ img, svg {
   position: relative;
   max-width: 1060px;
   margin: 0 auto;
-  padding: 0 16px 24px;
+  padding: 0 16px 36px;
 }
 
 .rp-sticky-card-wrapper {
   position: sticky;
-  top: calc(82px + var(--card-index, 0) * 28px);
-  margin-bottom: 35vh;
-  transform-origin: center top;
-  transition: transform 0.15s ease-out, filter 0.15s ease-out;
-  will-change: transform, filter;
+  top: calc(130px + var(--card-index, 0) * 26px);
+  margin-bottom: 32vh;
 }
 
 .rp-sticky-card-wrapper:last-child {
@@ -215,6 +212,32 @@ img, svg {
   grid-template-columns: 1.18fr 0.82fr;
   position: relative;
   min-height: 480px;
+  transform-origin: center top;
+  transition: transform 0.1s cubic-bezier(0.16, 1, 0.3, 1), filter 0.1s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.1s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, filter;
+}
+
+.rp-squad-tracker-pills {
+  position: sticky;
+  top: 78px;
+  z-index: 40;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 8px 12px;
+  background: rgba(7, 24, 15, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 100px;
+  max-width: 860px;
+  margin: 0 auto 36px auto;
+  scrollbar-width: none;
+}
+
+.rp-squad-tracker-pills::-webkit-scrollbar {
+  display: none;
 }
 
 .rp-sticky-card-tab {
@@ -261,9 +284,21 @@ img, svg {
 }
 
 @media (max-width: 880px) {
+  .rp-sticky-deck-track {
+    padding: 0 12px 16px;
+  }
+  .rp-squad-tracker-pills {
+    position: relative !important;
+    top: auto !important;
+    margin: 0 auto 20px auto !important;
+    max-width: 100% !important;
+    border-radius: 16px !important;
+    justify-content: flex-start !important;
+    -webkit-overflow-scrolling: touch;
+  }
   .rp-sticky-card-wrapper {
-    top: calc(78px + var(--card-index, 0) * 12px);
-    margin-bottom: 25vh;
+    top: calc(70px + var(--card-index, 0) * 14px) !important;
+    margin-bottom: 22vh !important;
   }
   .rp-sticky-card-wrapper:last-child {
     margin-bottom: 0 !important;
@@ -271,26 +306,40 @@ img, svg {
   .rp-sticky-card-shell {
     grid-template-columns: 1fr;
     min-height: auto;
+    border-radius: 20px;
   }
   .rp-sticky-card-body {
     padding: 22px 18px 18px;
   }
+  .rp-sticky-card-tab {
+    padding: 11px 16px;
+  }
+  .rp-sticky-card-visual {
+    padding-bottom: 12px;
+  }
   .rp-sticky-card-visual svg,
   .rp-sticky-card-visual img {
-    max-height: 220px;
+    max-height: 200px;
   }
 }
 
 @media (max-width: 540px) {
+  .rp-sticky-card-wrapper {
+    top: calc(64px + var(--card-index, 0) * 12px) !important;
+    margin-bottom: 18vh !important;
+  }
+  .rp-sticky-card-shell {
+    border-radius: 18px;
+  }
   .rp-sticky-card-body {
-    padding: 18px 16px 18px;
+    padding: 16px 14px 14px;
   }
   .rp-sticky-card-tab {
-    padding: 10px 16px;
+    padding: 9px 12px;
   }
   .rp-sticky-card-visual svg,
   .rp-sticky-card-visual img {
-    max-height: 180px;
+    max-height: 150px;
   }
 }
 
