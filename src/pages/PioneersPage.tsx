@@ -931,10 +931,6 @@ const FounderWelcomeSection: React.FC<FounderWelcomeSectionProps> = ({ onNavigat
               </div>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.04em' }}>
-                  Tonye Taylor • Refeir Protocol
-                </span>
-
                 <button
                   onClick={handleFullscreen}
                   title="Fullscreen"
