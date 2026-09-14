@@ -204,7 +204,7 @@ img, svg {
   background: linear-gradient(180deg, rgba(16, 42, 27, 0.96) 0%, rgba(7, 21, 14, 0.98) 100%);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 26px;
-  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.5), 0 25px 60px rgba(0, 0, 0, 0.85);
+  box-shadow: 0 -4px 18px rgba(0, 0, 0, 0.18), 0 16px 36px -6px rgba(0, 0, 0, 0.38);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   overflow: hidden;

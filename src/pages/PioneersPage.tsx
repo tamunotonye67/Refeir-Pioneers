@@ -1600,9 +1600,11 @@ const WhoWeAreLookingFor: React.FC = () => {
           const scale = Math.max(isMobile ? 0.88 : 0.84, 1 - stackProgress * (isMobile ? 0.045 : 0.052));
           const translateY = -(stackProgress * (isMobile ? 8 : 12));
           const brightness = Math.max(0.42, 1 - stackProgress * (isMobile ? 0.22 : 0.28));
+          const topShadowAlpha = Math.min(0.25, 0.10 + stackProgress * 0.08);
+          const mainShadowAlpha = Math.min(0.46, 0.28 + stackProgress * 0.10);
           shell.style.transform = `scale(${scale}) translateY(${translateY}px)`;
           shell.style.filter = `brightness(${brightness})`;
-          shell.style.boxShadow = `0 -8px 25px rgba(0, 0, 0, ${0.45 + stackProgress * 0.3}), 0 ${20 + stackProgress * 15}px ${50 + stackProgress * 25}px rgba(0, 0, 0, 0.92)`;
+          shell.style.boxShadow = `0 -4px 18px rgba(0, 0, 0, ${topShadowAlpha}), 0 ${16 + stackProgress * 8}px ${32 + stackProgress * 12}px rgba(0, 0, 0, ${mainShadowAlpha})`;
         } else {
           shell.style.transform = 'scale(1) translateY(0px)';
           shell.style.filter = 'brightness(1)';
@@ -1755,7 +1757,7 @@ const WhoWeAreLookingFor: React.FC = () => {
                 className="rp-sticky-card-shell"
                 style={{
                   borderColor: `${item.color}35`,
-                  boxShadow: `0 -8px 30px rgba(0, 0, 0, 0.5), 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 35px ${item.color}15`
+                  boxShadow: `0 -4px 18px rgba(0, 0, 0, 0.18), 0 16px 36px -6px rgba(0, 0, 0, 0.38), 0 0 20px ${item.color}08`
                 }}
               >
                 {/* Ambient Radial Spotlight inside Card */}
