@@ -1209,6 +1209,7 @@ const DIVISIONS_DATA = [
     Icon: Code2,
     title: 'TECH & PRODUCT',
     shortTitle: 'Tech & Product',
+    mobileTitle: 'Tech',
     tagline: 'Platform Architecture, Engineering & AI Systems',
     roles: ['Developers', 'Engineers', 'QA Testers', 'AI Specialists', 'Product Thinkers'],
     mission: 'Build, stress-test and continuously engineer the Refeir platform.',
@@ -1222,6 +1223,7 @@ const DIVISIONS_DATA = [
     Icon: Palette,
     title: 'CREATIVE',
     shortTitle: 'Creative',
+    mobileTitle: 'Creative',
     tagline: 'Brand Identity, UI/UX & Visual Storytelling',
     roles: ['UI/UX Designers', 'Graphic Designers', 'Brand Writers', 'Motion & Video Creators', 'Content Strategists'],
     mission: 'Make Refeir unmistakable, intuitive, and impossible to ignore across Africa.',
@@ -1235,6 +1237,7 @@ const DIVISIONS_DATA = [
     Icon: TrendingUp,
     title: 'GROWTH',
     shortTitle: 'Growth',
+    mobileTitle: 'Growth',
     tagline: 'User Acquisition, Distribution & Network Expansion',
     roles: ['Digital Marketers', 'Growth Strategists', 'Social Media Specialists', 'SEO Specialists', 'Campaign Leads'],
     mission: 'Put Refeir directly in front of the ambitious talent and clients who need it most.',
@@ -1248,6 +1251,7 @@ const DIVISIONS_DATA = [
     Icon: Briefcase,
     title: 'BUSINESS',
     shortTitle: 'Business',
+    mobileTitle: 'Business',
     tagline: 'Enterprise Contracts, Partnerships & Monetization',
     roles: ['Business Developers', 'Sales Executives', 'Partnership Builders', 'Strategic Networkers', 'Account Leads'],
     mission: 'Bring verified, high-value client contracts into the Refeir freelance ecosystem.',
@@ -1261,6 +1265,7 @@ const DIVISIONS_DATA = [
     Icon: Users,
     title: 'COMMUNITY',
     shortTitle: 'Community',
+    mobileTitle: 'Community',
     tagline: 'Grassroots Engagement & Pan-African Ambassador Network',
     roles: ['Community Managers', 'Campus Ambassadors', 'Regional Leads', 'Ecosystem Organizers', 'Mentors'],
     mission: 'Build and nurture the trusted people-powered network behind Refeir in every major tech hub.',
@@ -1274,6 +1279,7 @@ const DIVISIONS_DATA = [
     Icon: FlaskConical,
     title: 'RESEARCH & TESTING',
     shortTitle: 'Research & Testing',
+    mobileTitle: 'Research',
     tagline: 'Product Intelligence, Market Feedback & QA Reliability',
     roles: ['Product Testers', 'User Researchers', 'Data Analysts', 'Beta Evaluators', 'Problem Solvers'],
     mission: 'Uncover user pain points, stress-test platform mechanics, and make Refeir better every single day.',
@@ -1509,6 +1515,24 @@ const WhoWeAreLookingFor: React.FC = () => {
   const [activeSquadIndex, setActiveSquadIndex] = useState<number>(0);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const shellRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const pillContainerRef = useRef<HTMLDivElement | null>(null);
+  const pillRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
+  // Automatically center active squad pill in horizontal track on mobile/smaller screens
+  useEffect(() => {
+    const activePill = pillRefs.current[activeSquadIndex];
+    if (activePill && pillContainerRef.current) {
+      const container = pillContainerRef.current;
+      const pillLeft = activePill.offsetLeft;
+      const pillWidth = activePill.offsetWidth;
+      const containerWidth = container.offsetWidth;
+      const targetScrollLeft = pillLeft - (containerWidth / 2) + (pillWidth / 2);
+      container.scrollTo({
+        left: targetScrollLeft,
+        behavior: 'smooth'
+      });
+    }
+  }, [activeSquadIndex]);
 
   useEffect(() => {
     let animId: number;
@@ -1516,7 +1540,7 @@ const WhoWeAreLookingFor: React.FC = () => {
     const handleScroll = () => {
       const isMobile = window.innerWidth <= 880;
       const isSmall = window.innerWidth <= 540;
-      const baseTop = isMobile ? (isSmall ? 76 : 80) : 130;
+      const baseTop = isMobile ? (isSmall ? 118 : 122) : 130;
       const step = isMobile ? (isSmall ? 14 : 16) : 26;
 
       let highestStuckIndex = 0;
@@ -1609,7 +1633,7 @@ const WhoWeAreLookingFor: React.FC = () => {
     if (card) {
       const isMobile = window.innerWidth <= 880;
       const isSmall = window.innerWidth <= 540;
-      const baseTop = isMobile ? (isSmall ? 76 : 80) : 130;
+      const baseTop = isMobile ? (isSmall ? 118 : 122) : 130;
       const step = isMobile ? (isSmall ? 14 : 16) : 26;
       const targetTop = baseTop + index * step;
       const elementY = card.getBoundingClientRect().top + window.scrollY;
@@ -1665,32 +1689,32 @@ const WhoWeAreLookingFor: React.FC = () => {
           </p>
         </div>
 
-        {/* Floating Squad Tracker Pills */}
-        <div className="rp-squad-tracker-pills">
+        {/* Floating Squad Tracker Pills Overlay (Apple-Style Segmented Dock) */}
+        <div
+          ref={pillContainerRef}
+          className="rp-squad-tracker-pills"
+          role="tablist"
+          aria-label="Squad divisions switcher"
+        >
           {DIVISIONS_DATA.map((item, i) => {
             const isActive = activeSquadIndex === i;
             return (
               <button
                 key={item.id}
+                ref={el => (pillRefs.current[i] = el)}
+                role="tab"
+                aria-selected={isActive}
                 onClick={() => handleJumpToSquad(i)}
+                className={`rp-squad-pill-btn ${isActive ? 'is-active' : ''}`}
                 style={{
-                  background: isActive ? `${item.color}20` : 'transparent',
-                  border: isActive ? `1px solid ${item.color}88` : '1px solid transparent',
-                  borderRadius: 100,
-                  padding: '5px 12px',
-                  fontSize: 11.5,
-                  fontWeight: isActive ? 700 : 500,
-                  color: isActive ? '#FFFFFF' : 'rgba(255, 255, 255, 0.55)',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  whiteSpace: 'nowrap',
-                  transition: 'all 0.25s ease'
+                  background: isActive ? `${item.color}22` : 'transparent',
+                  borderColor: isActive ? `${item.color}99` : 'transparent',
+                  boxShadow: isActive ? `0 0 16px ${item.color}33, 0 2px 8px rgba(0, 0, 0, 0.4)` : 'none'
                 }}
               >
                 <item.Icon size={12} color={isActive ? item.color : 'rgba(255, 255, 255, 0.4)'} />
-                <span>{item.id} {item.shortTitle}</span>
+                <span className="rp-pill-title-desk">{item.id} {item.shortTitle}</span>
+                <span className="rp-pill-title-mob">{item.id} {item.mobileTitle}</span>
               </button>
             );
           })}

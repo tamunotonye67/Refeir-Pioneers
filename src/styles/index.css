@@ -217,26 +217,63 @@ img, svg {
   will-change: transform, filter;
 }
 
+/* ─── Floating Squad Tracker Pill Overlay (Apple-Style Segmented Dock) ─── */
 .rp-squad-tracker-pills {
   position: sticky;
   top: 78px;
-  z-index: 40;
+  z-index: 50;
   display: flex;
+  align-items: center;
   justify-content: center;
   gap: 6px;
-  overflow-x: auto;
-  padding: 8px 12px;
-  background: rgba(7, 24, 15, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 100px;
-  max-width: 860px;
+  width: max-content;
+  max-width: min(920px, calc(100vw - 32px));
   margin: 0 auto 36px auto;
+  padding: 6px 10px;
+  background: rgba(7, 24, 15, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 100px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.65), 0 0 20px rgba(24, 252, 92, 0.08);
+  overflow-x: auto;
   scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
 }
 
 .rp-squad-tracker-pills::-webkit-scrollbar {
+  display: none;
+}
+
+.rp-squad-pill-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 100px;
+  padding: 6px 14px;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.65);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.rp-squad-pill-btn:hover {
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.rp-squad-pill-btn.is-active {
+  color: #FFFFFF;
+  font-weight: 700;
+}
+
+.rp-pill-title-mob {
   display: none;
 }
 
@@ -295,16 +332,26 @@ img, svg {
     padding: 0 12px 16px;
   }
   .rp-squad-tracker-pills {
-    position: relative !important;
-    top: auto !important;
+    position: sticky !important;
+    top: 74px !important;
     margin: 0 auto 20px auto !important;
-    max-width: 100% !important;
-    border-radius: 16px !important;
+    width: max-content !important;
+    max-width: calc(100vw - 24px) !important;
+    border-radius: 100px !important;
+    padding: 5px 6px !important;
+    gap: 4px !important;
     justify-content: flex-start !important;
     -webkit-overflow-scrolling: touch;
+    mask-image: linear-gradient(to right, transparent 0, black 16px, black calc(100% - 16px), transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0, black 16px, black calc(100% - 16px), transparent 100%);
+  }
+  .rp-squad-pill-btn {
+    padding: 5px 11px !important;
+    font-size: 11px !important;
+    gap: 5px !important;
   }
   .rp-sticky-card-wrapper {
-    top: calc(80px + var(--card-index, 0) * 16px) !important;
+    top: calc(122px + var(--card-index, 0) * 16px) !important;
     margin-bottom: 22vh !important;
   }
   .rp-sticky-card-wrapper:last-child {
@@ -331,8 +378,25 @@ img, svg {
 }
 
 @media (max-width: 540px) {
+  .rp-squad-tracker-pills {
+    top: 72px !important;
+    max-width: calc(100vw - 18px) !important;
+    padding: 4px 5px !important;
+    gap: 3px !important;
+  }
+  .rp-squad-pill-btn {
+    padding: 5px 9px !important;
+    font-size: 10.5px !important;
+    gap: 4px !important;
+  }
+  .rp-pill-title-desk {
+    display: none !important;
+  }
+  .rp-pill-title-mob {
+    display: inline !important;
+  }
   .rp-sticky-card-wrapper {
-    top: calc(76px + var(--card-index, 0) * 14px) !important;
+    top: calc(118px + var(--card-index, 0) * 14px) !important;
     margin-bottom: 18vh !important;
   }
   .rp-sticky-card-shell {
@@ -559,19 +623,6 @@ img, svg {
   overflow: hidden !important;
 }
 
-/* ─── SQUAD TRACKER PILLS (FLOATS BELOW NAVBAR) ─────────────────────────── */
-.rp-squad-tracker-pills {
-  top: 78px !important;
-  max-width: calc(100vw - 32px) !important;
-  -webkit-overflow-scrolling: touch;
-}
-
-@media (max-width: 640px) {
-  .rp-squad-tracker-pills {
-    justify-content: flex-start !important;
-    padding: 6px 10px !important;
-  }
-}
 
 /* ─── MORE THAN A COMMUNITY (4-GRID MATRIX) ────────────────────────────── */
 .rp-quad-grid {
