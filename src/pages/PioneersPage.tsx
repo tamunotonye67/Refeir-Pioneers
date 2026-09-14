@@ -1516,8 +1516,8 @@ const WhoWeAreLookingFor: React.FC = () => {
     const handleScroll = () => {
       const isMobile = window.innerWidth <= 880;
       const isSmall = window.innerWidth <= 540;
-      const baseTop = isMobile ? (isSmall ? 64 : 70) : 130;
-      const step = isMobile ? (isSmall ? 12 : 14) : 26;
+      const baseTop = isMobile ? (isSmall ? 76 : 80) : 130;
+      const step = isMobile ? (isSmall ? 14 : 16) : 26;
 
       let highestStuckIndex = 0;
 
@@ -1535,17 +1535,18 @@ const WhoWeAreLookingFor: React.FC = () => {
         }
 
         // Apple-style stacking depth physics:
-        // Calculate cumulative compression based on all cards stacking over it
+        // Only apply compression when this card has arrived at its sticky dock
+        const isCardDocked = cardRect.top <= targetTop + 14;
         let stackProgress = 0;
 
-        // 1. Primary approach from the card directly below it (i + 1)
-        if (i < DIVISIONS_DATA.length - 1) {
+        if (isCardDocked && i < DIVISIONS_DATA.length - 1) {
+          // 1. Primary approach from the card directly below it (i + 1)
           const nextCard = cardRefs.current[i + 1];
           if (nextCard) {
             const nextTargetTop = baseTop + (i + 1) * step;
             const nextRect = nextCard.getBoundingClientRect();
             // Distance of next card from its dock position
-            const dist = nextRect.top - nextTargetTop;
+            const dist = Math.max(0, nextRect.top - nextTargetTop);
             const stackRange = isMobile ? 260 : 380;
 
             if (dist < stackRange) {
@@ -1560,17 +1561,17 @@ const WhoWeAreLookingFor: React.FC = () => {
             if (furtherCard) {
               const furtherTargetTop = baseTop + k * step;
               const furtherRect = furtherCard.getBoundingClientRect();
-              const furtherDist = furtherRect.top - furtherTargetTop;
+              const furtherDist = Math.max(0, furtherRect.top - furtherTargetTop);
               const furtherRange = isMobile ? 260 : 380;
               if (furtherDist < furtherRange) {
                 const p = Math.min(1, Math.max(0, 1 - (furtherDist / furtherRange)));
-                stackProgress += p * 0.4;
+                stackProgress += p * 0.35;
               }
             }
           }
         }
 
-        if (stackProgress > 0.005) {
+        if (isCardDocked && stackProgress > 0.005) {
           const scale = Math.max(isMobile ? 0.88 : 0.84, 1 - stackProgress * (isMobile ? 0.045 : 0.052));
           const translateY = -(stackProgress * (isMobile ? 8 : 12));
           const brightness = Math.max(0.42, 1 - stackProgress * (isMobile ? 0.22 : 0.28));
@@ -1593,10 +1594,12 @@ const WhoWeAreLookingFor: React.FC = () => {
     };
 
     window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
     handleScroll();
 
     return () => {
       window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
       cancelAnimationFrame(animId);
     };
   }, []);
@@ -1606,8 +1609,8 @@ const WhoWeAreLookingFor: React.FC = () => {
     if (card) {
       const isMobile = window.innerWidth <= 880;
       const isSmall = window.innerWidth <= 540;
-      const baseTop = isMobile ? (isSmall ? 64 : 70) : 130;
-      const step = isMobile ? (isSmall ? 12 : 14) : 26;
+      const baseTop = isMobile ? (isSmall ? 76 : 80) : 130;
+      const step = isMobile ? (isSmall ? 14 : 16) : 26;
       const targetTop = baseTop + index * step;
       const elementY = card.getBoundingClientRect().top + window.scrollY;
       window.scrollTo({
@@ -1726,7 +1729,11 @@ const WhoWeAreLookingFor: React.FC = () => {
                 }} />
 
                 {/* Card Top Tab Bar (Remains visible as subsequent cards stack) */}
-                <div className="rp-sticky-card-tab">
+                <div
+                  className="rp-sticky-card-tab"
+                  onClick={() => handleJumpToSquad(index)}
+                  title={`View Squad 0${index + 1}: ${item.title}`}
+                >
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                     <div style={{
                       width: 7, height: 7, borderRadius: '50%',
