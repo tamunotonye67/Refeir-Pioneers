@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { Menu, X, ChevronDown, User, LogOut, Award, Zap, FileCheck } from 'lucide-react';
 import {
   RF_DEEP_GREEN,
@@ -23,8 +24,17 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
   const [contributor, setContributor] = useState<ContributorProfile | null>(getCurrentContributor());
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState<number>(0);
+  const [isMobile, setIsMobile] = useState<boolean>(() => typeof window !== 'undefined' && window.innerWidth <= 768);
   const moreRef = useRef<HTMLDivElement>(null);
   const profileMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -49,7 +59,10 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
         setMoreDropdownOpen(false);
       }
       if (profileMenuRef.current && !profileMenuRef.current.contains(e.target as Node)) {
-        setProfileMenuOpen(false);
+        // Only close on click outside for desktop dropdown. Mobile sheet manages its own backdrop touch/click.
+        if (window.innerWidth > 768) {
+          setProfileMenuOpen(false);
+        }
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -57,8 +70,7 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
   }, []);
 
   useEffect(() => {
-    const isMobileViewport = typeof window !== 'undefined' && window.innerWidth <= 768;
-    if (mobileMenuOpen || (profileMenuOpen && isMobileViewport)) {
+    if (mobileMenuOpen) {
       document.body.style.overflow = 'hidden';
       document.body.style.touchAction = 'none';
     } else {
@@ -69,7 +81,7 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
       document.body.style.overflow = '';
       document.body.style.touchAction = '';
     };
-  }, [mobileMenuOpen, profileMenuOpen]);
+  }, [mobileMenuOpen]);
 
   const handleLinkClick = (target: string, isHash: boolean = false) => {
     setMobileMenuOpen(false);
@@ -573,26 +585,146 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
                 <ChevronDown size={13} style={{ color: 'rgba(255,255,255,0.6)', marginLeft: 2 }} />
               </button>
 
-              {/* Profile Menu Dropdown / Mobile Bottom Sheet Docker */}
-              {profileMenuOpen && (
-                <>
-                  {/* Backdrop Overlay for mobile */}
+              {/* Profile Menu: Desktop Dropdown in-place */}
+              {profileMenuOpen && !isMobile && (
+                <div className="rp-profile-menu-box">
+                  <div style={{ padding: '4px 8px 12px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <div>
+                        <div style={{ fontSize: 14, fontWeight: 700, color: '#FFFFFF' }}>
+                          {contributor.full_name}
+                        </div>
+                        <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.5)', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {contributor.email}
+                        </div>
+                      </div>
+                      <span style={{
+                        fontSize: 10,
+                        background: 'rgba(24, 252, 92, 0.12)', color: RF_MINT_ACCENT,
+                        padding: '3px 8px', borderRadius: 6, fontWeight: 700,
+                        border: '1px solid rgba(24, 252, 92, 0.25)',
+                        textTransform: 'uppercase', letterSpacing: '0.04em'
+                      }}>
+                        {contributor.contributor_level.replace('_', ' ')}
+                      </span>
+                    </div>
+                    {contributor.application_number && (
+                      <div style={{ marginTop: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <span style={{
+                          display: 'inline-block', fontSize: 10,
+                          background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.7)',
+                          padding: '2px 8px', borderRadius: 4, fontWeight: 600,
+                          letterSpacing: '0.03em'
+                        }}>
+                          ID: {contributor.application_number}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div style={{ padding: '10px 0 4px', display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    {!contributor.is_profile_completed ? (
+                      <button
+                        className="rp-docker-btn"
+                        onClick={() => { setProfileMenuOpen(false); onNavigate('/complete-profile'); }}
+                        style={{
+                          background: 'rgba(255, 184, 0, 0.15)', border: '1px solid rgba(255, 184, 0, 0.4)',
+                          color: '#FDE68A', fontWeight: 700, marginBottom: 6
+                        }}
+                      >
+                        <span style={{ width: 22, height: 22, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <User size={16} color={RF_GOLD_YELLOW} />
+                        </span>
+                        <span>Complete Profile (Mint ID)</span>
+                      </button>
+                    ) : (
+                      <button
+                        className="rp-docker-btn"
+                        onClick={() => { setProfileMenuOpen(false); onNavigate('/profile'); }}
+                        onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
+                        onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                      >
+                        <span style={{ width: 22, height: 22, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <User size={16} color={RF_MINT_ACCENT} />
+                        </span>
+                        <span>Profile</span>
+                      </button>
+                    )}
+                    <button
+                      className="rp-docker-btn"
+                      onClick={() => {
+                        setProfileMenuOpen(false);
+                        window.location.hash = '#certificates';
+                        onNavigate('/profile');
+                      }}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                    >
+                      <span style={{ width: 22, height: 22, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <FileCheck size={16} color={RF_GOLD_YELLOW} />
+                      </span>
+                      <span>My Certificates</span>
+                    </button>
+                    <button
+                      className="rp-docker-btn"
+                      onClick={() => { setProfileMenuOpen(false); handleLinkClick('/submit-task', false); }}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                    >
+                      <span style={{ width: 22, height: 22, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <Award size={16} color={RF_MINT_ACCENT} />
+                      </span>
+                      <span>Submit Task Proof</span>
+                    </button>
+                    <button
+                      className="rp-docker-btn"
+                      onClick={() => { setProfileMenuOpen(false); handleLinkClick('/rewards', false); }}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                    >
+                      <span style={{ width: 22, height: 22, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <Zap size={16} color={RF_GOLD_YELLOW} />
+                      </span>
+                      <span>Rewards & Ladder</span>
+                    </button>
+                    <div style={{ height: 1, background: 'rgba(255,255,255,0.08)', margin: '6px 0' }} />
+                    <button
+                      className="rp-docker-btn"
+                      onClick={() => { setProfileMenuOpen(false); signOutContributor(); }}
+                      style={{ color: '#FCA5A5' }}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'rgba(239,68,68,0.12)')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                    >
+                      <span style={{ width: 22, height: 22, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <LogOut size={16} color="#FCA5A5" />
+                      </span>
+                      <span>Sign Out</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Mobile Profile Docker (Mounted cleanly via Portal to document.body to prevent parent transform/blur judder) */}
+              {profileMenuOpen && isMobile && typeof document !== 'undefined' && createPortal(
+                <div style={{ position: 'fixed', inset: 0, zIndex: 99999, pointerEvents: 'auto' }}>
+                  {/* Backdrop Overlay */}
                   <div
                     className="rp-profile-docker-overlay"
                     onClick={() => setProfileMenuOpen(false)}
+                    onTouchMove={(e) => e.preventDefault()}
                     aria-hidden="true"
                   />
-                  <div className="rp-profile-menu-box">
+                  <div className="rp-profile-menu-box" role="dialog" aria-modal="true" aria-label="Contributor profile options">
                     {/* Mobile Sheet Handle Pill */}
                     <div className="rp-docker-handle" />
 
                     <div style={{ padding: '4px 8px 12px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <div>
-                          <div style={{ fontSize: 14, fontWeight: 700, color: '#FFFFFF' }}>
+                          <div style={{ fontSize: 15, fontWeight: 700, color: '#FFFFFF' }}>
                             {contributor.full_name}
                           </div>
-                          <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.5)', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                             {contributor.email}
                           </div>
                         </div>
@@ -620,7 +752,7 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
                       )}
                     </div>
 
-                    <div style={{ padding: '10px 0 4px', display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <div style={{ padding: '12px 0 6px', display: 'flex', flexDirection: 'column', gap: 4 }}>
                       {!contributor.is_profile_completed ? (
                         <button
                           className="rp-docker-btn"
@@ -630,8 +762,8 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
                             color: '#FDE68A', fontWeight: 700, marginBottom: 6
                           }}
                         >
-                          <span style={{ width: 22, height: 22, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                            <User size={16} color={RF_GOLD_YELLOW} />
+                          <span style={{ width: 24, height: 24, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            <User size={18} color={RF_GOLD_YELLOW} />
                           </span>
                           <span>Complete Profile (Mint ID)</span>
                         </button>
@@ -639,11 +771,9 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
                         <button
                           className="rp-docker-btn"
                           onClick={() => { setProfileMenuOpen(false); onNavigate('/profile'); }}
-                          onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
-                          onMouseLeave={e => (e.currentTarget.style.background = 'none')}
                         >
-                          <span style={{ width: 22, height: 22, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                            <User size={16} color={RF_MINT_ACCENT} />
+                          <span style={{ width: 24, height: 24, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            <User size={18} color={RF_MINT_ACCENT} />
                           </span>
                           <span>Profile</span>
                         </button>
@@ -655,52 +785,45 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
                           window.location.hash = '#certificates';
                           onNavigate('/profile');
                         }}
-                        onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
-                        onMouseLeave={e => (e.currentTarget.style.background = 'none')}
                       >
-                        <span style={{ width: 22, height: 22, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <FileCheck size={16} color={RF_GOLD_YELLOW} />
+                        <span style={{ width: 24, height: 24, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <FileCheck size={18} color={RF_GOLD_YELLOW} />
                         </span>
                         <span>My Certificates</span>
                       </button>
                       <button
                         className="rp-docker-btn"
                         onClick={() => { setProfileMenuOpen(false); handleLinkClick('/submit-task', false); }}
-                        onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
-                        onMouseLeave={e => (e.currentTarget.style.background = 'none')}
                       >
-                        <span style={{ width: 22, height: 22, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <Award size={16} color={RF_MINT_ACCENT} />
+                        <span style={{ width: 24, height: 24, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <Award size={18} color={RF_MINT_ACCENT} />
                         </span>
                         <span>Submit Task Proof</span>
                       </button>
                       <button
                         className="rp-docker-btn"
                         onClick={() => { setProfileMenuOpen(false); handleLinkClick('/rewards', false); }}
-                        onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
-                        onMouseLeave={e => (e.currentTarget.style.background = 'none')}
                       >
-                        <span style={{ width: 22, height: 22, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <Zap size={16} color={RF_GOLD_YELLOW} />
+                        <span style={{ width: 24, height: 24, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <Zap size={18} color={RF_GOLD_YELLOW} />
                         </span>
                         <span>Rewards & Ladder</span>
                       </button>
-                      <div style={{ height: 1, background: 'rgba(255,255,255,0.08)', margin: '6px 0' }} />
+                      <div style={{ height: 1, background: 'rgba(255,255,255,0.08)', margin: '8px 0' }} />
                       <button
                         className="rp-docker-btn"
                         onClick={() => { setProfileMenuOpen(false); signOutContributor(); }}
                         style={{ color: '#FCA5A5' }}
-                        onMouseEnter={e => (e.currentTarget.style.background = 'rgba(239,68,68,0.12)')}
-                        onMouseLeave={e => (e.currentTarget.style.background = 'none')}
                       >
-                        <span style={{ width: 22, height: 22, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <LogOut size={16} color="#FCA5A5" />
+                        <span style={{ width: 24, height: 24, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <LogOut size={18} color="#FCA5A5" />
                         </span>
                         <span>Sign Out</span>
                       </button>
                     </div>
                   </div>
-                </>
+                </div>,
+                document.body
               )}
             </div>
           ) : (
