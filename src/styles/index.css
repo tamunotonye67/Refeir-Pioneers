@@ -395,27 +395,28 @@ img, svg {
     top: auto !important;
     margin: 0 auto !important;
     width: max-content !important;
-    max-width: calc(100vw - 24px) !important;
+    max-width: calc(100vw - 32px) !important;
     border-radius: 100px !important;
-    padding: 5px 6px !important;
+    padding: 5px 8px !important;
     gap: 4px !important;
     justify-content: flex-start !important;
     -webkit-overflow-scrolling: touch;
-    mask-image: linear-gradient(to right, transparent 0, black 16px, black calc(100% - 16px), transparent 100%);
-    -webkit-mask-image: linear-gradient(to right, transparent 0, black 16px, black calc(100% - 16px), transparent 100%);
+    mask-image: none !important;
+    -webkit-mask-image: none !important;
   }
   .rp-squad-tracker-pills.is-expanded {
     width: 100vw !important;
     max-width: 100vw !important;
     border-radius: 0px !important;
     padding: 6px 12px !important;
-    mask-image: linear-gradient(to right, transparent 0, black 12px, black calc(100% - 12px), transparent 100%) !important;
-    -webkit-mask-image: linear-gradient(to right, transparent 0, black 12px, black calc(100% - 12px), transparent 100%) !important;
+    mask-image: none !important;
+    -webkit-mask-image: none !important;
   }
   .rp-squad-tracker-inner {
     width: max-content;
     justify-content: flex-start;
     gap: 4px;
+    padding: 0 4px;
   }
   .rp-squad-pill-btn {
     padding: 5px 11px !important;
@@ -454,13 +455,18 @@ img, svg {
     top: 72px !important;
   }
   .rp-squad-tracker-pills {
-    max-width: calc(100vw - 18px) !important;
-    padding: 4px 5px !important;
+    max-width: calc(100vw - 28px) !important;
+    padding: 4px 6px !important;
     gap: 3px !important;
+    mask-image: none !important;
+    -webkit-mask-image: none !important;
   }
   .rp-squad-tracker-pills.is-expanded {
     padding: 5px 8px !important;
     border-radius: 0px !important;
+  }
+  .rp-squad-tracker-inner {
+    padding: 0 4px;
   }
   .rp-squad-pill-btn {
     padding: 5px 9px !important;
