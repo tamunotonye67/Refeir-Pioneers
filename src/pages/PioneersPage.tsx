@@ -1513,6 +1513,7 @@ const SquadFlatVectorArt: React.FC<{ squadId: string; color: string; title: stri
 
 const WhoWeAreLookingFor: React.FC = () => {
   const [activeSquadIndex, setActiveSquadIndex] = useState<number>(0);
+  const [isDockExpanded, setIsDockExpanded] = useState<boolean>(false);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const shellRefs = useRef<(HTMLDivElement | null)[]>([]);
   const pillContainerRef = useRef<HTMLDivElement | null>(null);
@@ -1610,6 +1611,17 @@ const WhoWeAreLookingFor: React.FC = () => {
       });
 
       setActiveSquadIndex(highestStuckIndex);
+
+      // Check if user has scrolled to the second card (Card 1) or beyond
+      const card1 = cardRefs.current[1];
+      if (card1) {
+        const targetTop1 = baseTop + 1 * step;
+        const rect1 = card1.getBoundingClientRect();
+        // Morph once the user reaches the second card
+        setIsDockExpanded(rect1.top <= targetTop1 + 24);
+      } else {
+        setIsDockExpanded(highestStuckIndex >= 1);
+      }
     };
 
     const onScroll = () => {
@@ -1647,7 +1659,7 @@ const WhoWeAreLookingFor: React.FC = () => {
   return (
     <section id="divisions" style={{
       background: `linear-gradient(180deg, ${RF_DEEP_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
-      padding: '90px 20px 48px',
+      padding: '90px 0 48px',
       position: 'relative',
       overflow: 'visible'
     }}>
@@ -1659,8 +1671,8 @@ const WhoWeAreLookingFor: React.FC = () => {
         pointerEvents: 'none'
       }} />
 
-      <div style={{ maxWidth: 1140, margin: '0 auto', position: 'relative', zIndex: 2 }}>
-        {/* Section Header */}
+      {/* Section Header Container */}
+      <div style={{ maxWidth: 1140, margin: '0 auto', padding: '0 20px', position: 'relative', zIndex: 2 }}>
         <div style={{ textAlign: 'center', marginBottom: 28 }}>
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: 8,
@@ -1688,39 +1700,45 @@ const WhoWeAreLookingFor: React.FC = () => {
             Refeir is built across six specialized squads. Scroll down to see each squad emerge and stack into our sovereign roster.
           </p>
         </div>
+      </div>
 
-        {/* Floating Squad Tracker Pills Overlay (Apple-Style Segmented Dock) */}
+      {/* Floating Squad Tracker Pills Overlay (Morphs to 100% viewport width without rounded edges once scrolled to second card) */}
+      <div className={`rp-squad-tracker-dock ${isDockExpanded ? 'is-expanded' : ''}`}>
         <div
           ref={pillContainerRef}
-          className="rp-squad-tracker-pills"
+          className={`rp-squad-tracker-pills ${isDockExpanded ? 'is-expanded' : ''}`}
           role="tablist"
           aria-label="Squad divisions switcher"
         >
-          {DIVISIONS_DATA.map((item, i) => {
-            const isActive = activeSquadIndex === i;
-            return (
-              <button
-                key={item.id}
-                ref={el => (pillRefs.current[i] = el)}
-                role="tab"
-                aria-selected={isActive}
-                onClick={() => handleJumpToSquad(i)}
-                className={`rp-squad-pill-btn ${isActive ? 'is-active' : ''}`}
-                style={{
-                  background: isActive ? `${item.color}22` : 'transparent',
-                  borderColor: isActive ? `${item.color}99` : 'transparent',
-                  boxShadow: isActive ? `0 0 16px ${item.color}33, 0 2px 8px rgba(0, 0, 0, 0.4)` : 'none'
-                }}
-              >
-                <item.Icon size={12} color={isActive ? item.color : 'rgba(255, 255, 255, 0.4)'} />
-                <span className="rp-pill-title-desk">{item.id} {item.shortTitle}</span>
-                <span className="rp-pill-title-mob">{item.id} {item.mobileTitle}</span>
-              </button>
-            );
-          })}
+          <div className={`rp-squad-tracker-inner ${isDockExpanded ? 'is-expanded' : ''}`}>
+            {DIVISIONS_DATA.map((item, i) => {
+              const isActive = activeSquadIndex === i;
+              return (
+                <button
+                  key={item.id}
+                  ref={el => (pillRefs.current[i] = el)}
+                  role="tab"
+                  aria-selected={isActive}
+                  onClick={() => handleJumpToSquad(i)}
+                  className={`rp-squad-pill-btn ${isActive ? 'is-active' : ''}`}
+                  style={{
+                    background: isActive ? `${item.color}22` : 'transparent',
+                    borderColor: isActive ? `${item.color}99` : 'transparent',
+                    boxShadow: isActive ? `0 0 16px ${item.color}33, 0 2px 8px rgba(0, 0, 0, 0.4)` : 'none'
+                  }}
+                >
+                  <item.Icon size={12} color={isActive ? item.color : 'rgba(255, 255, 255, 0.4)'} />
+                  <span className="rp-pill-title-desk">{item.id} {item.shortTitle}</span>
+                  <span className="rp-pill-title-mob">{item.id} {item.mobileTitle}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
+      </div>
 
-        {/* ─── Sticky Stacking Cards Deck (Phone-Product Style) ─── */}
+      {/* ─── Sticky Stacking Cards Deck (Phone-Product Style) ─── */}
+      <div style={{ maxWidth: 1140, margin: '0 auto', padding: '0 20px', position: 'relative', zIndex: 2 }}>
         <div className="rp-sticky-deck-track">
           {DIVISIONS_DATA.map((item, index) => (
             <div
