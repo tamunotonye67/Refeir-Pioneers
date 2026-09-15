@@ -2528,7 +2528,8 @@ const ContributorLadder: React.FC<{ onNavigate: (path: string) => void }> = ({ o
       status: 'Entry Gate',
       criteria: 'Application approved & community orientation completed.',
       rewards: 'Access to general WhatsApp community, monthly product briefings, and early prototype builds.',
-      badgeColor: '#94A3B8'
+      badgeColor: '#94A3B8',
+      icon: Users
     },
     {
       level: 2,
@@ -2537,7 +2538,8 @@ const ContributorLadder: React.FC<{ onNavigate: (path: string) => void }> = ({ o
       status: 'Active Builder',
       criteria: 'Completed & peer-reviewed at least 1 tangible mission (not simply joined the group).',
       rewards: 'Official Verified Pioneer Badge, division squad admission, and priority access to client pilot work packages.',
-      badgeColor: RF_LEAF_GREEN
+      badgeColor: RF_LEAF_GREEN,
+      icon: Award
     },
     {
       level: 3,
@@ -2546,7 +2548,8 @@ const ContributorLadder: React.FC<{ onNavigate: (path: string) => void }> = ({ o
       status: 'High Impact',
       criteria: 'Sustained delivery across 4+ squad missions with demonstrated high quality and peer endorsements.',
       rewards: 'Tier-2 Referral Multiplier (+15%), Contributor Bounty Pool access, and verified public builder profile.',
-      badgeColor: RF_MINT_ACCENT
+      badgeColor: RF_MINT_ACCENT,
+      icon: TrendingUp
     },
     {
       level: 4,
@@ -2555,7 +2558,8 @@ const ContributorLadder: React.FC<{ onNavigate: (path: string) => void }> = ({ o
       status: 'Squad Leader',
       criteria: 'Leads a functional division squad, mentors new contributors, or anchors regional community chapters.',
       rewards: 'Tier-3 Referral Multiplier (+30%), monthly squad leadership stipend/bounties, and direct advisory with Founder.',
-      badgeColor: RF_GOLD_YELLOW
+      badgeColor: RF_GOLD_YELLOW,
+      icon: Star
     },
     {
       level: 5,
@@ -2564,23 +2568,25 @@ const ContributorLadder: React.FC<{ onNavigate: (path: string) => void }> = ({ o
       status: 'Protocol Steward',
       criteria: 'Deeply trusted contributors involved in platform architecture, sovereign smart contracts, and strategic roadmap.',
       rewards: 'Ecosystem Token / Contributor Equity Pool allocation, full-time core contracts, and permanent Governance Council seat.',
-      badgeColor: '#38BDF8'
+      badgeColor: '#38BDF8',
+      icon: Shield
     }
   ];
 
   const active = levels.find(l => l.level === selectedLevel) || levels[1];
+  const ActiveIcon = active.icon;
 
   return (
     <section id="contributor-ladder" style={{ background: '#F4F7F5', padding: '100px 24px' }}>
       <div style={{ maxWidth: 1140, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: 54 }}>
           <div style={{
-            display: 'inline-flex', alignItems: 'center', gap: 6,
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 7,
             color: RF_GREEN, fontSize: 11, fontWeight: 800, letterSpacing: '0.16em',
             textTransform: 'uppercase', marginBottom: 16
           }}>
-            <Award size={13} />
-            Formal Contributor Reward Scheme
+            <Award size={14} style={{ flexShrink: 0, display: 'inline-block', verticalAlign: 'middle' }} />
+            <span>Formal Contributor Reward Scheme</span>
           </div>
 
           <h2 style={{
@@ -2607,6 +2613,7 @@ const ContributorLadder: React.FC<{ onNavigate: (path: string) => void }> = ({ o
         }}>
           {levels.map(lvl => {
             const isSelected = lvl.level === selectedLevel;
+            const LvlIcon = lvl.icon;
             return (
               <div
                 key={lvl.level}
@@ -2616,37 +2623,46 @@ const ContributorLadder: React.FC<{ onNavigate: (path: string) => void }> = ({ o
                   color: isSelected ? '#FFFFFF' : '#1E293B',
                   border: isSelected ? `2px solid ${lvl.badgeColor}` : '1px solid rgba(18, 43, 26, 0.1)',
                   borderRadius: 16,
-                  padding: '20px 16px',
+                  padding: '18px 16px',
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
-                  boxShadow: isSelected ? '0 12px 30px rgba(7, 24, 15, 0.25)' : 'none'
+                  boxShadow: isSelected ? '0 12px 30px rgba(7, 24, 15, 0.25)' : 'none',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between'
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-                  <span style={{
-                    fontSize: 10, fontWeight: 900, letterSpacing: '0.1em',
-                    padding: '2px 8px', borderRadius: 100,
-                    background: isSelected ? 'rgba(255,255,255,0.12)' : 'rgba(18, 43, 26, 0.06)',
-                    color: isSelected ? lvl.badgeColor : RF_GREEN
-                  }}>
-                    LEVEL 0{lvl.level}
-                  </span>
-                  <span style={{
-                    width: 8, height: 8, borderRadius: '50%',
-                    background: lvl.badgeColor
-                  }} />
-                </div>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                    <span style={{
+                      fontSize: 10, fontWeight: 900, letterSpacing: '0.1em',
+                      padding: '2px 8px', borderRadius: 100,
+                      background: isSelected ? 'rgba(255,255,255,0.12)' : 'rgba(18, 43, 26, 0.06)',
+                      color: isSelected ? lvl.badgeColor : RF_GREEN
+                    }}>
+                      LEVEL 0{lvl.level}
+                    </span>
+                    <div style={{
+                      width: 26, height: 26, borderRadius: '50%',
+                      background: isSelected ? 'rgba(255,255,255,0.12)' : `${lvl.badgeColor}18`,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      flexShrink: 0
+                    }}>
+                      <LvlIcon size={13} color={lvl.badgeColor} />
+                    </div>
+                  </div>
 
-                <div style={{
-                  fontSize: 15, fontWeight: 800,
-                  color: isSelected ? '#FFFFFF' : RF_DARK_GREEN, marginBottom: 4
-                }}>
-                  {lvl.name}
+                  <div style={{
+                    fontSize: 15, fontWeight: 800,
+                    color: isSelected ? '#FFFFFF' : RF_DARK_GREEN, marginBottom: 4
+                  }}>
+                    {lvl.name}
+                  </div>
                 </div>
 
                 <div style={{
                   fontSize: 11.5, color: isSelected ? 'rgba(255,255,255,0.7)' : '#64748B',
-                  lineHeight: 1.4
+                  lineHeight: 1.4, marginTop: 6
                 }}>
                   {lvl.tagline}
                 </div>
@@ -2669,22 +2685,33 @@ const ContributorLadder: React.FC<{ onNavigate: (path: string) => void }> = ({ o
             flexWrap: 'wrap', gap: 20, marginBottom: 28, paddingBottom: 24,
             borderBottom: '1px solid rgba(255,255,255,0.1)'
           }}>
-            <div>
-              <span style={{
-                fontSize: 11, fontWeight: 900, color: active.badgeColor,
-                letterSpacing: '0.14em', textTransform: 'uppercase'
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16 }}>
+              <div style={{
+                width: 48, height: 48, borderRadius: 14,
+                background: `${active.badgeColor}22`,
+                border: `1.5px solid ${active.badgeColor}55`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                flexShrink: 0, marginTop: 4
               }}>
-                LEVEL 0{active.level} • {active.status}
-              </span>
-              <h3 style={{
-                fontSize: 'clamp(24px, 3.5vw, 36px)', fontWeight: 800, margin: '6px 0 4px',
-                fontFamily: 'Plus Jakarta Sans, sans-serif'
-              }}>
-                {active.name}
-              </h3>
-              <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.75)', margin: 0 }}>
-                "{active.tagline}"
-              </p>
+                <ActiveIcon size={24} color={active.badgeColor} />
+              </div>
+              <div>
+                <span style={{
+                  fontSize: 11, fontWeight: 900, color: active.badgeColor,
+                  letterSpacing: '0.14em', textTransform: 'uppercase'
+                }}>
+                  LEVEL 0{active.level} • {active.status}
+                </span>
+                <h3 style={{
+                  fontSize: 'clamp(24px, 3.5vw, 36px)', fontWeight: 800, margin: '6px 0 4px',
+                  fontFamily: 'Plus Jakarta Sans, sans-serif'
+                }}>
+                  {active.name}
+                </h3>
+                <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.75)', margin: 0 }}>
+                  "{active.tagline}"
+                </p>
+              </div>
             </div>
 
             <button
@@ -2724,8 +2751,15 @@ const ContributorLadder: React.FC<{ onNavigate: (path: string) => void }> = ({ o
               background: 'rgba(255,255,255,0.04)', borderRadius: 16, padding: '24px 22px',
               border: '1px solid rgba(255,255,255,0.08)'
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                <CheckCircle2 size={16} color={active.badgeColor} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+                <div style={{
+                  width: 28, height: 28, borderRadius: 8,
+                  background: `${active.badgeColor}22`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  flexShrink: 0
+                }}>
+                  <CheckCircle2 size={16} color={active.badgeColor} />
+                </div>
                 <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', color: active.badgeColor }}>
                   How to Qualify
                 </span>
@@ -2740,8 +2774,15 @@ const ContributorLadder: React.FC<{ onNavigate: (path: string) => void }> = ({ o
               background: 'rgba(255,255,255,0.04)', borderRadius: 16, padding: '24px 22px',
               border: '1px solid rgba(255,255,255,0.08)'
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                <Award size={16} color={active.badgeColor} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+                <div style={{
+                  width: 28, height: 28, borderRadius: 8,
+                  background: `${active.badgeColor}22`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  flexShrink: 0
+                }}>
+                  <Award size={16} color={active.badgeColor} />
+                </div>
                 <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', color: active.badgeColor }}>
                   Unlocked Rewards & Privileges
                 </span>
@@ -2758,8 +2799,15 @@ const ContributorLadder: React.FC<{ onNavigate: (path: string) => void }> = ({ o
             background: 'rgba(24, 252, 92, 0.08)', border: '1px solid rgba(24, 252, 92, 0.2)',
             display: 'flex', alignItems: 'center', gap: 12
           }}>
-            <Shield size={16} color={RF_MINT_ACCENT} style={{ flexShrink: 0 }} />
-            <span style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.85)', lineHeight: 1.5 }}>
+            <div style={{
+              width: 28, height: 28, borderRadius: 8,
+              background: 'rgba(24, 252, 92, 0.15)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              flexShrink: 0
+            }}>
+              <Shield size={16} color={RF_MINT_ACCENT} />
+            </div>
+            <span style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.85)', lineHeight: 1.5, flex: 1 }}>
               <strong>Execution Over Attendance:</strong> Merely joining WhatsApp does not qualify for Level 2 badges or bounty pools. Progression requires completing verified missions logged in your Pioneer profile.
             </span>
           </div>
