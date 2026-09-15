@@ -797,7 +797,8 @@ const FounderWelcomeSection: React.FC<FounderWelcomeSectionProps> = ({ onNavigat
             color: RF_MINT_ACCENT, fontSize: 11, fontWeight: 700, letterSpacing: '0.14em',
             textTransform: 'uppercase', marginBottom: 16
           }}>
-            Founder's Welcome Note • Cohorts 001–100
+            <span className="rp-founder-line1">Founder's Welcome </span>
+            <span className="rp-founder-line2">Note • Cohorts 001–100</span>
           </div>
 
           <h2 style={{
@@ -1003,15 +1004,19 @@ const FounderWelcomeSection: React.FC<FounderWelcomeSectionProps> = ({ onNavigat
         </div>
 
         {/* Minimalist Bottom Actions (Centered, Simple & Clean) */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          gap: 16,
-          marginTop: 32,
-          flexWrap: 'wrap'
-        }}>
+        <div
+          className="rp-video-bottom-actions"
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: 16,
+            marginTop: 32,
+            flexWrap: 'wrap'
+          }}
+        >
           <button
+            className="rp-video-btn-apply"
             onClick={() => scrollToId('apply')}
             style={{
               background: RF_LEAF_GREEN,
@@ -1030,10 +1035,11 @@ const FounderWelcomeSection: React.FC<FounderWelcomeSectionProps> = ({ onNavigat
             onMouseEnter={e => (e.currentTarget.style.transform = 'translateY(-1px)')}
             onMouseLeave={e => (e.currentTarget.style.transform = 'translateY(0)')}
           >
-            Apply for Cohort 001 <ArrowRight size={14} />
+            <span>Apply for Cohort 001–100</span> <ArrowRight size={14} style={{ flexShrink: 0 }} />
           </button>
 
           <button
+            className="rp-video-btn-divisions"
             onClick={() => onNavigate('/divisions')}
             style={{
               background: 'rgba(255,255,255,0.05)',
@@ -1044,6 +1050,9 @@ const FounderWelcomeSection: React.FC<FounderWelcomeSectionProps> = ({ onNavigat
               fontSize: 13.5,
               fontWeight: 500,
               cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
               transition: 'all 0.2s'
             }}
             onMouseEnter={e => {
@@ -1055,7 +1064,7 @@ const FounderWelcomeSection: React.FC<FounderWelcomeSectionProps> = ({ onNavigat
               e.currentTarget.style.color = 'rgba(255,255,255,0.85)';
             }}
           >
-            Explore Divisions
+            <span>Explore Divisions</span>
           </button>
         </div>
       </div>
@@ -2361,10 +2370,11 @@ const Founding100: React.FC = () => {
 
         <h2 style={{
           fontSize: 'clamp(32px, 5vw, 60px)', fontWeight: 900, color: '#FFFFFF',
-          lineHeight: 1.05, letterSpacing: '-0.02em', marginBottom: 14,
+          lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: 14,
           fontFamily: 'Plus Jakarta Sans, sans-serif'
         }}>
-          THE REFEIR FOUNDING 100
+          <span className="rp-founding-p1">THE REFEIR </span>
+          <span className="rp-founding-p2">FOUNDING 100</span>
         </h2>
 
         <p style={{
@@ -2687,14 +2697,18 @@ const ContributorLadder: React.FC<{ onNavigate: (path: string) => void }> = ({ o
             textTransform: 'uppercase', marginBottom: 16
           }}>
             <Award size={15} style={{ flexShrink: 0, display: 'block' }} />
-            <span>Formal Contributor Reward Scheme</span>
+            <span>
+              <span className="rp-scheme-line1">Formal Contributor </span>
+              <span className="rp-scheme-line2">Reward Scheme</span>
+            </span>
           </div>
 
           <h2 style={{
             fontSize: 'clamp(28px, 4.5vw, 48px)', fontWeight: 900, color: RF_DARK_GREEN,
-            lineHeight: 1.12, letterSpacing: '-0.02em', fontFamily: 'Plus Jakarta Sans, sans-serif'
+            lineHeight: 1.15, letterSpacing: '-0.02em', fontFamily: 'Plus Jakarta Sans, sans-serif'
           }}>
-            The Refeir Contributor Ladder
+            <span className="rp-ladder-title-p1">The Refeir </span>
+            <span className="rp-ladder-title-p2">Contributor Ladder</span>
           </h2>
 
           <p style={{

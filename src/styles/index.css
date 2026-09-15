@@ -1090,3 +1090,82 @@ img, svg {
     justify-content: center !important;
   }
 }
+
+/* ─── MOBILE VIEW TEXT BREAKS & ACTIONS ROW ──────────────────────────────── */
+.rp-founder-line1,
+.rp-founder-line2,
+.rp-scheme-line1,
+.rp-scheme-line2,
+.rp-ladder-title-p1,
+.rp-ladder-title-p2,
+.rp-founding-p1,
+.rp-founding-p2 {
+  display: inline;
+}
+
+@media (max-width: 640px) {
+  /* 1. Founder's Welcome Note: line 2 starts with NOTE */
+  .rp-founder-line1 {
+    display: block !important;
+  }
+  .rp-founder-line2 {
+    display: block !important;
+  }
+
+  /* 2. Video Actions Row: side-by-side on same line */
+  .rp-video-bottom-actions {
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    gap: 8px !important;
+    width: 100% !important;
+    max-width: 440px !important;
+    margin: 24px auto 0 auto !important;
+    padding: 0 4px !important;
+    box-sizing: border-box !important;
+  }
+
+  .rp-video-btn-apply {
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    padding: 11px 8px !important;
+    font-size: 12px !important;
+    justify-content: center !important;
+    white-space: nowrap !important;
+  }
+
+  .rp-video-btn-divisions {
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    padding: 11px 8px !important;
+    font-size: 12px !important;
+    justify-content: center !important;
+    white-space: nowrap !important;
+  }
+
+  /* 3. Formal Contributor Reward Scheme: line 2 starts with REWARD */
+  .rp-scheme-line1 {
+    display: block !important;
+  }
+  .rp-scheme-line2 {
+    display: block !important;
+    white-space: nowrap !important;
+  }
+
+  /* 3b. The Refeir Contributor Ladder: "Contributor Ladder" on one line, "The Refeir" at the first */
+  .rp-ladder-title-p1 {
+    display: block !important;
+  }
+  .rp-ladder-title-p2 {
+    display: block !important;
+    white-space: nowrap !important;
+  }
+
+  /* 4. THE REFEIR FOUNDING 100: "FOUNDING 100" on next line */
+  .rp-founding-p1 {
+    display: block !important;
+  }
+  .rp-founding-p2 {
+    display: block !important;
+    white-space: nowrap !important;
+  }
+}
