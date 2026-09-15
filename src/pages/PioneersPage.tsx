@@ -1120,10 +1120,12 @@ const WhyRefeir: React.FC = () => (
         </div>
 
         <p style={{
-          fontSize: 'clamp(18px, 2.2vw, 24px)', color: '#FFFFFF', lineHeight: 1.7,
-          fontStyle: 'italic', fontWeight: 400, marginBottom: 28
+          fontFamily: "'Newsreader', Georgia, 'Times New Roman', serif",
+          fontSize: 'clamp(20px, 2.5vw, 27px)', color: '#FFFFFF', lineHeight: 1.6,
+          fontStyle: 'italic', fontWeight: 400, marginBottom: 28,
+          letterSpacing: '0.01em'
         }}>
-          "When people share opportunities and success is rewarded, everyone has a reason to help someone else move forward."
+          “When people share opportunities and success is rewarded, everyone has a reason to help someone else move forward.”
         </p>
         <div style={{ height: 1, background: 'rgba(255,255,255,0.12)', marginBottom: 24 }} />
         <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.75)', lineHeight: 1.75 }}>
