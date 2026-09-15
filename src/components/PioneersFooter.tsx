@@ -205,7 +205,7 @@ export const PioneersFooter: React.FC<PioneersFooterProps> = ({ onNavigate, onOp
           gap: 12
         }}>
           <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.38)', margin: 0 }}>
-            © {new Date().getFullYear()} Refeir Africa. All rights reserved.
+            © {new Date().getFullYear()} Refeir Technologies Ltd. All rights reserved.
           </p>
           <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.28)', letterSpacing: '0.04em' }}>
             Connecting African talent to global scale • @refeirafrica
