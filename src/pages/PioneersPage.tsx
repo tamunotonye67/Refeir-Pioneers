@@ -2870,35 +2870,33 @@ const ContributorLadder: React.FC<{ onNavigate: (path: string) => void }> = ({ o
         }}>
           <div className="rp-ladder-detail-header" style={{
             display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-            flexWrap: 'wrap', gap: 20, marginBottom: 28, paddingBottom: 24,
+            flexWrap: 'wrap', gap: 16, marginBottom: 20, paddingBottom: 20,
             borderBottom: '1px solid rgba(255,255,255,0.1)'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
               <div style={{
-                width: 50, height: 50, borderRadius: 14,
+                width: 48, height: 48, borderRadius: 13,
                 background: `${active.badgeColor}22`,
                 border: `1.5px solid ${active.badgeColor}55`,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 flexShrink: 0
               }}>
-                <ActiveIcon size={26} color={active.badgeColor} style={{ display: 'block', flexShrink: 0 }} />
+                <ActiveIcon size={25} color={active.badgeColor} style={{ display: 'block', flexShrink: 0 }} />
               </div>
-              <div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 3, textAlign: 'left' }}>
                 <span style={{
-                  fontSize: 11, fontWeight: 900, color: active.badgeColor,
-                  letterSpacing: '0.14em', textTransform: 'uppercase', display: 'block', marginBottom: 2
+                  fontSize: 10.5, fontWeight: 900, color: active.badgeColor,
+                  letterSpacing: '0.12em', textTransform: 'uppercase', lineHeight: 1
                 }}>
                   LEVEL 0{active.level} • {active.status}
                 </span>
                 <h3 style={{
-                  fontSize: 'clamp(22px, 3.5vw, 34px)', fontWeight: 800, margin: '2px 0 4px',
-                  fontFamily: 'Plus Jakarta Sans, sans-serif', lineHeight: 1.2
+                  fontSize: 'clamp(21px, 3.8vw, 32px)', fontWeight: 800, margin: 0,
+                  fontFamily: 'Plus Jakarta Sans, sans-serif', lineHeight: 1.15,
+                  color: '#FFFFFF'
                 }}>
                   {active.name}
                 </h3>
-                <p style={{ fontSize: 14.5, color: 'rgba(255,255,255,0.75)', margin: 0 }}>
-                  "{active.tagline}"
-                </p>
               </div>
             </div>
 
@@ -2909,7 +2907,7 @@ const ContributorLadder: React.FC<{ onNavigate: (path: string) => void }> = ({ o
                 background: 'rgba(255,255,255,0.08)',
                 border: '1px solid rgba(255,255,255,0.2)',
                 color: '#FFFFFF',
-                padding: '10px 22px',
+                padding: '10px 20px',
                 borderRadius: 100,
                 fontSize: 13,
                 fontWeight: 600,
@@ -2935,6 +2933,16 @@ const ContributorLadder: React.FC<{ onNavigate: (path: string) => void }> = ({ o
               <ArrowRight size={14} style={{ display: 'block', flexShrink: 0 }} />
             </button>
           </div>
+
+          <p style={{
+            fontSize: 14.5,
+            color: 'rgba(255,255,255,0.78)',
+            fontStyle: 'italic',
+            margin: '0 0 24px 0',
+            lineHeight: 1.55
+          }}>
+            "{active.tagline}"
+          </p>
 
           <div className="rp-ladder-detail-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24 }}>
             {/* Qualification Gate */}
