@@ -980,3 +980,102 @@ img, svg {
     box-shadow: 0 4px 15px rgba(10, 30, 17, 0.04);
   }
 }
+
+/* ─── CONTRIBUTOR LADDER RESPONSIVE & MOBILE FLOW ────────────────────────── */
+.rp-ladder-desktop-grid {
+  display: grid !important;
+  grid-template-columns: repeat(5, 1fr) !important;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.rp-ladder-mobile-wrapper {
+  display: none !important;
+}
+
+.rp-ladder-mobile-dots {
+  display: none !important;
+}
+
+@media (max-width: 860px) {
+  .rp-ladder-desktop-grid {
+    display: none !important;
+  }
+
+  .rp-ladder-mobile-wrapper {
+    display: block !important;
+    position: relative;
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+
+  .rp-ladder-mobile-marquee {
+    display: flex !important;
+    position: relative;
+    width: 100%;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 10px 20px 20px 20px !important;
+    gap: 14px;
+    box-sizing: border-box;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: pan-x;
+  }
+
+  .rp-ladder-mobile-marquee:active {
+    cursor: grabbing;
+  }
+
+  .rp-ladder-mobile-marquee::-webkit-scrollbar {
+    display: none;
+  }
+
+  .rp-ladder-card-mobile {
+    flex-shrink: 0;
+    width: 224px;
+    min-height: 146px;
+    border-radius: 16px;
+    padding: 16px 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-sizing: border-box;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+
+  .rp-ladder-mobile-dots {
+    display: flex !important;
+  }
+
+  .rp-ladder-detail-card {
+    padding: 24px 18px !important;
+    border-radius: 20px !important;
+  }
+
+  .rp-ladder-detail-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .rp-ladder-detail-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 16px !important;
+  }
+
+  .rp-ladder-rubric-btn {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+}

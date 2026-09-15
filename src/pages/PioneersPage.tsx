@@ -2519,6 +2519,13 @@ const MoreThanCommunity: React.FC = () => (
 // ─── CONTRIBUTOR REWARD LADDER (FORMAL 5-LEVEL SYSTEM) ───────────────────────
 const ContributorLadder: React.FC<{ onNavigate: (path: string) => void }> = ({ onNavigate }) => {
   const [selectedLevel, setSelectedLevel] = useState(2);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const isDownRef = useRef(false);
+  const startXRef = useRef(0);
+  const startScrollLeftRef = useRef(0);
+  const isInteractingRef = useRef(false);
+  const animFrameRef = useRef<number | null>(null);
+  const resumeTimerRef = useRef<any>(null);
 
   const levels = [
     {
@@ -2573,19 +2580,113 @@ const ContributorLadder: React.FC<{ onNavigate: (path: string) => void }> = ({ o
     }
   ];
 
+  const tripleLevels = [...levels, ...levels, ...levels];
   const active = levels.find(l => l.level === selectedLevel) || levels[1];
   const ActiveIcon = active.icon;
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    let lastTime = performance.now();
+    const speed = 0.038; // Gentle right-to-left flow speed (~38px/sec)
+
+    const step = (time: number) => {
+      const delta = Math.min(time - lastTime, 100);
+      lastTime = time;
+
+      if (!isInteractingRef.current && el) {
+        el.scrollLeft += speed * delta;
+        const oneThird = el.scrollWidth / 3;
+        if (oneThird > 0) {
+          if (el.scrollLeft >= 2 * oneThird) {
+            el.scrollLeft -= oneThird;
+            if (isDownRef.current) startScrollLeftRef.current -= oneThird;
+          } else if (el.scrollLeft <= 0) {
+            el.scrollLeft += oneThird;
+            if (isDownRef.current) startScrollLeftRef.current += oneThird;
+          }
+        }
+      }
+      animFrameRef.current = requestAnimationFrame(step);
+    };
+
+    const initTimer = setTimeout(() => {
+      if (el) {
+        const oneThird = el.scrollWidth / 3;
+        if (oneThird > 0 && el.scrollLeft < 10) {
+          el.scrollLeft = oneThird;
+        }
+      }
+    }, 150);
+
+    animFrameRef.current = requestAnimationFrame(step);
+
+    return () => {
+      clearTimeout(initTimer);
+      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+      if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+    };
+  }, []);
+
+  const pauseInteraction = () => {
+    isInteractingRef.current = true;
+    if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+  };
+
+  const scheduleResume = (delayMs = 3000) => {
+    if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+    resumeTimerRef.current = setTimeout(() => {
+      isInteractingRef.current = false;
+    }, delayMs);
+  };
+
+  const handleCardClick = (levelNumber: number) => {
+    setSelectedLevel(levelNumber);
+    pauseInteraction();
+    scheduleResume(5000);
+  };
+
+  const handleTouchStart = () => {
+    pauseInteraction();
+  };
+
+  const handleTouchEnd = () => {
+    scheduleResume(3000);
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    pauseInteraction();
+    isDownRef.current = true;
+    startXRef.current = e.pageX;
+    if (scrollRef.current) {
+      startScrollLeftRef.current = scrollRef.current.scrollLeft;
+    }
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDownRef.current || !scrollRef.current) return;
+    const walk = (e.pageX - startXRef.current) * 1.2;
+    scrollRef.current.scrollLeft = startScrollLeftRef.current - walk;
+  };
+
+  const handleMouseUpOrLeave = () => {
+    if (isDownRef.current) {
+      isDownRef.current = false;
+      scheduleResume(3000);
+    }
+  };
 
   return (
     <section id="contributor-ladder" style={{ background: '#F4F7F5', padding: '100px 24px' }}>
       <div style={{ maxWidth: 1140, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: 54 }}>
           <div style={{
-            display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 7,
-            color: RF_GREEN, fontSize: 11, fontWeight: 800, letterSpacing: '0.16em',
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            color: RF_GREEN, fontSize: 11.5, fontWeight: 800, letterSpacing: '0.16em',
             textTransform: 'uppercase', marginBottom: 16
           }}>
-            <Award size={14} style={{ flexShrink: 0, display: 'inline-block', verticalAlign: 'middle' }} />
+            <Award size={15} style={{ flexShrink: 0, display: 'block' }} />
             <span>Formal Contributor Reward Scheme</span>
           </div>
 
@@ -2604,20 +2705,15 @@ const ContributorLadder: React.FC<{ onNavigate: (path: string) => void }> = ({ o
           </p>
         </div>
 
-        {/* 5-Level Progress Tabs */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-          gap: 12,
-          marginBottom: 32
-        }}>
+        {/* Desktop 5-Level Progress Tabs */}
+        <div className="rp-ladder-desktop-grid">
           {levels.map(lvl => {
             const isSelected = lvl.level === selectedLevel;
             const LvlIcon = lvl.icon;
             return (
               <div
                 key={lvl.level}
-                onClick={() => setSelectedLevel(lvl.level)}
+                onClick={() => handleCardClick(lvl.level)}
                 style={{
                   background: isSelected ? RF_DEEP_GREEN : '#FFFFFF',
                   color: isSelected ? '#FFFFFF' : '#1E293B',
@@ -2625,44 +2721,49 @@ const ContributorLadder: React.FC<{ onNavigate: (path: string) => void }> = ({ o
                   borderRadius: 16,
                   padding: '18px 16px',
                   cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  boxShadow: isSelected ? '0 12px 30px rgba(7, 24, 15, 0.25)' : 'none',
+                  transition: 'all 0.25s ease',
+                  boxShadow: isSelected ? '0 12px 30px rgba(7, 24, 15, 0.22)' : 'none',
                   display: 'flex',
                   flexDirection: 'column',
-                  justifyContent: 'space-between'
+                  justifyContent: 'space-between',
+                  minHeight: 148,
+                  boxSizing: 'border-box'
                 }}
               >
                 <div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-                    <span style={{
-                      fontSize: 10, fontWeight: 900, letterSpacing: '0.1em',
-                      padding: '2px 8px', borderRadius: 100,
-                      background: isSelected ? 'rgba(255,255,255,0.12)' : 'rgba(18, 43, 26, 0.06)',
-                      color: isSelected ? lvl.badgeColor : RF_GREEN
-                    }}>
-                      LEVEL 0{lvl.level}
-                    </span>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
                     <div style={{
-                      width: 26, height: 26, borderRadius: '50%',
-                      background: isSelected ? 'rgba(255,255,255,0.12)' : `${lvl.badgeColor}18`,
+                      width: 36, height: 36, borderRadius: 10,
+                      background: isSelected ? 'rgba(255,255,255,0.16)' : `${lvl.badgeColor}18`,
+                      border: isSelected ? '1px solid rgba(255,255,255,0.25)' : `1px solid ${lvl.badgeColor}35`,
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       flexShrink: 0
                     }}>
-                      <LvlIcon size={13} color={lvl.badgeColor} />
+                      <LvlIcon size={18} color={isSelected ? '#FFFFFF' : lvl.badgeColor} style={{ display: 'block', flexShrink: 0 }} />
                     </div>
+                    <span style={{
+                      fontSize: 10.5, fontWeight: 800, letterSpacing: '0.08em',
+                      padding: '3px 9px', borderRadius: 100,
+                      background: isSelected ? 'rgba(255,255,255,0.15)' : 'rgba(18, 43, 26, 0.06)',
+                      color: isSelected ? lvl.badgeColor : RF_GREEN,
+                      display: 'inline-flex', alignItems: 'center'
+                    }}>
+                      LEVEL 0{lvl.level}
+                    </span>
                   </div>
 
                   <div style={{
                     fontSize: 15, fontWeight: 800,
-                    color: isSelected ? '#FFFFFF' : RF_DARK_GREEN, marginBottom: 4
+                    color: isSelected ? '#FFFFFF' : RF_DARK_GREEN, marginBottom: 4,
+                    lineHeight: 1.25
                   }}>
                     {lvl.name}
                   </div>
                 </div>
 
                 <div style={{
-                  fontSize: 11.5, color: isSelected ? 'rgba(255,255,255,0.7)' : '#64748B',
-                  lineHeight: 1.4, marginTop: 6
+                  fontSize: 11.5, color: isSelected ? 'rgba(255,255,255,0.72)' : '#64748B',
+                  lineHeight: 1.45, marginTop: 6
                 }}>
                   {lvl.tagline}
                 </div>
@@ -2671,8 +2772,131 @@ const ContributorLadder: React.FC<{ onNavigate: (path: string) => void }> = ({ o
           })}
         </div>
 
-        {/* Selected Tier Feature Card */}
-        <div style={{
+        {/* Mobile Flowing Carousel (Right to Left & Swipable Left/Right) */}
+        <div className="rp-ladder-mobile-wrapper">
+          {/* Edge Fades */}
+          <div style={{
+            position: 'absolute', left: 0, top: 0, bottom: 0, width: 28,
+            background: 'linear-gradient(to right, #F4F7F5 20%, rgba(244,247,245,0))',
+            pointerEvents: 'none', zIndex: 3
+          }} />
+          <div style={{
+            position: 'absolute', right: 0, top: 0, bottom: 0, width: 28,
+            background: 'linear-gradient(to left, #F4F7F5 20%, rgba(244,247,245,0))',
+            pointerEvents: 'none', zIndex: 3
+          }} />
+
+          <div
+            ref={scrollRef}
+            className="rp-ladder-mobile-marquee"
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUpOrLeave}
+            onMouseLeave={handleMouseUpOrLeave}
+            onScroll={() => { if (isInteractingRef.current) scheduleResume(); }}
+          >
+            {tripleLevels.map((lvl, idx) => {
+              const isSelected = lvl.level === selectedLevel;
+              const LvlIcon = lvl.icon;
+              return (
+                <div
+                  key={`mobile-lvl-${lvl.level}-${idx}`}
+                  className="rp-ladder-card-mobile"
+                  onClick={() => handleCardClick(lvl.level)}
+                  style={{
+                    background: isSelected ? RF_DEEP_GREEN : '#FFFFFF',
+                    color: isSelected ? '#FFFFFF' : '#1E293B',
+                    border: isSelected ? `2px solid ${lvl.badgeColor}` : '1px solid rgba(18, 43, 26, 0.1)',
+                    boxShadow: isSelected ? '0 10px 25px rgba(7, 24, 15, 0.25)' : '0 4px 12px rgba(10, 30, 17, 0.04)'
+                  }}
+                >
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                      <div style={{
+                        width: 36, height: 36, borderRadius: 10,
+                        background: isSelected ? 'rgba(255,255,255,0.16)' : `${lvl.badgeColor}18`,
+                        border: isSelected ? '1px solid rgba(255,255,255,0.25)' : `1px solid ${lvl.badgeColor}35`,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        flexShrink: 0
+                      }}>
+                        <LvlIcon size={18} color={isSelected ? '#FFFFFF' : lvl.badgeColor} style={{ display: 'block', flexShrink: 0 }} />
+                      </div>
+                      <span style={{
+                        fontSize: 10.5, fontWeight: 800, letterSpacing: '0.08em',
+                        padding: '3px 9px', borderRadius: 100,
+                        background: isSelected ? 'rgba(255,255,255,0.15)' : 'rgba(18, 43, 26, 0.06)',
+                        color: isSelected ? lvl.badgeColor : RF_GREEN,
+                        display: 'inline-flex', alignItems: 'center'
+                      }}>
+                        LEVEL 0{lvl.level}
+                      </span>
+                    </div>
+
+                    <div style={{
+                      fontSize: 15, fontWeight: 800,
+                      color: isSelected ? '#FFFFFF' : RF_DARK_GREEN, marginBottom: 4,
+                      lineHeight: 1.25
+                    }}>
+                      {lvl.name}
+                    </div>
+                  </div>
+
+                  <div style={{
+                    fontSize: 11.5, color: isSelected ? 'rgba(255,255,255,0.72)' : '#64748B',
+                    lineHeight: 1.45, marginTop: 6
+                  }}>
+                    {lvl.tagline}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Mobile Level Switcher Quick Pills */}
+        <div className="rp-ladder-mobile-dots" style={{
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: 8,
+          marginBottom: 20
+        }}>
+          {levels.map(l => {
+            const isSelected = selectedLevel === l.level;
+            return (
+              <button
+                key={`dot-${l.level}`}
+                onClick={() => handleCardClick(l.level)}
+                style={{
+                  padding: '6px 13px',
+                  borderRadius: 100,
+                  fontSize: 11.5,
+                  fontWeight: 800,
+                  background: isSelected ? RF_DEEP_GREEN : '#FFFFFF',
+                  color: isSelected ? l.badgeColor : '#64748B',
+                  border: isSelected ? `1.5px solid ${l.badgeColor}` : '1px solid rgba(18, 43, 26, 0.12)',
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  boxShadow: isSelected ? '0 4px 12px rgba(7, 24, 15, 0.15)' : 'none',
+                  transition: 'all 0.2s'
+                }}
+              >
+                <span style={{
+                  width: 7, height: 7, borderRadius: '50%',
+                  background: l.badgeColor,
+                  flexShrink: 0
+                }} />
+                <span>Level 0{l.level}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Selected Tier Feature Card (Displayed directly under) */}
+        <div className="rp-ladder-detail-card" style={{
           background: RF_DEEP_GREEN,
           borderRadius: 24,
           padding: '40px 36px',
@@ -2680,41 +2904,42 @@ const ContributorLadder: React.FC<{ onNavigate: (path: string) => void }> = ({ o
           border: `2px solid rgba(102, 187, 42, 0.35)`,
           boxShadow: '0 20px 50px rgba(7, 24, 15, 0.3)'
         }}>
-          <div style={{
-            display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
+          <div className="rp-ladder-detail-header" style={{
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
             flexWrap: 'wrap', gap: 20, marginBottom: 28, paddingBottom: 24,
             borderBottom: '1px solid rgba(255,255,255,0.1)'
           }}>
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
               <div style={{
-                width: 48, height: 48, borderRadius: 14,
+                width: 50, height: 50, borderRadius: 14,
                 background: `${active.badgeColor}22`,
                 border: `1.5px solid ${active.badgeColor}55`,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                flexShrink: 0, marginTop: 4
+                flexShrink: 0
               }}>
-                <ActiveIcon size={24} color={active.badgeColor} />
+                <ActiveIcon size={26} color={active.badgeColor} style={{ display: 'block', flexShrink: 0 }} />
               </div>
               <div>
                 <span style={{
                   fontSize: 11, fontWeight: 900, color: active.badgeColor,
-                  letterSpacing: '0.14em', textTransform: 'uppercase'
+                  letterSpacing: '0.14em', textTransform: 'uppercase', display: 'block', marginBottom: 2
                 }}>
                   LEVEL 0{active.level} • {active.status}
                 </span>
                 <h3 style={{
-                  fontSize: 'clamp(24px, 3.5vw, 36px)', fontWeight: 800, margin: '6px 0 4px',
-                  fontFamily: 'Plus Jakarta Sans, sans-serif'
+                  fontSize: 'clamp(22px, 3.5vw, 34px)', fontWeight: 800, margin: '2px 0 4px',
+                  fontFamily: 'Plus Jakarta Sans, sans-serif', lineHeight: 1.2
                 }}>
                   {active.name}
                 </h3>
-                <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.75)', margin: 0 }}>
+                <p style={{ fontSize: 14.5, color: 'rgba(255,255,255,0.75)', margin: 0 }}>
                   "{active.tagline}"
                 </p>
               </div>
             </div>
 
             <button
+              className="rp-ladder-rubric-btn"
               onClick={() => onNavigate('/rewards')}
               style={{
                 background: 'rgba(255,255,255,0.08)',
@@ -2727,8 +2952,9 @@ const ContributorLadder: React.FC<{ onNavigate: (path: string) => void }> = ({ o
                 cursor: 'pointer',
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: 6,
-                transition: 'all 0.2s'
+                gap: 8,
+                transition: 'all 0.2s',
+                flexShrink: 0
               }}
               onMouseEnter={e => {
                 e.currentTarget.style.background = RF_LEAF_GREEN;
@@ -2741,11 +2967,12 @@ const ContributorLadder: React.FC<{ onNavigate: (path: string) => void }> = ({ o
                 e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)';
               }}
             >
-              Full Reward Rubric <ArrowRight size={14} />
+              <span>Full Reward Rubric</span>
+              <ArrowRight size={14} style={{ display: 'block', flexShrink: 0 }} />
             </button>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24 }}>
+          <div className="rp-ladder-detail-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24 }}>
             {/* Qualification Gate */}
             <div style={{
               background: 'rgba(255,255,255,0.04)', borderRadius: 16, padding: '24px 22px',
@@ -2755,12 +2982,13 @@ const ContributorLadder: React.FC<{ onNavigate: (path: string) => void }> = ({ o
                 <div style={{
                   width: 28, height: 28, borderRadius: 8,
                   background: `${active.badgeColor}22`,
+                  border: `1px solid ${active.badgeColor}40`,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   flexShrink: 0
                 }}>
-                  <CheckCircle2 size={16} color={active.badgeColor} />
+                  <CheckCircle2 size={16} color={active.badgeColor} style={{ display: 'block', flexShrink: 0 }} />
                 </div>
-                <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', color: active.badgeColor }}>
+                <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', color: active.badgeColor, lineHeight: 1 }}>
                   How to Qualify
                 </span>
               </div>
@@ -2778,12 +3006,13 @@ const ContributorLadder: React.FC<{ onNavigate: (path: string) => void }> = ({ o
                 <div style={{
                   width: 28, height: 28, borderRadius: 8,
                   background: `${active.badgeColor}22`,
+                  border: `1px solid ${active.badgeColor}40`,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   flexShrink: 0
                 }}>
-                  <Award size={16} color={active.badgeColor} />
+                  <Award size={16} color={active.badgeColor} style={{ display: 'block', flexShrink: 0 }} />
                 </div>
-                <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', color: active.badgeColor }}>
+                <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', color: active.badgeColor, lineHeight: 1 }}>
                   Unlocked Rewards & Privileges
                 </span>
               </div>
@@ -2795,20 +3024,21 @@ const ContributorLadder: React.FC<{ onNavigate: (path: string) => void }> = ({ o
 
           {/* Bottom Execution Note */}
           <div style={{
-            marginTop: 24, padding: '14px 18px', borderRadius: 12,
+            marginTop: 24, padding: '16px 20px', borderRadius: 14,
             background: 'rgba(24, 252, 92, 0.08)', border: '1px solid rgba(24, 252, 92, 0.2)',
-            display: 'flex', alignItems: 'center', gap: 12
+            display: 'flex', alignItems: 'flex-start', gap: 14
           }}>
             <div style={{
               width: 28, height: 28, borderRadius: 8,
-              background: 'rgba(24, 252, 92, 0.15)',
+              background: 'rgba(24, 252, 92, 0.18)',
+              border: '1px solid rgba(24, 252, 92, 0.3)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              flexShrink: 0
+              flexShrink: 0, marginTop: 2
             }}>
-              <Shield size={16} color={RF_MINT_ACCENT} />
+              <Shield size={16} color={RF_MINT_ACCENT} style={{ display: 'block', flexShrink: 0 }} />
             </div>
-            <span style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.85)', lineHeight: 1.5, flex: 1 }}>
-              <strong>Execution Over Attendance:</strong> Merely joining WhatsApp does not qualify for Level 2 badges or bounty pools. Progression requires completing verified missions logged in your Pioneer profile.
+            <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.88)', lineHeight: 1.6, flex: 1 }}>
+              <strong style={{ color: '#FFFFFF' }}>Execution Over Attendance:</strong> Merely joining WhatsApp does not qualify for Level 2 badges or bounty pools. Progression requires completing verified missions logged in your Pioneer profile.
             </span>
           </div>
         </div>
