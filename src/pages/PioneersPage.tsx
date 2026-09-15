@@ -794,8 +794,6 @@ const FounderWelcomeSection: React.FC<FounderWelcomeSectionProps> = ({ onNavigat
         <div style={{ textAlign: 'center', maxWidth: 780, margin: '0 auto 40px' }}>
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: 6,
-            padding: '4px 14px', borderRadius: 100,
-            background: 'rgba(102, 187, 42, 0.12)', border: '1px solid rgba(102, 187, 42, 0.28)',
             color: RF_MINT_ACCENT, fontSize: 11, fontWeight: 700, letterSpacing: '0.14em',
             textTransform: 'uppercase', marginBottom: 16
           }}>
@@ -1680,8 +1678,7 @@ const WhoWeAreLookingFor: React.FC = () => {
         <div style={{ textAlign: 'center', marginBottom: 28 }}>
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: 8,
-            background: 'rgba(255, 255, 255, 0.04)', border: '1px solid rgba(255, 255, 255, 0.12)',
-            borderRadius: 100, padding: '5px 16px', marginBottom: 14
+            marginBottom: 14
           }}>
             <div style={{ width: 6, height: 6, borderRadius: '50%', background: RF_MINT_ACCENT }} />
             <span style={{ fontSize: 10.5, fontWeight: 700, color: RF_MINT_ACCENT, letterSpacing: '0.14em', textTransform: 'uppercase' }}>
@@ -2356,8 +2353,7 @@ const Founding100: React.FC = () => {
 
       <div style={{ maxWidth: 840, margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 2 }}>
         <div style={{
-          display: 'inline-block', padding: '6px 18px', borderRadius: 100,
-          background: `${RF_GOLD_YELLOW}1e`, border: `1px solid ${RF_GOLD_YELLOW}55`,
+          display: 'inline-block',
           fontSize: 11, fontWeight: 900, color: RF_GOLD_YELLOW, letterSpacing: '0.22em', marginBottom: 32
         }}>
           LIMITED OPPORTUNITY
@@ -2580,8 +2576,6 @@ const ContributorLadder: React.FC<{ onNavigate: (path: string) => void }> = ({ o
         <div style={{ textAlign: 'center', marginBottom: 54 }}>
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: 6,
-            padding: '4px 14px', borderRadius: 100,
-            background: 'rgba(18, 43, 26, 0.08)', border: '1px solid rgba(18, 43, 26, 0.15)',
             color: RF_GREEN, fontSize: 11, fontWeight: 800, letterSpacing: '0.16em',
             textTransform: 'uppercase', marginBottom: 16
           }}>
