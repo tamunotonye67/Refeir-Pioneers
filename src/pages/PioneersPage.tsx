@@ -269,7 +269,7 @@ const HeroSection: React.FC = () => {
               fontSize: 'clamp(15px, 1.8vw, 19px)', color: 'rgba(255,255,255,0.88)',
               fontWeight: 500, marginBottom: 24, lineHeight: 1.55
             }}>
-              Join the people helping build Africa's referral-powered freelance economy.
+              Join the people helping build Refeir, Africa's referral-powered freelance economy.
             </p>
 
             {/* CTAs */}
