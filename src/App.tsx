@@ -48,7 +48,16 @@ export const App: React.FC = () => {
     };
 
     window.addEventListener('refeir-open-auth', handleOpenAuth);
-    return () => window.removeEventListener('refeir-open-auth', handleOpenAuth);
+
+    const handleOpenStatus = () => {
+      setStatusModalOpen(true);
+    };
+    window.addEventListener('refeir-open-status', handleOpenStatus);
+
+    return () => {
+      window.removeEventListener('refeir-open-auth', handleOpenAuth);
+      window.removeEventListener('refeir-open-status', handleOpenStatus);
+    };
   }, []);
 
   // Listen to browser Back / Forward buttons

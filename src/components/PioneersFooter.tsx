@@ -3,12 +3,22 @@ import { RF_FOREST_DARK, RF_MINT_ACCENT } from '../constants/brand';
 
 export interface PioneersFooterProps {
   onNavigate: (path: string) => void;
+  onOpenStatus?: () => void;
 }
 
-export const PioneersFooter: React.FC<PioneersFooterProps> = ({ onNavigate }) => {
-  // Only the exact links requested: Our Story, Privacy, Terms, Contact, FAQ, Admissions Admin
+export const PioneersFooter: React.FC<PioneersFooterProps> = ({ onNavigate, onOpenStatus }) => {
+  const handleCheckStatus = () => {
+    if (onOpenStatus) {
+      onOpenStatus();
+    } else {
+      window.dispatchEvent(new CustomEvent('refeir-open-status'));
+    }
+  };
+
+  // Standard footer links including Check Status
   const footerLinks = [
     { label: 'Our Story', path: '/story' },
+    { label: 'Check Status', action: 'status' },
     { label: 'Privacy', path: '/privacy' },
     { label: 'Terms', path: '/terms' },
     { label: 'Contact', path: '/contact' },
@@ -117,12 +127,18 @@ export const PioneersFooter: React.FC<PioneersFooterProps> = ({ onNavigate }) =>
             </span>
           </div>
 
-          {/* Explicit Links: Privacy, Terms, Contact, FAQ, Admissions Admin */}
+          {/* Explicit Links: Our Story, Check Status, Privacy, Terms, Contact, FAQ, Admissions Admin */}
           <nav aria-label="Footer Navigation" style={{ display: 'flex', gap: 24, flexWrap: 'wrap', alignItems: 'center' }}>
-            {footerLinks.map(({ label, path }) => (
+            {footerLinks.map((item) => (
               <button
-                key={label}
-                onClick={() => onNavigate(path)}
+                key={item.label}
+                onClick={() => {
+                  if (item.action === 'status') {
+                    handleCheckStatus();
+                  } else if (item.path) {
+                    onNavigate(item.path);
+                  }
+                }}
                 style={{
                   background: 'none',
                   border: 'none',
@@ -136,7 +152,7 @@ export const PioneersFooter: React.FC<PioneersFooterProps> = ({ onNavigate }) =>
                 onMouseEnter={e => (e.currentTarget.style.color = RF_MINT_ACCENT)}
                 onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.6)')}
               >
-                {label}
+                {item.label}
               </button>
             ))}
           </nav>

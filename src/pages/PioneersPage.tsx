@@ -3648,7 +3648,7 @@ export const PioneersPage: React.FC<PioneersPageProps> = ({ onNavigate }) => {
       <ApplicationSection />
       <FAQSection />
       <FinalCTA onNavigate={onNavigate} />
-      <PioneersFooter onNavigate={onNavigate} />
+      <PioneersFooter onNavigate={onNavigate} onOpenStatus={() => setStatusModalOpen(true)} />
     </div>
   );
 };
