@@ -2678,9 +2678,9 @@ const ContributorLadder: React.FC<{ onNavigate: (path: string) => void }> = ({ o
   };
 
   return (
-    <section id="contributor-ladder" style={{ background: '#F4F7F5', padding: '100px 24px' }}>
+    <section id="contributor-ladder" className="rp-ladder-section">
       <div style={{ maxWidth: 1140, margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: 54 }}>
+        <div className="rp-ladder-header-wrap">
           <div style={{
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8,
             color: RF_GREEN, fontSize: 11.5, fontWeight: 800, letterSpacing: '0.16em',
@@ -2808,91 +2808,55 @@ const ContributorLadder: React.FC<{ onNavigate: (path: string) => void }> = ({ o
                   style={{
                     background: isSelected ? RF_DEEP_GREEN : '#FFFFFF',
                     color: isSelected ? '#FFFFFF' : '#1E293B',
-                    border: isSelected ? `2px solid ${lvl.badgeColor}` : '1px solid rgba(18, 43, 26, 0.1)',
-                    boxShadow: isSelected ? '0 10px 25px rgba(7, 24, 15, 0.25)' : '0 4px 12px rgba(10, 30, 17, 0.04)'
+                    border: isSelected ? `2px solid ${lvl.badgeColor}` : '1.5px solid rgba(18, 43, 26, 0.08)',
+                    boxShadow: isSelected
+                      ? '0 6px 18px rgba(7, 24, 15, 0.2)'
+                      : '0 2px 6px rgba(10, 30, 17, 0.03)'
                   }}
                 >
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-                      <div style={{
-                        width: 36, height: 36, borderRadius: 10,
-                        background: isSelected ? 'rgba(255,255,255,0.16)' : `${lvl.badgeColor}18`,
-                        border: isSelected ? '1px solid rgba(255,255,255,0.25)' : `1px solid ${lvl.badgeColor}35`,
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        flexShrink: 0
-                      }}>
-                        <LvlIcon size={18} color={isSelected ? '#FFFFFF' : lvl.badgeColor} style={{ display: 'block', flexShrink: 0 }} />
-                      </div>
-                      <span style={{
-                        fontSize: 10.5, fontWeight: 800, letterSpacing: '0.08em',
-                        padding: '3px 9px', borderRadius: 100,
-                        background: isSelected ? 'rgba(255,255,255,0.15)' : 'rgba(18, 43, 26, 0.06)',
-                        color: isSelected ? lvl.badgeColor : RF_GREEN,
-                        display: 'inline-flex', alignItems: 'center'
-                      }}>
-                        LEVEL 0{lvl.level}
-                      </span>
-                    </div>
+                  <div style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: 10,
+                    background: isSelected ? 'rgba(255,255,255,0.15)' : `${lvl.badgeColor}15`,
+                    border: isSelected ? '1px solid rgba(255,255,255,0.22)' : `1px solid ${lvl.badgeColor}28`,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0
+                  }}>
+                    <LvlIcon
+                      size={17}
+                      color={isSelected ? '#FFFFFF' : lvl.badgeColor}
+                      style={{ display: 'block', flexShrink: 0 }}
+                    />
+                  </div>
 
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 2, textAlign: 'left' }}>
                     <div style={{
-                      fontSize: 15, fontWeight: 800,
-                      color: isSelected ? '#FFFFFF' : RF_DARK_GREEN, marginBottom: 4,
-                      lineHeight: 1.25
+                      fontSize: 9.5,
+                      fontWeight: 900,
+                      letterSpacing: '0.1em',
+                      color: isSelected ? lvl.badgeColor : RF_GREEN,
+                      textTransform: 'uppercase',
+                      lineHeight: 1
+                    }}>
+                      LEVEL 0{lvl.level}
+                    </div>
+                    <div style={{
+                      fontSize: 13.5,
+                      fontWeight: 800,
+                      color: isSelected ? '#FFFFFF' : RF_DARK_GREEN,
+                      whiteSpace: 'nowrap',
+                      lineHeight: 1.2
                     }}>
                       {lvl.name}
                     </div>
-                  </div>
-
-                  <div style={{
-                    fontSize: 11.5, color: isSelected ? 'rgba(255,255,255,0.72)' : '#64748B',
-                    lineHeight: 1.45, marginTop: 6
-                  }}>
-                    {lvl.tagline}
                   </div>
                 </div>
               );
             })}
           </div>
-        </div>
-
-        {/* Mobile Level Switcher Quick Pills */}
-        <div className="rp-ladder-mobile-dots" style={{
-          justifyContent: 'center',
-          alignItems: 'center',
-          gap: 8,
-          marginBottom: 20
-        }}>
-          {levels.map(l => {
-            const isSelected = selectedLevel === l.level;
-            return (
-              <button
-                key={`dot-${l.level}`}
-                onClick={() => handleCardClick(l.level)}
-                style={{
-                  padding: '6px 13px',
-                  borderRadius: 100,
-                  fontSize: 11.5,
-                  fontWeight: 800,
-                  background: isSelected ? RF_DEEP_GREEN : '#FFFFFF',
-                  color: isSelected ? l.badgeColor : '#64748B',
-                  border: isSelected ? `1.5px solid ${l.badgeColor}` : '1px solid rgba(18, 43, 26, 0.12)',
-                  cursor: 'pointer',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  boxShadow: isSelected ? '0 4px 12px rgba(7, 24, 15, 0.15)' : 'none',
-                  transition: 'all 0.2s'
-                }}
-              >
-                <span style={{
-                  width: 7, height: 7, borderRadius: '50%',
-                  background: l.badgeColor,
-                  flexShrink: 0
-                }} />
-                <span>Level 0{l.level}</span>
-              </button>
-            );
-          })}
         </div>
 
         {/* Selected Tier Feature Card (Displayed directly under) */}

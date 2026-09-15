@@ -982,6 +982,16 @@ img, svg {
 }
 
 /* ─── CONTRIBUTOR LADDER RESPONSIVE & MOBILE FLOW ────────────────────────── */
+.rp-ladder-section {
+  background: #F4F7F5;
+  padding: 100px 24px;
+}
+
+.rp-ladder-header-wrap {
+  text-align: center;
+  margin-bottom: 54px;
+}
+
 .rp-ladder-desktop-grid {
   display: grid !important;
   grid-template-columns: repeat(5, 1fr) !important;
@@ -993,11 +1003,15 @@ img, svg {
   display: none !important;
 }
 
-.rp-ladder-mobile-dots {
-  display: none !important;
-}
-
 @media (max-width: 860px) {
+  .rp-ladder-section {
+    padding: 60px 16px !important;
+  }
+
+  .rp-ladder-header-wrap {
+    margin-bottom: 28px !important;
+  }
+
   .rp-ladder-desktop-grid {
     display: none !important;
   }
@@ -1009,11 +1023,12 @@ img, svg {
     margin-left: calc(-50vw + 50%);
     margin-right: calc(-50vw + 50%);
     overflow: hidden;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
   }
 
   .rp-ladder-mobile-marquee {
     display: flex !important;
+    align-items: center !important;
     position: relative;
     width: 100%;
     overflow-x: auto !important;
@@ -1021,8 +1036,8 @@ img, svg {
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     -ms-overflow-style: none;
-    padding: 10px 20px 20px 20px !important;
-    gap: 14px;
+    padding: 6px 20px 14px 20px !important;
+    gap: 10px;
     box-sizing: border-box;
     cursor: grab;
     user-select: none;
@@ -1040,24 +1055,20 @@ img, svg {
 
   .rp-ladder-card-mobile {
     flex-shrink: 0;
-    width: 224px;
-    min-height: 146px;
-    border-radius: 16px;
-    padding: 16px 14px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    min-height: 54px;
+    border-radius: 14px;
+    padding: 8px 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 11px;
     box-sizing: border-box;
     cursor: pointer;
-    transition: all 0.25s ease;
-  }
-
-  .rp-ladder-mobile-dots {
-    display: flex !important;
+    transition: all 0.22s ease;
+    white-space: nowrap;
   }
 
   .rp-ladder-detail-card {
-    padding: 24px 18px !important;
+    padding: 26px 20px !important;
     border-radius: 20px !important;
   }
 
