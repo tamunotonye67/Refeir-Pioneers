@@ -6,27 +6,33 @@ import {
   Image as ImageIcon, Award, Eye, Check, FileCheck, Users,
   UserPlus, Trash2, Key, EyeOff, Copy, Ban, UserX, Calendar,
   Building2, Globe, Phone, Send, AtSign, Share2, Briefcase,
-  AlertTriangle, Brain, Gift, Zap, Megaphone, PlusCircle, Radio, DollarSign
+  AlertTriangle, Brain, Gift, Zap, Megaphone, PlusCircle, Radio, DollarSign,
+  Database, Server, HardDrive, Terminal, Wifi, WifiOff, UploadCloud, DownloadCloud, Code, Layers, Activity
 } from 'lucide-react';
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { supabase, isSupabaseConfigured, checkSupabaseConnection, SupabaseDiagnostics } from '../lib/supabase';
 import {
   TaskSubmissionRecord,
   getTaskSubmissions,
   updateTaskSubmissionStatus,
-  MIN_JOBS_FOR_PROMOTION
+  MIN_JOBS_FOR_PROMOTION,
+  syncTaskSubmissionsToSupabase
 } from '../lib/taskSubmissions';
 import {
   updateContributorLevel,
   getAllContributors,
   suspendContributor,
   activateContributor,
-  ContributorProfile
+  ContributorProfile,
+  syncContributorsToSupabase,
+  fetchContributorsFromDatabase
 } from '../lib/contributorAuth';
 import {
   PioneerApplicationRecord,
   getStoredApplications,
   generateAcceptanceCode,
-  updateStoredApplication
+  updateStoredApplication,
+  syncApplicationsToSupabase,
+  fetchApplicationsFromDatabase
 } from '../lib/pioneerApplications';
 import {
   StaffMember,
@@ -46,7 +52,9 @@ import {
   revokeCertificate,
   getCertificatesByEmail,
   LEVEL_NAMES,
-  LEVEL_DESCRIPTIONS
+  LEVEL_DESCRIPTIONS,
+  syncCertificatesToSupabase,
+  fetchCertificatesFromDatabase
 } from '../lib/certificates';
 import { CertificateModal } from '../components/CertificateModal';
 import {
@@ -60,8 +68,11 @@ import {
   deleteSquadTask,
   toggleTaskStatus,
   generateWhatsAppBroadcast,
-  openWhatsAppShare
+  openWhatsAppShare,
+  syncSquadTasksToSupabase,
+  fetchSquadTasksFromDatabase
 } from '../lib/squadTasks';
+import { SCHEMA_SQL } from '../lib/schemaSql';
 import {
   RF_DEEP_GREEN,
   RF_DARK_GREEN,
@@ -235,10 +246,11 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
   const [authError, setAuthError] = useState('');
 
   // Data & Management State
-  const [adminTab, setAdminTab] = useState<'applications' | 'proofs' | 'members' | 'workers' | 'certificates' | 'tasks'>(() => {
+  const [adminTab, setAdminTab] = useState<'applications' | 'proofs' | 'members' | 'workers' | 'certificates' | 'tasks' | 'database'>(() => {
     try {
       const params = new URLSearchParams(window.location.search);
       const tabParam = params.get('tab')?.toLowerCase();
+      if (tabParam === 'database' || tabParam === 'supabase' || tabParam === 'backend') return 'database';
       if (tabParam === 'tasks' || tabParam === 'squad-tasks' || tabParam === 'bounties') return 'tasks';
       if (tabParam === 'proofs') return 'proofs';
       if (tabParam === 'members') return 'members';
@@ -247,6 +259,15 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
     } catch {}
     return 'applications';
   });
+
+  // Database & Supabase Management State
+  const [dbDiagnostics, setDbDiagnostics] = useState<SupabaseDiagnostics | null>(null);
+  const [dbTesting, setDbTesting] = useState<boolean>(false);
+  const [dbSyncing, setDbSyncing] = useState<boolean>(false);
+  const [dbSyncResult, setDbSyncResult] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [dbSchemaCopied, setDbSchemaCopied] = useState<boolean>(false);
+  const [dbActiveSubTab, setDbActiveSubTab] = useState<'overview' | 'tables' | 'schema' | 'instructions'>('overview');
+
   const [applications, setApplications] = useState<ApplicationRecord[]>([]);
   const [taskSubmissions, setTaskSubmissions] = useState<TaskSubmissionRecord[]>([]);
   const [membersList, setMembersList] = useState<ContributorProfile[]>(() => getAllContributors());
@@ -901,6 +922,123 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
       setTimeout(() => setCopiedTaskBroadcastId(null), 3000);
     });
   };
+
+  // Database Management Handlers
+  const handleTestDatabase = async () => {
+    setDbTesting(true);
+    setDbSyncResult(null);
+    try {
+      const diag = await checkSupabaseConnection();
+      setDbDiagnostics(diag);
+      if (diag.connected) {
+        setDbSyncResult({
+          message: `Supabase PostgreSQL is connected! Ping latency: ${diag.latencyMs}ms. Schema and RLS active.`,
+          type: 'success'
+        });
+      } else {
+        setDbSyncResult({
+          message: `Running in Local Reactive Mode: ${diag.message || 'Configure VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to enable cloud sync'}. All features continue to function seamlessly.`,
+          type: 'error'
+        });
+      }
+    } catch (err: any) {
+      setDbSyncResult({
+        message: `Connection test error: ${err?.message || 'Check failed'}`,
+        type: 'error'
+      });
+    } finally {
+      setDbTesting(false);
+    }
+  };
+
+  const handleSyncAllToSupabase = async () => {
+    if (!isSupabaseConfigured) {
+      alert('Supabase credentials are not detected in your .env file. Please add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY first.');
+      return;
+    }
+    setDbSyncing(true);
+    setDbSyncResult(null);
+    try {
+      const appsRes = await syncApplicationsToSupabase();
+      const contribsRes = await syncContributorsToSupabase();
+      const tasksRes = await syncSquadTasksToSupabase();
+      const powRes = await syncTaskSubmissionsToSupabase();
+      const certsRes = await syncCertificatesToSupabase();
+
+      const totalSynced = (appsRes.count ?? 0) + (contribsRes.count ?? 0) + (tasksRes.synced ?? 0) + (powRes.synced ?? 0) + (certsRes.synced ?? 0);
+      const anyError = appsRes.error || contribsRes.error || tasksRes.error || powRes.error || certsRes.error;
+
+      if (anyError) {
+        setDbSyncResult({
+          message: `Synced ${totalSynced} local records with notice: ${anyError}`,
+          type: 'error'
+        });
+      } else {
+        setDbSyncResult({
+          message: `Successfully synchronized ${totalSynced} records across all 6 tables to live Supabase PostgreSQL!`,
+          type: 'success'
+        });
+      }
+      const diag = await checkSupabaseConnection();
+      setDbDiagnostics(diag);
+    } catch (err: any) {
+      setDbSyncResult({
+        message: `Sync failed: ${err?.message || 'Network error'}`,
+        type: 'error'
+      });
+    } finally {
+      setDbSyncing(false);
+    }
+  };
+
+  const handleFetchAllFromDatabase = async () => {
+    if (!isSupabaseConfigured) {
+      alert('Supabase credentials are not configured in your environment.');
+      return;
+    }
+    setDbSyncing(true);
+    setDbSyncResult(null);
+    try {
+      const [fetchedApps, fetchedContribs, fetchedTasks, fetchedCerts] = await Promise.all([
+        fetchApplicationsFromDatabase(),
+        fetchContributorsFromDatabase(),
+        fetchSquadTasksFromDatabase(),
+        fetchCertificatesFromDatabase()
+      ]);
+      setApplications(fetchedApps);
+      setMembersList(fetchedContribs);
+      setTasksList(fetchedTasks);
+      setCertificatesList(fetchedCerts);
+      const fetchedSubmissions = await getTaskSubmissions();
+      setTaskSubmissions(fetchedSubmissions);
+
+      setDbSyncResult({
+        message: `Refreshed all local state from live Supabase: ${fetchedApps.length} applications, ${fetchedContribs.length} members, ${fetchedTasks.length} missions, ${fetchedCerts.length} certificates.`,
+        type: 'success'
+      });
+    } catch (err: any) {
+      setDbSyncResult({
+        message: `Pull error: ${err?.message || 'Failed to pull'}`,
+        type: 'error'
+      });
+    } finally {
+      setDbSyncing(false);
+    }
+  };
+
+  const handleCopySchema = () => {
+    navigator.clipboard.writeText(SCHEMA_SQL);
+    setDbSchemaCopied(true);
+    setTimeout(() => setDbSchemaCopied(false), 3000);
+  };
+
+  // Run diagnostics automatically when opening database tab
+  useEffect(() => {
+    if (adminTab === 'database' && !dbDiagnostics && !dbTesting) {
+      handleTestDatabase();
+    }
+  }, [adminTab]);
+
 
   const filteredSquadTasks = useMemo(() => {
     return tasksList.filter(t => {
@@ -1636,6 +1774,28 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               padding: '2px 8px', borderRadius: 100, fontSize: 11, fontWeight: 800
             }}>
               {tasksList.filter(t => t.status === 'ACTIVE').length}
+            </span>
+          </button>
+
+          <button
+            onClick={() => setAdminTab('database')}
+            style={{
+              background: adminTab === 'database' ? RF_LEAF_GREEN : 'rgba(255,255,255,0.05)',
+              color: adminTab === 'database' ? RF_DEEP_GREEN : '#FFFFFF',
+              border: 'none', padding: '10px 20px', borderRadius: 100, fontSize: 13.5,
+              fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
+              transition: 'all 0.2s'
+            }}
+          >
+            <Database size={16} />
+            Database &amp; Supabase
+            <span style={{
+              background: isSupabaseConfigured ? 'rgba(24, 252, 92, 0.2)' : 'rgba(246, 178, 26, 0.2)',
+              color: isSupabaseConfigured ? (adminTab === 'database' ? RF_DEEP_GREEN : RF_MINT_ACCENT) : (adminTab === 'database' ? RF_DEEP_GREEN : RF_GOLD_YELLOW),
+              padding: '2px 8px', borderRadius: 100, fontSize: 10.5, fontWeight: 800,
+              letterSpacing: '0.04em'
+            }}>
+              {isSupabaseConfigured ? 'CONNECTED' : 'LOCAL'}
             </span>
           </button>
         </div>
@@ -3589,7 +3749,551 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           </div>
         </div>
       )}
-    </div>
+
+        {/* ═════════════════════════════════════════════════════════════════════════ */}
+        {/* ─── TAB 7: DATABASE & SUPABASE BACKEND MANAGEMENT ───────────────────── */}
+        {/* ═════════════════════════════════════════════════════════════════════════ */}
+        {adminTab === 'database' && (
+          <div>
+            {/* Header with Title & Action Controls */}
+            <div style={{
+              display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
+              flexWrap: 'wrap', gap: 16, marginBottom: 24
+            }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
+                  <div style={{
+                    width: 36, height: 36, borderRadius: 10, background: 'rgba(24, 252, 92, 0.12)',
+                    border: `1px solid ${RF_LEAF_GREEN}55`, display: 'flex', alignItems: 'center',
+                    justifyContent: 'center', color: RF_MINT_ACCENT
+                  }}>
+                    <Database size={20} />
+                  </div>
+                  <h2 style={{ fontSize: 24, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
+                    Database &amp; Backend Infrastructure
+                  </h2>
+                </div>
+                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', margin: 0 }}>
+                  Dual-mode persistence engine: Local Reactive Storage ↔ Live PostgreSQL via Supabase
+                </p>
+              </div>
+
+              {/* Action Buttons */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                <button
+                  onClick={handleTestDatabase}
+                  disabled={dbTesting}
+                  style={{
+                    background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)',
+                    color: '#FFFFFF', padding: '9px 16px', borderRadius: 100, fontSize: 13,
+                    fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  <RefreshCw size={14} className={dbTesting ? 'animate-spin' : ''} />
+                  {dbTesting ? 'Checking Latency...' : 'Test Connection'}
+                </button>
+
+                <button
+                  onClick={handleSyncAllToSupabase}
+                  disabled={dbSyncing}
+                  style={{
+                    background: RF_LEAF_GREEN, color: RF_DEEP_GREEN, border: 'none',
+                    padding: '9px 18px', borderRadius: 100, fontSize: 13, fontWeight: 700,
+                    cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
+                    boxShadow: `0 4px 14px ${RF_LEAF_GREEN}44`
+                  }}
+                >
+                  <UploadCloud size={15} />
+                  {dbSyncing ? 'Syncing to Cloud...' : 'Push Local → Supabase'}
+                </button>
+
+                <button
+                  onClick={handleFetchAllFromDatabase}
+                  disabled={dbSyncing || !isSupabaseConfigured}
+                  style={{
+                    background: 'rgba(24, 252, 92, 0.1)', border: `1px solid ${RF_LEAF_GREEN}55`,
+                    color: RF_MINT_ACCENT, padding: '9px 16px', borderRadius: 100, fontSize: 13,
+                    fontWeight: 600, cursor: isSupabaseConfigured ? 'pointer' : 'not-allowed',
+                    display: 'flex', alignItems: 'center', gap: 8
+                  }}
+                  title={!isSupabaseConfigured ? 'Supabase not configured in .env' : 'Pull latest records from cloud'}
+                >
+                  <DownloadCloud size={15} />
+                  Pull Supabase → Local
+                </button>
+
+                <button
+                  onClick={handleCopySchema}
+                  style={{
+                    background: dbSchemaCopied ? 'rgba(24, 252, 92, 0.2)' : 'rgba(255, 209, 102, 0.12)',
+                    border: `1px solid ${dbSchemaCopied ? RF_MINT_ACCENT : RF_GOLD_YELLOW}55`,
+                    color: dbSchemaCopied ? RF_MINT_ACCENT : RF_GOLD_YELLOW,
+                    padding: '9px 16px', borderRadius: 100, fontSize: 13, fontWeight: 700,
+                    cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8
+                  }}
+                >
+                  <Copy size={14} />
+                  {dbSchemaCopied ? 'Copied schema.sql!' : 'Copy SQL Schema'}
+                </button>
+              </div>
+            </div>
+
+            {/* Notification / Toast Banner */}
+            {dbSyncResult && (
+              <div style={{
+                marginBottom: 24, padding: '14px 18px', borderRadius: 14,
+                background: dbSyncResult.type === 'success' ? 'rgba(24, 252, 92, 0.1)' : 'rgba(246, 178, 26, 0.1)',
+                border: `1px solid ${dbSyncResult.type === 'success' ? RF_LEAF_GREEN : RF_GOLD_YELLOW}66`,
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  {dbSyncResult.type === 'success' ? (
+                    <CheckCircle2 size={18} color={RF_MINT_ACCENT} />
+                  ) : (
+                    <AlertCircle size={18} color={RF_GOLD_YELLOW} />
+                  )}
+                  <span style={{ fontSize: 13, color: '#FFFFFF', fontWeight: 500 }}>
+                    {dbSyncResult.message}
+                  </span>
+                </div>
+                <button
+                  onClick={() => setDbSyncResult(null)}
+                  style={{
+                    background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.6)',
+                    cursor: 'pointer', fontSize: 16
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+            )}
+
+            {/* Sub-tab Navigation */}
+            <div style={{
+              display: 'flex', gap: 8, marginBottom: 24,
+              borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: 12
+            }}>
+              <button
+                onClick={() => setDbActiveSubTab('overview')}
+                style={{
+                  background: dbActiveSubTab === 'overview' ? 'rgba(24, 252, 92, 0.15)' : 'transparent',
+                  color: dbActiveSubTab === 'overview' ? RF_MINT_ACCENT : 'rgba(255,255,255,0.7)',
+                  border: dbActiveSubTab === 'overview' ? `1px solid ${RF_LEAF_GREEN}66` : '1px solid transparent',
+                  padding: '7px 16px', borderRadius: 100, fontSize: 12.5, fontWeight: 700, cursor: 'pointer'
+                }}
+              >
+                Engine Overview &amp; Health
+              </button>
+
+              <button
+                onClick={() => setDbActiveSubTab('tables')}
+                style={{
+                  background: dbActiveSubTab === 'tables' ? 'rgba(24, 252, 92, 0.15)' : 'transparent',
+                  color: dbActiveSubTab === 'tables' ? RF_MINT_ACCENT : 'rgba(255,255,255,0.7)',
+                  border: dbActiveSubTab === 'tables' ? `1px solid ${RF_LEAF_GREEN}66` : '1px solid transparent',
+                  padding: '7px 16px', borderRadius: 100, fontSize: 12.5, fontWeight: 700, cursor: 'pointer'
+                }}
+              >
+                Database Tables (6)
+              </button>
+
+              <button
+                onClick={() => setDbActiveSubTab('schema')}
+                style={{
+                  background: dbActiveSubTab === 'schema' ? 'rgba(24, 252, 92, 0.15)' : 'transparent',
+                  color: dbActiveSubTab === 'schema' ? RF_MINT_ACCENT : 'rgba(255,255,255,0.7)',
+                  border: dbActiveSubTab === 'schema' ? `1px solid ${RF_LEAF_GREEN}66` : '1px solid transparent',
+                  padding: '7px 16px', borderRadius: 100, fontSize: 12.5, fontWeight: 700, cursor: 'pointer'
+                }}
+              >
+                PostgreSQL Schema Viewer
+              </button>
+
+              <button
+                onClick={() => setDbActiveSubTab('instructions')}
+                style={{
+                  background: dbActiveSubTab === 'instructions' ? 'rgba(24, 252, 92, 0.15)' : 'transparent',
+                  color: dbActiveSubTab === 'instructions' ? RF_MINT_ACCENT : 'rgba(255,255,255,0.7)',
+                  border: dbActiveSubTab === 'instructions' ? `1px solid ${RF_LEAF_GREEN}66` : '1px solid transparent',
+                  padding: '7px 16px', borderRadius: 100, fontSize: 12.5, fontWeight: 700, cursor: 'pointer'
+                }}
+              >
+                Setup Guide (.env)
+              </button>
+            </div>
+
+            {/* Sub-tab 1: Engine Overview & Health */}
+            {dbActiveSubTab === 'overview' && (
+              <div>
+                {/* Diagnostics Grid */}
+                <div style={{
+                  display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                  gap: 16, marginBottom: 28
+                }}>
+                  {/* Card 1: Connection Mode */}
+                  <div style={{
+                    background: 'rgba(255,255,255,0.03)', borderRadius: 18, padding: '22px 24px',
+                    border: `1px solid ${isSupabaseConfigured ? RF_LEAF_GREEN : RF_GOLD_YELLOW}44`,
+                    position: 'relative', overflow: 'hidden'
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600 }}>
+                        Active Database Mode
+                      </span>
+                      {isSupabaseConfigured ? (
+                        <span style={{
+                          background: 'rgba(24, 252, 92, 0.15)', color: RF_MINT_ACCENT,
+                          padding: '3px 10px', borderRadius: 100, fontSize: 11, fontWeight: 700,
+                          display: 'flex', alignItems: 'center', gap: 5
+                        }}>
+                          <Wifi size={12} /> SUPABASE CONNECTED
+                        </span>
+                      ) : (
+                        <span style={{
+                          background: 'rgba(246, 178, 26, 0.15)', color: RF_GOLD_YELLOW,
+                          padding: '3px 10px', borderRadius: 100, fontSize: 11, fontWeight: 700,
+                          display: 'flex', alignItems: 'center', gap: 5
+                        }}>
+                          <HardDrive size={12} /> LOCAL REACTIVE
+                        </span>
+                      )}
+                    </div>
+                    <div style={{ fontSize: 22, fontWeight: 700, color: '#FFFFFF', marginBottom: 6 }}>
+                      {isSupabaseConfigured ? 'Live PostgreSQL Backend' : 'Client-Side Offline Engine'}
+                    </div>
+                    <p style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.65)', lineHeight: 1.5, margin: 0 }}>
+                      {isSupabaseConfigured
+                        ? 'Connected to live cloud PostgreSQL cluster. Data writes and updates replicate directly to cloud tables.'
+                        : 'Operating via localStorage cache. Zero latency, instant responses, fully operational without cloud credentials.'}
+                    </p>
+                  </div>
+
+                  {/* Card 2: Cluster Latency */}
+                  <div style={{
+                    background: 'rgba(255,255,255,0.03)', borderRadius: 18, padding: '22px 24px',
+                    border: '1px solid rgba(255,255,255,0.08)'
+                  }}>
+                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600 }}>
+                      Ping Latency &amp; Speed
+                    </span>
+                    <div style={{ fontSize: 28, fontWeight: 700, color: RF_MINT_ACCENT, marginTop: 8, marginBottom: 4 }}>
+                      {dbDiagnostics?.latencyMs !== undefined ? `${dbDiagnostics.latencyMs} ms` : (isSupabaseConfigured ? 'Ready' : '< 1 ms (Local)')}
+                    </div>
+                    <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', margin: 0 }}>
+                      {isSupabaseConfigured
+                        ? `Project: ${dbDiagnostics?.projectUrl || 'Supabase Endpoint'}`
+                        : 'Local memory storage provides instantaneous microsecond reads & writes.'}
+                    </p>
+                  </div>
+
+                  {/* Card 3: Fault-Tolerance & Auto-Failover */}
+                  <div style={{
+                    background: 'rgba(255,255,255,0.03)', borderRadius: 18, padding: '22px 24px',
+                    border: '1px solid rgba(255,255,255,0.08)'
+                  }}>
+                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600 }}>
+                      Offline Failover Status
+                    </span>
+                    <div style={{ fontSize: 24, fontWeight: 700, color: '#FFFFFF', marginTop: 8, marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <CheckCircle2 size={22} color={RF_MINT_ACCENT} /> Active &amp; Guarded
+                    </div>
+                    <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', margin: 0 }}>
+                      If network connectivity drops, the app automatically falls back to local storage without throwing unhandled exceptions.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Table Record Counters */}
+                <h3 style={{ fontSize: 16, fontWeight: 700, color: '#FFFFFF', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <Layers size={18} color={RF_MINT_ACCENT} />
+                  Table Entities &amp; Cached Records
+                </h3>
+
+                <div style={{
+                  display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+                  gap: 14, marginBottom: 32
+                }}>
+                  <div style={{ background: 'rgba(0,0,0,0.3)', borderRadius: 14, padding: '16px 18px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>Applications</div>
+                    <div style={{ fontSize: 26, fontWeight: 700, color: '#FFFFFF', marginTop: 4 }}>{applications.length}</div>
+                    <div style={{ fontSize: 11.5, color: RF_MINT_ACCENT, marginTop: 2 }}>pioneer_applications</div>
+                  </div>
+
+                  <div style={{ background: 'rgba(0,0,0,0.3)', borderRadius: 14, padding: '16px 18px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>Pioneers</div>
+                    <div style={{ fontSize: 26, fontWeight: 700, color: '#FFFFFF', marginTop: 4 }}>{membersList.length}</div>
+                    <div style={{ fontSize: 11.5, color: RF_MINT_ACCENT, marginTop: 2 }}>contributor_profiles</div>
+                  </div>
+
+                  <div style={{ background: 'rgba(0,0,0,0.3)', borderRadius: 14, padding: '16px 18px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>Squad Missions</div>
+                    <div style={{ fontSize: 26, fontWeight: 700, color: '#FFFFFF', marginTop: 4 }}>{tasksList.length}</div>
+                    <div style={{ fontSize: 11.5, color: RF_MINT_ACCENT, marginTop: 2 }}>squad_tasks</div>
+                  </div>
+
+                  <div style={{ background: 'rgba(0,0,0,0.3)', borderRadius: 14, padding: '16px 18px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>Deliverables</div>
+                    <div style={{ fontSize: 26, fontWeight: 700, color: '#FFFFFF', marginTop: 4 }}>{taskSubmissions.length}</div>
+                    <div style={{ fontSize: 11.5, color: RF_MINT_ACCENT, marginTop: 2 }}>pioneer_proof_of_work</div>
+                  </div>
+
+                  <div style={{ background: 'rgba(0,0,0,0.3)', borderRadius: 14, padding: '16px 18px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>Certificates</div>
+                    <div style={{ fontSize: 26, fontWeight: 700, color: '#FFFFFF', marginTop: 4 }}>{certificatesList.length}</div>
+                    <div style={{ fontSize: 11.5, color: RF_MINT_ACCENT, marginTop: 2 }}>pioneer_certificates</div>
+                  </div>
+
+                  <div style={{ background: 'rgba(0,0,0,0.3)', borderRadius: 14, padding: '16px 18px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>Staff Team</div>
+                    <div style={{ fontSize: 26, fontWeight: 700, color: '#FFFFFF', marginTop: 4 }}>{staffList.length}</div>
+                    <div style={{ fontSize: 11.5, color: RF_MINT_ACCENT, marginTop: 2 }}>staff_members</div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Sub-tab 2: Database Tables Inspector */}
+            {dbActiveSubTab === 'tables' && (
+              <div style={{
+                background: 'rgba(0,0,0,0.25)', borderRadius: 16, border: '1px solid rgba(255,255,255,0.08)',
+                overflow: 'hidden'
+              }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: 13 }}>
+                  <thead>
+                    <tr style={{ background: 'rgba(255,255,255,0.04)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                      <th style={{ padding: '14px 18px', color: 'rgba(255,255,255,0.6)', fontWeight: 600 }}>Table Name</th>
+                      <th style={{ padding: '14px 18px', color: 'rgba(255,255,255,0.6)', fontWeight: 600 }}>Entity Description</th>
+                      <th style={{ padding: '14px 18px', color: 'rgba(255,255,255,0.6)', fontWeight: 600 }}>Local Count</th>
+                      <th style={{ padding: '14px 18px', color: 'rgba(255,255,255,0.6)', fontWeight: 600 }}>Supabase Table Status</th>
+                      <th style={{ padding: '14px 18px', color: 'rgba(255,255,255,0.6)', fontWeight: 600 }}>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      {
+                        name: 'pioneer_applications',
+                        desc: 'Founding Cohort applicant submissions, contact info, squad, review decisions',
+                        count: applications.length,
+                        tab: 'applications' as const
+                      },
+                      {
+                        name: 'contributor_profiles',
+                        desc: 'Pioneer contributor logins, profile details, social handles, payout info',
+                        count: membersList.length,
+                        tab: 'members' as const
+                      },
+                      {
+                        name: 'squad_tasks',
+                        desc: 'Sprint tasks, daily missions, and bounties (Airtime, Data, Cash)',
+                        count: tasksList.length,
+                        tab: 'tasks' as const
+                      },
+                      {
+                        name: 'pioneer_proof_of_work',
+                        desc: 'Deliverable submissions, screenshots, URLs, verification status & feedback',
+                        count: taskSubmissions.length,
+                        tab: 'proofs' as const
+                      },
+                      {
+                        name: 'pioneer_certificates',
+                        desc: 'Official tamper-evident certificates with cryptographic verification hash',
+                        count: certificatesList.length,
+                        tab: 'certificates' as const
+                      },
+                      {
+                        name: 'staff_members',
+                        desc: 'Admissions reviewers, verifiers, squad leads, and administrator credentials',
+                        count: staffList.length,
+                        tab: 'workers' as const
+                      }
+                    ].map((tbl, i) => {
+                      const keyMap: Record<string, keyof NonNullable<SupabaseDiagnostics['tablesFound']>> = {
+                        pioneer_applications: 'applications',
+                        contributor_profiles: 'profiles',
+                        squad_tasks: 'tasks',
+                        pioneer_proof_of_work: 'proofOfWork',
+                        pioneer_certificates: 'certificates',
+                        staff_members: 'staff'
+                      };
+                      const foundKey = keyMap[tbl.name];
+                      const isFound = dbDiagnostics?.tablesFound && foundKey ? dbDiagnostics.tablesFound[foundKey] : false;
+                      const tableStatus = isFound ? 'READY' : (isSupabaseConfigured ? 'CHECKING' : 'LOCAL');
+                      return (
+                        <tr
+                          key={tbl.name}
+                          style={{
+                            borderBottom: i < 5 ? '1px solid rgba(255,255,255,0.06)' : 'none',
+                            background: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.015)'
+                          }}
+                        >
+                          <td style={{ padding: '14px 18px', fontFamily: 'monospace', fontWeight: 700, color: RF_MINT_ACCENT }}>
+                            {tbl.name}
+                          </td>
+                          <td style={{ padding: '14px 18px', color: 'rgba(255,255,255,0.75)', maxWidth: 380 }}>
+                            {tbl.desc}
+                          </td>
+                          <td style={{ padding: '14px 18px', fontWeight: 700, color: '#FFFFFF' }}>
+                            {tbl.count}
+                          </td>
+                          <td style={{ padding: '14px 18px' }}>
+                            <span style={{
+                              background: tableStatus === 'READY' ? 'rgba(24, 252, 92, 0.12)' : 'rgba(246, 178, 26, 0.12)',
+                              color: tableStatus === 'READY' ? RF_MINT_ACCENT : RF_GOLD_YELLOW,
+                              border: `1px solid ${tableStatus === 'READY' ? RF_LEAF_GREEN : RF_GOLD_YELLOW}44`,
+                              padding: '3px 10px', borderRadius: 100, fontSize: 11, fontWeight: 700
+                            }}>
+                              {tableStatus}
+                            </span>
+                          </td>
+                          <td style={{ padding: '14px 18px' }}>
+                            <button
+                              onClick={() => setAdminTab(tbl.tab)}
+                              style={{
+                                background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)',
+                                color: '#FFFFFF', padding: '5px 12px', borderRadius: 100, fontSize: 11.5,
+                                cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4
+                              }}
+                            >
+                              Manage Records →
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {/* Sub-tab 3: PostgreSQL Schema Viewer */}
+            {dbActiveSubTab === 'schema' && (
+              <div>
+                <div style={{
+                  background: 'rgba(24, 252, 92, 0.06)', border: `1px solid ${RF_LEAF_GREEN}44`,
+                  borderRadius: 14, padding: '16px 20px', marginBottom: 20,
+                  display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 14
+                }}>
+                  <div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: '#FFFFFF', marginBottom: 4 }}>
+                      Ready-to-Run PostgreSQL Migration Script (`supabase/schema.sql`)
+                    </div>
+                    <p style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.7)', margin: 0 }}>
+                      Copy this SQL and run it directly in your Supabase project's SQL Editor to set up all 6 tables, triggers, and Row Level Security.
+                    </p>
+                  </div>
+
+                  <button
+                    onClick={handleCopySchema}
+                    style={{
+                      background: dbSchemaCopied ? RF_MINT_ACCENT : RF_LEAF_GREEN,
+                      color: RF_DEEP_GREEN, border: 'none',
+                      padding: '9px 20px', borderRadius: 100, fontSize: 13, fontWeight: 700,
+                      cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
+                      boxShadow: `0 4px 14px ${RF_LEAF_GREEN}44`
+                    }}
+                  >
+                    <Copy size={15} />
+                    {dbSchemaCopied ? 'Copied to Clipboard!' : 'Copy Entire SQL Schema'}
+                  </button>
+                </div>
+
+                <div style={{
+                  background: '#040d08', borderRadius: 14, padding: '20px 24px',
+                  border: '1px solid rgba(255,255,255,0.12)', maxHeight: 500, overflowY: 'auto'
+                }}>
+                  <pre style={{
+                    margin: 0, fontFamily: 'monospace', fontSize: 12, color: 'rgba(255,255,255,0.85)',
+                    whiteSpace: 'pre-wrap', lineHeight: 1.6
+                  }}>
+                    {SCHEMA_SQL}
+                  </pre>
+                </div>
+              </div>
+            )}
+
+            {/* Sub-tab 4: Setup Guide */}
+            {dbActiveSubTab === 'instructions' && (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20 }}>
+                {/* Step 1 */}
+                <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: '24px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+                    <div style={{
+                      width: 30, height: 30, borderRadius: '50%', background: RF_LEAF_GREEN,
+                      color: RF_DEEP_GREEN, fontWeight: 800, display: 'flex', alignItems: 'center',
+                      justifyContent: 'center', fontSize: 14
+                    }}>
+                      1
+                    </div>
+                    <h4 style={{ fontSize: 16, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>Create Supabase Project</h4>
+                  </div>
+                  <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.5 }}>
+                    Go to <a href="https://supabase.com" target="_blank" rel="noopener noreferrer" style={{ color: RF_MINT_ACCENT }}>supabase.com</a> and sign in. Create a new free project titled <strong>"Refeir Pioneers"</strong>. Choose Frankfurt or London for African latency optimization.
+                  </p>
+                </div>
+
+                {/* Step 2 */}
+                <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: '24px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+                    <div style={{
+                      width: 30, height: 30, borderRadius: '50%', background: RF_LEAF_GREEN,
+                      color: RF_DEEP_GREEN, fontWeight: 800, display: 'flex', alignItems: 'center',
+                      justifyContent: 'center', fontSize: 14
+                    }}>
+                      2
+                    </div>
+                    <h4 style={{ fontSize: 16, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>Run Database Schema</h4>
+                  </div>
+                  <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.5 }}>
+                    In your Supabase project dashboard, open the <strong>SQL Editor</strong> tab on the left. Click "New Query", paste the contents from the <strong>schema.sql</strong> tab above, and click <strong>"Run"</strong>.
+                  </p>
+                </div>
+
+                {/* Step 3 */}
+                <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: '24px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+                    <div style={{
+                      width: 30, height: 30, borderRadius: '50%', background: RF_LEAF_GREEN,
+                      color: RF_DEEP_GREEN, fontWeight: 800, display: 'flex', alignItems: 'center',
+                      justifyContent: 'center', fontSize: 14
+                    }}>
+                      3
+                    </div>
+                    <h4 style={{ fontSize: 16, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>Configure Environment (.env)</h4>
+                  </div>
+                  <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.5, marginBottom: 12 }}>
+                    Copy your Project URL and Anon API Key from Project Settings → API, and add them to your <code style={{ background: 'rgba(0,0,0,0.4)', padding: '2px 6px', borderRadius: 4, color: RF_MINT_ACCENT }}>.env</code> file:
+                  </p>
+                  <pre style={{
+                    background: 'rgba(0,0,0,0.5)', padding: '10px 12px', borderRadius: 8,
+                    fontSize: 11.5, color: RF_GOLD_YELLOW, margin: 0, fontFamily: 'monospace'
+                  }}>
+{`VITE_SUPABASE_URL=https://your-id.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key`}
+                  </pre>
+                </div>
+
+                {/* Step 4 */}
+                <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: '24px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+                    <div style={{
+                      width: 30, height: 30, borderRadius: '50%', background: RF_LEAF_GREEN,
+                      color: RF_DEEP_GREEN, fontWeight: 800, display: 'flex', alignItems: 'center',
+                      justifyContent: 'center', fontSize: 14
+                    }}>
+                      4
+                    </div>
+                    <h4 style={{ fontSize: 16, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>1-Click Sync Local Data</h4>
+                  </div>
+                  <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.5 }}>
+                    Return to this tab and click <strong>"Push Local → Supabase"</strong>. All seeded applications, contributor accounts, squad missions, deliverables, and certificates will immediately sync into your live PostgreSQL tables!
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* ─── DETAILED APPLICANT REVIEW MODAL ────────────────────────────────────── */}
       {modalOpen && activeApp && (

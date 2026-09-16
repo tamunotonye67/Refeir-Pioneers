@@ -1,4 +1,5 @@
 import { supabase, isSupabaseConfigured } from './supabase';
+import { issueCertificate } from './certificates';
 
 export interface ScreenshotAttachment {
   id: string;
@@ -178,6 +179,45 @@ export const saveTaskSubmission = async (
   return record;
 };
 
+/**
+ * Synchronizes local cached proof-of-work submissions to Supabase.
+ */
+export const syncTaskSubmissionsToSupabase = async (): Promise<{ synced: number; error: string | null }> => {
+  if (!isSupabaseConfigured) {
+    return { synced: 0, error: 'Supabase credentials not configured' };
+  }
+
+  try {
+    const local = await getTaskSubmissions();
+    const records = local.map(item => ({
+      reference_id: item.reference_id,
+      full_name: item.full_name,
+      email: item.email,
+      application_number: item.application_number,
+      pioneer_id: item.pioneer_id,
+      division: item.division,
+      target_level: item.target_level,
+      task_title: item.task_title,
+      task_category: item.task_category,
+      task_description: item.task_description,
+      deliverable_url: item.deliverable_url || null,
+      additional_url: item.additional_url || null,
+      screenshots: item.screenshots,
+      status: item.status,
+      admin_feedback: item.admin_feedback || null,
+      created_at: item.created_at
+    }));
+
+    const { error } = await supabase.from('pioneer_proof_of_work').upsert(records, { onConflict: 'reference_id' });
+    if (error) {
+      return { synced: 0, error: error.message };
+    }
+    return { synced: records.length, error: null };
+  } catch (err: any) {
+    return { synced: 0, error: err?.message || 'Sync failed' };
+  }
+};
+
 export const updateTaskSubmissionStatus = async (
   id: string,
   status: 'VERIFIED' | 'NEEDS_REVISION' | 'REJECTED',
@@ -196,8 +236,53 @@ export const updateTaskSubmissionStatus = async (
 
   // Update in localStorage
   const current = await getTaskSubmissions();
-  const updated = current.map(item =>
-    item.id === id ? { ...item, status, admin_feedback: admin_feedback ?? item.admin_feedback } : item
-  );
+  let affectedRecord: TaskSubmissionRecord | undefined;
+
+  const updated = current.map(item => {
+    if (item.id === id) {
+      affectedRecord = { ...item, status, admin_feedback: admin_feedback ?? item.admin_feedback };
+      return affectedRecord;
+    }
+    return item;
+  });
+
   localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+
+  // If newly verified, check for rank promotion and certificate issuance
+  if (status === 'VERIFIED' && affectedRecord) {
+    try {
+      const verifiedCount = updated.filter(
+        t => t.email.toLowerCase() === affectedRecord!.email.toLowerCase() && t.status === 'VERIFIED'
+      ).length;
+
+      // Determine highest earned tier
+      let earnedTier: 'LEVEL_1' | 'LEVEL_2' | 'LEVEL_3' | 'LEVEL_4' | 'LEVEL_5' = 'LEVEL_1';
+      if (verifiedCount >= MIN_JOBS_FOR_PROMOTION.LEVEL_5) {
+        earnedTier = 'LEVEL_5';
+      } else if (verifiedCount >= MIN_JOBS_FOR_PROMOTION.LEVEL_4) {
+        earnedTier = 'LEVEL_4';
+      } else if (verifiedCount >= MIN_JOBS_FOR_PROMOTION.LEVEL_3) {
+        earnedTier = 'LEVEL_3';
+      } else if (verifiedCount >= MIN_JOBS_FOR_PROMOTION.LEVEL_2) {
+        earnedTier = 'LEVEL_2';
+      }
+
+      if (earnedTier !== 'LEVEL_1') {
+        // Auto issue certificate for this tier if not already issued
+        issueCertificate({
+          pioneer_id: affectedRecord.pioneer_id,
+          application_number: affectedRecord.application_number,
+          recipient_name: affectedRecord.full_name,
+          recipient_email: affectedRecord.email,
+          level: earnedTier,
+          division: affectedRecord.division,
+          verified_jobs_count: verifiedCount,
+          issued_by: 'Refeir Admissions Committee & Protocol Stewards',
+          special_distinction: `Earned with ${verifiedCount} verified deliverables in the Refeir Founding 100 cohort`
+        });
+      }
+    } catch (promoErr) {
+      console.warn('Auto promotion certificate issuance non-fatal warning:', promoErr);
+    }
+  }
 };

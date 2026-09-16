@@ -176,6 +176,16 @@ export const addStoredApplication = (app: Omit<PioneerApplicationRecord, 'id' | 
   };
   apps.unshift(newApp);
   saveStoredApplications(apps);
+
+  if (isSupabaseConfigured) {
+    supabase
+      .from('pioneer_applications')
+      .insert([newApp])
+      .then(({ error }) => {
+        if (error) console.warn('Supabase application insert warning:', error.message);
+      });
+  }
+
   return newApp;
 };
 
@@ -219,6 +229,16 @@ export const updateStoredApplication = (
 
   if (updatedApp) {
     saveStoredApplications(modified);
+
+    if (isSupabaseConfigured) {
+      supabase
+        .from('pioneer_applications')
+        .update(updatedApp)
+        .eq('application_number', (updatedApp as PioneerApplicationRecord).application_number)
+        .then(({ error }) => {
+          if (error) console.warn('Supabase application update warning:', error.message);
+        });
+    }
   }
   return updatedApp;
 };
@@ -290,3 +310,51 @@ export const generateNextPioneerId = (): string => {
   return `RP-${String(nextNum).padStart(3, '0')}`;
 };
 
+/**
+ * Fetches applications from Supabase if configured, and updates local cache.
+ */
+export const fetchApplicationsFromDatabase = async (): Promise<PioneerApplicationRecord[]> => {
+  if (!isSupabaseConfigured) {
+    return getStoredApplications();
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('pioneer_applications')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (!error && Array.isArray(data) && data.length > 0) {
+      saveStoredApplications(data as PioneerApplicationRecord[]);
+      return data as PioneerApplicationRecord[];
+    }
+  } catch (err) {
+    console.warn('Could not query Supabase pioneer_applications, falling back to local storage:', err);
+  }
+
+  return getStoredApplications();
+};
+
+/**
+ * Pushes all locally stored applications to Supabase (useful for seeding fresh Supabase instance).
+ */
+export const syncApplicationsToSupabase = async (): Promise<{ success: boolean; count: number; error?: string }> => {
+  if (!isSupabaseConfigured) {
+    return { success: false, count: 0, error: 'Supabase is not configured. Add credentials to .env' };
+  }
+
+  const apps = getStoredApplications();
+  try {
+    const { error } = await supabase
+      .from('pioneer_applications')
+      .upsert(apps, { onConflict: 'application_number' });
+
+    if (error) {
+      return { success: false, count: 0, error: error.message };
+    }
+
+    return { success: true, count: apps.length };
+  } catch (err: any) {
+    return { success: false, count: 0, error: err?.message || 'Sync failed' };
+  }
+};

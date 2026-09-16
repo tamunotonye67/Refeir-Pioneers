@@ -1,4 +1,5 @@
 import { ContributorProfile } from './contributorAuth';
+import { supabase, isSupabaseConfigured } from './supabase';
 
 export type ContributorTier = 'LEVEL_1' | 'LEVEL_2' | 'LEVEL_3' | 'LEVEL_4' | 'LEVEL_5';
 
@@ -120,6 +121,95 @@ export function getAllCertificates(): PioneerCertificate[] {
   }
 }
 
+/**
+ * Fetches certificates from Supabase if configured,
+ * updates local storage cache, and returns them.
+ */
+export async function fetchCertificatesFromDatabase(): Promise<PioneerCertificate[]> {
+  if (!isSupabaseConfigured) {
+    return getAllCertificates();
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('pioneer_certificates')
+      .select('*')
+      .order('issued_at', { ascending: false });
+
+    if (error) {
+      console.warn('Supabase fetch error for pioneer_certificates, falling back to local storage:', error.message);
+      return getAllCertificates();
+    }
+
+    if (data && data.length > 0) {
+      const mapped: PioneerCertificate[] = data.map(item => ({
+        id: item.credential_id || item.id,
+        pioneer_id: item.pioneer_id,
+        application_number: item.application_number || '',
+        recipient_name: item.recipient_name,
+        recipient_email: item.recipient_email,
+        level: item.level as ContributorTier,
+        level_title: item.title,
+        division: item.division,
+        verified_jobs_count: item.verified_jobs_count || 0,
+        issued_at: item.issued_at,
+        issued_by: item.issued_by || 'Refeir Admissions Committee & Protocol Stewards',
+        special_distinction: item.special_distinction || item.description || '',
+        verification_hash: item.verification_hash,
+        status: item.is_revoked ? 'REVOKED' : 'ISSUED',
+        revocation_reason: item.revoked_reason || undefined
+      }));
+
+      localStorage.setItem(CERTIFICATES_STORAGE_KEY, JSON.stringify(mapped));
+      return mapped;
+    }
+
+    return getAllCertificates();
+  } catch (err) {
+    console.error('Failed to fetch certificates from Supabase:', err);
+    return getAllCertificates();
+  }
+}
+
+/**
+ * Synchronizes local cached certificates to Supabase database.
+ */
+export async function syncCertificatesToSupabase(): Promise<{ synced: number; error: string | null }> {
+  if (!isSupabaseConfigured) {
+    return { synced: 0, error: 'Supabase credentials not configured' };
+  }
+
+  try {
+    const localCerts = getAllCertificates();
+    const records = localCerts.map(c => ({
+      credential_id: c.id,
+      pioneer_id: c.pioneer_id,
+      application_number: c.application_number,
+      recipient_name: c.recipient_name,
+      recipient_email: c.recipient_email,
+      division: c.division,
+      level: c.level,
+      title: c.level_title,
+      description: c.special_distinction || '',
+      verified_jobs_count: c.verified_jobs_count,
+      issued_at: c.issued_at,
+      issued_by: c.issued_by,
+      special_distinction: c.special_distinction,
+      is_revoked: c.status === 'REVOKED',
+      revoked_reason: c.revocation_reason || null,
+      verification_hash: c.verification_hash
+    }));
+
+    const { error } = await supabase.from('pioneer_certificates').upsert(records, { onConflict: 'credential_id' });
+    if (error) {
+      return { synced: 0, error: error.message };
+    }
+    return { synced: records.length, error: null };
+  } catch (err: any) {
+    return { synced: 0, error: err?.message || 'Sync failed' };
+  }
+}
+
 export function getCertificatesByEmail(email: string): PioneerCertificate[] {
   if (!email) return [];
   const all = getAllCertificates();
@@ -184,6 +274,30 @@ export function issueCertificate(params: {
 
   const updated = [newCert, ...all];
   localStorage.setItem(CERTIFICATES_STORAGE_KEY, JSON.stringify(updated));
+
+  // Asynchronously sync to Supabase if configured
+  if (isSupabaseConfigured) {
+    supabase.from('pioneer_certificates').upsert({
+      credential_id: newCert.id,
+      pioneer_id: newCert.pioneer_id,
+      application_number: newCert.application_number,
+      recipient_name: newCert.recipient_name,
+      recipient_email: newCert.recipient_email,
+      division: newCert.division,
+      level: newCert.level,
+      title: newCert.level_title,
+      description: newCert.special_distinction,
+      verified_jobs_count: newCert.verified_jobs_count,
+      issued_at: newCert.issued_at,
+      issued_by: newCert.issued_by,
+      special_distinction: newCert.special_distinction,
+      is_revoked: false,
+      verification_hash: newCert.verification_hash
+    }, { onConflict: 'credential_id' }).then(({ error }) => {
+      if (error) console.warn('Supabase certificate insert error:', error.message);
+    });
+  }
+
   return newCert;
 }
 
@@ -204,6 +318,17 @@ export function revokeCertificate(id: string, reason: string): PioneerCertificat
   });
 
   localStorage.setItem(CERTIFICATES_STORAGE_KEY, JSON.stringify(updated));
+
+  if (isSupabaseConfigured && targetCert) {
+    supabase.from('pioneer_certificates').update({
+      is_revoked: true,
+      revoked_reason: reason || 'Administrative decision',
+      revoked_at: new Date().toISOString()
+    }).eq('credential_id', id).then(({ error }) => {
+      if (error) console.warn('Supabase certificate revoke error:', error.message);
+    });
+  }
+
   return targetCert;
 }
 

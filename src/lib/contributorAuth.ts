@@ -178,6 +178,28 @@ export const signUpContributor = async (data: {
   users.push(newProfile);
   saveStoredUsers(users);
 
+  if (isSupabaseConfigured) {
+    supabase
+      .from('contributor_profiles')
+      .insert([{
+        id: newProfile.id,
+        email: newProfile.email,
+        full_name: newProfile.full_name,
+        division: newProfile.division,
+        application_number: newProfile.application_number,
+        pioneer_id: newProfile.pioneer_id,
+        acceptance_code: newProfile.acceptance_code,
+        whatsapp_number: newProfile.whatsapp_number,
+        contributor_level: newProfile.contributor_level,
+        is_profile_completed: false,
+        password_hash: newProfile.password,
+        created_at: newProfile.created_at
+      }])
+      .then(({ error }) => {
+        if (error) console.warn('Supabase contributor profile insert error:', error.message);
+      });
+  }
+
   // Mark application as having an account created
   updateStoredApplication(appNum, { account_created: true });
 
@@ -282,6 +304,43 @@ export const completeContributorProfile = async (
   users[userIdx] = updated;
   saveStoredUsers(users);
 
+  if (isSupabaseConfigured) {
+    supabase
+      .from('contributor_profiles')
+      .update({
+        full_name: updated.full_name,
+        avatar_url: updated.avatar_url,
+        date_of_birth: updated.date_of_birth,
+        whatsapp_number: updated.whatsapp_number,
+        telegram_handle: updated.telegram_handle,
+        twitter_handle: updated.twitter_handle,
+        instagram_handle: updated.instagram_handle,
+        github_url: updated.github_url,
+        linkedin_url: updated.linkedin_url,
+        portfolio_url: updated.portfolio_url,
+        institution: updated.institution,
+        country: updated.country,
+        city: updated.city,
+        division: updated.division,
+        bio: updated.bio,
+        skills: updated.skills,
+        payout_preference: updated.payout_preference,
+        payout_details: updated.payout_details,
+        bank_name: updated.bank_name,
+        account_number: updated.account_number,
+        account_name: updated.account_name,
+        survey_responses: updated.survey_responses,
+        survey_completed_at: updated.survey_completed_at,
+        pioneer_id: updated.pioneer_id,
+        is_profile_completed: true,
+        profile_completed_at: updated.profile_completed_at
+      })
+      .eq('email', user.email)
+      .then(({ error }) => {
+        if (error) console.warn('Supabase contributor profile update error:', error.message);
+      });
+  }
+
   // Sync to pioneerApplications
   if (user.application_number) {
     updateStoredApplication(user.application_number, {
@@ -306,7 +365,30 @@ export const signInContributor = async (emailInput: string, passwordInput: strin
   const email = emailInput.trim().toLowerCase();
   const users = getStoredUsers();
 
-  const user = users.find(u => u.email.toLowerCase() === email);
+  let user = users.find(u => u.email.toLowerCase() === email);
+
+  // If user not found in local cache, check live Supabase database
+  if (!user && isSupabaseConfigured) {
+    try {
+      const { data, error } = await supabase
+        .from('contributor_profiles')
+        .select('*')
+        .eq('email', email)
+        .single();
+
+      if (data && !error) {
+        user = {
+          ...data,
+          password: data.password_hash || 'password123'
+        } as ContributorProfile;
+        users.push(user);
+        saveStoredUsers(users);
+      }
+    } catch {
+      // ignore
+    }
+  }
+
   if (!user) {
     throw new Error(
       'No active account found for this email. Membership requires an official acceptance into the Pioneer program. If you have been accepted and issued an Acceptance Code, please click "Activate Account" to register.'
@@ -446,5 +528,97 @@ export const updateContributorAvatar = (email: string, avatarUrl: string): Contr
 // Dispatch custom event for reactive UI updates
 export const notifyAuthChange = () => {
   window.dispatchEvent(new Event('refeir-auth-change'));
+};
+
+/**
+ * Fetches all contributor profiles from Supabase if configured, and updates local cache.
+ */
+export const fetchContributorsFromDatabase = async (): Promise<ContributorProfile[]> => {
+  if (!isSupabaseConfigured) {
+    return getStoredUsers();
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('contributor_profiles')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (!error && Array.isArray(data) && data.length > 0) {
+      const mapped = data.map(u => ({
+        ...u,
+        password: u.password_hash || 'password123'
+      }));
+      saveStoredUsers(mapped as ContributorProfile[]);
+      notifyAuthChange();
+      return mapped as ContributorProfile[];
+    }
+  } catch (err) {
+    console.warn('Could not query Supabase contributor_profiles:', err);
+  }
+
+  return getStoredUsers();
+};
+
+/**
+ * Pushes all locally stored contributors to Supabase (useful for initial cloud migration).
+ */
+export const syncContributorsToSupabase = async (): Promise<{ success: boolean; count: number; error?: string }> => {
+  if (!isSupabaseConfigured) {
+    return { success: false, count: 0, error: 'Supabase is not configured in .env' };
+  }
+
+  const users = getStoredUsers();
+  try {
+    const payload = users.map(u => ({
+      id: u.id,
+      email: u.email,
+      full_name: u.full_name,
+      application_number: u.application_number,
+      pioneer_id: u.pioneer_id,
+      acceptance_code: u.acceptance_code,
+      division: u.division,
+      contributor_level: u.contributor_level,
+      date_of_birth: u.date_of_birth || null,
+      avatar_url: u.avatar_url || null,
+      whatsapp_number: u.whatsapp_number || null,
+      telegram_handle: u.telegram_handle || null,
+      twitter_handle: u.twitter_handle || null,
+      instagram_handle: u.instagram_handle || null,
+      github_url: u.github_url || null,
+      linkedin_url: u.linkedin_url || null,
+      portfolio_url: u.portfolio_url || null,
+      institution: u.institution || null,
+      country: u.country || null,
+      city: u.city || null,
+      bio: u.bio || null,
+      skills: u.skills || [],
+      payout_preference: u.payout_preference || 'BANK',
+      payout_details: u.payout_details || null,
+      bank_name: u.bank_name || null,
+      account_number: u.account_number || null,
+      account_name: u.account_name || null,
+      is_profile_completed: u.is_profile_completed,
+      password_hash: u.password || 'password123',
+      survey_responses: u.survey_responses || [],
+      survey_completed_at: u.survey_completed_at || null,
+      is_suspended: u.is_suspended || false,
+      suspension_reason: u.suspension_reason || null,
+      suspended_at: u.suspended_at || null,
+      created_at: u.created_at || new Date().toISOString()
+    }));
+
+    const { error } = await supabase
+      .from('contributor_profiles')
+      .upsert(payload, { onConflict: 'email' });
+
+    if (error) {
+      return { success: false, count: 0, error: error.message };
+    }
+
+    return { success: true, count: users.length };
+  } catch (err: any) {
+    return { success: false, count: 0, error: err?.message || 'Sync failed' };
+  }
 };
 
