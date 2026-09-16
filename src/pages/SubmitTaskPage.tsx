@@ -658,100 +658,63 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
 
             {!contributor ? (
               /* ─── PIONEER AUTHENTICATION REQUIRED GATE ─── */
-              <div style={{
-                background: 'rgba(7, 24, 15, 0.95)',
-                border: `1px solid ${RF_LEAF_GREEN}44`,
-                borderRadius: 24,
-                padding: '48px 32px',
-                textAlign: 'center',
-                boxShadow: '0 20px 50px rgba(0,0,0,0.6)',
-                maxWidth: 720,
-                margin: '20px auto 0'
-              }}>
-                <div style={{
-                  width: 58, height: 58, borderRadius: 18, background: 'rgba(24, 252, 92, 0.1)',
-                  border: `1px solid ${RF_LEAF_GREEN}55`, display: 'flex', alignItems: 'center',
-                  justifyContent: 'center', margin: '0 auto 18px', color: RF_MINT_ACCENT
-                }}>
-                  <Lock size={28} />
+              <div className="rp-auth-gate-card">
+                <div className="rp-auth-gate-icon-box">
+                  <Lock size={26} />
                 </div>
 
-                <span style={{
-                  display: 'inline-block', fontSize: 11, fontWeight: 700, letterSpacing: '0.14em',
-                  color: RF_GOLD_YELLOW, textTransform: 'uppercase', marginBottom: 12
-                }}>
+                <span className="rp-auth-gate-badge">
                   Access Restricted • Pioneer Sign-In Required
                 </span>
 
-                <h2 style={{
-                  fontSize: 'clamp(24px, 3.5vw, 32px)', fontWeight: 700, color: '#FFFFFF',
-                  fontFamily: 'Plus Jakarta Sans, sans-serif', marginBottom: 14
-                }}>
+                <h2 className="rp-auth-gate-title">
                   Pioneer Verification Required
                 </h2>
 
-                <p style={{
-                  fontSize: 15, color: 'rgba(255,255,255,0.75)', lineHeight: 1.7,
-                  maxWidth: 580, margin: '0 auto 26px'
-                }}>
-                  Task reporting, mission deliverables, and Contributor Ladder upgrades are restricted to <strong>officially accepted Refeir Pioneers</strong>. Members must enter their mandatory <strong>Application ID</strong> and <strong>Pioneer ID</strong>, and be issued an official Acceptance Code.
+                <p className="rp-auth-gate-desc">
+                  Task reporting, mission deliverables, and Contributor Ladder upgrades are restricted to <strong>officially accepted Refeir Pioneers</strong>. Members must enter their mandatory <strong>Application ID</strong> &amp; <strong>Pioneer ID</strong>, and be issued an official Acceptance Code.
                 </p>
 
-                <div style={{
-                  background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',
-                  borderRadius: 14, padding: '18px 22px', marginBottom: 30, textAlign: 'left',
-                  display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 14
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                    <div style={{ width: 22, height: 22, borderRadius: '50%', background: `${RF_LEAF_GREEN}22`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: RF_MINT_ACCENT, fontSize: 12, fontWeight: 800, flexShrink: 0 }}>1</div>
-                    <div>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: '#FFFFFF' }}>Application &amp; Pioneer ID</div>
-                      <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.6)', marginTop: 2 }}>Both IDs are mandatory and assigned upon admission.</div>
+                <div className="rp-auth-gate-steps">
+                  <div className="rp-auth-gate-step-item">
+                    <div className="rp-auth-gate-step-num">1</div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div className="rp-auth-gate-step-title">Application &amp; Pioneer ID</div>
+                      <div className="rp-auth-gate-step-desc">Both IDs are mandatory and assigned upon admission.</div>
                     </div>
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                    <div style={{ width: 22, height: 22, borderRadius: '50%', background: `${RF_LEAF_GREEN}22`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: RF_MINT_ACCENT, fontSize: 12, fontWeight: 800, flexShrink: 0 }}>2</div>
-                    <div>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: '#FFFFFF' }}>Acceptance Code</div>
-                      <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.6)', marginTop: 2 }}>Issued by admissions to confirm your verified seat.</div>
+                  <div className="rp-auth-gate-step-item">
+                    <div className="rp-auth-gate-step-num">2</div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div className="rp-auth-gate-step-title">Acceptance Code</div>
+                      <div className="rp-auth-gate-step-desc">Issued by admissions to confirm your verified seat.</div>
                     </div>
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+                <div className="rp-auth-gate-actions">
                   <button
                     onClick={() => onNavigate('/signin')}
-                    style={{
-                      background: RF_LEAF_GREEN, color: RF_DEEP_GREEN, border: 'none',
-                      padding: '13px 26px', borderRadius: 100, fontSize: 14, fontWeight: 800,
-                      cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
-                      boxShadow: `0 4px 16px ${RF_LEAF_GREEN}44`, transition: 'all 0.2s'
-                    }}
-                    onMouseEnter={e => (e.currentTarget.style.background = RF_MINT_ACCENT)}
-                    onMouseLeave={e => (e.currentTarget.style.background = RF_LEAF_GREEN)}
+                    className="rp-auth-gate-btn-primary"
                   >
-                    <LogIn size={15} style={{ flexShrink: 0 }} /> Sign In / Activate Account
+                    <LogIn size={15} style={{ flexShrink: 0 }} />
+                    <span>Sign In / Activate</span>
                   </button>
 
                   <button
                     onClick={onOpenStatus}
-                    style={{
-                      background: 'rgba(255,255,255,0.06)', color: '#FFFFFF',
-                      border: '1px solid rgba(255,255,255,0.2)', padding: '13px 22px',
-                      borderRadius: 100, fontSize: 13.5, fontWeight: 600, cursor: 'pointer',
-                      display: 'flex', alignItems: 'center', gap: 8
-                    }}
+                    className="rp-auth-gate-btn-secondary"
                   >
-                    <Search size={15} style={{ flexShrink: 0, color: RF_MINT_ACCENT }} /> Check Status for Acceptance Code
+                    <Search size={15} style={{ flexShrink: 0, color: RF_MINT_ACCENT }} />
+                    <span>Check Admission Status</span>
                   </button>
+                </div>
 
+                <div className="rp-auth-gate-link-wrap">
                   <button
                     onClick={() => onNavigate('/#apply')}
-                    style={{
-                      background: 'none', color: 'rgba(255,255,255,0.65)', border: 'none',
-                      padding: '13px 18px', fontSize: 13, cursor: 'pointer', textDecoration: 'underline'
-                    }}
+                    className="rp-auth-gate-apply-link"
                   >
                     Not yet applied? Apply to Pioneers →
                   </button>
