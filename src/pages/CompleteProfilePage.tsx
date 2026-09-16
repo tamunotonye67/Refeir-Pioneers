@@ -800,129 +800,167 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
   // ═══════════════════════════════════════════════════════════════════════════
   if (step === 'complete' && successCard) {
     return (
-      <div style={{ background: RF_DEEP_GREEN, minHeight: '100vh', color: '#FFFFFF', paddingTop: 110, paddingBottom: 90 }}>
-        <div style={{ maxWidth: 680, margin: '0 auto', padding: '0 20px', textAlign: 'center' }}>
+      <div className="rp-profile-page" style={{ background: RF_DEEP_GREEN, minHeight: '100vh', color: '#FFFFFF' }}>
+        <div className="rp-profile-container" style={{ maxWidth: 680, margin: '0 auto', textAlign: 'center' }}>
           
           <div style={{
-            display: 'inline-flex', alignItems: 'center', gap: 8,
-            padding: '6px 18px', borderRadius: 100,
-            background: 'rgba(24, 252, 92, 0.12)', border: '1px solid rgba(24, 252, 92, 0.3)',
-            color: RF_MINT_ACCENT, fontSize: 13, fontWeight: 700, letterSpacing: '0.04em',
-            textTransform: 'uppercase', marginBottom: 20
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            padding: '4px 14px', borderRadius: 100,
+            background: 'rgba(24, 252, 92, 0.08)', border: '1px solid rgba(24, 252, 92, 0.28)',
+            color: RF_MINT_ACCENT, fontSize: 11, fontWeight: 700, letterSpacing: '0.06em',
+            textTransform: 'uppercase', marginBottom: 12
           }}>
-            <CheckCircle2 size={16} /> Reasoning Survey & Profile Verified
+            <CheckCircle2 size={13} /> Verified Pioneer
           </div>
 
-          <h1 style={{
+          <h1 className="rp-profile-title" style={{
             fontFamily: 'Plus Jakarta Sans, sans-serif',
-            fontSize: 'clamp(28px, 5vw, 42px)',
+            fontSize: 'clamp(24px, 4.5vw, 34px)',
             fontWeight: 800,
-            lineHeight: 1.2,
-            margin: '0 0 12px',
+            lineHeight: 1.22,
+            margin: '0 0 8px',
             color: '#FFFFFF'
           }}>
-            Welcome to the Founding Pioneers
+            Welcome, Founding Pioneer
           </h1>
-          <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.72)', margin: '0 0 32px', lineHeight: 1.6, maxWidth: 560, marginInline: 'auto' }}>
-            Your cognitive and reasoning survey has been evaluated and recorded. Your official Pioneer ID and verified credential seat have been permanently issued.
+          <p className="rp-profile-subtitle" style={{
+            fontSize: 13.5, color: 'rgba(255,255,255,0.7)',
+            margin: '0 auto 24px', lineHeight: 1.5, maxWidth: 520
+          }}>
+            Your cognitive reasoning survey and credentials have been verified. Your Pioneer seat is active.
           </p>
 
           {/* Pioneer Credential Card */}
-          <div style={{
-            background: `linear-gradient(135deg, ${RF_DARK_GREEN} 0%, #03140A 100%)`,
-            border: `2px solid ${RF_LEAF_GREEN}`,
-            borderRadius: 24,
-            padding: '36px 32px',
-            boxShadow: `0 25px 60px rgba(0,0,0,0.9), 0 0 40px ${RF_LEAF_GREEN}22`,
+          <div className="rp-credential-card" style={{
+            background: `linear-gradient(145deg, ${RF_DARK_GREEN} 0%, #03140A 100%)`,
+            border: `1.5px solid ${RF_LEAF_GREEN}66`,
+            borderRadius: 20,
+            boxShadow: `0 20px 50px rgba(0,0,0,0.85), 0 0 35px ${RF_LEAF_GREEN}18`,
             textAlign: 'left',
             position: 'relative',
             overflow: 'hidden',
-            marginBottom: 28
+            marginBottom: 20,
+            boxSizing: 'border-box'
           }}>
             {/* Hologram Accent Line */}
             <div style={{
-              position: 'absolute', top: 0, left: 0, right: 0, height: 4,
+              position: 'absolute', top: 0, left: 0, right: 0, height: 3,
               background: `linear-gradient(90deg, ${RF_LEAF_GREEN}, ${RF_MINT_ACCENT}, ${RF_GOLD_YELLOW})`
             }} />
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 18, marginBottom: 24 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            {/* Header: Avatar, Name, and Pioneer ID */}
+            <div className="rp-credential-header" style={{
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+              gap: 14, marginBottom: 18, flexWrap: 'wrap'
+            }}>
+              <div className="rp-credential-user" style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0, flex: '1 1 240px' }}>
                 {successCard.avatar_url ? (
                   <img
                     src={successCard.avatar_url}
                     alt={successCard.full_name}
+                    className="rp-credential-avatar"
                     style={{
-                      width: 72, height: 72, borderRadius: '50%', objectFit: 'cover',
-                      border: `2.5px solid ${RF_MINT_ACCENT}`,
-                      boxShadow: `0 0 20px ${RF_MINT_ACCENT}40`
+                      width: 54, height: 54, borderRadius: '50%', objectFit: 'cover',
+                      border: `2px solid ${RF_MINT_ACCENT}`,
+                      boxShadow: `0 0 16px ${RF_MINT_ACCENT}35`,
+                      flexShrink: 0
                     }}
                   />
                 ) : (
-                  <div style={{
-                    width: 72, height: 72, borderRadius: '50%',
-                    background: 'rgba(24, 252, 92, 0.12)', border: `2.5px solid ${RF_MINT_ACCENT}`,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 24, fontWeight: 800, color: RF_MINT_ACCENT,
-                    boxShadow: `0 0 20px ${RF_MINT_ACCENT}30`
-                  }}>
+                  <div
+                    className="rp-credential-avatar"
+                    style={{
+                      width: 54, height: 54, borderRadius: '50%',
+                      background: 'rgba(24, 252, 92, 0.12)', border: `2px solid ${RF_MINT_ACCENT}`,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: 18, fontWeight: 800, color: RF_MINT_ACCENT,
+                      boxShadow: `0 0 16px ${RF_MINT_ACCENT}25`,
+                      flexShrink: 0
+                    }}
+                  >
                     {successCard.full_name ? successCard.full_name.slice(0, 2).toUpperCase() : 'RP'}
                   </div>
                 )}
-                <div>
-                  <div style={{ fontSize: 11, fontWeight: 800, color: RF_MINT_ACCENT, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-                    Refeir Sovereign Pioneer Credential
-                  </div>
-                  <h3 style={{ fontSize: 24, fontWeight: 800, color: '#FFFFFF', margin: '4px 0 0', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+                <div className="rp-credential-info" style={{ minWidth: 0, flex: 1 }}>
+                  <span className="rp-credential-badge-micro" style={{
+                    fontSize: 10, fontWeight: 800, color: RF_MINT_ACCENT, letterSpacing: '0.08em', textTransform: 'uppercase', display: 'block'
+                  }}>
+                    Refeir Pioneer Credential
+                  </span>
+                  <h3 className="rp-credential-name" style={{
+                    fontSize: 19, fontWeight: 800, color: '#FFFFFF', margin: '2px 0 0',
+                    fontFamily: 'Plus Jakarta Sans, sans-serif', lineHeight: 1.25,
+                    whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
+                  }}>
                     {successCard.full_name}
                   </h3>
-                  <div style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.6)', marginTop: 2 }}>
-                    {successCard.institution} • {successCard.city ? `${successCard.city}, ` : ''}{successCard.country}
-                    {successCard.date_of_birth && ` • Born: ${successCard.date_of_birth}`}
+                  <div className="rp-credential-meta" style={{
+                    fontSize: 12, color: 'rgba(255,255,255,0.6)', marginTop: 2,
+                    whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
+                  }}>
+                    {successCard.institution} {successCard.country ? `• ${successCard.country}` : ''}
                   </div>
                 </div>
               </div>
 
-              <div style={{
-                background: 'rgba(24, 252, 92, 0.12)', border: `1px solid ${RF_MINT_ACCENT}`,
-                borderRadius: 12, padding: '8px 16px', textAlign: 'right'
+              <div className="rp-credential-id-badge" style={{
+                background: 'rgba(24, 252, 92, 0.1)', border: `1px solid ${RF_MINT_ACCENT}55`,
+                borderRadius: 12, padding: '7px 14px', textAlign: 'right', flexShrink: 0
               }}>
-                <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                <div className="rp-credential-id-label" style={{
+                  fontSize: 9.5, color: 'rgba(255,255,255,0.55)', textTransform: 'uppercase', letterSpacing: '0.05em'
+                }}>
                   Official Pioneer ID
                 </div>
-                <div style={{ fontSize: 22, fontWeight: 900, color: RF_MINT_ACCENT, letterSpacing: '0.05em' }}>
+                <div className="rp-credential-id-value" style={{
+                  fontSize: 18, fontWeight: 900, color: RF_MINT_ACCENT, letterSpacing: '0.04em', lineHeight: 1.2
+                }}>
                   {successCard.pioneer_id}
                 </div>
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 16, background: 'rgba(0,0,0,0.3)', borderRadius: 14, padding: 18, marginBottom: 18, border: '1px solid rgba(255,255,255,0.06)' }}>
-              <div>
-                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase' }}>Application</div>
-                <div style={{ fontSize: 13, fontWeight: 700, color: '#FFFFFF', marginTop: 2 }}>{successCard.application_number}</div>
+            {/* 4-Stat Grid: Application, Squad, Rank, Reasoning */}
+            <div className="rp-credential-stats-grid" style={{
+              display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10,
+              background: 'rgba(0,0,0,0.3)', borderRadius: 12, padding: '12px 14px',
+              marginBottom: 14, border: '1px solid rgba(255,255,255,0.06)', boxSizing: 'border-box'
+            }}>
+              <div className="rp-credential-stat-item" style={{ minWidth: 0 }}>
+                <div className="rp-credential-stat-label" style={{ fontSize: 10, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase' }}>Application</div>
+                <div className="rp-credential-stat-val" style={{ fontSize: 12.5, fontWeight: 700, color: '#FFFFFF', marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {successCard.application_number}
+                </div>
               </div>
-              <div>
-                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase' }}>Assigned Squad</div>
-                <div style={{ fontSize: 13, fontWeight: 700, color: RF_MINT_ACCENT, marginTop: 2 }}>{successCard.division}</div>
+              <div className="rp-credential-stat-item" style={{ minWidth: 0 }}>
+                <div className="rp-credential-stat-label" style={{ fontSize: 10, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase' }}>Assigned Squad</div>
+                <div className="rp-credential-stat-val" style={{ fontSize: 12.5, fontWeight: 700, color: RF_MINT_ACCENT, marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {successCard.division}
+                </div>
               </div>
-              <div>
-                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase' }}>Rank</div>
-                <div style={{ fontSize: 13, fontWeight: 700, color: RF_GOLD_YELLOW, marginTop: 2 }}>{successCard.contributor_level.replace('_', ' ')}</div>
+              <div className="rp-credential-stat-item" style={{ minWidth: 0 }}>
+                <div className="rp-credential-stat-label" style={{ fontSize: 10, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase' }}>Rank</div>
+                <div className="rp-credential-stat-val" style={{ fontSize: 12.5, fontWeight: 700, color: RF_GOLD_YELLOW, marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {successCard.contributor_level.replace('_', ' ')}
+                </div>
               </div>
-              <div>
-                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase' }}>Reasoning Survey</div>
-                <div style={{ fontSize: 13, fontWeight: 700, color: RF_MINT_ACCENT, marginTop: 2 }}>10/10 EVALUATED ✓</div>
+              <div className="rp-credential-stat-item" style={{ minWidth: 0 }}>
+                <div className="rp-credential-stat-label" style={{ fontSize: 10, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase' }}>Reasoning</div>
+                <div className="rp-credential-stat-val" style={{ fontSize: 12.5, fontWeight: 700, color: RF_MINT_ACCENT, marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  10/10 ✓
+                </div>
               </div>
             </div>
 
-            {/* Verified Persona & Social Proof Badges */}
+            {/* Verified Persona & Social Links */}
             {(successCard.linkedin_url || successCard.twitter_handle || successCard.instagram_handle || successCard.github_url || successCard.telegram_handle || successCard.portfolio_url) && (
-              <div style={{
-                display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center',
-                padding: '10px 14px', background: 'rgba(0,0,0,0.25)', borderRadius: 10,
-                marginBottom: 18, border: '1px solid rgba(255,255,255,0.06)'
+              <div className="rp-credential-social-row" style={{
+                display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center',
+                padding: '8px 12px', background: 'rgba(0,0,0,0.25)', borderRadius: 10,
+                marginBottom: 14, border: '1px solid rgba(255,255,255,0.06)'
               }}>
-                <span style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', marginRight: 4 }}>
-                  Verified Persona:
+                <span style={{ fontSize: 10.5, fontWeight: 700, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', marginRight: 2 }}>
+                  Verified:
                 </span>
                 {successCard.linkedin_url && (
                   <a
@@ -930,11 +968,11 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                     target="_blank" rel="noopener noreferrer"
                     style={{
                       display: 'inline-flex', alignItems: 'center', gap: 4,
-                      background: 'rgba(10, 102, 194, 0.2)', border: '1px solid rgba(10, 102, 194, 0.4)',
-                      padding: '3px 10px', borderRadius: 100, fontSize: 11.5, color: '#70B5F9', textDecoration: 'none'
+                      background: 'rgba(10, 102, 194, 0.2)', border: '1px solid rgba(10, 102, 194, 0.35)',
+                      padding: '3px 8px', borderRadius: 100, fontSize: 11, color: '#70B5F9', textDecoration: 'none'
                     }}
                   >
-                    LinkedIn <ExternalLink size={10} />
+                    LinkedIn <ExternalLink size={9} />
                   </a>
                 )}
                 {successCard.twitter_handle && (
@@ -944,10 +982,10 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                     style={{
                       display: 'inline-flex', alignItems: 'center', gap: 4,
                       background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)',
-                      padding: '3px 10px', borderRadius: 100, fontSize: 11.5, color: '#FFFFFF', textDecoration: 'none'
+                      padding: '3px 8px', borderRadius: 100, fontSize: 11, color: '#FFFFFF', textDecoration: 'none'
                     }}
                   >
-                    𝕏 {successCard.twitter_handle.startsWith('@') ? successCard.twitter_handle : `@${successCard.twitter_handle}`} <ExternalLink size={10} />
+                    𝕏 {successCard.twitter_handle.startsWith('@') ? successCard.twitter_handle : `@${successCard.twitter_handle}`} <ExternalLink size={9} />
                   </a>
                 )}
                 {successCard.instagram_handle && (
@@ -956,11 +994,11 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                     target="_blank" rel="noopener noreferrer"
                     style={{
                       display: 'inline-flex', alignItems: 'center', gap: 4,
-                      background: 'rgba(225, 48, 108, 0.15)', border: '1px solid rgba(225, 48, 108, 0.4)',
-                      padding: '3px 10px', borderRadius: 100, fontSize: 11.5, color: '#FF80AB', textDecoration: 'none'
+                      background: 'rgba(225, 48, 108, 0.15)', border: '1px solid rgba(225, 48, 108, 0.35)',
+                      padding: '3px 8px', borderRadius: 100, fontSize: 11, color: '#FF80AB', textDecoration: 'none'
                     }}
                   >
-                    IG: {successCard.instagram_handle.startsWith('@') ? successCard.instagram_handle : `@${successCard.instagram_handle}`} <ExternalLink size={10} />
+                    IG <ExternalLink size={9} />
                   </a>
                 )}
                 {successCard.github_url && (
@@ -970,17 +1008,17 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                     style={{
                       display: 'inline-flex', alignItems: 'center', gap: 4,
                       background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.18)',
-                      padding: '3px 10px', borderRadius: 100, fontSize: 11.5, color: '#E2E8F0', textDecoration: 'none'
+                      padding: '3px 8px', borderRadius: 100, fontSize: 11, color: '#E2E8F0', textDecoration: 'none'
                     }}
                   >
-                    GitHub <ExternalLink size={10} />
+                    GitHub <ExternalLink size={9} />
                   </a>
                 )}
                 {successCard.telegram_handle && (
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', gap: 4,
-                    background: 'rgba(0, 136, 204, 0.15)', border: '1px solid rgba(0, 136, 204, 0.35)',
-                    padding: '3px 10px', borderRadius: 100, fontSize: 11.5, color: '#64B5F6'
+                    background: 'rgba(0, 136, 204, 0.15)', border: '1px solid rgba(0, 136, 204, 0.3)',
+                    padding: '3px 8px', borderRadius: 100, fontSize: 11, color: '#64B5F6'
                   }}>
                     TG: {successCard.telegram_handle}
                   </span>
@@ -991,11 +1029,11 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                     target="_blank" rel="noopener noreferrer"
                     style={{
                       display: 'inline-flex', alignItems: 'center', gap: 4,
-                      background: 'rgba(24, 252, 92, 0.1)', border: `1px solid ${RF_MINT_ACCENT}40`,
-                      padding: '3px 10px', borderRadius: 100, fontSize: 11.5, color: RF_MINT_ACCENT, textDecoration: 'none'
+                      background: 'rgba(24, 252, 92, 0.1)', border: `1px solid ${RF_MINT_ACCENT}35`,
+                      padding: '3px 8px', borderRadius: 100, fontSize: 11, color: RF_MINT_ACCENT, textDecoration: 'none'
                     }}
                   >
-                    Portfolio <ExternalLink size={10} />
+                    Portfolio <ExternalLink size={9} />
                   </a>
                 )}
               </div>
@@ -1003,78 +1041,85 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
 
             {/* Verified Settlement Account */}
             {(successCard.bank_name || successCard.account_number) && (
-              <div style={{
+              <div className="rp-credential-bank-card" style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                padding: '12px 16px', background: 'rgba(0,0,0,0.25)', borderRadius: 12,
-                marginBottom: 18, border: '1px solid rgba(255,255,255,0.08)', flexWrap: 'wrap', gap: 10
+                padding: '10px 14px', background: 'rgba(0,0,0,0.25)', borderRadius: 12,
+                marginBottom: 14, border: '1px solid rgba(255,255,255,0.08)', gap: 10, boxSizing: 'border-box'
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <Building2 size={18} style={{ color: RF_MINT_ACCENT }} />
-                  <div>
-                    <div style={{ fontSize: 10.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                      Settlement Bank Account
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+                  <Building2 size={16} style={{ color: RF_MINT_ACCENT, flexShrink: 0 }} />
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                      Settlement Account
                     </div>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: '#FFFFFF' }}>
+                    <div style={{ fontSize: 12.5, fontWeight: 700, color: '#FFFFFF', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {successCard.bank_name} • {successCard.account_number ? `••••${successCard.account_number.slice(-4)}` : ''} ({successCard.account_name || successCard.full_name})
                     </div>
                   </div>
                 </div>
-                <span style={{ fontSize: 11, fontWeight: 700, color: RF_MINT_ACCENT, background: 'rgba(24, 252, 92, 0.1)', border: '1px solid rgba(24, 252, 92, 0.3)', padding: '4px 10px', borderRadius: 100 }}>
-                  Direct Payout Ready ✓
+                <span className="rp-credential-payout-badge" style={{
+                  fontSize: 10.5, fontWeight: 700, color: RF_MINT_ACCENT, background: 'rgba(24, 252, 92, 0.1)',
+                  border: '1px solid rgba(24, 252, 92, 0.3)', padding: '3px 8px', borderRadius: 100, whiteSpace: 'nowrap', flexShrink: 0
+                }}>
+                  Ready ✓
                 </span>
               </div>
             )}
 
-            {/* Survey Verification Banner */}
-            <div style={{
-              background: 'rgba(24, 252, 92, 0.08)', border: '1px solid rgba(24, 252, 92, 0.25)',
-              borderRadius: 12, padding: '12px 16px', marginBottom: 18,
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10
+            {/* Survey Verification Box */}
+            <div className="rp-credential-survey-box" style={{
+              background: 'rgba(24, 252, 92, 0.07)', border: '1px solid rgba(24, 252, 92, 0.22)',
+              borderRadius: 12, padding: '10px 14px', marginBottom: 14,
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, boxSizing: 'border-box'
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <Brain size={18} style={{ color: RF_MINT_ACCENT }} />
-                <div>
-                  <div style={{ fontSize: 12.5, fontWeight: 700, color: '#FFFFFF' }}>Cognitive & Problem-Solving Survey Recorded</div>
-                  <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.65)' }}>10/10 squad-tailored reasoning scenarios analyzed and attributed to your profile</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+                <Brain size={16} style={{ color: RF_MINT_ACCENT, flexShrink: 0 }} />
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: '#FFFFFF', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    Reasoning Survey Recorded
+                  </div>
+                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    10/10 scenarios evaluated &amp; attributed
+                  </div>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setSurveyReviewOpen(!surveyReviewOpen)}
                 style={{
-                  background: 'none', border: `1px solid ${RF_LEAF_GREEN}66`, color: RF_MINT_ACCENT,
-                  padding: '5px 12px', borderRadius: 8, fontSize: 11.5, fontWeight: 600, cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', gap: 5
+                  background: 'none', border: `1px solid ${RF_LEAF_GREEN}55`, color: RF_MINT_ACCENT,
+                  padding: '4px 10px', borderRadius: 8, fontSize: 11, fontWeight: 700, cursor: 'pointer',
+                  display: 'inline-flex', alignItems: 'center', gap: 4, flexShrink: 0, whiteSpace: 'nowrap'
                 }}
               >
-                {surveyReviewOpen ? 'Hide Answers' : 'View Answers'}
-                <ChevronDown size={14} style={{ transform: surveyReviewOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+                {surveyReviewOpen ? 'Hide' : 'Answers'}
+                <ChevronDown size={13} style={{ transform: surveyReviewOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
               </button>
             </div>
 
             {/* Expandable Survey Answers Review */}
             {surveyReviewOpen && successCard.survey_responses && (
               <div style={{
-                background: 'rgba(0,0,0,0.4)', borderRadius: 12, padding: 16, marginBottom: 20,
-                border: '1px solid rgba(255,255,255,0.08)', maxHeight: 320, overflowY: 'auto'
+                background: 'rgba(0,0,0,0.45)', borderRadius: 12, padding: 14, marginBottom: 16,
+                border: '1px solid rgba(255,255,255,0.08)', maxHeight: 300, overflowY: 'auto'
               }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: RF_MINT_ACCENT, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 12 }}>
-                  Your Submitted Reasoning Profiles ({successCard.survey_responses.length} Scenarios)
+                <div style={{ fontSize: 11, fontWeight: 700, color: RF_MINT_ACCENT, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 10 }}>
+                  Submitted Scenarios ({successCard.survey_responses.length})
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                   {successCard.survey_responses.map((resp, idx) => (
-                    <div key={resp.question_id || idx} style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: 10 }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>
+                    <div key={resp.question_id || idx} style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: 8 }}>
+                      <div style={{ fontSize: 10.5, fontWeight: 700, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase' }}>
                         {idx + 1}. {resp.category}
                       </div>
-                      <div style={{ fontSize: 12.5, color: '#FFFFFF', fontWeight: 600, margin: '2px 0 4px' }}>
+                      <div style={{ fontSize: 12, color: '#FFFFFF', fontWeight: 600, margin: '2px 0 4px' }}>
                         {resp.question}
                       </div>
-                      <div style={{ fontSize: 12, color: RF_MINT_ACCENT, background: 'rgba(24, 252, 92, 0.08)', padding: '6px 10px', borderRadius: 6, lineHeight: 1.5 }}>
+                      <div style={{ fontSize: 11.5, color: RF_MINT_ACCENT, background: 'rgba(24, 252, 92, 0.08)', padding: '5px 8px', borderRadius: 6, lineHeight: 1.45 }}>
                         {resp.selected_option}
                       </div>
                       {resp.reasoning_notes && (
-                        <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.7)', marginTop: 4, fontStyle: 'italic' }}>
+                        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.65)', marginTop: 3, fontStyle: 'italic' }}>
                           Note: "{resp.reasoning_notes}"
                         </div>
                       )}
@@ -1084,12 +1129,13 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
               </div>
             )}
 
+            {/* Skills Pills */}
             {successCard.skills && successCard.skills.length > 0 && (
-              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
                 {successCard.skills.map((s, i) => (
                   <span key={i} style={{
-                    background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
-                    borderRadius: 100, padding: '3px 10px', fontSize: 11, color: 'rgba(255,255,255,0.85)'
+                    background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.09)',
+                    borderRadius: 100, padding: '2px 8px', fontSize: 10.5, color: 'rgba(255,255,255,0.8)'
                   }}>
                     {s}
                   </span>
@@ -1103,46 +1149,50 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
           {/* ═══════════════════════════════════════════════════════════════════════════ */}
           <div
             id="certificates-section"
+            className="rp-certificates-card"
             style={{
               background: `linear-gradient(145deg, rgba(7, 24, 15, 0.95) 0%, rgba(2, 14, 8, 0.95) 100%)`,
-              border: `1.5px solid rgba(102, 187, 42, 0.35)`,
-              borderRadius: 24,
-              padding: '32px 28px',
-              boxShadow: '0 20px 50px rgba(0,0,0,0.8), 0 0 35px rgba(24, 252, 92, 0.08)',
+              border: `1.5px solid rgba(102, 187, 42, 0.3)`,
+              borderRadius: 20,
+              boxShadow: '0 20px 50px rgba(0,0,0,0.8), 0 0 35px rgba(24, 252, 92, 0.06)',
               textAlign: 'left',
-              marginBottom: 32,
-              position: 'relative'
+              marginBottom: 24,
+              position: 'relative',
+              boxSizing: 'border-box'
             }}
           >
-            {/* Header Badge */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 14, marginBottom: 20 }}>
+            {/* Header Badge & Counts */}
+            <div className="rp-certificates-header" style={{
+              display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
+              gap: 12, marginBottom: 16, flexWrap: 'wrap'
+            }}>
               <div>
                 <div style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 6,
-                  padding: '4px 12px', borderRadius: 100,
-                  background: 'rgba(24, 252, 92, 0.12)', border: '1px solid rgba(24, 252, 92, 0.3)',
-                  color: RF_MINT_ACCENT, fontSize: 11, fontWeight: 800, letterSpacing: '0.06em',
-                  textTransform: 'uppercase', marginBottom: 8
+                  display: 'inline-flex', alignItems: 'center', gap: 5,
+                  padding: '3px 10px', borderRadius: 100,
+                  background: 'rgba(24, 252, 92, 0.1)', border: '1px solid rgba(24, 252, 92, 0.25)',
+                  color: RF_MINT_ACCENT, fontSize: 10.5, fontWeight: 800, letterSpacing: '0.05em',
+                  textTransform: 'uppercase', marginBottom: 6
                 }}>
-                  <Award size={13} /> Official Accreditations & Credentials
+                  <Award size={12} /> Verified Accreditation
                 </div>
                 <h3 style={{
                   fontFamily: 'Plus Jakarta Sans, sans-serif',
-                  fontSize: 24, fontWeight: 800, margin: 0, color: '#FFFFFF'
+                  fontSize: 20, fontWeight: 800, margin: 0, color: '#FFFFFF'
                 }}>
-                  My Certificates of Level Completion
+                  Certificates of Completion
                 </h3>
-                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', margin: '4px 0 0', lineHeight: 1.5 }}>
-                  Verifiable proof-of-work certificates issued upon milestone completion. Each certificate bears a cryptographic verification hash and Tonye Taylor's signature.
+                <p style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.6)', margin: '3px 0 0', lineHeight: 1.45 }}>
+                  Verifiable proof-of-work certificates with cryptographic verification hash.
                 </p>
               </div>
 
               <div style={{
                 background: 'rgba(255, 184, 0, 0.1)', border: '1px solid rgba(255, 184, 0, 0.3)',
-                borderRadius: 12, padding: '8px 14px', textAlign: 'right'
+                borderRadius: 10, padding: '6px 12px', textAlign: 'right', flexShrink: 0
               }}>
-                <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>Issued Certificates</div>
-                <div style={{ fontSize: 18, fontWeight: 900, color: RF_GOLD_YELLOW }}>
+                <div style={{ fontSize: 9.5, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>Issued</div>
+                <div style={{ fontSize: 16, fontWeight: 900, color: RF_GOLD_YELLOW, lineHeight: 1.2 }}>
                   {certificates.length} Total
                 </div>
               </div>
@@ -1151,99 +1201,94 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
             {/* Certificates List */}
             {certificates.length === 0 ? (
               <div style={{
-                padding: '24px', background: 'rgba(0,0,0,0.3)', borderRadius: 16,
-                border: '1px dashed rgba(255,255,255,0.15)', textAlign: 'center'
+                padding: '20px', background: 'rgba(0,0,0,0.3)', borderRadius: 14,
+                border: '1px dashed rgba(255,255,255,0.12)', textAlign: 'center'
               }}>
-                <Award size={32} style={{ color: RF_MINT_ACCENT, margin: '0 auto 10px', opacity: 0.8 }} />
-                <div style={{ fontSize: 14, fontWeight: 700, color: '#FFFFFF' }}>Certificate Generation in Progress</div>
-                <div style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.6)', marginTop: 4 }}>
-                  Your Level 1: Pioneer Associate Certificate is being minted upon profile verification.
+                <Award size={28} style={{ color: RF_MINT_ACCENT, margin: '0 auto 8px', opacity: 0.8 }} />
+                <div style={{ fontSize: 13.5, fontWeight: 700, color: '#FFFFFF' }}>Certificate in Progress</div>
+                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', marginTop: 3 }}>
+                  Your Level 1: Pioneer Associate Certificate is being minted.
                 </div>
               </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 {certificates.map(cert => {
                   return (
                     <div
                       key={cert.id}
+                      className="rp-certificate-item"
                       style={{
                         background: 'rgba(0,0,0,0.35)',
                         border: '1px solid rgba(255,255,255,0.1)',
-                        borderRadius: 16,
-                        padding: '18px 20px',
+                        borderRadius: 14,
+                        padding: '14px 16px',
                         display: 'flex',
                         justifyContent: 'space-between',
                         alignItems: 'center',
                         flexWrap: 'wrap',
-                        gap: 16,
-                        transition: 'all 0.2s'
+                        gap: 12,
+                        transition: 'all 0.2s',
+                        boxSizing: 'border-box'
                       }}
                     >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0, flex: '1 1 220px' }}>
                         <div style={{
-                          width: 44, height: 44, borderRadius: 12,
+                          width: 40, height: 40, borderRadius: 10,
                           background: `linear-gradient(135deg, ${RF_DARK_GREEN} 0%, rgba(24, 252, 92, 0.15) 100%)`,
                           border: `1.5px solid ${RF_MINT_ACCENT}55`,
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                           color: RF_GOLD_YELLOW, flexShrink: 0
                         }}>
-                          <Award size={22} />
+                          <Award size={20} />
                         </div>
-                        <div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                            <span style={{ fontSize: 14.5, fontWeight: 800, color: '#FFFFFF' }}>
+                        <div style={{ minWidth: 0 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                            <span style={{ fontSize: 14, fontWeight: 800, color: '#FFFFFF' }}>
                               {cert.level_title}
                             </span>
                             <span style={{
-                              fontSize: 10, fontWeight: 800,
+                              fontSize: 9.5, fontWeight: 800,
                               background: cert.status === 'ISSUED' ? 'rgba(24, 252, 92, 0.15)' : 'rgba(239, 68, 68, 0.2)',
                               color: cert.status === 'ISSUED' ? RF_MINT_ACCENT : '#FCA5A5',
                               border: `1px solid ${cert.status === 'ISSUED' ? RF_MINT_ACCENT + '55' : '#EF444455'}`,
-                              padding: '2px 8px', borderRadius: 100, textTransform: 'uppercase'
+                              padding: '2px 7px', borderRadius: 100, textTransform: 'uppercase'
                             }}>
-                              {cert.status === 'ISSUED' ? 'VERIFIED & ISSUED' : 'REVOKED'}
+                              {cert.status === 'ISSUED' ? 'VERIFIED' : 'REVOKED'}
                             </span>
                           </div>
-                          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', marginTop: 3 }}>
-                            Serial: <code style={{ color: RF_MINT_ACCENT }}>{cert.id}</code> • Division: <strong>{cert.division}</strong> • Verified Jobs: <strong>{cert.verified_jobs_count}</strong>
+                          <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.6)', marginTop: 2 }}>
+                            Serial: <code style={{ color: RF_MINT_ACCENT }}>{cert.id}</code> • Squad: <strong>{cert.division}</strong>
                           </div>
-                          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', marginTop: 2 }}>
-                            Issued: {new Date(cert.issued_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} • Signatory: {cert.issued_by}
+                          <div style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.45)', marginTop: 1 }}>
+                            Issued: {new Date(cert.issued_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                           </div>
                         </div>
                       </div>
 
-                      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                        <button
-                          type="button"
-                          onClick={() => setSelectedCertificate(cert)}
-                          style={{
-                            background: `linear-gradient(135deg, ${RF_LEAF_GREEN} 0%, ${RF_MINT_ACCENT} 100%)`,
-                            color: RF_DEEP_GREEN,
-                            border: 'none',
-                            padding: '9px 18px',
-                            borderRadius: 10,
-                            fontSize: 12.5,
-                            fontWeight: 800,
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 6,
-                            boxShadow: `0 4px 14px ${RF_LEAF_GREEN}33`,
-                            transition: 'all 0.18s'
-                          }}
-                          onMouseEnter={e => {
-                            e.currentTarget.style.transform = 'translateY(-1px)';
-                            e.currentTarget.style.boxShadow = `0 6px 20px ${RF_MINT_ACCENT}55`;
-                          }}
-                          onMouseLeave={e => {
-                            e.currentTarget.style.transform = 'none';
-                            e.currentTarget.style.boxShadow = `0 4px 14px ${RF_LEAF_GREEN}33`;
-                          }}
-                        >
-                          <Printer size={14} /> View & Print Certificate
-                        </button>
-                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedCertificate(cert)}
+                        className="rp-certificate-btn"
+                        style={{
+                          background: `linear-gradient(135deg, ${RF_LEAF_GREEN} 0%, ${RF_MINT_ACCENT} 100%)`,
+                          color: RF_DEEP_GREEN,
+                          border: 'none',
+                          padding: '8px 14px',
+                          borderRadius: 8,
+                          fontSize: 12,
+                          fontWeight: 800,
+                          cursor: 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 5,
+                          boxShadow: `0 3px 12px ${RF_LEAF_GREEN}33`,
+                          transition: 'all 0.18s',
+                          whiteSpace: 'nowrap',
+                          flexShrink: 0
+                        }}
+                      >
+                        <Printer size={13} /> View Certificate
+                      </button>
                     </div>
                   );
                 })}
@@ -1251,26 +1296,27 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
             )}
 
             {/* Sovereign Ladder Promotion Tracker */}
-            <div style={{
-              marginTop: 20,
+            <div className="rp-milestone-quota-box" style={{
+              marginTop: 16,
               background: 'rgba(24, 252, 92, 0.05)',
-              border: '1px solid rgba(24, 252, 92, 0.2)',
-              borderRadius: 14,
-              padding: '14px 18px',
+              border: '1px solid rgba(24, 252, 92, 0.18)',
+              borderRadius: 12,
+              padding: '12px 14px',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
               flexWrap: 'wrap',
-              gap: 12
+              gap: 10,
+              boxSizing: 'border-box'
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <Sparkles size={18} style={{ color: RF_GOLD_YELLOW }} />
-                <div>
-                  <div style={{ fontSize: 12.5, fontWeight: 700, color: '#FFFFFF' }}>
-                    Level Promotion Milestone Quotas
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0, flex: '1 1 220px' }}>
+                <Sparkles size={16} style={{ color: RF_GOLD_YELLOW, flexShrink: 0 }} />
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: '#FFFFFF' }}>
+                    Milestone Quotas
                   </div>
-                  <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.65)' }}>
-                    Proof-of-work certificates are automatically awarded upon completing: Level 2 (15 verified jobs), Level 3 (40 verified jobs), Level 4 (75 verified jobs), and Level 5 (125 verified jobs).
+                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', lineHeight: 1.4 }}>
+                    Certificates awarded: Level 2 (15 jobs), Level 3 (40 jobs), Level 4 (75 jobs), Level 5 (125 jobs).
                   </div>
                 </div>
               </div>
@@ -1278,41 +1324,32 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                 type="button"
                 onClick={() => onNavigate('/rewards')}
                 style={{
-                  background: 'none', border: `1px solid ${RF_LEAF_GREEN}66`, color: RF_MINT_ACCENT,
-                  padding: '6px 14px', borderRadius: 8, fontSize: 11.5, fontWeight: 700, cursor: 'pointer'
+                  background: 'none', border: `1px solid ${RF_LEAF_GREEN}55`, color: RF_MINT_ACCENT,
+                  padding: '5px 12px', borderRadius: 8, fontSize: 11, fontWeight: 700, cursor: 'pointer',
+                  whiteSpace: 'nowrap', flexShrink: 0
                 }}
               >
-                View Ladder & Rewards →
+                View Ladder →
               </button>
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
+          {/* Action Buttons: Concise, Modern, Minimal */}
+          <div className="rp-profile-success-actions">
             <button
               onClick={() => onNavigate('/submit-task')}
-              style={{
-                background: RF_LEAF_GREEN, color: RF_DEEP_GREEN, border: 'none',
-                padding: '14px 28px', borderRadius: 100, fontSize: 14.5, fontWeight: 800,
-                cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
-                boxShadow: `0 4px 16px ${RF_LEAF_GREEN}44`, transition: 'all 0.2s'
-              }}
-              onMouseEnter={e => (e.currentTarget.style.background = RF_MINT_ACCENT)}
-              onMouseLeave={e => (e.currentTarget.style.background = RF_LEAF_GREEN)}
+              className="rp-btn-action-primary"
             >
-              Go to Missions & Submit Task Proofs <ArrowRight size={16} />
+              Submit Proofs <ArrowRight size={15} />
             </button>
             <button
               onClick={() => {
                 setStep('profile');
                 setSuccessCard(null);
               }}
-              style={{
-                background: 'rgba(255,255,255,0.06)', color: '#FFFFFF',
-                border: '1px solid rgba(255,255,255,0.2)', padding: '14px 24px',
-                borderRadius: 100, fontSize: 14, fontWeight: 600, cursor: 'pointer'
-              }}
+              className="rp-btn-action-secondary"
             >
-              Edit Profile Details
+              Edit Profile
             </button>
           </div>
 

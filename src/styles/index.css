@@ -2346,6 +2346,321 @@ img, svg {
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+/* ─── PIONEER CREDENTIAL CARD & VERIFIED PROFILE VIEW ─── */
+.rp-credential-card {
+  background: linear-gradient(145deg, #0C281B 0%, #04160C 100%);
+  border: 1.5px solid rgba(102, 187, 42, 0.35);
+  border-radius: 20px;
+  padding: 28px 26px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85), 0 0 35px rgba(24, 252, 92, 0.06);
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 22px;
+  box-sizing: border-box;
+}
+
+.rp-credential-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.rp-credential-user {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  flex: 1 1 260px;
+}
+
+.rp-credential-avatar {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  border: 2px solid #18FC5C;
+  box-shadow: 0 0 16px rgba(24, 252, 92, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 800;
+  color: #18FC5C;
+  background: rgba(24, 252, 92, 0.12);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.rp-credential-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.rp-credential-badge-micro {
+  font-size: 10px;
+  font-weight: 800;
+  color: #18FC5C;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  display: block;
+}
+
+.rp-credential-name {
+  font-size: 20px;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin: 2px 0 0;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  line-height: 1.25;
+}
+
+.rp-credential-meta {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 2px;
+  line-height: 1.35;
+}
+
+.rp-credential-id-badge {
+  background: rgba(24, 252, 92, 0.1);
+  border: 1px solid rgba(24, 252, 92, 0.35);
+  border-radius: 12px;
+  padding: 8px 16px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.rp-credential-id-label {
+  font-size: 9.5px;
+  color: rgba(255, 255, 255, 0.55);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  display: block;
+}
+
+.rp-credential-id-value {
+  font-size: 18px;
+  font-weight: 900;
+  color: #18FC5C;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+}
+
+.rp-credential-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  box-sizing: border-box;
+}
+
+.rp-credential-stat-item {
+  min-width: 0;
+}
+
+.rp-credential-stat-label {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.rp-credential-stat-val {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rp-credential-social-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
+  margin-bottom: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.rp-credential-bank-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 12px;
+  margin-bottom: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  gap: 10px;
+  box-sizing: border-box;
+}
+
+.rp-credential-payout-badge {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #18FC5C;
+  background: rgba(24, 252, 92, 0.1);
+  border: 1px solid rgba(24, 252, 92, 0.3);
+  padding: 3px 8px;
+  border-radius: 100px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.rp-credential-survey-box {
+  background: rgba(24, 252, 92, 0.07);
+  border: 1px solid rgba(24, 252, 92, 0.22);
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  box-sizing: border-box;
+}
+
+/* Certificates Card */
+.rp-certificates-card {
+  background: linear-gradient(145deg, rgba(7, 24, 15, 0.95) 0%, rgba(2, 14, 8, 0.95) 100%);
+  border: 1.5px solid rgba(102, 187, 42, 0.3);
+  border-radius: 20px;
+  padding: 24px 22px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 35px rgba(24, 252, 92, 0.06);
+  text-align: left;
+  margin-bottom: 24px;
+  box-sizing: border-box;
+}
+
+.rp-certificates-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.rp-certificate-item {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.rp-certificate-btn {
+  background: linear-gradient(135deg, #66BB2A 0%, #18FC5C 100%);
+  color: #0F2E1E;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  box-shadow: 0 3px 12px rgba(102, 187, 42, 0.3);
+  transition: all 0.18s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.rp-certificate-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 16px rgba(24, 252, 92, 0.5);
+}
+
+.rp-milestone-quota-box {
+  margin-top: 16px;
+  background: rgba(24, 252, 92, 0.05);
+  border: 1px solid rgba(24, 252, 92, 0.18);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  box-sizing: border-box;
+}
+
+.rp-profile-success-actions {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 12px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.rp-btn-action-primary {
+  background: #66BB2A;
+  color: #0F2E1E;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 100px;
+  font-size: 13.5px;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  box-shadow: 0 4px 16px rgba(102, 187, 42, 0.35);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.rp-btn-action-primary:hover {
+  background: #18FC5C;
+  transform: translateY(-1px);
+}
+
+.rp-btn-action-secondary {
+  background: rgba(255, 255, 255, 0.06);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 12px 18px;
+  border-radius: 100px;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.rp-btn-action-secondary:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
 @media (max-width: 640px) {
   .rp-profile-page {
     padding-top: 76px !important;
@@ -2455,6 +2770,105 @@ img, svg {
     width: 100% !important;
     justify-content: center !important;
     padding: 12px 10px !important;
+    font-size: 13px !important;
+  }
+
+  .rp-credential-card {
+    padding: 16px 12px !important;
+    border-radius: 16px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .rp-credential-header {
+    gap: 12px !important;
+    margin-bottom: 14px !important;
+  }
+
+  .rp-credential-user {
+    gap: 10px !important;
+    flex: 1 1 100% !important;
+  }
+
+  .rp-credential-avatar {
+    width: 48px !important;
+    height: 48px !important;
+    font-size: 17px !important;
+  }
+
+  .rp-credential-name {
+    font-size: 17px !important;
+  }
+
+  .rp-credential-meta {
+    font-size: 11px !important;
+  }
+
+  .rp-credential-id-badge {
+    padding: 6px 12px !important;
+    width: 100% !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    text-align: left !important;
+    box-sizing: border-box !important;
+  }
+
+  .rp-credential-id-value {
+    font-size: 16px !important;
+  }
+
+  .rp-credential-stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+    padding: 10px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .rp-credential-stat-val {
+    font-size: 11.5px !important;
+  }
+
+  .rp-credential-bank-card {
+    padding: 8px 10px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .rp-credential-survey-box {
+    padding: 8px 10px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .rp-certificates-card {
+    padding: 16px 12px !important;
+    border-radius: 16px !important;
+    margin-bottom: 18px !important;
+  }
+
+  .rp-certificate-item {
+    padding: 12px 10px !important;
+    gap: 10px !important;
+  }
+
+  .rp-certificate-btn {
+    width: 100% !important;
+    justify-content: center !important;
+    padding: 9px !important;
+  }
+
+  .rp-milestone-quota-box {
+    padding: 10px !important;
+    gap: 8px !important;
+  }
+
+  .rp-profile-success-actions {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+
+  .rp-btn-action-primary,
+  .rp-btn-action-secondary {
+    padding: 12px !important;
     font-size: 13px !important;
   }
 }
