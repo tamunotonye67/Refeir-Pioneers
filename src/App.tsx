@@ -18,6 +18,7 @@ import { PioneersNav } from './components/PioneersNav';
 import { PioneersFooter } from './components/PioneersFooter';
 import { StatusLookupModal } from './components/StatusLookupModal';
 import { ContributorAuthModal } from './components/ContributorAuthModal';
+import { ThemeProvider } from './context/ThemeContext';
 
 export const App: React.FC = () => {
   // Normalize initial pathname
@@ -296,7 +297,7 @@ export const App: React.FC = () => {
   };
 
   return (
-    <>
+    <ThemeProvider>
       <StatusLookupModal
         isOpen={statusModalOpen}
         onClose={() => setStatusModalOpen(false)}
@@ -321,6 +322,6 @@ export const App: React.FC = () => {
         }}
       />
       {renderPageContent()}
-    </>
+    </ThemeProvider>
   );
 };

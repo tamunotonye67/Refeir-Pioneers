@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { Menu, X, ChevronDown, User, LogOut, Award, Zap, FileCheck } from 'lucide-react';
+import { Menu, X, ChevronDown, User, LogOut, Award, Zap, FileCheck, Sun, Moon } from 'lucide-react';
 import {
   RF_DEEP_GREEN,
   RF_DARK_GREEN,
@@ -10,6 +10,7 @@ import {
   RF_GOLD_YELLOW
 } from '../constants/brand';
 import { getCurrentContributor, signOutContributor, ContributorProfile } from '../lib/contributorAuth';
+import { useTheme } from '../context/ThemeContext';
 
 export interface PioneersNavProps {
   currentPath?: string;
@@ -18,6 +19,7 @@ export interface PioneersNavProps {
 }
 
 export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onNavigate, onOpenStatus }) => {
+  const { theme, toggleTheme } = useTheme();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [moreDropdownOpen, setMoreDropdownOpen] = useState(false);
@@ -211,9 +213,15 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
   return (
     <nav style={{
       position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
-      background: scrolled ? `rgba(15, 46, 30, 0.96)` : 'transparent',
-      backdropFilter: scrolled ? 'blur(18px)' : 'none',
-      borderBottom: scrolled ? '1px solid rgba(102, 187, 42, 0.15)' : 'none',
+      background: scrolled 
+        ? (theme === 'light' ? 'rgba(255, 255, 255, 0.95)' : 'rgba(15, 46, 30, 0.96)') 
+        : (theme === 'light' ? 'rgba(255, 255, 255, 0.88)' : 'transparent'),
+      backdropFilter: 'blur(18px)',
+      WebkitBackdropFilter: 'blur(18px)',
+      borderBottom: scrolled 
+        ? (theme === 'light' ? '1px solid rgba(15, 46, 30, 0.08)' : '1px solid rgba(102, 187, 42, 0.15)') 
+        : (theme === 'light' ? '1px solid rgba(15, 46, 30, 0.04)' : 'none'),
+      boxShadow: scrolled && theme === 'light' ? '0 2px 14px rgba(15, 46, 30, 0.04)' : 'none',
       transition: 'all 0.3s ease'
     }}>
       <div style={{
@@ -247,9 +255,9 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
             }}
           >
             {mobileMenuOpen ? (
-              <X size={22} strokeWidth={1.5} color={RF_MINT_ACCENT} />
+              <X size={22} strokeWidth={1.5} color={theme === 'light' ? '#15803D' : RF_MINT_ACCENT} />
             ) : (
-              <Menu size={22} strokeWidth={1.5} color="rgba(255, 255, 255, 0.9)" />
+              <Menu size={22} strokeWidth={1.5} color={theme === 'light' ? '#0A1C12' : 'rgba(255, 255, 255, 0.9)'} />
             )}
           </button>
 
@@ -258,11 +266,19 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
             style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}
             onClick={() => handleLinkClick('/', false)}
           >
-            <img src="/Refeir-LogoWhite.png" alt="Refeir" style={{ height: 26, width: 'auto' }} />
+            <img
+              src={theme === 'light' ? '/RefeirLogo.png' : '/Refeir-LogoWhite.png'}
+              alt="Refeir"
+              style={{ height: 26, width: 'auto' }}
+            />
             <span style={{
-              fontSize: 9, fontWeight: 600, letterSpacing: '0.14em', color: RF_MINT_ACCENT,
-              padding: '2px 7px', border: `1px solid ${RF_LEAF_GREEN}33`, borderRadius: 100,
-              background: `${RF_LEAF_GREEN}14`, textTransform: 'uppercase'
+              fontSize: 9, fontWeight: 600, letterSpacing: '0.14em',
+              color: theme === 'light' ? '#15803D' : RF_MINT_ACCENT,
+              padding: '2px 7px',
+              border: `1px solid ${theme === 'light' ? 'rgba(46, 125, 50, 0.3)' : `${RF_LEAF_GREEN}33`}`,
+              borderRadius: 100,
+              background: theme === 'light' ? 'rgba(46, 125, 50, 0.08)' : `${RF_LEAF_GREEN}14`,
+              textTransform: 'uppercase'
             }}>
               PIONEERS
             </span>
@@ -276,12 +292,16 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
             onClick={() => handleLinkClick('pioneers-about', true)}
             style={{
               background: 'none', border: 'none',
-              color: currentPath === '/' && (window.location.hash === '#pioneers-about' || !window.location.hash) ? RF_MINT_ACCENT : 'rgba(255,255,255,0.72)',
+              color: currentPath === '/' && (window.location.hash === '#pioneers-about' || !window.location.hash)
+                ? (theme === 'light' ? '#15803D' : RF_MINT_ACCENT)
+                : (theme === 'light' ? '#1E3628' : 'rgba(255,255,255,0.72)'),
               fontSize: 13, fontWeight: 500, letterSpacing: '0.01em',
               cursor: 'pointer', transition: 'all 0.2s', padding: '6px 0'
             }}
-            onMouseEnter={e => (e.currentTarget.style.color = RF_MINT_ACCENT)}
-            onMouseLeave={e => (e.currentTarget.style.color = currentPath === '/' ? RF_MINT_ACCENT : 'rgba(255,255,255,0.72)')}
+            onMouseEnter={e => (e.currentTarget.style.color = theme === 'light' ? '#15803D' : RF_MINT_ACCENT)}
+            onMouseLeave={e => (e.currentTarget.style.color = currentPath === '/'
+              ? (theme === 'light' ? '#15803D' : RF_MINT_ACCENT)
+              : (theme === 'light' ? '#1E3628' : 'rgba(255,255,255,0.72)'))}
           >
             Pioneers
           </button>
@@ -291,12 +311,16 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
             onClick={() => handleLinkClick('/about', false)}
             style={{
               background: 'none', border: 'none',
-              color: currentPath === '/about' ? RF_MINT_ACCENT : 'rgba(255,255,255,0.72)',
+              color: currentPath === '/about'
+                ? (theme === 'light' ? '#15803D' : RF_MINT_ACCENT)
+                : (theme === 'light' ? '#1E3628' : 'rgba(255,255,255,0.72)'),
               fontSize: 13, fontWeight: 500, letterSpacing: '0.01em',
               cursor: 'pointer', transition: 'all 0.2s', padding: '6px 0'
             }}
-            onMouseEnter={e => (e.currentTarget.style.color = RF_MINT_ACCENT)}
-            onMouseLeave={e => (e.currentTarget.style.color = currentPath === '/about' ? RF_MINT_ACCENT : 'rgba(255,255,255,0.72)')}
+            onMouseEnter={e => (e.currentTarget.style.color = theme === 'light' ? '#15803D' : RF_MINT_ACCENT)}
+            onMouseLeave={e => (e.currentTarget.style.color = currentPath === '/about'
+              ? (theme === 'light' ? '#15803D' : RF_MINT_ACCENT)
+              : (theme === 'light' ? '#1E3628' : 'rgba(255,255,255,0.72)'))}
           >
             About Refeir
           </button>
@@ -312,13 +336,17 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
               onClick={() => setMoreDropdownOpen(!moreDropdownOpen)}
               style={{
                 background: 'none', border: 'none',
-                color: isMoreActive ? RF_MINT_ACCENT : 'rgba(255,255,255,0.72)',
+                color: isMoreActive
+                  ? (theme === 'light' ? '#15803D' : RF_MINT_ACCENT)
+                  : (theme === 'light' ? '#1E3628' : 'rgba(255,255,255,0.72)'),
                 fontSize: 13, fontWeight: 500, letterSpacing: '0.01em',
                 cursor: 'pointer', transition: 'all 0.2s', padding: '6px 0',
                 display: 'inline-flex', alignItems: 'center', gap: 5
               }}
-              onMouseEnter={e => (e.currentTarget.style.color = RF_MINT_ACCENT)}
-              onMouseLeave={e => (e.currentTarget.style.color = isMoreActive ? RF_MINT_ACCENT : 'rgba(255,255,255,0.72)')}
+              onMouseEnter={e => (e.currentTarget.style.color = theme === 'light' ? '#15803D' : RF_MINT_ACCENT)}
+              onMouseLeave={e => (e.currentTarget.style.color = isMoreActive
+                ? (theme === 'light' ? '#15803D' : RF_MINT_ACCENT)
+                : (theme === 'light' ? '#1E3628' : 'rgba(255,255,255,0.72)'))}
             >
               Explore
               <ChevronDown
@@ -344,11 +372,13 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
               >
                 <div
                   style={{
-                    background: 'rgba(6, 20, 13, 0.98)',
+                    background: theme === 'light' ? '#FFFFFF' : 'rgba(6, 20, 13, 0.98)',
                     backdropFilter: 'blur(22px)',
-                    border: '1px solid rgba(102, 187, 42, 0.35)',
+                    border: theme === 'light' ? '1px solid rgba(15, 46, 30, 0.12)' : '1px solid rgba(102, 187, 42, 0.35)',
                     borderRadius: 0, // Sharp corners
-                    boxShadow: '0 24px 60px rgba(0, 0, 0, 0.85), 0 0 35px rgba(24, 252, 92, 0.08)',
+                    boxShadow: theme === 'light'
+                      ? '0 20px 50px rgba(15, 46, 30, 0.12), 0 4px 12px rgba(15, 46, 30, 0.05)'
+                      : '0 24px 60px rgba(0, 0, 0, 0.85), 0 0 35px rgba(24, 252, 92, 0.08)',
                     display: 'flex',
                     width: 580,
                     maxWidth: 'calc(100vw - 32px)',
@@ -371,15 +401,15 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
                             padding: '10px 18px',
                             borderRadius: 0, // Sharp edges
                             background: isHovered
-                              ? 'rgba(102, 187, 42, 0.14)'
+                              ? (theme === 'light' ? 'rgba(102, 187, 42, 0.12)' : 'rgba(102, 187, 42, 0.14)')
                               : isSelected
-                              ? 'rgba(255, 255, 255, 0.04)'
+                              ? (theme === 'light' ? 'rgba(15, 46, 30, 0.04)' : 'rgba(255, 255, 255, 0.04)')
                               : 'transparent',
                             border: 'none',
                             borderLeft: isHovered
-                              ? `3px solid ${RF_MINT_ACCENT}`
+                              ? (theme === 'light' ? '3px solid #15803D' : `3px solid ${RF_MINT_ACCENT}`)
                               : isSelected
-                              ? `3px solid rgba(102, 187, 42, 0.45)`
+                              ? (theme === 'light' ? '3px solid rgba(46, 125, 50, 0.5)' : '3px solid rgba(102, 187, 42, 0.45)')
                               : '3px solid transparent',
                             cursor: 'pointer',
                             display: 'flex',
@@ -391,7 +421,11 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
                           <span style={{
                             fontSize: 13,
                             fontWeight: isHovered || isSelected ? 600 : 500,
-                            color: isHovered ? RF_MINT_ACCENT : isSelected ? '#FFFFFF' : 'rgba(255, 255, 255, 0.85)',
+                            color: isHovered
+                              ? (theme === 'light' ? '#15803D' : RF_MINT_ACCENT)
+                              : isSelected
+                              ? (theme === 'light' ? '#0F2E1E' : '#FFFFFF')
+                              : (theme === 'light' ? '#2A4234' : 'rgba(255, 255, 255, 0.85)'),
                             letterSpacing: '0.01em',
                             display: 'flex',
                             alignItems: 'center',
@@ -401,7 +435,9 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
                           </span>
                           <span style={{
                             fontSize: 12,
-                            color: isHovered ? RF_MINT_ACCENT : 'rgba(255, 255, 255, 0.25)',
+                            color: isHovered
+                              ? (theme === 'light' ? '#15803D' : RF_MINT_ACCENT)
+                              : (theme === 'light' ? 'rgba(15, 46, 30, 0.3)' : 'rgba(255, 255, 255, 0.25)'),
                             transform: isHovered ? 'translateX(2px)' : 'none',
                             transition: 'transform 0.15s, color 0.15s'
                           }}>
@@ -415,7 +451,7 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
                   {/* Vertical Dividing Line */}
                   <div style={{
                     width: 1,
-                    background: 'rgba(102, 187, 42, 0.25)',
+                    background: theme === 'light' ? 'rgba(15, 46, 30, 0.1)' : 'rgba(102, 187, 42, 0.25)',
                     alignSelf: 'stretch'
                   }} />
 
@@ -426,7 +462,7 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'space-between',
-                    background: 'rgba(24, 252, 92, 0.02)'
+                    background: theme === 'light' ? 'rgba(15, 46, 30, 0.02)' : 'rgba(24, 252, 92, 0.02)'
                   }}>
                     <div>
                       <div style={{
@@ -434,9 +470,9 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
                         fontSize: 9.5,
                         fontWeight: 700,
                         letterSpacing: '0.12em',
-                        color: RF_MINT_ACCENT,
-                        background: 'rgba(24, 252, 92, 0.08)',
-                        border: '1px solid rgba(24, 252, 92, 0.25)',
+                        color: theme === 'light' ? '#15803D' : RF_MINT_ACCENT,
+                        background: theme === 'light' ? 'rgba(46, 125, 50, 0.08)' : 'rgba(24, 252, 92, 0.08)',
+                        border: theme === 'light' ? '1px solid rgba(46, 125, 50, 0.2)' : '1px solid rgba(24, 252, 92, 0.25)',
                         padding: '3px 8px',
                         borderRadius: 0, // Sharp edges
                         marginBottom: 10,
@@ -448,7 +484,7 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
                       <h4 style={{
                         fontSize: 16,
                         fontWeight: 700,
-                        color: '#FFFFFF',
+                        color: theme === 'light' ? '#0A1C12' : '#FFFFFF',
                         margin: '0 0 8px 0',
                         letterSpacing: '-0.01em',
                         display: 'flex',
@@ -461,7 +497,7 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
                       <p style={{
                         fontSize: 12.5,
                         lineHeight: 1.5,
-                        color: 'rgba(255, 255, 255, 0.8)',
+                        color: theme === 'light' ? '#273E31' : 'rgba(255, 255, 255, 0.8)',
                         margin: '0 0 10px 0'
                       }}>
                         {activeFlyoutItem.desc}
@@ -470,7 +506,7 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
                       <p style={{
                         fontSize: 11.5,
                         lineHeight: 1.45,
-                        color: 'rgba(255, 255, 255, 0.48)',
+                        color: theme === 'light' ? '#526E5E' : 'rgba(255, 255, 255, 0.48)',
                         margin: 0
                       }}>
                         {activeFlyoutItem.preview}
@@ -482,17 +518,17 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
                       style={{
                         marginTop: 18,
                         paddingTop: 12,
-                        borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+                        borderTop: theme === 'light' ? '1px solid rgba(15, 46, 30, 0.08)' : '1px solid rgba(255, 255, 255, 0.08)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
                         fontSize: 12,
                         fontWeight: 600,
-                        color: RF_MINT_ACCENT,
+                        color: theme === 'light' ? '#15803D' : RF_MINT_ACCENT,
                         cursor: 'pointer'
                       }}
-                      onMouseEnter={e => (e.currentTarget.style.color = '#FFFFFF')}
-                      onMouseLeave={e => (e.currentTarget.style.color = RF_MINT_ACCENT)}
+                      onMouseEnter={e => (e.currentTarget.style.color = theme === 'light' ? '#0A1C12' : '#FFFFFF')}
+                      onMouseLeave={e => (e.currentTarget.style.color = theme === 'light' ? '#15803D' : RF_MINT_ACCENT)}
                     >
                       <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                         {activeFlyoutItem.cta}
@@ -507,7 +543,35 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
         </div>
 
         {/* Action Controls & Mobile Hamburger Toggle */}
-        <div className="rp-nav-actions" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div className="rp-nav-actions" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          {/* Theme Switcher Toggle (Desktop & Tablet) */}
+          <button
+            onClick={toggleTheme}
+            className="rp-theme-toggle-btn rp-nav-cta-desk"
+            title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            aria-label={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          >
+            {theme === 'dark' ? (
+              <Sun size={15} strokeWidth={2} color="#FED072" />
+            ) : (
+              <Moon size={15} strokeWidth={2} color="#0A1C12" />
+            )}
+          </button>
+
+          {/* Theme Switcher Toggle (Mobile Header) */}
+          <button
+            onClick={toggleTheme}
+            className="rp-mobile-theme-toggle"
+            title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            aria-label={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          >
+            {theme === 'dark' ? (
+              <Sun size={14} strokeWidth={2} color="#FED072" />
+            ) : (
+              <Moon size={14} strokeWidth={2} color="#0A1C12" />
+            )}
+          </button>
+
           {/* "Become a Pioneer" Button (Desktop/Tablet CTA) */}
           <button
             onClick={() => handleLinkClick('apply', true)}
@@ -746,7 +810,23 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
                       <span>Rewards &amp; Ladder</span>
                     </button>
 
-                    <div style={{ height: 1, background: 'rgba(255, 255, 255, 0.06)', margin: '4px 0' }} />
+                    <button
+                      className="rp-desk-flyout-btn"
+                      onClick={toggleTheme}
+                      role="menuitem"
+                    >
+                      <span className="rp-flyout-icon">
+                        {theme === 'dark' ? <Sun size={15} color="#FED072" /> : <Moon size={15} color="#0A1C12" />}
+                      </span>
+                      <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                        <span>Appearance</span>
+                        <span style={{ fontSize: 11, opacity: 0.7, textTransform: 'capitalize' }}>
+                          {theme === 'dark' ? 'Dark Mode' : 'Light Mode'}
+                        </span>
+                      </span>
+                    </button>
+
+                    <div style={{ height: 1, background: theme === 'light' ? 'rgba(15, 46, 30, 0.08)' : 'rgba(255, 255, 255, 0.06)', margin: '4px 0' }} />
 
                     <button
                       className="rp-desk-flyout-btn rp-desk-flyout-btn-danger"
@@ -906,7 +986,23 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
                         </span>
                         <span>Rewards &amp; Ladder</span>
                       </button>
-                      <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', margin: '4px 0' }} />
+
+                      <button
+                        className="rp-docker-btn"
+                        onClick={toggleTheme}
+                      >
+                        <span style={{ width: 20, height: 20, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: theme === 'dark' ? '#FED072' : '#0F2E1E' }}>
+                          {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+                        </span>
+                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                          <span>Theme</span>
+                          <span style={{ fontSize: 11, opacity: 0.7, textTransform: 'capitalize' }}>
+                            {theme === 'dark' ? 'Dark Mode' : 'Light Mode'}
+                          </span>
+                        </span>
+                      </button>
+
+                      <div style={{ height: 1, background: theme === 'light' ? 'rgba(15, 46, 30, 0.08)' : 'rgba(255, 255, 255, 0.06)', margin: '4px 0' }} />
                       <button
                         className="rp-docker-btn"
                         onClick={() => { setProfileMenuOpen(false); signOutContributor(); }}
@@ -965,8 +1061,9 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
             bottom: 0,
             width: '100vw',
             height: 'calc(100vh - 72px)',
-            background: `linear-gradient(180deg, ${RF_DARK_GREEN} 0%, #030a06 100%)`,
-            borderBottom: `1px solid ${RF_LEAF_GREEN}33`,
+            background: theme === 'light' ? '#FFFFFF' : `linear-gradient(180deg, ${RF_DARK_GREEN} 0%, #030a06 100%)`,
+            borderBottom: theme === 'light' ? '1px solid rgba(15, 46, 30, 0.12)' : `1px solid ${RF_LEAF_GREEN}33`,
+            color: theme === 'light' ? '#0A1C12' : '#FFFFFF',
             padding: '20px 24px 40px',
             overflowY: 'auto',
             overscrollBehavior: 'contain',
@@ -977,7 +1074,8 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
           {/* Contributor Profile or Sign In */}
           {contributor ? (
             <div style={{
-              background: 'rgba(24, 252, 92, 0.08)', border: '1px solid rgba(24, 252, 92, 0.25)',
+              background: theme === 'light' ? '#F6FAF7' : 'rgba(24, 252, 92, 0.08)',
+              border: theme === 'light' ? '1px solid rgba(15, 46, 30, 0.1)' : '1px solid rgba(24, 252, 92, 0.25)',
               borderRadius: 12, padding: '12px 14px', marginBottom: 14
             }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
@@ -996,10 +1094,10 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
                     )}
                   </div>
                   <div>
-                    <div style={{ fontSize: 13.5, fontWeight: 700, color: '#FFFFFF' }}>
+                    <div style={{ fontSize: 13.5, fontWeight: 700, color: theme === 'light' ? '#0A1C12' : '#FFFFFF' }}>
                       {contributor.full_name}
                     </div>
-                    <div style={{ fontSize: 11, color: RF_MINT_ACCENT, fontWeight: 600 }}>
+                    <div style={{ fontSize: 11, color: theme === 'light' ? '#15803D' : RF_MINT_ACCENT, fontWeight: 600 }}>
                       {contributor.pioneer_id ? `${contributor.pioneer_id} • ` : ''}{contributor.contributor_level.replace('_', ' ')} • {contributor.division}
                     </div>
                   </div>
@@ -1007,7 +1105,7 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
                 <button
                   onClick={() => signOutContributor()}
                   style={{
-                    background: 'none', border: 'none', color: '#FCA5A5',
+                    background: 'none', border: 'none', color: '#EF4444',
                     fontSize: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4
                   }}
                 >
@@ -1020,7 +1118,7 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
                   onClick={() => { setMobileMenuOpen(false); onNavigate('/complete-profile'); }}
                   style={{
                     width: '100%', background: 'rgba(255, 184, 0, 0.15)', border: '1px solid rgba(255, 184, 0, 0.4)',
-                    color: '#FDE68A', padding: '8px 10px', borderRadius: 8, fontSize: 12, fontWeight: 700,
+                    color: theme === 'light' ? '#B45309' : '#FDE68A', padding: '8px 10px', borderRadius: 8, fontSize: 12, fontWeight: 700,
                     cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6
                   }}
                 >
@@ -1031,12 +1129,15 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
                   <button
                     onClick={() => { setMobileMenuOpen(false); onNavigate('/profile'); }}
                     style={{
-                      flex: 1, background: 'rgba(255, 255, 255, 0.06)', border: '1px solid rgba(255, 255, 255, 0.15)',
-                      color: '#FFFFFF', padding: '7px 8px', borderRadius: 8, fontSize: 11.5, fontWeight: 600,
+                      flex: 1,
+                      background: theme === 'light' ? '#FFFFFF' : 'rgba(255, 255, 255, 0.06)',
+                      border: theme === 'light' ? '1px solid rgba(15, 46, 30, 0.12)' : '1px solid rgba(255, 255, 255, 0.15)',
+                      color: theme === 'light' ? '#0A1C12' : '#FFFFFF',
+                      padding: '7px 8px', borderRadius: 8, fontSize: 11.5, fontWeight: 600,
                       cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5
                     }}
                   >
-                    <User size={13} color={RF_MINT_ACCENT} /> Profile & Pass
+                    <User size={13} color={theme === 'light' ? '#15803D' : RF_MINT_ACCENT} /> Profile & Pass
                   </button>
                   <button
                     onClick={() => {
@@ -1046,7 +1147,7 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
                     }}
                     style={{
                       flex: 1, background: 'rgba(255, 184, 0, 0.12)', border: '1px solid rgba(255, 184, 0, 0.3)',
-                      color: RF_GOLD_YELLOW, padding: '7px 8px', borderRadius: 8, fontSize: 11.5, fontWeight: 700,
+                      color: theme === 'light' ? '#B45309' : RF_GOLD_YELLOW, padding: '7px 8px', borderRadius: 8, fontSize: 11.5, fontWeight: 700,
                       cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5
                     }}
                   >
@@ -1062,13 +1163,16 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
                 onNavigate('/signin');
               }}
               style={{
-                width: '100%', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.2)',
-                color: '#FFFFFF', padding: '10px', borderRadius: 12, fontSize: 13, fontWeight: 600,
+                width: '100%',
+                background: theme === 'light' ? '#F6FAF7' : 'rgba(255,255,255,0.06)',
+                border: theme === 'light' ? '1px solid rgba(15, 46, 30, 0.12)' : '1px solid rgba(255,255,255,0.2)',
+                color: theme === 'light' ? '#0A1C12' : '#FFFFFF',
+                padding: '10px', borderRadius: 12, fontSize: 13, fontWeight: 600,
                 cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
                 marginBottom: 14
               }}
             >
-              <User size={14} color={RF_MINT_ACCENT} /> Sign In / Register
+              <User size={14} color={theme === 'light' ? '#15803D' : RF_MINT_ACCENT} /> Sign In / Register
             </button>
           )}
 
@@ -1077,8 +1181,11 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
             onClick={() => handleLinkClick('pioneers-about', true)}
             style={{
               display: 'block', width: '100%', textAlign: 'left', background: 'none',
-              border: 'none', borderBottom: '1px solid rgba(255,255,255,0.06)',
-              color: currentPath === '/' ? RF_MINT_ACCENT : 'rgba(255,255,255,0.85)',
+              border: 'none',
+              borderBottom: theme === 'light' ? '1px solid rgba(15, 46, 30, 0.08)' : '1px solid rgba(255,255,255,0.06)',
+              color: currentPath === '/'
+                ? (theme === 'light' ? '#15803D' : RF_MINT_ACCENT)
+                : (theme === 'light' ? '#1B3526' : 'rgba(255,255,255,0.85)'),
               fontSize: 14, fontWeight: 500, padding: '12px 0', cursor: 'pointer'
             }}
           >
@@ -1089,8 +1196,11 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
             onClick={() => handleLinkClick('/about', false)}
             style={{
               display: 'block', width: '100%', textAlign: 'left', background: 'none',
-              border: 'none', borderBottom: '1px solid rgba(255,255,255,0.06)',
-              color: currentPath === '/about' ? RF_MINT_ACCENT : 'rgba(255,255,255,0.85)',
+              border: 'none',
+              borderBottom: theme === 'light' ? '1px solid rgba(15, 46, 30, 0.08)' : '1px solid rgba(255,255,255,0.06)',
+              color: currentPath === '/about'
+                ? (theme === 'light' ? '#15803D' : RF_MINT_ACCENT)
+                : (theme === 'light' ? '#1B3526' : 'rgba(255,255,255,0.85)'),
               fontSize: 14, fontWeight: 500, padding: '12px 0', cursor: 'pointer'
             }}
           >
@@ -1098,8 +1208,15 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
           </button>
 
           {/* Explore Section Items */}
-          <div style={{ padding: '10px 0 6px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-            <span style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'rgba(255,255,255,0.4)', fontWeight: 600, display: 'block', marginBottom: 6 }}>
+          <div style={{
+            padding: '10px 0 6px',
+            borderBottom: theme === 'light' ? '1px solid rgba(15, 46, 30, 0.08)' : '1px solid rgba(255,255,255,0.06)'
+          }}>
+            <span style={{
+              fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em',
+              color: theme === 'light' ? '#526E5E' : 'rgba(255,255,255,0.4)',
+              fontWeight: 600, display: 'block', marginBottom: 6
+            }}>
               Explore
             </span>
             {moreLinks.map(item => {
@@ -1112,25 +1229,61 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     width: '100%', textAlign: 'left', background: 'none',
                     border: 'none',
-                    color: isSelected ? RF_MINT_ACCENT : 'rgba(255,255,255,0.85)',
+                    color: isSelected
+                      ? (theme === 'light' ? '#15803D' : RF_MINT_ACCENT)
+                      : (theme === 'light' ? '#1B3526' : 'rgba(255,255,255,0.85)'),
                     fontSize: 13.5, fontWeight: isSelected ? 600 : 500, padding: '8px 6px', cursor: 'pointer'
                   }}
                 >
                   <span style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
                     {item.label}
                   </span>
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>›</span>
+                  <span style={{
+                    fontSize: 11,
+                    color: theme === 'light' ? 'rgba(15, 46, 30, 0.3)' : 'rgba(255,255,255,0.3)'
+                  }}>›</span>
                 </button>
               );
             })}
           </div>
 
+          {/* Mobile Drawer Dedicated Theme Switcher */}
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: '12px 14px', borderRadius: 12,
+            background: theme === 'light' ? 'rgba(15, 46, 30, 0.04)' : 'rgba(255, 255, 255, 0.05)',
+            border: `1px solid ${theme === 'light' ? 'rgba(15, 46, 30, 0.1)' : 'rgba(255, 255, 255, 0.1)'}`,
+            marginTop: 14, marginBottom: 14
+          }}>
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 9,
+              fontSize: 13.5, fontWeight: 600,
+              color: theme === 'light' ? '#0A1C12' : '#FFFFFF'
+            }}>
+              {theme === 'dark' ? <Moon size={16} color="#18FC5C" /> : <Sun size={16} color="#F6B21A" />}
+              <span>Theme Appearance</span>
+            </div>
+            <button
+              onClick={toggleTheme}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 6,
+                padding: '6px 12px', borderRadius: 100,
+                background: theme === 'light' ? '#0F2E1E' : 'rgba(255, 255, 255, 0.14)',
+                color: '#FFFFFF',
+                fontSize: 12, fontWeight: 600, border: 'none', cursor: 'pointer'
+              }}
+            >
+              {theme === 'dark' ? <Sun size={13} color="#FED072" /> : <Moon size={13} color="#FED072" />}
+              <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+            </button>
+          </div>
+
           <button
             onClick={() => handleLinkClick('apply', true)}
             style={{
-              marginTop: 18, width: '100%', background: RF_LEAF_GREEN, color: RF_DEEP_GREEN,
+              marginTop: 6, width: '100%', background: RF_LEAF_GREEN, color: '#061A0F',
               border: 'none', padding: '12px', borderRadius: 100, fontSize: 13.5,
-              fontWeight: 600, cursor: 'pointer', letterSpacing: '0.01em'
+              fontWeight: 700, cursor: 'pointer', letterSpacing: '0.01em'
             }}
           >
             Become a Pioneer

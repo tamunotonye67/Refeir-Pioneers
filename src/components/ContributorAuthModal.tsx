@@ -13,6 +13,7 @@ import {
 } from '../constants/brand';
 import { signInContributor, signUpContributor, ContributorProfile } from '../lib/contributorAuth';
 import { validateAcceptanceCredentials, PioneerApplicationRecord } from '../lib/pioneerApplications';
+import { useTheme } from '../context/ThemeContext';
 
 interface ContributorAuthModalProps {
   isOpen: boolean;
@@ -35,6 +36,7 @@ export const ContributorAuthModal: React.FC<ContributorAuthModalProps> = ({
   prefilledAcceptanceCode = '',
   onOpenStatus
 }) => {
+  const { theme } = useTheme();
   const [tab, setTab] = useState<'signin' | 'signup'>(initialTab);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -193,7 +195,8 @@ export const ContributorAuthModal: React.FC<ContributorAuthModalProps> = ({
     <div
       style={{
         position: 'fixed', inset: 0, zIndex: 1200,
-        background: 'rgba(4, 15, 9, 0.94)', backdropFilter: 'blur(16px)',
+        background: theme === 'light' ? 'rgba(10, 28, 18, 0.65)' : 'rgba(4, 15, 9, 0.94)',
+        backdropFilter: 'blur(16px)',
         display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px 16px',
         overflowY: 'auto', overscrollBehavior: 'contain'
       }}
@@ -201,12 +204,12 @@ export const ContributorAuthModal: React.FC<ContributorAuthModalProps> = ({
     >
       <div
         style={{
-          background: `linear-gradient(145deg, ${RF_DARK_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
-          border: '1px solid rgba(102, 187, 42, 0.35)',
+          background: theme === 'light' ? '#FFFFFF' : `linear-gradient(145deg, ${RF_DARK_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
+          border: theme === 'light' ? '1px solid #CBD5E1' : '1px solid rgba(102, 187, 42, 0.35)',
           borderRadius: 24, maxWidth: 500, width: '100%',
           maxHeight: 'calc(100vh - 40px)',
           display: 'flex', flexDirection: 'column',
-          boxShadow: '0 25px 60px rgba(0,0,0,0.9), 0 0 35px rgba(24, 252, 92, 0.1)',
+          boxShadow: theme === 'light' ? '0 25px 60px rgba(0,0,0,0.18), 0 0 35px rgba(102, 187, 42, 0.08)' : '0 25px 60px rgba(0,0,0,0.9), 0 0 35px rgba(24, 252, 92, 0.1)',
           position: 'relative', overflow: 'hidden', margin: 'auto'
         }}
         onClick={e => e.stopPropagation()}
@@ -217,8 +220,8 @@ export const ContributorAuthModal: React.FC<ContributorAuthModalProps> = ({
           style={{
             position: 'absolute', top: 18, right: 18, zIndex: 10,
             width: 32, height: 32, borderRadius: '50%',
-            background: 'rgba(255,255,255,0.06)', border: 'none',
-            color: 'rgba(255,255,255,0.6)', cursor: 'pointer',
+            background: theme === 'light' ? '#F1F5F9' : 'rgba(255,255,255,0.06)', border: 'none',
+            color: theme === 'light' ? '#475569' : 'rgba(255,255,255,0.6)', cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center'
           }}
         >
@@ -228,17 +231,20 @@ export const ContributorAuthModal: React.FC<ContributorAuthModalProps> = ({
         {/* Modal Header */}
         <div style={{ padding: '26px 28px 14px', textAlign: 'center', flexShrink: 0 }}>
           <div style={{
-            width: 44, height: 44, borderRadius: 14, background: `${RF_LEAF_GREEN}20`,
-            border: `1px solid ${RF_LEAF_GREEN}44`, display: 'flex', alignItems: 'center',
-            justifyContent: 'center', margin: '0 auto 12px', color: RF_MINT_ACCENT
+            width: 44, height: 44, borderRadius: 14,
+            background: theme === 'light' ? 'rgba(102, 187, 42, 0.12)' : `${RF_LEAF_GREEN}20`,
+            border: theme === 'light' ? '1px solid rgba(102, 187, 42, 0.3)' : `1px solid ${RF_LEAF_GREEN}44`,
+            display: 'flex', alignItems: 'center',
+            justifyContent: 'center', margin: '0 auto 12px',
+            color: theme === 'light' ? '#15803d' : RF_MINT_ACCENT
           }}>
             <Shield size={22} />
           </div>
 
-          <h3 style={{ fontSize: 21, fontWeight: 800, color: '#FFFFFF', margin: '0 0 6px', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+          <h3 style={{ fontSize: 21, fontWeight: 800, color: theme === 'light' ? '#0A1C12' : '#FFFFFF', margin: '0 0 6px', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
             {tab === 'signin' ? 'Sign In to Refeir Pioneers' : 'Activate Contributor Profile'}
           </h3>
-          <p style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.65)', margin: 0, lineHeight: 1.5 }}>
+          <p style={{ fontSize: 12.5, color: theme === 'light' ? '#4A6B56' : 'rgba(255,255,255,0.65)', margin: 0, lineHeight: 1.5 }}>
             {tab === 'signin'
               ? 'Access your contributor dashboard, submit task deliverables, and track ladder advancement.'
               : 'Members can only sign up after being accepted by admissions and issued an official Acceptance Code.'}
@@ -246,8 +252,11 @@ export const ContributorAuthModal: React.FC<ContributorAuthModalProps> = ({
 
           {/* Tab Switcher */}
           <div style={{
-            display: 'flex', background: 'rgba(0,0,0,0.35)', borderRadius: 100,
-            padding: 4, marginTop: 14, border: '1px solid rgba(255,255,255,0.08)'
+            display: 'flex',
+            background: theme === 'light' ? '#F1F5F9' : 'rgba(0,0,0,0.35)',
+            borderRadius: 100,
+            padding: 4, marginTop: 14,
+            border: theme === 'light' ? '1px solid #E2E8F0' : '1px solid rgba(255,255,255,0.08)'
           }}>
             <button
               type="button"
@@ -255,7 +264,7 @@ export const ContributorAuthModal: React.FC<ContributorAuthModalProps> = ({
               style={{
                 flex: 1, padding: '7px 14px', borderRadius: 100, border: 'none',
                 background: tab === 'signin' ? RF_LEAF_GREEN : 'transparent',
-                color: tab === 'signin' ? RF_DEEP_GREEN : 'rgba(255,255,255,0.7)',
+                color: tab === 'signin' ? '#061A0F' : (theme === 'light' ? '#64748B' : 'rgba(255,255,255,0.7)'),
                 fontSize: 12.5, fontWeight: 700, cursor: 'pointer', display: 'flex',
                 alignItems: 'center', justifyContent: 'center', gap: 6, transition: 'all 0.15s'
               }}
@@ -268,7 +277,7 @@ export const ContributorAuthModal: React.FC<ContributorAuthModalProps> = ({
               style={{
                 flex: 1, padding: '7px 14px', borderRadius: 100, border: 'none',
                 background: tab === 'signup' ? RF_LEAF_GREEN : 'transparent',
-                color: tab === 'signup' ? RF_DEEP_GREEN : 'rgba(255,255,255,0.7)',
+                color: tab === 'signup' ? '#061A0F' : (theme === 'light' ? '#64748B' : 'rgba(255,255,255,0.7)'),
                 fontSize: 12.5, fontWeight: 700, cursor: 'pointer', display: 'flex',
                 alignItems: 'center', justifyContent: 'center', gap: 6, transition: 'all 0.15s'
               }}
@@ -320,19 +329,20 @@ export const ContributorAuthModal: React.FC<ContributorAuthModalProps> = ({
             <>
               {/* Step 1: Acceptance Credentials Notice */}
               <div style={{
-                background: 'rgba(24, 252, 92, 0.04)', border: '1px solid rgba(102, 187, 42, 0.2)',
+                background: theme === 'light' ? 'rgba(102, 187, 42, 0.08)' : 'rgba(24, 252, 92, 0.04)',
+                border: theme === 'light' ? '1px solid rgba(102, 187, 42, 0.3)' : '1px solid rgba(102, 187, 42, 0.2)',
                 borderRadius: 12, padding: '10px 14px', marginBottom: 14,
                 display: 'flex', alignItems: 'center', gap: 10
               }}>
-                <Key size={16} color={RF_MINT_ACCENT} style={{ flexShrink: 0 }} />
-                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.85)', lineHeight: 1.4 }}>
-                  Registration requires your verified <strong style={{ color: '#FFFFFF' }}>Application ID</strong> and official <strong style={{ color: RF_MINT_ACCENT }}>Acceptance Code</strong>. Your official Pioneer ID will be minted upon completing your profile.
+                <Key size={16} color={theme === 'light' ? '#15803d' : RF_MINT_ACCENT} style={{ flexShrink: 0 }} />
+                <div style={{ fontSize: 12, color: theme === 'light' ? '#1E3A2B' : 'rgba(255,255,255,0.85)', lineHeight: 1.4 }}>
+                  Registration requires your verified <strong style={{ color: theme === 'light' ? '#0A1C12' : '#FFFFFF' }}>Application ID</strong> and official <strong style={{ color: theme === 'light' ? '#15803d' : RF_MINT_ACCENT }}>Acceptance Code</strong>. Your official Pioneer ID will be minted upon completing your profile.
                 </div>
               </div>
 
               {/* Application ID Input */}
               <div style={{ marginBottom: 12 }}>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: theme === 'light' ? '#0A1C12' : 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
                   Application ID *
                 </label>
                 <input
@@ -342,8 +352,9 @@ export const ContributorAuthModal: React.FC<ContributorAuthModalProps> = ({
                   onChange={e => setAppNumber(e.target.value.toUpperCase())}
                   style={{
                     width: '100%', padding: '11px 12px', borderRadius: 10,
-                    background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(102, 187, 42, 0.3)',
-                    color: '#FFFFFF', fontSize: 13, outline: 'none', boxSizing: 'border-box',
+                    background: theme === 'light' ? '#FFFFFF' : 'rgba(255,255,255,0.06)',
+                    border: theme === 'light' ? '1px solid #CBD5E1' : '1px solid rgba(102, 187, 42, 0.3)',
+                    color: theme === 'light' ? '#0A1C12' : '#FFFFFF', fontSize: 13, outline: 'none', boxSizing: 'border-box',
                     fontFamily: 'monospace', textTransform: 'uppercase'
                   }}
                 />
@@ -352,7 +363,7 @@ export const ContributorAuthModal: React.FC<ContributorAuthModalProps> = ({
               {/* Acceptance Code */}
               <div style={{ marginBottom: 12 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 }}>
-                  <label style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.85)' }}>
+                  <label style={{ fontSize: 12, fontWeight: 600, color: theme === 'light' ? '#0A1C12' : 'rgba(255,255,255,0.85)' }}>
                     Admissions Acceptance Code *
                   </label>
                   {onOpenStatus && (
@@ -361,7 +372,8 @@ export const ContributorAuthModal: React.FC<ContributorAuthModalProps> = ({
                       onClick={() => { onClose(); onOpenStatus(); }}
                       style={{
                         background: 'none', border: 'none', padding: 0,
-                        color: RF_MINT_ACCENT, fontSize: 11, cursor: 'pointer', textDecoration: 'underline'
+                        color: theme === 'light' ? '#15803d' : RF_MINT_ACCENT,
+                        fontSize: 11, cursor: 'pointer', textDecoration: 'underline'
                       }}
                     >
                       Forgot / Check Code?
@@ -375,8 +387,10 @@ export const ContributorAuthModal: React.FC<ContributorAuthModalProps> = ({
                   onChange={e => setAcceptanceCode(e.target.value.toUpperCase())}
                   style={{
                     width: '100%', padding: '11px 14px', borderRadius: 10,
-                    background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(102, 187, 42, 0.3)',
-                    color: RF_MINT_ACCENT, fontSize: 13.5, outline: 'none', boxSizing: 'border-box',
+                    background: theme === 'light' ? '#FFFFFF' : 'rgba(255,255,255,0.06)',
+                    border: theme === 'light' ? '1px solid #CBD5E1' : '1px solid rgba(102, 187, 42, 0.3)',
+                    color: theme === 'light' ? '#15803d' : RF_MINT_ACCENT,
+                    fontSize: 13.5, outline: 'none', boxSizing: 'border-box',
                     fontFamily: 'monospace', textTransform: 'uppercase', fontWeight: 600
                   }}
                 />
@@ -385,24 +399,27 @@ export const ContributorAuthModal: React.FC<ContributorAuthModalProps> = ({
               {/* Verified Application Preview Card */}
               {verifiedApp && (
                 <div style={{
-                  background: 'rgba(24, 252, 92, 0.08)', border: `1px solid ${RF_LEAF_GREEN}55`,
+                  background: theme === 'light' ? 'rgba(102, 187, 42, 0.1)' : 'rgba(24, 252, 92, 0.08)',
+                  border: theme === 'light' ? '1px solid rgba(102, 187, 42, 0.4)' : `1px solid ${RF_LEAF_GREEN}55`,
                   borderRadius: 10, padding: '10px 14px', marginBottom: 14,
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between'
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <CheckCircle2 size={16} color={RF_MINT_ACCENT} />
+                    <CheckCircle2 size={16} color={theme === 'light' ? '#15803d' : RF_MINT_ACCENT} />
                     <div>
-                      <div style={{ fontSize: 12.5, fontWeight: 700, color: '#FFFFFF' }}>
+                      <div style={{ fontSize: 12.5, fontWeight: 700, color: theme === 'light' ? '#0A1C12' : '#FFFFFF' }}>
                         {verifiedApp.full_name}
                       </div>
-                      <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.65)' }}>
+                      <div style={{ fontSize: 11, color: theme === 'light' ? '#4A6B56' : 'rgba(255,255,255,0.65)' }}>
                         Squad: {verifiedApp.primary_division || 'General Pioneer'} • {verifiedApp.contributor_level || 'Level 1'}
                       </div>
                     </div>
                   </div>
                   <span style={{
-                    fontSize: 10, fontWeight: 700, color: RF_MINT_ACCENT,
-                    background: 'rgba(24, 252, 92, 0.15)', padding: '2px 8px', borderRadius: 100,
+                    fontSize: 10, fontWeight: 700,
+                    color: theme === 'light' ? '#15803d' : RF_MINT_ACCENT,
+                    background: theme === 'light' ? 'rgba(102, 187, 42, 0.2)' : 'rgba(24, 252, 92, 0.15)',
+                    padding: '2px 8px', borderRadius: 100,
                     textTransform: 'uppercase'
                   }}>
                     Accepted
@@ -412,7 +429,7 @@ export const ContributorAuthModal: React.FC<ContributorAuthModalProps> = ({
 
               {/* Email Address */}
               <div style={{ marginBottom: 12 }}>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: theme === 'light' ? '#0A1C12' : 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
                   Email Address *
                 </label>
                 <div style={{ position: 'relative' }}>
@@ -423,17 +440,18 @@ export const ContributorAuthModal: React.FC<ContributorAuthModalProps> = ({
                     onChange={e => setEmail(e.target.value)}
                     style={{
                       width: '100%', padding: '11px 14px 11px 36px', borderRadius: 10,
-                      background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)',
-                      color: '#FFFFFF', fontSize: 13.5, outline: 'none', boxSizing: 'border-box'
+                      background: theme === 'light' ? '#FFFFFF' : 'rgba(255,255,255,0.05)',
+                      border: theme === 'light' ? '1px solid #CBD5E1' : '1px solid rgba(255,255,255,0.15)',
+                      color: theme === 'light' ? '#0A1C12' : '#FFFFFF', fontSize: 13.5, outline: 'none', boxSizing: 'border-box'
                     }}
                   />
-                  <Mail size={15} style={{ position: 'absolute', left: 12, top: 13, color: 'rgba(255,255,255,0.4)' }} />
+                  <Mail size={15} style={{ position: 'absolute', left: 12, top: 13, color: theme === 'light' ? '#94A3B8' : 'rgba(255,255,255,0.4)' }} />
                 </div>
               </div>
 
               {/* Password */}
               <div style={{ marginBottom: 16 }}>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: theme === 'light' ? '#0A1C12' : 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
                   Create Password *
                 </label>
                 <div style={{ position: 'relative' }}>
@@ -444,11 +462,12 @@ export const ContributorAuthModal: React.FC<ContributorAuthModalProps> = ({
                     onChange={e => setPassword(e.target.value)}
                     style={{
                       width: '100%', padding: '11px 14px 11px 36px', borderRadius: 10,
-                      background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)',
-                      color: '#FFFFFF', fontSize: 13.5, outline: 'none', boxSizing: 'border-box'
+                      background: theme === 'light' ? '#FFFFFF' : 'rgba(255,255,255,0.05)',
+                      border: theme === 'light' ? '1px solid #CBD5E1' : '1px solid rgba(255,255,255,0.15)',
+                      color: theme === 'light' ? '#0A1C12' : '#FFFFFF', fontSize: 13.5, outline: 'none', boxSizing: 'border-box'
                     }}
                   />
-                  <Lock size={15} style={{ position: 'absolute', left: 12, top: 13, color: 'rgba(255,255,255,0.4)' }} />
+                  <Lock size={15} style={{ position: 'absolute', left: 12, top: 13, color: theme === 'light' ? '#94A3B8' : 'rgba(255,255,255,0.4)' }} />
                 </div>
               </div>
             </>
@@ -456,7 +475,7 @@ export const ContributorAuthModal: React.FC<ContributorAuthModalProps> = ({
             <>
               {/* Sign In Tab */}
               <div style={{ marginBottom: 14 }}>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: theme === 'light' ? '#0A1C12' : 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
                   Email Address *
                 </label>
                 <div style={{ position: 'relative' }}>
@@ -467,16 +486,17 @@ export const ContributorAuthModal: React.FC<ContributorAuthModalProps> = ({
                     onChange={e => setEmail(e.target.value)}
                     style={{
                       width: '100%', padding: '11px 14px 11px 36px', borderRadius: 10,
-                      background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)',
-                      color: '#FFFFFF', fontSize: 13.5, outline: 'none', boxSizing: 'border-box'
+                      background: theme === 'light' ? '#FFFFFF' : 'rgba(255,255,255,0.05)',
+                      border: theme === 'light' ? '1px solid #CBD5E1' : '1px solid rgba(255,255,255,0.15)',
+                      color: theme === 'light' ? '#0A1C12' : '#FFFFFF', fontSize: 13.5, outline: 'none', boxSizing: 'border-box'
                     }}
                   />
-                  <Mail size={15} style={{ position: 'absolute', left: 12, top: 13, color: 'rgba(255,255,255,0.4)' }} />
+                  <Mail size={15} style={{ position: 'absolute', left: 12, top: 13, color: theme === 'light' ? '#94A3B8' : 'rgba(255,255,255,0.4)' }} />
                 </div>
               </div>
 
               <div style={{ marginBottom: 18 }}>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: theme === 'light' ? '#0A1C12' : 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
                   Password *
                 </label>
                 <div style={{ position: 'relative' }}>
@@ -487,11 +507,12 @@ export const ContributorAuthModal: React.FC<ContributorAuthModalProps> = ({
                     onChange={e => setPassword(e.target.value)}
                     style={{
                       width: '100%', padding: '11px 14px 11px 36px', borderRadius: 10,
-                      background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)',
-                      color: '#FFFFFF', fontSize: 13.5, outline: 'none', boxSizing: 'border-box'
+                      background: theme === 'light' ? '#FFFFFF' : 'rgba(255,255,255,0.05)',
+                      border: theme === 'light' ? '1px solid #CBD5E1' : '1px solid rgba(255,255,255,0.15)',
+                      color: theme === 'light' ? '#0A1C12' : '#FFFFFF', fontSize: 13.5, outline: 'none', boxSizing: 'border-box'
                     }}
                   />
-                  <Lock size={15} style={{ position: 'absolute', left: 12, top: 13, color: 'rgba(255,255,255,0.4)' }} />
+                  <Lock size={15} style={{ position: 'absolute', left: 12, top: 13, color: theme === 'light' ? '#94A3B8' : 'rgba(255,255,255,0.4)' }} />
                 </div>
               </div>
             </>
@@ -502,7 +523,7 @@ export const ContributorAuthModal: React.FC<ContributorAuthModalProps> = ({
             type="submit"
             disabled={loading}
             style={{
-              width: '100%', background: RF_LEAF_GREEN, color: RF_DEEP_GREEN,
+              width: '100%', background: RF_LEAF_GREEN, color: '#061A0F',
               border: 'none', padding: '13px', borderRadius: 100, fontSize: 14,
               fontWeight: 800, cursor: loading ? 'not-allowed' : 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
@@ -514,8 +535,12 @@ export const ContributorAuthModal: React.FC<ContributorAuthModalProps> = ({
           </button>
 
           {/* Quick Demo Pre-fill Shortcuts */}
-          <div style={{ marginTop: 20, paddingTop: 14, borderTop: '1px solid rgba(255,255,255,0.08)', textAlign: 'center' }}>
-            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', display: 'block', marginBottom: 8 }}>
+          <div style={{
+            marginTop: 20, paddingTop: 14,
+            borderTop: theme === 'light' ? '1px solid #E2E8F0' : '1px solid rgba(255,255,255,0.08)',
+            textAlign: 'center'
+          }}>
+            <span style={{ fontSize: 11, color: theme === 'light' ? '#64748B' : 'rgba(255,255,255,0.45)', display: 'block', marginBottom: 8 }}>
               {tab === 'signin' ? 'Test Existing Contributor Account:' : 'Test Accepted Applicants (Ready to Activate):'}
             </span>
             <div style={{ display: 'flex', justifyContent: 'center', gap: 8, flexWrap: 'wrap' }}>
@@ -524,8 +549,10 @@ export const ContributorAuthModal: React.FC<ContributorAuthModalProps> = ({
                   type="button"
                   onClick={() => handleTestFill('kwame_signin')}
                   style={{
-                    background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)',
-                    color: RF_MINT_ACCENT, padding: '4px 10px', borderRadius: 100, fontSize: 11, cursor: 'pointer'
+                    background: theme === 'light' ? '#F8FAFC' : 'rgba(255,255,255,0.05)',
+                    border: theme === 'light' ? '1px solid #CBD5E1' : '1px solid rgba(255,255,255,0.12)',
+                    color: theme === 'light' ? '#15803d' : RF_MINT_ACCENT,
+                    padding: '4px 10px', borderRadius: 100, fontSize: 11, cursor: 'pointer'
                   }}
                 >
                   Kwame (Growth Lead)
@@ -536,8 +563,10 @@ export const ContributorAuthModal: React.FC<ContributorAuthModalProps> = ({
                     type="button"
                     onClick={() => handleTestFill('chidubem_signup')}
                     style={{
-                      background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)',
-                      color: RF_MINT_ACCENT, padding: '4px 10px', borderRadius: 100, fontSize: 11, cursor: 'pointer'
+                      background: theme === 'light' ? '#F8FAFC' : 'rgba(255,255,255,0.05)',
+                      border: theme === 'light' ? '1px solid #CBD5E1' : '1px solid rgba(255,255,255,0.12)',
+                      color: theme === 'light' ? '#15803d' : RF_MINT_ACCENT,
+                      padding: '4px 10px', borderRadius: 100, fontSize: 11, cursor: 'pointer'
                     }}
                   >
                     Chidubem (RP-012 • ACC-8492)
@@ -546,8 +575,10 @@ export const ContributorAuthModal: React.FC<ContributorAuthModalProps> = ({
                     type="button"
                     onClick={() => handleTestFill('amina_signup')}
                     style={{
-                      background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)',
-                      color: RF_MINT_ACCENT, padding: '4px 10px', borderRadius: 100, fontSize: 11, cursor: 'pointer'
+                      background: theme === 'light' ? '#F8FAFC' : 'rgba(255,255,255,0.05)',
+                      border: theme === 'light' ? '1px solid #CBD5E1' : '1px solid rgba(255,255,255,0.12)',
+                      color: theme === 'light' ? '#15803d' : RF_MINT_ACCENT,
+                      padding: '4px 10px', borderRadius: 100, fontSize: 11, cursor: 'pointer'
                     }}
                   >
                     Amina (RP-028 • ACC-6129)

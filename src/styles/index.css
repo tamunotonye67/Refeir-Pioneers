@@ -14,6 +14,53 @@
 
   --rf-font-display: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   --rf-font-sans: 'Plus Jakarta Sans', 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Theme Tokens - Dark Mode Default */
+  --rp-bg-page: #07180F;
+  --rp-bg-surface: #0F2E1E;
+  --rp-bg-surface-alt: #122B1A;
+  --rp-bg-card: rgba(16, 42, 27, 0.96);
+  --rp-bg-glass: rgba(15, 46, 30, 0.96);
+  --rp-text-main: #FFFFFF;
+  --rp-text-heading: #FFFFFF;
+  --rp-text-sub: rgba(255, 255, 255, 0.78);
+  --rp-text-muted: rgba(255, 255, 255, 0.52);
+  --rp-border-color: rgba(102, 187, 42, 0.2);
+  --rp-nav-bg: rgba(15, 46, 30, 0.96);
+  --rp-nav-border: rgba(102, 187, 42, 0.15);
+  --rp-nav-link: rgba(255, 255, 255, 0.75);
+  --rp-nav-link-hover: #18FC5C;
+  --rp-input-bg: rgba(0, 0, 0, 0.32);
+  --rp-input-border: rgba(255, 255, 255, 0.14);
+  --rp-input-text: #FFFFFF;
+  --rp-input-placeholder: rgba(255, 255, 255, 0.4);
+  --rp-footer-bg: #07180F;
+  --rp-footer-border: rgba(102, 187, 42, 0.15);
+  --rp-footer-text: rgba(255, 255, 255, 0.6);
+}
+
+[data-theme="light"], .theme-light {
+  --rp-bg-page: #F8FAF9;
+  --rp-bg-surface: #FFFFFF;
+  --rp-bg-surface-alt: #EDF5F0;
+  --rp-bg-card: #FFFFFF;
+  --rp-bg-glass: rgba(255, 255, 255, 0.94);
+  --rp-text-main: #0A1C12;
+  --rp-text-heading: #081B11;
+  --rp-text-sub: #273E31;
+  --rp-text-muted: #526E5E;
+  --rp-border-color: rgba(15, 46, 30, 0.12);
+  --rp-nav-bg: rgba(255, 255, 255, 0.94);
+  --rp-nav-border: rgba(15, 46, 30, 0.08);
+  --rp-nav-link: #1A3425;
+  --rp-nav-link-hover: #15803D;
+  --rp-input-bg: #FFFFFF;
+  --rp-input-border: #CBD5E1;
+  --rp-input-text: #0A1C12;
+  --rp-input-placeholder: #64748B;
+  --rp-footer-bg: #EDF5F0;
+  --rp-footer-border: rgba(15, 46, 30, 0.1);
+  --rp-footer-text: #273E31;
 }
 
 *, *::before, *::after {
@@ -24,8 +71,8 @@
 
 html {
   font-family: var(--rf-font-sans);
-  background-color: var(--pioneer-navy);
-  color: #FFFFFF;
+  background-color: var(--rp-bg-page);
+  color: var(--rp-text-main);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -33,6 +80,7 @@ html {
   overflow-x: clip;
   max-width: 100vw;
   width: 100%;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -43,12 +91,13 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: var(--pioneer-navy);
-  color: #FFFFFF;
+  background-color: var(--rp-bg-page);
+  color: var(--rp-text-main);
   overflow-x: clip;
   max-width: 100vw;
   width: 100%;
   position: relative;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 a {
@@ -3222,4 +3271,398 @@ img, svg {
     padding: 5px 6px !important;
     font-size: 10.5px !important;
   }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LIGHT MODE CONTRAST & THEMING ENGINE
+   Strict adherence to high contrast (WCAG AAA) across all devices and pages
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+[data-theme="light"] {
+  color-scheme: light;
+}
+
+/* ─── Global Page Surfaces & Typography ─── */
+[data-theme="light"] .rp-page-root {
+  background: #F8FAF9 !important;
+  color: #0A1C12 !important;
+}
+
+[data-theme="light"] .rp-page-hero {
+  background: linear-gradient(135deg, #EBF5EE 0%, #F6FAF7 100%) !important;
+  color: #0A1C12 !important;
+}
+
+[data-theme="light"] .rp-page-hero h1,
+[data-theme="light"] .rp-page-hero h2 {
+  color: #0A1C12 !important;
+}
+
+[data-theme="light"] .rp-page-hero p {
+  color: #273E31 !important;
+}
+
+[data-theme="light"] .rp-page-hero .rp-hero-headline {
+  color: #0A1C12 !important;
+}
+
+/* ─── Hero Section in Light Mode ─── */
+[data-theme="light"] #hero {
+  background: radial-gradient(ellipse 80% 80% at 50% -20%, rgba(102, 187, 42, 0.14) 0%, #F5FAF7 70%) !important;
+}
+
+[data-theme="light"] #hero .rp-hero-headline,
+[data-theme="light"] #hero h1,
+[data-theme="light"] #hero h2 {
+  color: #0A1C12 !important;
+}
+
+[data-theme="light"] #hero p {
+  color: #273E31 !important;
+}
+
+[data-theme="light"] #hero .rp-stats-grid {
+  border-top-color: rgba(15, 46, 30, 0.14) !important;
+}
+
+[data-theme="light"] #hero .rp-stats-grid > div > div:last-child {
+  color: #526E5E !important;
+}
+
+[data-theme="light"] #hero .rp-btn-ghost-hero {
+  background: rgba(15, 46, 30, 0.05) !important;
+  border-color: rgba(15, 46, 30, 0.2) !important;
+  color: #0A1C12 !important;
+}
+
+[data-theme="light"] #hero .rp-btn-ghost-hero:hover {
+  background: rgba(15, 46, 30, 0.09) !important;
+  border-color: rgba(15, 46, 30, 0.35) !important;
+  color: #0A1C12 !important;
+}
+
+/* ─── Founder Welcome Video Section ─── */
+[data-theme="light"] .rp-video-section {
+  background: #EBF4EE !important;
+}
+
+[data-theme="light"] .rp-video-title {
+  color: #0A1C12 !important;
+}
+
+[data-theme="light"] .rp-video-desc {
+  color: #273E31 !important;
+}
+
+[data-theme="light"] .rp-video-btn-divisions {
+  background: rgba(15, 46, 30, 0.05) !important;
+  border-color: rgba(15, 46, 30, 0.2) !important;
+  color: #0A1C12 !important;
+}
+
+/* ─── Squad Divisions & Sticky Stack ─── */
+[data-theme="light"] #divisions {
+  background: linear-gradient(180deg, #F5FAF7 0%, #EAF3EC 100%) !important;
+}
+
+[data-theme="light"] #divisions h2 {
+  color: #0A1C12 !important;
+}
+
+[data-theme="light"] #divisions p {
+  color: #273E31 !important;
+}
+
+[data-theme="light"] .rp-squad-tracker-pills {
+  background: rgba(255, 255, 255, 0.94) !important;
+  border: 1px solid rgba(15, 46, 30, 0.12) !important;
+  box-shadow: 0 6px 24px rgba(15, 46, 30, 0.08) !important;
+}
+
+[data-theme="light"] .rp-squad-pill-btn {
+  color: #273E31 !important;
+}
+
+[data-theme="light"] .rp-squad-pill-btn.is-active {
+  color: #0A1C12 !important;
+  background: rgba(102, 187, 42, 0.18) !important;
+}
+
+[data-theme="light"] .rp-sticky-card-shell {
+  background: linear-gradient(180deg, #FFFFFF 0%, #F8FCF9 100%) !important;
+  border: 1px solid rgba(15, 46, 30, 0.14) !important;
+  box-shadow: 0 8px 30px rgba(15, 46, 30, 0.08) !important;
+}
+
+[data-theme="light"] .rp-sticky-card-tab {
+  background: rgba(15, 46, 30, 0.04) !important;
+  border-bottom: 1px solid rgba(15, 46, 30, 0.08) !important;
+}
+
+[data-theme="light"] .rp-sticky-card-tab span:last-child,
+[data-theme="light"] .rp-sticky-card-tab .rp-tab-title {
+  color: #0A1C12 !important;
+}
+
+[data-theme="light"] .rp-sticky-card-shell h3,
+[data-theme="light"] .rp-sticky-card-shell h4 {
+  color: #0A1C12 !important;
+}
+
+[data-theme="light"] .rp-sticky-card-shell p,
+[data-theme="light"] .rp-sticky-card-shell li,
+[data-theme="light"] .rp-sticky-card-shell span:not([data-brand]) {
+  color: #273E31 !important;
+}
+
+/* ─── Founding 100 Section ─── */
+[data-theme="light"] .rp-founding-section {
+  background: linear-gradient(135deg, #EAF4EE 0%, #DCECE1 100%) !important;
+}
+
+[data-theme="light"] .rp-founding-section h2,
+[data-theme="light"] .rp-founding-section .rp-founding-p1 {
+  color: #0A1C12 !important;
+}
+
+[data-theme="light"] .rp-founding-section .rp-founding-p2 {
+  color: #15803D !important;
+}
+
+[data-theme="light"] .rp-founding-section p {
+  color: #273E31 !important;
+}
+
+[data-theme="light"] .rp-founding-box {
+  background: #FFFFFF !important;
+  border: 1.5px solid rgba(102, 187, 42, 0.35) !important;
+  box-shadow: 0 12px 40px rgba(15, 46, 30, 0.08) !important;
+}
+
+/* ─── Contributor Ladder Section ─── */
+[data-theme="light"] .rp-ladder-section {
+  background: #F4F9F6 !important;
+}
+
+[data-theme="light"] .rp-ladder-section h2 {
+  color: #0A1C12 !important;
+}
+
+[data-theme="light"] .rp-ladder-section p {
+  color: #273E31 !important;
+}
+
+[data-theme="light"] .rp-ladder-card {
+  background: #FFFFFF !important;
+  border-color: rgba(15, 46, 30, 0.12) !important;
+  box-shadow: 0 6px 20px rgba(15, 46, 30, 0.05) !important;
+}
+
+[data-theme="light"] .rp-ladder-card h3 {
+  color: #0A1C12 !important;
+}
+
+/* ─── Application Form Section ─── */
+[data-theme="light"] #apply {
+  background: linear-gradient(180deg, #F5FAF7 0%, #EBF4EE 100%) !important;
+}
+
+[data-theme="light"] #apply h2,
+[data-theme="light"] #apply h3 {
+  color: #0A1C12 !important;
+}
+
+[data-theme="light"] #apply p,
+[data-theme="light"] #apply label {
+  color: #273E31 !important;
+}
+
+[data-theme="light"] #apply input,
+[data-theme="light"] #apply select,
+[data-theme="light"] #apply textarea {
+  background: #FFFFFF !important;
+  color: #0A1C12 !important;
+  border: 1px solid #CBD5E1 !important;
+}
+
+[data-theme="light"] #apply input::placeholder,
+[data-theme="light"] #apply textarea::placeholder {
+  color: #64748B !important;
+}
+
+[data-theme="light"] .rp-app-form-shell {
+  background: #FFFFFF !important;
+  border: 1px solid rgba(15, 46, 30, 0.12) !important;
+  box-shadow: 0 16px 48px rgba(15, 46, 30, 0.07) !important;
+}
+
+/* ─── Final CTA Section ─── */
+[data-theme="light"] .rp-final-cta {
+  background: linear-gradient(135deg, #EAF4EE 0%, #DCECE1 100%) !important;
+}
+
+[data-theme="light"] .rp-final-cta h2 {
+  color: #0A1C12 !important;
+}
+
+[data-theme="light"] .rp-final-cta p {
+  color: #273E31 !important;
+}
+
+/* ─── Auth Page Styles in Light Mode ─── */
+[data-theme="light"] .rp-auth-wrapper {
+  background: #F8FAF9 !important;
+}
+
+[data-theme="light"] .rp-auth-title {
+  color: #0A1C12 !important;
+}
+
+[data-theme="light"] .rp-auth-subtitle {
+  color: #273E31 !important;
+}
+
+[data-theme="light"] .rp-auth-card {
+  background: #FFFFFF !important;
+  border: 1px solid rgba(15, 46, 30, 0.12) !important;
+  box-shadow: 0 12px 40px rgba(15, 46, 30, 0.08) !important;
+}
+
+[data-theme="light"] .rp-auth-tabs {
+  background: rgba(15, 46, 30, 0.06) !important;
+  border: 1px solid rgba(15, 46, 30, 0.1) !important;
+}
+
+[data-theme="light"] .rp-auth-tab-btn:not(.active) {
+  color: #4A6354 !important;
+}
+
+[data-theme="light"] .rp-auth-tab-btn.active {
+  background: #FFFFFF !important;
+  color: #0A1C12 !important;
+  box-shadow: 0 2px 8px rgba(15, 46, 30, 0.12) !important;
+}
+
+[data-theme="light"] .rp-auth-input {
+  background: #FFFFFF !important;
+  border: 1px solid #CBD5E1 !important;
+  color: #0A1C12 !important;
+}
+
+[data-theme="light"] .rp-auth-input:focus {
+  border-color: #2E7D32 !important;
+  box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.15) !important;
+}
+
+[data-theme="light"] .rp-auth-input::placeholder {
+  color: #64748B !important;
+}
+
+[data-theme="light"] .rp-auth-demo-box {
+  border-top-color: rgba(15, 46, 30, 0.1) !important;
+}
+
+[data-theme="light"] .rp-auth-demo-btn {
+  background: rgba(15, 46, 30, 0.04) !important;
+  border-color: rgba(15, 46, 30, 0.12) !important;
+  color: #273E31 !important;
+}
+
+[data-theme="light"] .rp-auth-demo-btn:hover {
+  background: rgba(102, 187, 42, 0.14) !important;
+  border-color: #66BB2A !important;
+  color: #0A1C12 !important;
+}
+
+/* ─── Buttons Contrast Assurance ─── */
+/* Critical: buttons with bright leaf/mint green background MUST keep dark green text */
+[data-theme="light"] .rp-auth-submit-btn,
+[data-theme="light"] .rp-nav-cta-desk,
+[data-theme="light"] button[style*="background: rgb(102, 187, 42)"],
+[data-theme="light"] button[style*="background: #66BB2A"],
+[data-theme="light"] button[style*="background:#66BB2A"] {
+  color: #061A0F !important;
+  font-weight: 700 !important;
+}
+
+/* ─── Theme Toggle Button Minimalist Design ─── */
+.rp-theme-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.06);
+  color: #FFFFFF;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.rp-theme-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.35);
+  transform: scale(1.05);
+}
+
+[data-theme="light"] .rp-theme-toggle-btn {
+  border: 1px solid rgba(15, 46, 30, 0.16);
+  background: rgba(15, 46, 30, 0.05);
+  color: #0A1C12;
+}
+
+[data-theme="light"] .rp-theme-toggle-btn:hover {
+  background: rgba(15, 46, 30, 0.1);
+  border-color: rgba(15, 46, 30, 0.28);
+  color: #0A1C12;
+}
+
+/* Mobile top navbar theme toggle button */
+.rp-mobile-theme-toggle {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .rp-mobile-theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(255, 255, 255, 0.06);
+    color: #FFFFFF;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  [data-theme="light"] .rp-mobile-theme-toggle {
+    border: 1px solid rgba(15, 46, 30, 0.14);
+    background: rgba(15, 46, 30, 0.05);
+    color: #0A1C12;
+  }
+}
+
+/* ─── Sticky Card Body Details in Light Mode ─── */
+[data-theme="light"] .rp-sticky-card-body span[style*="border-radius: 100px"],
+[data-theme="light"] .rp-sticky-card-body span[style*="borderRadius: 100px"],
+[data-theme="light"] .rp-sticky-card-body span[style*="border-radius: 100"],
+[data-theme="light"] .rp-sticky-card-body span[style*="borderRadius: 100"] {
+  background: rgba(15, 46, 30, 0.06) !important;
+  border: 1px solid rgba(15, 46, 30, 0.14) !important;
+  color: #1A3425 !important;
+}
+
+[data-theme="light"] .rp-sticky-card-body button:not([style*="boxShadow"]):not([style*="box-shadow"]) {
+  background: rgba(15, 46, 30, 0.05) !important;
+  border: 1px solid rgba(15, 46, 30, 0.16) !important;
+  color: #1A3425 !important;
+}
+
+[data-theme="light"] .rp-sticky-card-body button:not([style*="boxShadow"]):not([style*="box-shadow"]):hover {
+  background: rgba(15, 46, 30, 0.1) !important;
+  color: #0A1C12 !important;
 }

@@ -1,5 +1,7 @@
 import React from 'react';
+import { Sun, Moon } from 'lucide-react';
 import { RF_FOREST_DARK, RF_MINT_ACCENT } from '../constants/brand';
+import { useTheme } from '../context/ThemeContext';
 
 export interface PioneersFooterProps {
   onNavigate: (path: string) => void;
@@ -7,6 +9,7 @@ export interface PioneersFooterProps {
 }
 
 export const PioneersFooter: React.FC<PioneersFooterProps> = ({ onNavigate, onOpenStatus }) => {
+  const { theme, toggleTheme } = useTheme();
   const handleCheckStatus = () => {
     if (onOpenStatus) {
       onOpenStatus();
@@ -96,10 +99,11 @@ export const PioneersFooter: React.FC<PioneersFooterProps> = ({ onNavigate, onOp
 
   return (
     <footer style={{
-      background: RF_FOREST_DARK,
+      background: theme === 'light' ? '#EDF5F0' : RF_FOREST_DARK,
       padding: '44px 24px 34px',
-      borderTop: '1px solid rgba(102, 187, 42, 0.15)',
-      position: 'relative'
+      borderTop: theme === 'light' ? '1px solid rgba(15, 46, 30, 0.1)' : '1px solid rgba(102, 187, 42, 0.15)',
+      position: 'relative',
+      transition: 'background-color 0.25s ease, border-color 0.25s ease'
     }}>
       <div style={{
         maxWidth: 1240,
@@ -121,8 +125,17 @@ export const PioneersFooter: React.FC<PioneersFooterProps> = ({ onNavigate, onOp
             style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }}
             onClick={() => onNavigate('/')}
           >
-            <img src="/Refeir-LogoWhite.png" alt="Refeir" style={{ height: 25, width: 'auto' }} />
-            <span style={{ fontSize: 9.5, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.14em', fontWeight: 600 }}>
+            <img
+              src={theme === 'light' ? '/RefeirLogo.png' : '/Refeir-LogoWhite.png'}
+              alt="Refeir"
+              style={{ height: 25, width: 'auto' }}
+            />
+            <span style={{
+              fontSize: 9.5,
+              color: theme === 'light' ? '#15803D' : 'rgba(255,255,255,0.4)',
+              letterSpacing: '0.14em',
+              fontWeight: 600
+            }}>
               PIONEERS
             </span>
           </div>
@@ -142,22 +155,22 @@ export const PioneersFooter: React.FC<PioneersFooterProps> = ({ onNavigate, onOp
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: 'rgba(255,255,255,0.6)',
+                  color: theme === 'light' ? '#1B3526' : 'rgba(255,255,255,0.6)',
                   fontSize: 13,
                   fontWeight: 500,
                   cursor: 'pointer',
                   transition: 'color 0.2s',
                   padding: 0
                 }}
-                onMouseEnter={e => (e.currentTarget.style.color = RF_MINT_ACCENT)}
-                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.6)')}
+                onMouseEnter={e => (e.currentTarget.style.color = theme === 'light' ? '#15803D' : RF_MINT_ACCENT)}
+                onMouseLeave={e => (e.currentTarget.style.color = theme === 'light' ? '#1B3526' : 'rgba(255,255,255,0.6)')}
               >
                 {item.label}
               </button>
             ))}
           </nav>
 
-          {/* Social Media Section: Only the icons */}
+          {/* Social Media Section & Theme Toggle Pill */}
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 16 }}>
             {socialLinks.map(({ name, url, icon }) => (
               <a
@@ -174,29 +187,54 @@ export const PioneersFooter: React.FC<PioneersFooterProps> = ({ onNavigate, onOp
                   background: 'none',
                   border: 'none',
                   padding: 0,
-                  color: 'rgba(255, 255, 255, 0.55)',
+                  color: theme === 'light' ? '#1B3526' : 'rgba(255, 255, 255, 0.55)',
                   transition: 'color 0.2s ease, transform 0.2s ease',
                   textDecoration: 'none',
                   lineHeight: 1
                 }}
                 onMouseEnter={e => {
-                  e.currentTarget.style.color = RF_MINT_ACCENT;
+                  e.currentTarget.style.color = theme === 'light' ? '#15803D' : RF_MINT_ACCENT;
                   e.currentTarget.style.transform = 'translateY(-2px)';
                 }}
                 onMouseLeave={e => {
-                  e.currentTarget.style.color = 'rgba(255, 255, 255, 0.55)';
+                  e.currentTarget.style.color = theme === 'light' ? '#1B3526' : 'rgba(255, 255, 255, 0.55)';
                   e.currentTarget.style.transform = 'translateY(0)';
                 }}
               >
                 {icon}
               </a>
             ))}
+
+            {/* Footer Theme Toggle Pill */}
+            <button
+              onClick={toggleTheme}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '5px 12px',
+                borderRadius: 100,
+                background: theme === 'light' ? 'rgba(15, 46, 30, 0.06)' : 'rgba(255, 255, 255, 0.06)',
+                border: `1px solid ${theme === 'light' ? 'rgba(15, 46, 30, 0.14)' : 'rgba(255, 255, 255, 0.12)'}`,
+                color: theme === 'light' ? '#0A1C12' : '#FFFFFF',
+                fontSize: 11.5,
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                marginLeft: 4
+              }}
+              title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              aria-label={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            >
+              {theme === 'dark' ? <Sun size={12} color="#FED072" /> : <Moon size={12} color="#0A1C12" />}
+              <span>{theme === 'dark' ? 'Light' : 'Dark'}</span>
+            </button>
           </div>
         </div>
 
         {/* Bottom divider & Copyright */}
         <div style={{
-          borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+          borderTop: theme === 'light' ? '1px solid rgba(15, 46, 30, 0.08)' : '1px solid rgba(255, 255, 255, 0.08)',
           paddingTop: 20,
           display: 'flex',
           justifyContent: 'space-between',
@@ -204,10 +242,10 @@ export const PioneersFooter: React.FC<PioneersFooterProps> = ({ onNavigate, onOp
           flexWrap: 'wrap',
           gap: 12
         }}>
-          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.38)', margin: 0 }}>
+          <p style={{ fontSize: 12, color: theme === 'light' ? '#4A6354' : 'rgba(255,255,255,0.38)', margin: 0 }}>
             © {new Date().getFullYear()} Refeir Technologies Ltd. All rights reserved.
           </p>
-          <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.28)', letterSpacing: '0.04em' }}>
+          <span style={{ fontSize: 11.5, color: theme === 'light' ? '#5A7264' : 'rgba(255,255,255,0.28)', letterSpacing: '0.04em' }}>
             Connecting African talent to global scale • @refeirafrica
           </span>
         </div>

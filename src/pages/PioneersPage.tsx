@@ -2349,7 +2349,7 @@ const Founding100: React.FC = () => {
   }, []);
 
   return (
-    <section style={{
+    <section className="rp-founding-section" style={{
       background: `linear-gradient(135deg, ${RF_DEEP_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
       padding: '100px 24px', position: 'relative', overflow: 'hidden'
     }}>
@@ -2391,7 +2391,7 @@ const Founding100: React.FC = () => {
         </p>
 
         {/* Counter Box */}
-        <div style={{
+        <div className="rp-founding-box" style={{
           background: 'rgba(255,255,255,0.06)', border: `1.5px solid rgba(102, 187, 42, 0.35)`,
           borderRadius: 24, padding: 'clamp(24px, 5vw, 40px) clamp(18px, 4vw, 48px)', marginBottom: 44,
           display: 'inline-block', width: '100%', maxWidth: 360, boxSizing: 'border-box',

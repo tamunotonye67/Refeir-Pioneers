@@ -13,6 +13,7 @@ import {
   RF_MINT_ACCENT,
   RF_GOLD_YELLOW
 } from '../constants/brand';
+import { useTheme } from '../context/ThemeContext';
 
 export type PioneerReviewStatus = 'PENDING' | 'REVIEWING' | 'ACCEPTED' | 'WAITLISTED' | 'REJECTED';
 
@@ -27,6 +28,7 @@ export const StatusLookupModal: React.FC<StatusModalProps> = ({
   onClose,
   onActivateAccount
 }) => {
+  const { theme } = useTheme();
   const [appNumber, setAppNumber] = useState('');
   const [email, setEmail] = useState('');
   const [lookupState, setLookupState] = useState<'idle' | 'loading' | 'found' | 'not_found'>('idle');
@@ -143,21 +145,25 @@ export const StatusLookupModal: React.FC<StatusModalProps> = ({
   return (
     <div style={{
       position: 'fixed', inset: 0, zIndex: 1200,
-      background: 'rgba(4, 15, 9, 0.94)', backdropFilter: 'blur(16px)',
+      background: theme === 'light' ? 'rgba(15, 46, 30, 0.45)' : 'rgba(4, 15, 9, 0.94)',
+      backdropFilter: 'blur(16px)',
       display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px 16px',
       overflowY: 'auto', overscrollBehavior: 'contain'
     }} onClick={onClose}>
       <div style={{
-        background: `linear-gradient(135deg, ${RF_DARK_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
-        border: `1px solid rgba(102, 187, 42, 0.35)`,
+        background: theme === 'light' ? '#FFFFFF' : `linear-gradient(135deg, ${RF_DARK_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
+        border: theme === 'light' ? '1px solid rgba(15, 46, 30, 0.14)' : `1px solid rgba(102, 187, 42, 0.35)`,
         borderRadius: 20, maxWidth: 520, width: '100%', padding: '32px 28px',
         maxHeight: 'calc(100vh - 40px)', overflowY: 'auto', overscrollBehavior: 'contain',
-        boxShadow: '0 25px 60px rgba(0,0,0,0.9)', position: 'relative', margin: 'auto'
+        boxShadow: theme === 'light' ? '0 25px 60px rgba(15, 46, 30, 0.16)' : '0 25px 60px rgba(0,0,0,0.9)',
+        position: 'relative', margin: 'auto'
       }} onClick={e => e.stopPropagation()}>
         
         <button onClick={onClose} style={{
-          position: 'absolute', top: 20, right: 20, color: 'rgba(255,255,255,0.6)',
-          background: 'rgba(255,255,255,0.06)', borderRadius: '50%', width: 32, height: 32,
+          position: 'absolute', top: 20, right: 20,
+          color: theme === 'light' ? '#0A1C12' : 'rgba(255,255,255,0.6)',
+          background: theme === 'light' ? 'rgba(15, 46, 30, 0.05)' : 'rgba(255,255,255,0.06)',
+          borderRadius: '50%', width: 32, height: 32,
           display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', border: 'none'
         }}>
           <X size={16} />
@@ -169,17 +175,29 @@ export const StatusLookupModal: React.FC<StatusModalProps> = ({
             ADMISSIONS PORTAL
           </span>
         </div>
-        <h3 style={{ fontSize: 22, fontWeight: 700, color: '#FFFFFF', marginBottom: 8, fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
-          Check Application & Acceptance Status
+        <h3 style={{
+          fontSize: 22, fontWeight: 700,
+          color: theme === 'light' ? '#0A1C12' : '#FFFFFF',
+          marginBottom: 8, fontFamily: 'Plus Jakarta Sans, sans-serif'
+        }}>
+          Check Application &amp; Acceptance Status
         </h3>
-        <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', marginBottom: 24, lineHeight: 1.6 }}>
-          Enter your Application ID (e.g. <span style={{ color: RF_MINT_ACCENT, fontFamily: 'monospace' }}>RP-2026-849201</span>) or email address to review your status and retrieve your credentials. Use your Application ID and Acceptance Code to activate your account.
+        <p style={{
+          fontSize: 13,
+          color: theme === 'light' ? '#273E31' : 'rgba(255,255,255,0.7)',
+          marginBottom: 24, lineHeight: 1.6
+        }}>
+          Enter your Application ID (e.g. <span style={{ color: theme === 'light' ? '#15803D' : RF_MINT_ACCENT, fontFamily: 'monospace', fontWeight: 600 }}>RP-2026-849201</span>) or email address to review your status and retrieve your credentials. Use your Application ID and Acceptance Code to activate your account.
         </p>
 
         {lookupState !== 'found' ? (
           <form onSubmit={handleLookup} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <div>
-              <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.85)', marginBottom: 6 }}>
+              <label style={{
+                display: 'block', fontSize: 12, fontWeight: 600,
+                color: theme === 'light' ? '#0A1C12' : 'rgba(255,255,255,0.85)',
+                marginBottom: 6
+              }}>
                 Application Number
               </label>
               <input
@@ -189,21 +207,27 @@ export const StatusLookupModal: React.FC<StatusModalProps> = ({
                 onChange={e => setAppNumber(e.target.value)}
                 style={{
                   width: '100%', padding: '12px 16px', borderRadius: 10,
-                  background: 'rgba(255,255,255,0.06)', border: `1px solid rgba(102, 187, 42, 0.3)`,
-                  color: '#FFFFFF', fontSize: 14, outline: 'none', boxSizing: 'border-box',
+                  background: theme === 'light' ? '#FFFFFF' : 'rgba(255,255,255,0.06)',
+                  border: theme === 'light' ? '1px solid #CBD5E1' : `1px solid rgba(102, 187, 42, 0.3)`,
+                  color: theme === 'light' ? '#0A1C12' : '#FFFFFF',
+                  fontSize: 14, outline: 'none', boxSizing: 'border-box',
                   fontFamily: 'monospace', textTransform: 'uppercase'
                 }}
               />
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '2px 0' }}>
-              <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.1)' }} />
-              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>OR</span>
-              <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.1)' }} />
+              <div style={{ flex: 1, height: 1, background: theme === 'light' ? 'rgba(15, 46, 30, 0.1)' : 'rgba(255,255,255,0.1)' }} />
+              <span style={{ fontSize: 11, color: theme === 'light' ? '#526E5E' : 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>OR</span>
+              <div style={{ flex: 1, height: 1, background: theme === 'light' ? 'rgba(15, 46, 30, 0.1)' : 'rgba(255,255,255,0.1)' }} />
             </div>
 
             <div>
-              <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.85)', marginBottom: 6 }}>
+              <label style={{
+                display: 'block', fontSize: 12, fontWeight: 600,
+                color: theme === 'light' ? '#0A1C12' : 'rgba(255,255,255,0.85)',
+                marginBottom: 6
+              }}>
                 Registered Email
               </label>
               <input
@@ -213,8 +237,10 @@ export const StatusLookupModal: React.FC<StatusModalProps> = ({
                 onChange={e => setEmail(e.target.value)}
                 style={{
                   width: '100%', padding: '12px 16px', borderRadius: 10,
-                  background: 'rgba(255,255,255,0.06)', border: `1px solid rgba(102, 187, 42, 0.3)`,
-                  color: '#FFFFFF', fontSize: 14, outline: 'none', boxSizing: 'border-box'
+                  background: theme === 'light' ? '#FFFFFF' : 'rgba(255,255,255,0.06)',
+                  border: theme === 'light' ? '1px solid #CBD5E1' : `1px solid rgba(102, 187, 42, 0.3)`,
+                  color: theme === 'light' ? '#0A1C12' : '#FFFFFF',
+                  fontSize: 14, outline: 'none', boxSizing: 'border-box'
                 }}
               />
             </div>
@@ -223,7 +249,7 @@ export const StatusLookupModal: React.FC<StatusModalProps> = ({
               <div style={{
                 background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)',
                 borderRadius: 10, padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 10,
-                color: '#FCA5A5', fontSize: 12.5
+                color: '#EF4444', fontSize: 12.5
               }}>
                 <AlertCircle size={16} style={{ flexShrink: 0 }} />
                 <span>No application found. Please verify your Application ID or registered email address.</span>
@@ -234,7 +260,7 @@ export const StatusLookupModal: React.FC<StatusModalProps> = ({
               type="submit"
               disabled={lookupState === 'loading'}
               style={{
-                background: RF_LEAF_GREEN, color: RF_DEEP_GREEN, border: 'none',
+                background: RF_LEAF_GREEN, color: '#061A0F', border: 'none',
                 padding: '13px', borderRadius: 100, fontWeight: 700, fontSize: 14,
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                 cursor: lookupState === 'loading' ? 'not-allowed' : 'pointer',
@@ -249,34 +275,39 @@ export const StatusLookupModal: React.FC<StatusModalProps> = ({
             {result?.status === 'ACCEPTED' ? (
               <div style={{ textAlign: 'center', padding: '8px 0' }}>
                 <div style={{ fontSize: 40, marginBottom: 10 }}>🎉</div>
-                <h4 style={{ fontSize: 20, fontWeight: 700, color: RF_MINT_ACCENT, marginBottom: 6 }}>
+                <h4 style={{ fontSize: 20, fontWeight: 700, color: theme === 'light' ? '#15803d' : RF_MINT_ACCENT, marginBottom: 6 }}>
                   You're Officially a Refeir Pioneer!
                 </h4>
-                <p style={{ fontSize: 13.5, color: 'rgba(255,255,255,0.85)', lineHeight: 1.6, marginBottom: 18 }}>
-                  Welcome aboard, <strong style={{ color: '#fff' }}>{result.fullName}</strong>! Your application has been approved into the Pioneer program.
+                <p style={{ fontSize: 13.5, color: theme === 'light' ? '#243C2E' : 'rgba(255,255,255,0.85)', lineHeight: 1.6, marginBottom: 18 }}>
+                  Welcome aboard, <strong style={{ color: theme === 'light' ? '#0A1C12' : '#fff' }}>{result.fullName}</strong>! Your application has been approved into the Pioneer program.
                 </p>
 
                 {/* Acceptance Credentials Card */}
                 <div style={{
-                  background: 'rgba(24, 252, 92, 0.05)', borderRadius: 14, padding: '18px 20px',
-                  marginBottom: 18, border: '1px solid rgba(102, 187, 42, 0.35)', textAlign: 'left'
+                  background: theme === 'light' ? 'rgba(102, 187, 42, 0.08)' : 'rgba(24, 252, 92, 0.05)',
+                  borderRadius: 14, padding: '18px 20px',
+                  marginBottom: 18,
+                  border: theme === 'light' ? '1px solid rgba(102, 187, 42, 0.4)' : '1px solid rgba(102, 187, 42, 0.35)',
+                  textAlign: 'left'
                 }}>
                   {/* Application ID */}
                   <div style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                    paddingBottom: 10, marginBottom: 10, borderBottom: '1px solid rgba(255,255,255,0.08)'
+                    paddingBottom: 10, marginBottom: 10,
+                    borderBottom: theme === 'light' ? '1px solid rgba(15, 46, 30, 0.1)' : '1px solid rgba(255,255,255,0.08)'
                   }}>
                     <div>
-                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', display: 'block' }}>Official Application ID</span>
-                      <span style={{ fontSize: 14, fontWeight: 700, color: '#FFFFFF', fontFamily: 'monospace' }}>
+                      <span style={{ fontSize: 11, color: theme === 'light' ? '#526E5E' : 'rgba(255,255,255,0.5)', display: 'block' }}>Official Application ID</span>
+                      <span style={{ fontSize: 14, fontWeight: 700, color: theme === 'light' ? '#0A1C12' : '#FFFFFF', fontFamily: 'monospace' }}>
                         {result.applicationNumber}
                       </span>
                     </div>
                     <button
                       onClick={() => copyToClipboard(result.applicationNumber, 'app')}
                       style={{
-                        background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)',
-                        color: copiedApp ? RF_MINT_ACCENT : 'rgba(255,255,255,0.8)',
+                        background: theme === 'light' ? '#FFFFFF' : 'rgba(255,255,255,0.06)',
+                        border: theme === 'light' ? '1px solid #CBD5E1' : '1px solid rgba(255,255,255,0.12)',
+                        color: copiedApp ? (theme === 'light' ? '#166534' : RF_MINT_ACCENT) : (theme === 'light' ? '#0A1C12' : 'rgba(255,255,255,0.8)'),
                         padding: '5px 10px', borderRadius: 8, fontSize: 11, cursor: 'pointer',
                         display: 'flex', alignItems: 'center', gap: 5
                       }}
@@ -289,11 +320,12 @@ export const StatusLookupModal: React.FC<StatusModalProps> = ({
                   {/* Pioneer ID */}
                   <div style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                    paddingBottom: 10, marginBottom: 10, borderBottom: '1px solid rgba(255,255,255,0.08)'
+                    paddingBottom: 10, marginBottom: 10,
+                    borderBottom: theme === 'light' ? '1px solid rgba(15, 46, 30, 0.1)' : '1px solid rgba(255,255,255,0.08)'
                   }}>
                     <div>
-                      <span style={{ fontSize: 11, color: RF_GOLD_YELLOW, fontWeight: 700, display: 'block' }}>Official Pioneer ID</span>
-                      <span style={{ fontSize: 13.5, fontWeight: 800, color: result.pioneerId ? RF_GOLD_YELLOW : 'rgba(255,255,255,0.6)', fontFamily: 'monospace' }}>
+                      <span style={{ fontSize: 11, color: theme === 'light' ? '#B45309' : RF_GOLD_YELLOW, fontWeight: 700, display: 'block' }}>Official Pioneer ID</span>
+                      <span style={{ fontSize: 13.5, fontWeight: 800, color: result.pioneerId ? (theme === 'light' ? '#B45309' : RF_GOLD_YELLOW) : (theme === 'light' ? '#64748B' : 'rgba(255,255,255,0.6)'), fontFamily: 'monospace' }}>
                         {result.pioneerId || 'Minted upon completing profile after sign in'}
                       </span>
                     </div>
@@ -301,8 +333,10 @@ export const StatusLookupModal: React.FC<StatusModalProps> = ({
                       <button
                         onClick={() => copyToClipboard(result.pioneerId!, 'pioneer')}
                         style={{
-                          background: 'rgba(246, 178, 26, 0.12)', border: '1px solid rgba(246, 178, 26, 0.4)',
-                          color: RF_GOLD_YELLOW, padding: '5px 10px', borderRadius: 8, fontSize: 11, cursor: 'pointer',
+                          background: theme === 'light' ? 'rgba(246, 178, 26, 0.18)' : 'rgba(246, 178, 26, 0.12)',
+                          border: theme === 'light' ? '1px solid rgba(217, 119, 6, 0.4)' : '1px solid rgba(246, 178, 26, 0.4)',
+                          color: theme === 'light' ? '#92400E' : RF_GOLD_YELLOW,
+                          padding: '5px 10px', borderRadius: 8, fontSize: 11, cursor: 'pointer',
                           display: 'flex', alignItems: 'center', gap: 5, fontWeight: 600
                         }}
                       >
@@ -316,21 +350,24 @@ export const StatusLookupModal: React.FC<StatusModalProps> = ({
                   {result.acceptanceCode ? (
                     <div style={{
                       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                      paddingBottom: 10, marginBottom: 10, borderBottom: '1px solid rgba(255,255,255,0.08)'
+                      paddingBottom: 10, marginBottom: 10,
+                      borderBottom: theme === 'light' ? '1px solid rgba(15, 46, 30, 0.1)' : '1px solid rgba(255,255,255,0.08)'
                     }}>
                       <div>
-                        <span style={{ fontSize: 11, color: RF_MINT_ACCENT, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <span style={{ fontSize: 11, color: theme === 'light' ? '#15803d' : RF_MINT_ACCENT, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 4 }}>
                           <Key size={12} /> Official Acceptance Code
                         </span>
-                        <span style={{ fontSize: 15, fontWeight: 800, color: RF_MINT_ACCENT, fontFamily: 'monospace' }}>
+                        <span style={{ fontSize: 15, fontWeight: 800, color: theme === 'light' ? '#15803d' : RF_MINT_ACCENT, fontFamily: 'monospace' }}>
                           {result.acceptanceCode}
                         </span>
                       </div>
                       <button
                         onClick={() => copyToClipboard(result.acceptanceCode!, 'code')}
                         style={{
-                          background: 'rgba(24, 252, 92, 0.15)', border: `1px solid ${RF_LEAF_GREEN}66`,
-                          color: RF_MINT_ACCENT, padding: '5px 12px', borderRadius: 8, fontSize: 11.5,
+                          background: theme === 'light' ? 'rgba(102, 187, 42, 0.18)' : 'rgba(24, 252, 92, 0.15)',
+                          border: theme === 'light' ? `1px solid rgba(102, 187, 42, 0.5)` : `1px solid ${RF_LEAF_GREEN}66`,
+                          color: theme === 'light' ? '#166534' : RF_MINT_ACCENT,
+                          padding: '5px 12px', borderRadius: 8, fontSize: 11.5,
                           fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5
                         }}
                       >
@@ -341,12 +378,12 @@ export const StatusLookupModal: React.FC<StatusModalProps> = ({
                   ) : null}
 
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8, fontSize: 12.5 }}>
-                    <span style={{ color: 'rgba(255,255,255,0.6)' }}>Assigned Squad</span>
-                    <span style={{ fontWeight: 700, color: RF_MINT_ACCENT }}>{result.division || 'Founding Pioneer'}</span>
+                    <span style={{ color: theme === 'light' ? '#526E5E' : 'rgba(255,255,255,0.6)' }}>Assigned Squad</span>
+                    <span style={{ fontWeight: 700, color: theme === 'light' ? '#15803d' : RF_MINT_ACCENT }}>{result.division || 'Founding Pioneer'}</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12.5 }}>
-                    <span style={{ color: 'rgba(255,255,255,0.6)' }}>Contributor Tier</span>
-                    <span style={{ fontWeight: 700, color: '#38BDF8' }}>Level 1: Refeir Member</span>
+                    <span style={{ color: theme === 'light' ? '#526E5E' : 'rgba(255,255,255,0.6)' }}>Contributor Tier</span>
+                    <span style={{ fontWeight: 700, color: theme === 'light' ? '#0284C7' : '#38BDF8' }}>Level 1: Refeir Member</span>
                   </div>
                 </div>
 
@@ -358,7 +395,7 @@ export const StatusLookupModal: React.FC<StatusModalProps> = ({
                       onActivateAccount(result.applicationNumber, result.acceptanceCode!, result.pioneerId);
                     }}
                     style={{
-                      width: '100%', background: RF_LEAF_GREEN, color: RF_DEEP_GREEN,
+                      width: '100%', background: RF_LEAF_GREEN, color: '#061A0F',
                       border: 'none', padding: '13px 20px', borderRadius: 100,
                       fontWeight: 800, fontSize: 14, cursor: 'pointer',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
@@ -386,21 +423,21 @@ export const StatusLookupModal: React.FC<StatusModalProps> = ({
               </div>
             ) : result?.status === 'REVIEWING' ? (
               <div style={{ textAlign: 'center', padding: '12px 0' }}>
-                <Clock size={44} color={RF_GOLD_YELLOW} style={{ margin: '0 auto 12px' }} />
-                <h4 style={{ fontSize: 20, fontWeight: 700, color: '#FFFFFF', marginBottom: 6 }}>
+                <Clock size={44} color={theme === 'light' ? '#D97706' : RF_GOLD_YELLOW} style={{ margin: '0 auto 12px' }} />
+                <h4 style={{ fontSize: 20, fontWeight: 700, color: theme === 'light' ? '#0A1C12' : '#FFFFFF', marginBottom: 6 }}>
                   Application Under Active Review
                 </h4>
-                <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)', lineHeight: 1.6 }}>
+                <p style={{ fontSize: 14, color: theme === 'light' ? '#334D3F' : 'rgba(255,255,255,0.8)', lineHeight: 1.6 }}>
                   Hi {result.fullName}, our admissions team is currently evaluating your application for the <strong>{result.division || 'Pioneer'}</strong> cohort. You will receive an update and your Acceptance Code once approved.
                 </p>
               </div>
             ) : (
               <div style={{ textAlign: 'center', padding: '12px 0' }}>
                 <CheckCircle2 size={44} color={RF_LEAF_GREEN} style={{ margin: '0 auto 12px' }} />
-                <h4 style={{ fontSize: 20, fontWeight: 700, color: '#FFFFFF', marginBottom: 6 }}>
+                <h4 style={{ fontSize: 20, fontWeight: 700, color: theme === 'light' ? '#0A1C12' : '#FFFFFF', marginBottom: 6 }}>
                   Application Received
                 </h4>
-                <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)', lineHeight: 1.6 }}>
+                <p style={{ fontSize: 14, color: theme === 'light' ? '#334D3F' : 'rgba(255,255,255,0.8)', lineHeight: 1.6 }}>
                   Thank you, {result?.fullName}! Your application is queued in our review backlog. Once accepted, an Acceptance Code will be issued here to allow you to activate your account.
                 </p>
               </div>
@@ -409,7 +446,9 @@ export const StatusLookupModal: React.FC<StatusModalProps> = ({
             <button
               onClick={() => { setLookupState('idle'); setAppNumber(''); setEmail(''); }}
               style={{
-                background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.85)', border: '1px solid rgba(255,255,255,0.18)',
+                background: theme === 'light' ? '#F1F5F9' : 'rgba(255,255,255,0.06)',
+                color: theme === 'light' ? '#0A1C12' : 'rgba(255,255,255,0.85)',
+                border: theme === 'light' ? '1px solid #CBD5E1' : '1px solid rgba(255,255,255,0.18)',
                 padding: '10px 20px', borderRadius: 100, fontSize: 13, fontWeight: 500, cursor: 'pointer',
                 transition: 'all 0.2s', marginTop: 18, width: '100%'
               }}
