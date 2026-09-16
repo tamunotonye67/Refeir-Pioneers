@@ -471,16 +471,18 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
               background: 'rgba(15, 46, 30, 0.7)',
               border: `1px solid ${RF_LEAF_GREEN}35`
             }}>
-              <div className="rp-banner-icon">
-                <ShieldCheck size={20} />
-              </div>
-              <div className="rp-banner-body">
-                <div className="rp-banner-title">
-                  Advancing to Level 2 (Refeir Pioneer) &amp; Beyond
+              <div className="rp-banner-content">
+                <div className="rp-banner-icon">
+                  <ShieldCheck size={20} />
                 </div>
-                <p className="rp-banner-text">
-                  Submitting tangible proof of work (such as code PRs, Figma links, and screenshots) allows your squad leader and core team to upgrade your profile, mint your verified badge, and unlock commission multipliers.
-                </p>
+                <div className="rp-banner-body">
+                  <div className="rp-banner-title">
+                    Advancing to Level 2 (Refeir Pioneer) &amp; Beyond
+                  </div>
+                  <p className="rp-banner-text">
+                    Submitting tangible proof of work (such as code PRs, Figma links, and screenshots) allows your squad leader and core team to upgrade your profile, mint your verified badge, and unlock commission multipliers.
+                  </p>
+                </div>
               </div>
             </div>
 
@@ -490,13 +492,13 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
               border: contributor ? `1px solid ${RF_LEAF_GREEN}55` : '1px solid rgba(255, 255, 255, 0.12)'
             }}>
               {contributor ? (
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14, flex: '1 1 auto', minWidth: 0 }}>
+                <div className="rp-banner-content">
                   <div style={{
                     width: 40, height: 40, borderRadius: '50%',
                     background: `linear-gradient(135deg, ${RF_LEAF_GREEN} 0%, ${RF_MINT_ACCENT} 100%)`,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     color: RF_DEEP_GREEN, fontWeight: 800, fontSize: 15,
-                    flexShrink: 0, overflow: 'hidden', marginTop: 1
+                    flexShrink: 0, overflow: 'hidden'
                   }}>
                     {contributor.avatar_url ? (
                       <img src={contributor.avatar_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -528,7 +530,7 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                   </div>
                 </div>
               ) : (
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14, flex: '1 1 auto', minWidth: 0 }}>
+                <div className="rp-banner-content">
                   <div className="rp-banner-icon">
                     <User size={19} />
                   </div>
