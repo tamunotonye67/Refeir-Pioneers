@@ -493,7 +493,7 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
             }}>
               {contributor ? (
                 <div className="rp-banner-content">
-                  <div style={{
+                  <div className="rp-banner-avatar" style={{
                     width: 40, height: 40, borderRadius: '50%',
                     background: `linear-gradient(135deg, ${RF_LEAF_GREEN} 0%, ${RF_MINT_ACCENT} 100%)`,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -507,7 +507,7 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                     )}
                   </div>
                   <div className="rp-banner-body">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                    <div className="rp-banner-contributor-header" style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                       <span style={{ fontSize: 14.5, fontWeight: 700, color: '#FFFFFF' }}>
                         {contributor.full_name}
                       </span>
