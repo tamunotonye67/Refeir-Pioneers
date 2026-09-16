@@ -673,17 +673,17 @@ img, svg {
     backdrop-filter: blur(8px) !important;
     -webkit-backdrop-filter: blur(8px) !important;
     z-index: 998 !important;
-    will-change: opacity;
-    animation: rp-docker-fade-in 0.22s ease-out forwards;
+    animation: rp-docker-fade-in 0.2s ease-out forwards;
+    touch-action: none;
   }
 
   .rp-docker-handle {
     display: block !important;
-    width: 44px !important;
-    height: 5px !important;
-    background: rgba(255, 255, 255, 0.3) !important;
+    width: 36px !important;
+    height: 4px !important;
+    background: rgba(255, 255, 255, 0.22) !important;
     border-radius: 999px !important;
-    margin: 2px auto 14px auto !important;
+    margin: 4px auto 10px auto !important;
     flex-shrink: 0 !important;
   }
 
@@ -695,38 +695,45 @@ img, svg {
     right: 0 !important;
     width: 100% !important;
     max-width: 100% !important;
-    height: 50dvh !important;
-    max-height: 54dvh !important;
-    min-height: 46dvh !important;
+    height: auto !important;
+    max-height: 85vh !important;
+    min-height: auto !important;
     margin: 0 !important;
-    border-radius: 24px 24px 0 0 !important;
-    border: 1px solid rgba(102, 187, 42, 0.35) !important;
+    border-radius: 20px 20px 0 0 !important;
+    border: 1px solid rgba(102, 187, 42, 0.28) !important;
     border-bottom: none !important;
-    background: #0C2819 !important;
-    background: linear-gradient(180deg, #0C2819 0%, #05150C 100%) !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.88), 0 0 30px rgba(24, 252, 92, 0.15) !important;
-    padding: 12px 20px calc(24px + env(safe-area-inset-bottom, 16px)) !important;
+    background: #082012 !important;
+    background: linear-gradient(180deg, #0A2616 0%, #05160C 100%) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.88), 0 0 30px rgba(24, 252, 92, 0.1) !important;
+    padding: 8px 16px calc(18px + env(safe-area-inset-bottom, 12px)) !important;
     z-index: 999 !important;
     overflow-y: auto !important;
     overscroll-behavior: contain !important;
     -webkit-overflow-scrolling: touch;
     box-sizing: border-box !important;
-    will-change: transform;
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
     transform: translate3d(0, 0, 0);
-    animation: rp-docker-slide-up 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: rp-docker-slide-up 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     display: flex !important;
     flex-direction: column !important;
+    touch-action: pan-y;
   }
 
   .rp-docker-btn {
-    padding: 12px 14px !important;
-    font-size: 14px !important;
-    border-radius: 12px !important;
-    margin-bottom: 4px !important;
+    padding: 10px 12px !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    border-radius: 10px !important;
+    margin-bottom: 2px !important;
+    color: rgba(255, 255, 255, 0.85) !important;
+    gap: 10px !important;
+    transition: background 0.15s ease !important;
+  }
+
+  .rp-docker-btn:active {
+    background: rgba(24, 252, 92, 0.1) !important;
+    color: #FFFFFF !important;
   }
 }
 

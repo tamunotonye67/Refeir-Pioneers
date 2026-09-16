@@ -80,7 +80,8 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
   }, []);
 
   useEffect(() => {
-    if (mobileMenuOpen) {
+    const shouldLock = mobileMenuOpen || (profileMenuOpen && isMobile);
+    if (shouldLock) {
       document.body.style.overflow = 'hidden';
       document.body.style.touchAction = 'none';
     } else {
@@ -91,7 +92,7 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
       document.body.style.overflow = '';
       document.body.style.touchAction = '';
     };
-  }, [mobileMenuOpen]);
+  }, [mobileMenuOpen, profileMenuOpen, isMobile]);
 
   const handleLinkClick = (target: string, isHash: boolean = false) => {
     setMobileMenuOpen(false);
@@ -775,53 +776,91 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
                     {/* Mobile Sheet Handle Pill */}
                     <div className="rp-docker-handle" />
 
-                    <div style={{ padding: '4px 8px 12px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <div>
-                          <div style={{ fontSize: 15, fontWeight: 700, color: '#FFFFFF' }}>
+                    {/* Header Card */}
+                    <div style={{
+                      padding: '10px 12px',
+                      background: 'rgba(255, 255, 255, 0.03)',
+                      border: '1px solid rgba(255, 255, 255, 0.06)',
+                      borderRadius: 12,
+                      marginBottom: 6
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <div style={{
+                          width: 36, height: 36, borderRadius: '50%',
+                          background: `linear-gradient(135deg, ${RF_LEAF_GREEN} 0%, ${RF_MINT_ACCENT} 100%)`,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          color: RF_DEEP_GREEN, fontWeight: 700, fontSize: 13,
+                          flexShrink: 0, overflow: 'hidden'
+                        }}>
+                          {contributor.avatar_url ? (
+                            <img src={contributor.avatar_url} alt={contributor.full_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          ) : (
+                            contributor.full_name.charAt(0).toUpperCase()
+                          )}
+                        </div>
+                        <div style={{ minWidth: 0, flex: 1 }}>
+                          <div style={{
+                            fontSize: 14, fontWeight: 600, color: '#FFFFFF',
+                            whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                            lineHeight: 1.2
+                          }}>
                             {contributor.full_name}
                           </div>
-                          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          <div style={{
+                            fontSize: 11.5, color: 'rgba(255, 255, 255, 0.48)',
+                            whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                            marginTop: 2
+                          }}>
                             {contributor.email}
                           </div>
                         </div>
+                      </div>
+
+                      {/* Metadata Badges */}
+                      <div style={{
+                        display: 'flex', alignItems: 'center', gap: 6,
+                        marginTop: 8, paddingTop: 6,
+                        borderTop: '1px solid rgba(255, 255, 255, 0.05)'
+                      }}>
                         <span style={{
-                          fontSize: 10,
-                          background: 'rgba(24, 252, 92, 0.12)', color: RF_MINT_ACCENT,
-                          padding: '3px 8px', borderRadius: 6, fontWeight: 700,
-                          border: '1px solid rgba(24, 252, 92, 0.25)',
-                          textTransform: 'uppercase', letterSpacing: '0.04em',
+                          fontSize: 9.5, fontWeight: 700, letterSpacing: '0.04em',
+                          background: 'rgba(24, 252, 92, 0.1)', color: RF_MINT_ACCENT,
+                          border: '1px solid rgba(24, 252, 92, 0.22)',
+                          padding: '2px 8px', borderRadius: 100, textTransform: 'uppercase',
+                          display: 'inline-flex', alignItems: 'center', gap: 4,
                           whiteSpace: 'nowrap'
                         }}>
+                          <span style={{ width: 4.5, height: 4.5, borderRadius: '50%', background: RF_MINT_ACCENT }} />
                           {contributor.contributor_level.replace('_', ' ')}
                         </span>
-                      </div>
-                      {contributor.application_number && (
-                        <div style={{ marginTop: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                        {contributor.application_number && (
                           <span style={{
-                            display: 'inline-block', fontSize: 10,
-                            background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.7)',
-                            padding: '2px 8px', borderRadius: 4, fontWeight: 600,
-                            letterSpacing: '0.03em'
+                            fontSize: 10, fontFamily: 'monospace',
+                            color: 'rgba(255, 255, 255, 0.6)',
+                            background: 'rgba(255, 255, 255, 0.05)',
+                            border: '1px solid rgba(255, 255, 255, 0.07)',
+                            padding: '2px 8px', borderRadius: 100,
+                            letterSpacing: '0.02em', whiteSpace: 'nowrap'
                           }}>
                             ID: {contributor.application_number}
                           </span>
-                        </div>
-                      )}
+                        )}
+                      </div>
                     </div>
 
-                    <div style={{ padding: '12px 0 6px', display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    {/* Navigation Options with Consistent Minimalist Styling */}
+                    <div style={{ padding: '2px 0', display: 'flex', flexDirection: 'column', gap: 2 }}>
                       {!contributor.is_profile_completed ? (
                         <button
                           className="rp-docker-btn"
                           onClick={() => { setProfileMenuOpen(false); onNavigate('/complete-profile'); }}
                           style={{
-                            background: 'rgba(255, 184, 0, 0.15)', border: '1px solid rgba(255, 184, 0, 0.4)',
-                            color: '#FDE68A', fontWeight: 700, marginBottom: 6
+                            background: 'rgba(255, 184, 0, 0.1)', border: '1px solid rgba(255, 184, 0, 0.25)',
+                            color: '#FDE68A', fontWeight: 600, marginBottom: 4
                           }}
                         >
-                          <span style={{ width: 24, height: 24, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                            <User size={18} color={RF_GOLD_YELLOW} />
+                          <span style={{ width: 20, height: 20, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: RF_GOLD_YELLOW }}>
+                            <User size={16} />
                           </span>
                           <span>Complete Profile (Mint ID)</span>
                         </button>
@@ -830,8 +869,8 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
                           className="rp-docker-btn"
                           onClick={() => { setProfileMenuOpen(false); onNavigate('/profile'); }}
                         >
-                          <span style={{ width: 24, height: 24, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                            <User size={18} color={RF_MINT_ACCENT} />
+                          <span style={{ width: 20, height: 20, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: 'rgba(255,255,255,0.6)' }}>
+                            <User size={16} />
                           </span>
                           <span>Profile</span>
                         </button>
@@ -844,8 +883,8 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
                           onNavigate('/profile');
                         }}
                       >
-                        <span style={{ width: 24, height: 24, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <FileCheck size={18} color={RF_GOLD_YELLOW} />
+                        <span style={{ width: 20, height: 20, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: 'rgba(255,255,255,0.6)' }}>
+                          <FileCheck size={16} />
                         </span>
                         <span>My Certificates</span>
                       </button>
@@ -853,8 +892,8 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
                         className="rp-docker-btn"
                         onClick={() => { setProfileMenuOpen(false); handleLinkClick('/submit-task', false); }}
                       >
-                        <span style={{ width: 24, height: 24, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <Award size={18} color={RF_MINT_ACCENT} />
+                        <span style={{ width: 20, height: 20, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: 'rgba(255,255,255,0.6)' }}>
+                          <Award size={16} />
                         </span>
                         <span>Submit Task Proof</span>
                       </button>
@@ -862,19 +901,19 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
                         className="rp-docker-btn"
                         onClick={() => { setProfileMenuOpen(false); handleLinkClick('/rewards', false); }}
                       >
-                        <span style={{ width: 24, height: 24, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <Zap size={18} color={RF_GOLD_YELLOW} />
+                        <span style={{ width: 20, height: 20, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: 'rgba(255,255,255,0.6)' }}>
+                          <Zap size={16} />
                         </span>
-                        <span>Rewards & Ladder</span>
+                        <span>Rewards &amp; Ladder</span>
                       </button>
-                      <div style={{ height: 1, background: 'rgba(255,255,255,0.08)', margin: '8px 0' }} />
+                      <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', margin: '4px 0' }} />
                       <button
                         className="rp-docker-btn"
                         onClick={() => { setProfileMenuOpen(false); signOutContributor(); }}
                         style={{ color: '#FCA5A5' }}
                       >
-                        <span style={{ width: 24, height: 24, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <LogOut size={18} color="#FCA5A5" />
+                        <span style={{ width: 20, height: 20, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: 'rgba(252,165,165,0.7)' }}>
+                          <LogOut size={16} />
                         </span>
                         <span>Sign Out</span>
                       </button>
