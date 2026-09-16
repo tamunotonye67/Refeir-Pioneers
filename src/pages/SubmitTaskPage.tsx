@@ -463,116 +463,44 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
               </p>
             </div>
 
-            {/* Verification Rule Notice Card */}
-            <div className="rp-banner-card" style={{
-              background: 'rgba(15, 46, 30, 0.7)',
-              border: `1px solid ${RF_LEAF_GREEN}35`
-            }}>
-              <div className="rp-banner-content">
-                <div className="rp-banner-body">
-                  <div className="rp-banner-title">
-                    Advance to Level 2 (Pioneer) &amp; Beyond
-                  </div>
-                  <p className="rp-banner-text">
-                    Verified proof of work unlocks your Pioneer badge, squad ranking, and contributor reward multipliers.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Contributor Profile Banner / Sign In Trigger */}
-            <div className="rp-banner-card" style={{
-              background: contributor ? 'rgba(24, 252, 92, 0.08)' : 'rgba(255, 255, 255, 0.04)',
-              border: contributor ? `1px solid ${RF_LEAF_GREEN}55` : '1px solid rgba(255, 255, 255, 0.12)'
-            }}>
-              {contributor ? (
-                <div className="rp-banner-content">
-                  <div className="rp-banner-avatar" style={{
-                    width: 38, height: 38, borderRadius: '50%',
-                    background: `linear-gradient(135deg, ${RF_LEAF_GREEN} 0%, ${RF_MINT_ACCENT} 100%)`,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    color: RF_DEEP_GREEN, fontWeight: 800, fontSize: 14,
-                    flexShrink: 0, overflow: 'hidden'
-                  }}>
+            {/* Contributor Profile Bar */}
+            {contributor && (
+              <div className="rp-contributor-bar">
+                <div className="rp-contributor-info">
+                  <div className="rp-contributor-avatar">
                     {contributor.avatar_url ? (
-                      <img src={contributor.avatar_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <img src={contributor.avatar_url} alt="" />
                     ) : (
                       contributor.full_name.charAt(0).toUpperCase()
                     )}
                   </div>
-                  <div className="rp-banner-body">
-                    <div className="rp-banner-contributor-header" style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-                      <span style={{ fontSize: 14, fontWeight: 700, color: '#FFFFFF' }}>
-                        {contributor.full_name}
-                      </span>
-                      <span style={{
-                        fontSize: 10, fontWeight: 700, color: RF_DEEP_GREEN, background: RF_MINT_ACCENT,
-                        padding: '2px 7px', borderRadius: 100, textTransform: 'uppercase', letterSpacing: '0.04em'
-                      }}>
+                  <div className="rp-contributor-details">
+                    <div className="rp-contributor-meta">
+                      <span className="rp-contributor-name">{contributor.full_name}</span>
+                      <span className="rp-contributor-badge rp-contributor-level-badge">
                         {contributor.contributor_level.replace('_', ' ')}
                       </span>
-                      <span style={{
-                        fontSize: 10, color: 'rgba(255,255,255,0.7)', background: 'rgba(255,255,255,0.08)',
-                        padding: '2px 7px', borderRadius: 100
-                      }}>
+                      <span className="rp-contributor-badge rp-contributor-squad-badge">
                         {contributor.division}
                       </span>
                     </div>
-                    <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.6)', marginTop: 3, wordBreak: 'break-word', lineHeight: 1.4 }}>
+                    <div className="rp-contributor-id">
                       {contributor.email} {contributor.application_number ? `• ${contributor.application_number}` : ''} {contributor.pioneer_id ? `• ${contributor.pioneer_id}` : ''}
                     </div>
                   </div>
                 </div>
-              ) : (
-                <div className="rp-banner-content">
-                  <div className="rp-banner-body">
-                    <div className="rp-banner-title">
-                      Contributor Profile Sign In
-                    </div>
-                    <p className="rp-banner-text">
-                      Sign in to link task submissions and track approved proofs automatically.
-                    </p>
-                  </div>
-                </div>
-              )}
 
-              <div className="rp-banner-action-col">
-                {contributor ? (
-                  <button
-                    onClick={() => signOutContributor()}
-                    className="rp-banner-btn-signout"
-                    style={{
-                      background: 'rgba(239, 68, 68, 0.1)',
-                      border: '1px solid rgba(239, 68, 68, 0.3)',
-                      color: '#FCA5A5',
-                      padding: '7px 14px',
-                      borderRadius: 100,
-                      fontSize: 12,
-                      fontWeight: 600,
-                      cursor: 'pointer',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: 5,
-                      lineHeight: 1,
-                      whiteSpace: 'nowrap',
-                      flexShrink: 0
-                    }}
-                  >
-                    <LogOut size={12} style={{ flexShrink: 0 }} />
-                    <span>Sign Out</span>
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => onNavigate('/signin')}
-                    className="rp-banner-btn"
-                  >
-                    <LogIn size={13} style={{ flexShrink: 0 }} />
-                    <span>Sign In</span>
-                  </button>
-                )}
+                <button
+                  type="button"
+                  onClick={() => signOutContributor()}
+                  className="rp-contributor-signout-btn"
+                  title="Sign out of contributor session"
+                >
+                  <LogOut size={12} style={{ flexShrink: 0 }} />
+                  <span>Sign Out</span>
+                </button>
               </div>
-            </div>
+            )}
 
             {contributor && !contributor.is_profile_completed && (
               <div style={{
@@ -701,33 +629,14 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
 
             {/* TAB: MISSION HISTORY */}
             {activeTab === 'history' && (
-              <div style={{
-                background: 'rgba(7, 24, 15, 0.75)',
-                backdropFilter: 'blur(16px)',
-                border: '1px solid rgba(102, 187, 42, 0.2)',
-                borderRadius: 24,
-                padding: 'clamp(24px, 4vw, 36px)',
-                boxShadow: '0 20px 50px rgba(0,0,0,0.5)'
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
-                  <div>
-                    <h2 style={{ fontSize: 20, fontWeight: 800, color: '#FFFFFF', margin: 0 }}>
-                      My Tracked Proofs of Work
-                    </h2>
-                    <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', margin: '4px 0 0' }}>
-                      Associated with: <strong style={{ color: RF_MINT_ACCENT }}>{contributor?.email || email || 'Current Session'}</strong>
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => setActiveTab('submit')}
-                    style={{
-                      background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.2)',
-                      color: '#FFFFFF', padding: '7px 14px', borderRadius: 100, fontSize: 12,
-                      fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5
-                    }}
-                  >
-                    <Zap size={13} color={RF_MINT_ACCENT} /> Submit Proof
-                  </button>
+              <div className="rp-submittask-history-card">
+                <div style={{ marginBottom: 20 }}>
+                  <h2 style={{ fontSize: 18, fontWeight: 800, color: '#FFFFFF', margin: 0 }}>
+                    My Tracked Proofs of Work
+                  </h2>
+                  <p style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.6)', margin: '4px 0 0' }}>
+                    Contributor: <strong style={{ color: RF_MINT_ACCENT }}>{contributor?.email || email || 'Current Session'}</strong>
+                  </p>
                 </div>
 
                 {loadingTasks ? (
@@ -754,38 +663,34 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                         cursor: 'pointer'
                       }}
                     >
-                      Submit First Proof
+                      Submit Proof
                     </button>
                   </div>
                 ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                     {myTasks.map(task => {
                       const isVerified = task.status === 'VERIFIED';
                       const isPending = task.status === 'PENDING';
                       const isRevision = task.status === 'NEEDS_REVISION';
-                      const isRejected = task.status === 'REJECTED';
 
                       return (
                         <div
                           key={task.id}
+                          className="rp-submittask-task-card"
                           style={{
-                            background: 'rgba(15, 46, 30, 0.65)',
-                            border: `1px solid ${isVerified ? RF_LEAF_GREEN + '66' : isRevision ? RF_ORANGE + '66' : 'rgba(255,255,255,0.1)'}`,
-                            borderRadius: 16,
-                            padding: '20px 24px',
-                            transition: 'all 0.2s'
+                            border: `1px solid ${isVerified ? RF_LEAF_GREEN + '55' : isRevision ? RF_ORANGE + '55' : 'rgba(255,255,255,0.1)'}`
                           }}
                         >
-                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 10, flexWrap: 'wrap' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, marginBottom: 10, flexWrap: 'wrap' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                               <span style={{
-                                fontSize: 11, fontWeight: 800, letterSpacing: '0.06em',
+                                fontSize: 11, fontWeight: 800, letterSpacing: '0.04em',
                                 color: RF_MINT_ACCENT, background: 'rgba(24, 252, 92, 0.1)',
                                 padding: '3px 8px', borderRadius: 6, border: `1px solid ${RF_LEAF_GREEN}33`
                               }}>
                                 {task.reference_id}
                               </span>
-                              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>
+                              <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.5)' }}>
                                 {new Date(task.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                               </span>
                             </div>
@@ -793,7 +698,7 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                             {/* Status Badge */}
                             <div style={{
                               display: 'inline-flex', alignItems: 'center',
-                              padding: '4px 12px', borderRadius: 100, fontSize: 12, fontWeight: 700,
+                              padding: '3px 10px', borderRadius: 100, fontSize: 11, fontWeight: 700,
                               background: isVerified
                                 ? 'rgba(24, 252, 92, 0.15)'
                                 : isPending
@@ -814,40 +719,37 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                             </div>
                           </div>
 
-                          <h3 style={{ fontSize: 16, fontWeight: 700, color: '#FFFFFF', margin: '0 0 6px' }}>
+                          <h3 style={{ fontSize: 15, fontWeight: 700, color: '#FFFFFF', margin: '0 0 6px' }}>
                             {task.task_title}
                           </h3>
 
-                          <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 12, flexWrap: 'wrap' }}>
-                            <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.7)', background: 'rgba(255,255,255,0.06)', padding: '2px 8px', borderRadius: 6 }}>
+                          <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginBottom: 10, flexWrap: 'wrap' }}>
+                            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)', background: 'rgba(255,255,255,0.06)', padding: '2px 8px', borderRadius: 6 }}>
                               {task.task_category}
                             </span>
-                            <span style={{ fontSize: 11.5, color: RF_GOLD_YELLOW, background: 'rgba(246, 178, 26, 0.08)', padding: '2px 8px', borderRadius: 6 }}>
-                              Target: {task.target_level.replace('_', ' ')}
+                            <span style={{ fontSize: 11, color: RF_GOLD_YELLOW, background: 'rgba(246, 178, 26, 0.08)', padding: '2px 8px', borderRadius: 6 }}>
+                              {task.target_level.replace('_', ' ')}
                             </span>
-                            <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.5)' }}>
+                            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)' }}>
                               Squad: {task.division}
                             </span>
                           </div>
 
-                          <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', lineHeight: 1.5, margin: '0 0 14px' }}>
+                          <p style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.75)', lineHeight: 1.5, margin: '0 0 12px' }}>
                             {task.task_description}
                           </p>
 
                           {/* Deliverables Links */}
                           {(task.deliverable_url || task.additional_url) && (
-                            <div style={{ display: 'flex', gap: 12, marginBottom: 14, flexWrap: 'wrap' }}>
+                            <div style={{ display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
                               {task.deliverable_url && (
                                 <a
                                   href={task.deliverable_url}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  style={{
-                                    fontSize: 12, color: RF_MINT_ACCENT, display: 'inline-flex',
-                                    alignItems: 'center', gap: 4, textDecoration: 'none'
-                                  }}
+                                  className="rp-submittask-pill-link"
                                 >
-                                  <ExternalLink size={12} /> Primary Deliverable
+                                  <ExternalLink size={12} /> Deliverable
                                 </a>
                               )}
                               {task.additional_url && (
@@ -855,12 +757,9 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                                   href={task.additional_url}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  style={{
-                                    fontSize: 12, color: RF_MINT_ACCENT, display: 'inline-flex',
-                                    alignItems: 'center', gap: 4, textDecoration: 'none'
-                                  }}
+                                  className="rp-submittask-pill-link-secondary"
                                 >
-                                  <ExternalLink size={12} /> Additional URL
+                                  <ExternalLink size={12} /> Link
                                 </a>
                               )}
                             </div>
@@ -868,7 +767,7 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
 
                           {/* Screenshots preview */}
                           {task.screenshots && task.screenshots.length > 0 && (
-                            <div style={{ marginTop: 10 }}>
+                            <div style={{ marginTop: 8 }}>
                               <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', display: 'block', marginBottom: 6 }}>
                                 Attachments ({task.screenshots.length}):
                               </span>
@@ -879,8 +778,12 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                                     src={s.data_url}
                                     alt={s.name}
                                     onClick={() => setPreviewModalImg(s.data_url)}
+                                    onError={e => {
+                                      // Hide broken image placeholder
+                                      (e.currentTarget as HTMLImageElement).style.display = 'none';
+                                    }}
                                     style={{
-                                      width: 60, height: 44, objectFit: 'cover', borderRadius: 6,
+                                      width: 58, height: 42, objectFit: 'cover', borderRadius: 6,
                                       border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer'
                                     }}
                                   />
@@ -892,10 +795,10 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                           {/* Admin Feedback Box */}
                           {task.admin_feedback && (
                             <div style={{
-                              marginTop: 14, padding: '10px 14px', borderRadius: 10,
+                              marginTop: 12, padding: '10px 12px', borderRadius: 8,
                               background: isVerified ? 'rgba(24, 252, 92, 0.08)' : 'rgba(244, 124, 32, 0.08)',
                               border: `1px solid ${isVerified ? RF_LEAF_GREEN + '33' : RF_ORANGE + '33'}`,
-                              fontSize: 12.5, color: '#FFFFFF', lineHeight: 1.4
+                              fontSize: 12, color: '#FFFFFF', lineHeight: 1.4
                             }}>
                               <strong style={{ color: isVerified ? RF_MINT_ACCENT : RF_ORANGE }}>Reviewer Feedback: </strong>
                               {task.admin_feedback}
@@ -1377,7 +1280,7 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                 ) : (
                   <>
                     <Zap size={16} style={{ flexShrink: 0 }} />
-                    Submit Verification
+                    Submit Proof
                   </>
                 )}
               </button>

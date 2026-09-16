@@ -1609,25 +1609,182 @@ img, svg {
 }
 
 /* ─── SUBMIT TASK PAGE MODERN RESPONSIVE STYLES ─── */
+/* ─── SUBMIT TASK PAGE MODERN RESPONSIVE STYLES ─── */
 .rp-submittask-container {
   max-width: 880px;
   margin: 0 auto;
   padding: 0 24px;
+  box-sizing: border-box;
 }
 
 .rp-submittask-header {
   text-align: center;
-  margin-bottom: 34px;
+  margin-bottom: 28px;
 }
 
-.rp-submittask-form-card {
+.rp-submittask-form-card,
+.rp-submittask-history-card {
   background: rgba(7, 24, 15, 0.75);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(102, 187, 42, 0.2);
   border-radius: 20px;
-  padding: 36px;
+  padding: 32px 28px;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  box-sizing: border-box;
+}
+
+.rp-contributor-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: rgba(24, 252, 92, 0.06);
+  border: 1px solid rgba(24, 252, 92, 0.22);
+  border-radius: 14px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  box-sizing: border-box;
+}
+
+.rp-contributor-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.rp-contributor-bar-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #66BB2A 0%, #18FC5C 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0F2E1E;
+  font-weight: 800;
+  font-size: 14px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.rp-contributor-bar-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.rp-contributor-bar-name-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.rp-contributor-bar-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #FFFFFF;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rp-submittask-badge-level {
+  font-size: 9.5px;
+  font-weight: 800;
+  color: #0F2E1E;
+  background: #18FC5C;
+  padding: 1px 7px;
+  border-radius: 100px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.rp-submittask-badge-squad {
+  font-size: 9.5px;
+  color: rgba(255, 255, 255, 0.75);
+  background: rgba(255, 255, 255, 0.08);
+  padding: 1px 7px;
+  border-radius: 100px;
+}
+
+.rp-contributor-bar-meta {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.55);
+  margin-top: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rp-contributor-bar-signout {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #FCA5A5;
+  padding: 5px 12px;
+  border-radius: 8px;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.rp-contributor-bar-signout:hover {
+  background: rgba(239, 68, 68, 0.18);
+  border-color: rgba(239, 68, 68, 0.45);
+}
+
+.rp-submittask-task-card {
+  background: rgba(15, 46, 30, 0.65);
+  border-radius: 14px;
+  padding: 18px 20px;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.rp-submittask-pill-link {
+  font-size: 11.5px;
+  color: #18FC5C;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  text-decoration: none;
+  background: rgba(24, 252, 92, 0.08);
+  border: 1px solid rgba(102, 187, 42, 0.28);
+  padding: 4px 10px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.rp-submittask-pill-link:hover {
+  background: rgba(24, 252, 92, 0.18);
+  border-color: #18FC5C;
+}
+
+.rp-submittask-pill-link-secondary {
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, 0.85);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 4px 10px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.rp-submittask-pill-link-secondary:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .rp-submittask-tabs {
@@ -1635,14 +1792,14 @@ img, svg {
   background: rgba(0, 0, 0, 0.4);
   border-radius: 12px;
   padding: 4px;
-  margin-bottom: 22px;
+  margin-bottom: 20px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   gap: 4px;
 }
 
 .rp-submittask-tab-btn {
   flex: 1;
-  padding: 10px 14px;
+  padding: 9px 14px;
   border-radius: 8px;
   border: none;
   font-size: 13px;
@@ -1651,7 +1808,7 @@ img, svg {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 7px;
+  gap: 6px;
   transition: all 0.15s ease;
   white-space: nowrap;
 }
@@ -1676,9 +1833,9 @@ img, svg {
   background: #66BB2A;
   color: #0F2E1E;
   border: none;
-  padding: 15px;
-  border-radius: 12px;
-  font-size: 15px;
+  padding: 13px;
+  border-radius: 100px;
+  font-size: 14.5px;
   font-weight: 800;
   cursor: pointer;
   display: flex;
@@ -1702,39 +1859,70 @@ img, svg {
 
 @media (max-width: 640px) {
   .rp-submittask-container {
-    padding: 0 14px !important;
+    padding: 0 12px !important;
   }
 
   .rp-submittask-header {
-    margin-bottom: 22px !important;
+    margin-bottom: 18px !important;
   }
 
   .rp-submittask-header h1 {
-    font-size: 24px !important;
+    font-size: 22px !important;
     line-height: 1.25 !important;
-    margin-bottom: 10px !important;
+    margin-bottom: 8px !important;
   }
 
   .rp-submittask-header p {
-    font-size: 13.5px !important;
-    line-height: 1.55 !important;
+    font-size: 12.5px !important;
+    line-height: 1.5 !important;
   }
 
-  .rp-submittask-form-card {
-    padding: 20px 14px !important;
-    border-radius: 16px !important;
+  .rp-submittask-form-card,
+  .rp-submittask-history-card {
+    padding: 16px 12px !important;
+    border-radius: 14px !important;
+  }
+
+  .rp-contributor-bar {
+    padding: 8px 10px !important;
+    border-radius: 10px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .rp-contributor-bar-avatar {
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 12px !important;
+  }
+
+  .rp-contributor-bar-name {
+    font-size: 12.5px !important;
+  }
+
+  .rp-contributor-bar-meta {
+    font-size: 10px !important;
+  }
+
+  .rp-contributor-bar-signout {
+    padding: 4px 8px !important;
+    font-size: 10.5px !important;
+  }
+
+  .rp-submittask-task-card {
+    padding: 14px 10px !important;
+    border-radius: 10px !important;
   }
 
   .rp-submittask-tabs {
     border-radius: 10px !important;
     padding: 3px !important;
-    margin-bottom: 18px !important;
+    margin-bottom: 14px !important;
   }
 
   .rp-submittask-tab-btn {
-    padding: 8px 8px !important;
+    padding: 8px 6px !important;
     font-size: 12px !important;
-    gap: 5px !important;
+    gap: 4px !important;
   }
 
   .rp-target-levels-grid {
@@ -1743,23 +1931,23 @@ img, svg {
   }
 
   .rp-target-level-card {
-    padding: 10px 10px !important;
+    padding: 10px 8px !important;
     border-radius: 10px !important;
   }
 
   .rp-target-level-card-label {
-    font-size: 12px !important;
+    font-size: 11.5px !important;
   }
 
   .rp-target-level-card-sub {
-    font-size: 10px !important;
+    font-size: 9.5px !important;
     line-height: 1.3 !important;
   }
 
   .rp-submittask-submit-btn {
-    padding: 13px !important;
+    padding: 12px !important;
     font-size: 14px !important;
-    border-radius: 10px !important;
+    border-radius: 100px !important;
   }
 }
 
