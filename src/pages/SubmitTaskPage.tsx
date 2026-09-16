@@ -465,40 +465,168 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
 
             {/* Contributor Profile Bar */}
             {contributor && (
-              <div className="rp-contributor-bar">
-                <div className="rp-contributor-info">
-                  <div className="rp-contributor-avatar">
+              <div
+                className="rp-banner-card rp-contributor-bar"
+                style={{
+                  background: 'rgba(24, 252, 92, 0.08)',
+                  border: `1px solid ${RF_LEAF_GREEN}55`,
+                  borderRadius: 16,
+                  padding: '14px 18px',
+                  marginBottom: 16,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: 14,
+                  boxSizing: 'border-box'
+                }}
+              >
+                <div
+                  className="rp-banner-content rp-contributor-bar-left"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 12,
+                    minWidth: 0,
+                    flex: '1 1 auto'
+                  }}
+                >
+                  <div
+                    className="rp-banner-avatar rp-contributor-bar-avatar"
+                    style={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: '50%',
+                      background: `linear-gradient(135deg, ${RF_LEAF_GREEN} 0%, ${RF_MINT_ACCENT} 100%)`,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: RF_DEEP_GREEN,
+                      fontWeight: 800,
+                      fontSize: 15,
+                      flexShrink: 0,
+                      overflow: 'hidden',
+                      boxShadow: `0 2px 8px ${RF_LEAF_GREEN}33`
+                    }}
+                  >
                     {contributor.avatar_url ? (
-                      <img src={contributor.avatar_url} alt="" />
+                      <img src={contributor.avatar_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (
                       contributor.full_name.charAt(0).toUpperCase()
                     )}
                   </div>
-                  <div className="rp-contributor-details">
-                    <div className="rp-contributor-meta">
-                      <span className="rp-contributor-name">{contributor.full_name}</span>
-                      <span className="rp-contributor-badge rp-contributor-level-badge">
+                  <div
+                    className="rp-banner-body rp-contributor-bar-info"
+                    style={{
+                      minWidth: 0,
+                      flex: '1 1 auto'
+                    }}
+                  >
+                    <div
+                      className="rp-banner-contributor-header rp-contributor-bar-name-row"
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 8,
+                        flexWrap: 'wrap'
+                      }}
+                    >
+                      <span
+                        className="rp-contributor-bar-name"
+                        style={{
+                          fontSize: 14.5,
+                          fontWeight: 700,
+                          color: '#FFFFFF',
+                          lineHeight: 1.3
+                        }}
+                      >
+                        {contributor.full_name}
+                      </span>
+                      <span
+                        className="rp-submittask-badge-level"
+                        style={{
+                          fontSize: 10,
+                          fontWeight: 800,
+                          color: RF_DEEP_GREEN,
+                          background: RF_MINT_ACCENT,
+                          padding: '2px 8px',
+                          borderRadius: 100,
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.04em',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          lineHeight: 1.4
+                        }}
+                      >
                         {contributor.contributor_level.replace('_', ' ')}
                       </span>
-                      <span className="rp-contributor-badge rp-contributor-squad-badge">
+                      <span
+                        className="rp-submittask-badge-squad"
+                        style={{
+                          fontSize: 10,
+                          fontWeight: 600,
+                          color: 'rgba(255, 255, 255, 0.85)',
+                          background: 'rgba(255, 255, 255, 0.1)',
+                          padding: '2px 8px',
+                          borderRadius: 100,
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          lineHeight: 1.4
+                        }}
+                      >
                         {contributor.division}
                       </span>
                     </div>
-                    <div className="rp-contributor-id">
+                    <div
+                      className="rp-contributor-bar-meta"
+                      style={{
+                        fontSize: 11.5,
+                        color: 'rgba(255, 255, 255, 0.6)',
+                        marginTop: 4,
+                        lineHeight: 1.4,
+                        wordBreak: 'break-word'
+                      }}
+                    >
                       {contributor.email} {contributor.application_number ? `• ${contributor.application_number}` : ''} {contributor.pioneer_id ? `• ${contributor.pioneer_id}` : ''}
                     </div>
                   </div>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => signOutContributor()}
-                  className="rp-contributor-signout-btn"
-                  title="Sign out of contributor session"
+                <div
+                  className="rp-banner-action-col"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    flexShrink: 0
+                  }}
                 >
-                  <LogOut size={12} style={{ flexShrink: 0 }} />
-                  <span>Sign Out</span>
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => signOutContributor()}
+                    className="rp-banner-btn-signout rp-contributor-bar-signout"
+                    style={{
+                      background: 'rgba(239, 68, 68, 0.1)',
+                      border: '1px solid rgba(239, 68, 68, 0.35)',
+                      color: '#FCA5A5',
+                      padding: '7px 14px',
+                      borderRadius: 100,
+                      fontSize: 12,
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 6,
+                      lineHeight: 1,
+                      whiteSpace: 'nowrap',
+                      flexShrink: 0,
+                      transition: 'all 0.15s ease'
+                    }}
+                    title="Sign out of contributor session"
+                  >
+                    <LogOut size={12} style={{ flexShrink: 0 }} />
+                    <span>Sign Out</span>
+                  </button>
+                </div>
               </div>
             )}
 
