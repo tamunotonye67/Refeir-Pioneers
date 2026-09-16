@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
-  Upload, X, CheckCircle2, AlertCircle, ArrowRight, FileText,
-  Image as ImageIcon, Link as LinkIcon, Shield, ShieldCheck, Award, Zap,
-  Check, ChevronRight, Eye, RefreshCw, User, LogIn,
-  LogOut, Clock, XCircle, ExternalLink, Lock, Key, Search, Mail, Briefcase, Globe
+  X, CheckCircle2, ArrowRight, FileText,
+  Link as LinkIcon, Award, Zap,
+  Eye, RefreshCw, User, LogIn,
+  LogOut, ExternalLink, Key, Search, Mail, Briefcase, Globe
 } from 'lucide-react';
 import {
   RF_DEEP_GREEN,
@@ -304,9 +304,9 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
         {/* Breadcrumb */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'rgba(255,255,255,0.6)', marginBottom: 24, flexWrap: 'wrap' }}>
           <span style={{ cursor: 'pointer' }} onClick={() => onNavigate('/')}>Home</span>
-          <ChevronRight size={14} />
+          <span style={{ opacity: 0.35 }}>/</span>
           <span style={{ cursor: 'pointer' }} onClick={() => onNavigate('/rewards')}>Rewards Ladder</span>
-          <ChevronRight size={14} />
+          <span style={{ opacity: 0.35 }}>/</span>
           <span style={{ color: RF_MINT_ACCENT, fontWeight: 600 }}>Submit Task</span>
         </div>
 
@@ -351,7 +351,6 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
               border: `1px solid ${RF_LEAF_GREEN}66`, color: RF_MINT_ACCENT,
               fontSize: 'clamp(16px, 3.5vw, 20px)', fontWeight: 800, letterSpacing: '0.05em', marginBottom: 28
             }}>
-              <Award size={20} />
               {submittedRecord.referenceId}
             </div>
 
@@ -439,13 +438,12 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
             {/* Header */}
             <div className="rp-submittask-header">
               <div style={{
-                display: 'inline-flex', alignItems: 'center', gap: 6,
-                padding: '4px 12px', borderRadius: 100,
+                display: 'inline-block',
+                padding: '4px 14px', borderRadius: 100,
                 background: 'rgba(24, 252, 92, 0.08)', border: `1px solid ${RF_LEAF_GREEN}44`,
                 color: RF_MINT_ACCENT, fontSize: 11, fontWeight: 700, letterSpacing: '0.08em',
                 textTransform: 'uppercase', marginBottom: 12
               }}>
-                <Shield size={12} />
                 PROOF OF WORK &amp; ADVANCEMENT
               </div>
 
@@ -471,9 +469,6 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
               border: `1px solid ${RF_LEAF_GREEN}35`
             }}>
               <div className="rp-banner-content">
-                <div className="rp-banner-icon">
-                  <ShieldCheck size={18} />
-                </div>
                 <div className="rp-banner-body">
                   <div className="rp-banner-title">
                     Advance to Level 2 (Pioneer) &amp; Beyond
@@ -530,9 +525,6 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                 </div>
               ) : (
                 <div className="rp-banner-content">
-                  <div className="rp-banner-icon">
-                    <User size={18} />
-                  </div>
                   <div className="rp-banner-body">
                     <div className="rp-banner-title">
                       Contributor Profile Sign In
@@ -588,13 +580,10 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                 borderRadius: 14, padding: '14px 16px', marginBottom: 18,
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: '1 1 240px' }}>
-                  <AlertCircle size={20} color={RF_GOLD_YELLOW} style={{ flexShrink: 0 }} />
-                  <div>
-                    <strong style={{ color: '#FFFFFF', fontSize: 13.5 }}>Complete Your Profile</strong>
-                    <div style={{ fontSize: 12, color: '#FDE68A', marginTop: 1 }}>
-                      Mint your Pioneer ID to unlock credential verification.
-                    </div>
+                <div style={{ flex: '1 1 240px' }}>
+                  <strong style={{ color: '#FFFFFF', fontSize: 13.5 }}>Complete Your Profile</strong>
+                  <div style={{ fontSize: 12, color: '#FDE68A', marginTop: 1 }}>
+                    Mint your Pioneer ID to unlock credential verification.
                   </div>
                 </div>
                 <button
@@ -614,10 +603,6 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
             {!contributor ? (
               /* ─── PIONEER AUTHENTICATION REQUIRED GATE ─── */
               <div className="rp-auth-gate-card">
-                <div className="rp-auth-gate-icon-box">
-                  <Lock size={24} />
-                </div>
-
                 <span className="rp-auth-gate-badge">
                   Access Restricted • Pioneer Sign-In Required
                 </span>
@@ -755,7 +740,6 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                     textAlign: 'center', padding: '48px 20px', background: 'rgba(0,0,0,0.2)',
                     borderRadius: 16, border: '1px dashed rgba(255,255,255,0.15)'
                   }}>
-                    <FileText size={36} color="rgba(255,255,255,0.3)" style={{ margin: '0 auto 12px' }} />
                     <div style={{ fontSize: 16, fontWeight: 700, color: '#FFFFFF', marginBottom: 6 }}>
                       No Task Submissions Found Yet
                     </div>
@@ -808,7 +792,7 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
 
                             {/* Status Badge */}
                             <div style={{
-                              display: 'inline-flex', alignItems: 'center', gap: 6,
+                              display: 'inline-flex', alignItems: 'center',
                               padding: '4px 12px', borderRadius: 100, fontSize: 12, fontWeight: 700,
                               background: isVerified
                                 ? 'rgba(24, 252, 92, 0.15)'
@@ -826,10 +810,6 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                                 : '#FCA5A5',
                               border: `1px solid ${isVerified ? RF_LEAF_GREEN : isPending ? RF_GOLD_YELLOW : isRevision ? RF_ORANGE : '#EF4444'}`
                             }}>
-                              {isVerified && <CheckCircle2 size={13} />}
-                              {isPending && <Clock size={13} />}
-                              {isRevision && <AlertCircle size={13} />}
-                              {isRejected && <XCircle size={13} />}
                               {task.status.replace('_', ' ')}
                             </div>
                           </div>
@@ -937,10 +917,8 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                   <div style={{
                     background: 'rgba(239, 68, 68, 0.15)', border: '1px solid #EF4444',
                     borderRadius: 12, padding: '12px 16px', color: '#FCA5A5',
-                    fontSize: 13.5, display: 'flex', alignItems: 'center', gap: 10,
-                    marginBottom: 20
+                    fontSize: 13.5, marginBottom: 20
                   }}>
-                    <AlertCircle size={18} style={{ flexShrink: 0 }} />
                     <span>{errorMessage}</span>
                   </div>
                 )}
@@ -982,8 +960,8 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                         <label style={{ fontSize: 12.5, fontWeight: 600, color: 'rgba(255,255,255,0.85)' }}>
                           Registered Email *
                         </label>
-                        <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.45)', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
-                          <Lock size={10} /> Locked
+                        <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.45)' }}>
+                          Locked
                         </span>
                       </div>
                       <div style={{ position: 'relative' }}>
@@ -1008,8 +986,8 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                         <label style={{ fontSize: 12.5, fontWeight: 600, color: 'rgba(255,255,255,0.85)' }}>
                           Application ID *
                         </label>
-                        <span style={{ fontSize: 10.5, color: `${RF_LEAF_GREEN}cc`, display: 'inline-flex', alignItems: 'center', gap: 3 }}>
-                          <Lock size={10} /> Locked
+                        <span style={{ fontSize: 10.5, color: `${RF_LEAF_GREEN}cc` }}>
+                          Locked
                         </span>
                       </div>
                       <div style={{ position: 'relative' }}>
@@ -1034,8 +1012,8 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                         <label style={{ fontSize: 12.5, fontWeight: 600, color: 'rgba(255,255,255,0.85)' }}>
                           Pioneer ID *
                         </label>
-                        <span style={{ fontSize: 10.5, color: 'rgba(246, 178, 26, 0.85)', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
-                          <Lock size={10} /> Locked
+                        <span style={{ fontSize: 10.5, color: 'rgba(246, 178, 26, 0.85)' }}>
+                          Locked
                         </span>
                       </div>
                       <div style={{ position: 'relative' }}>
@@ -1086,13 +1064,12 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                     </label>
                     <div className="rp-target-levels-grid">
                       {[
-                        { id: 'LEVEL_2', label: 'Level 2: Pioneer', subtitle: '1st Tangible Mission', color: RF_MINT_ACCENT, icon: Award },
-                        { id: 'LEVEL_3', label: 'Level 3: Builder', subtitle: '4+ Missions Delivered', color: RF_GOLD_YELLOW, icon: Zap },
-                        { id: 'LEVEL_4', label: 'Level 4: Lead', subtitle: 'Team / Squad Anchor', color: RF_ORANGE, icon: Shield },
-                        { id: 'LEVEL_5', label: 'Level 5: Core Team', subtitle: 'Protocol Delivery', color: '#60A5FA', icon: ShieldCheck },
+                        { id: 'LEVEL_2', label: 'Level 2: Pioneer', subtitle: '1st Tangible Mission', color: RF_MINT_ACCENT },
+                        { id: 'LEVEL_3', label: 'Level 3: Builder', subtitle: '4+ Missions Delivered', color: RF_GOLD_YELLOW },
+                        { id: 'LEVEL_4', label: 'Level 4: Lead', subtitle: 'Team / Squad Anchor', color: RF_ORANGE },
+                        { id: 'LEVEL_5', label: 'Level 5: Core Team', subtitle: 'Protocol Delivery', color: '#60A5FA' },
                       ].map(lvl => {
                         const active = targetLevel === lvl.id;
-                        const IconComp = lvl.icon;
                         return (
                           <div
                             key={lvl.id}
@@ -1103,11 +1080,8 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                               borderColor: active ? lvl.color : 'rgba(255,255,255,0.1)'
                             }}
                           >
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 3 }}>
-                              <span className="rp-target-level-card-label" style={{ fontWeight: 700, color: active ? lvl.color : '#FFFFFF' }}>
-                                {lvl.label}
-                              </span>
-                              <IconComp size={13} color={active ? lvl.color : 'rgba(255,255,255,0.4)'} style={{ flexShrink: 0 }} />
+                            <div className="rp-target-level-card-label" style={{ fontWeight: 700, color: active ? lvl.color : '#FFFFFF', marginBottom: 3 }}>
+                              {lvl.label}
                             </div>
                             <div className="rp-target-level-card-sub" style={{ color: 'rgba(255,255,255,0.6)' }}>
                               {lvl.subtitle}
@@ -1281,19 +1255,11 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                     onChange={e => handleFileUpload(e.target.files)}
                   />
 
-                  <div style={{
-                    width: 40, height: 40, borderRadius: '50%', background: `${RF_LEAF_GREEN}22`,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', color: RF_MINT_ACCENT,
-                    margin: '0 auto 10px'
-                  }}>
-                    <Upload size={18} />
+                  <div style={{ fontSize: 14, fontWeight: 700, color: '#FFFFFF', marginBottom: 4 }}>
+                    {isCompressing ? 'Optimizing images...' : 'Click or Drag Screenshots to Upload'}
                   </div>
-
-                  <div style={{ fontSize: 13.5, fontWeight: 700, color: '#FFFFFF', marginBottom: 3 }}>
-                    {isCompressing ? 'Optimizing images...' : 'Upload Screenshots'}
-                  </div>
-                  <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.5)' }}>
-                    PNG, JPG, WEBP (Max 5)
+                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>
+                    PNG, JPG, WEBP (Max 5 files)
                   </div>
                 </div>
 
