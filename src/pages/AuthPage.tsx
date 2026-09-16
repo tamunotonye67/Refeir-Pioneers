@@ -158,77 +158,53 @@ export const AuthPage: React.FC<AuthPageProps> = ({
   };
 
   return (
-    <div style={{ background: RF_DEEP_GREEN, minHeight: '100vh', color: '#FFFFFF', paddingTop: 100, paddingBottom: 80 }}>
-      <div style={{ maxWidth: 540, margin: '0 auto', padding: '0 20px' }}>
+    <div className="rp-auth-wrapper">
+      <div className="rp-auth-container">
         
         {/* Page Header */}
-        <div style={{ textAlign: 'center', marginBottom: 32 }}>
-          <div style={{
-            display: 'inline-flex', alignItems: 'center', gap: 8,
-            padding: '6px 16px', borderRadius: 100,
-            background: 'rgba(24, 252, 92, 0.1)', border: '1px solid rgba(24, 252, 92, 0.25)',
-            color: RF_MINT_ACCENT, fontSize: 12, fontWeight: 700, letterSpacing: '0.04em',
-            textTransform: 'uppercase', marginBottom: 16
-          }}>
-            <Shield size={14} /> Contributor Authentication
+        <div className="rp-auth-header">
+          <div className="rp-auth-badge">
+            <Shield size={12} /> Authentication
           </div>
 
-          <h1 style={{
-            fontFamily: 'Plus Jakarta Sans, sans-serif',
-            fontSize: 'clamp(28px, 5vw, 36px)',
-            fontWeight: 800,
-            lineHeight: 1.2,
-            margin: '0 0 10px',
-            color: '#FFFFFF'
-          }}>
-            {tab === 'signin' ? 'Sign In to Refeir Pioneers' : 'Activate Contributor Profile'}
+          <h1 className="rp-auth-title">
+            {tab === 'signin' ? 'Sign In to Pioneers' : 'Activate Profile'}
           </h1>
-          <p style={{ fontSize: 14.5, color: 'rgba(255,255,255,0.7)', margin: 0, lineHeight: 1.6 }}>
+          <p className="rp-auth-subtitle">
             {tab === 'signin'
-              ? 'Access your contributor portal, submit verified deliverables, and climb the advancement ladder.'
-              : 'Members can only sign up after being accepted by admissions and issued an official Acceptance Code.'}
+              ? 'Access your portal, submit verified tasks, and track your rank.'
+              : 'Enter your Application ID and Acceptance Code to activate your access.'}
           </p>
         </div>
 
         {/* Card Container */}
-        <div style={{
-          background: `linear-gradient(145deg, ${RF_DARK_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
-          border: '1px solid rgba(102, 187, 42, 0.35)',
-          borderRadius: 24,
-          padding: '32px 30px',
-          boxShadow: '0 25px 60px rgba(0,0,0,0.8), 0 0 35px rgba(24, 252, 92, 0.08)'
-        }}>
+        <div className="rp-auth-card">
 
-          {/* Tab Switcher */}
-          <div style={{
-            display: 'flex', background: 'rgba(0,0,0,0.4)', borderRadius: 100,
-            padding: 4, marginBottom: 24, border: '1px solid rgba(255,255,255,0.08)'
-          }}>
+          {/* Tab Switcher (Minimalist & Concise) */}
+          <div className="rp-auth-tabs">
             <button
               type="button"
+              className="rp-auth-tab-btn"
               onClick={() => { setTab('signin'); setErrorMsg(''); }}
               style={{
-                flex: 1, padding: '10px 16px', borderRadius: 100, border: 'none',
                 background: tab === 'signin' ? RF_LEAF_GREEN : 'transparent',
                 color: tab === 'signin' ? RF_DEEP_GREEN : 'rgba(255,255,255,0.7)',
-                fontSize: 13.5, fontWeight: 700, cursor: 'pointer', display: 'flex',
-                alignItems: 'center', justifyContent: 'center', gap: 8, transition: 'all 0.15s'
+                boxShadow: tab === 'signin' ? `0 2px 8px ${RF_LEAF_GREEN}44` : 'none'
               }}
             >
-              <LogIn size={15} /> Sign In
+              <LogIn size={14} /> Sign In
             </button>
             <button
               type="button"
+              className="rp-auth-tab-btn"
               onClick={() => { setTab('signup'); setErrorMsg(''); }}
               style={{
-                flex: 1, padding: '10px 16px', borderRadius: 100, border: 'none',
                 background: tab === 'signup' ? RF_LEAF_GREEN : 'transparent',
                 color: tab === 'signup' ? RF_DEEP_GREEN : 'rgba(255,255,255,0.7)',
-                fontSize: 13.5, fontWeight: 700, cursor: 'pointer', display: 'flex',
-                alignItems: 'center', justifyContent: 'center', gap: 8, transition: 'all 0.15s'
+                boxShadow: tab === 'signup' ? `0 2px 8px ${RF_LEAF_GREEN}44` : 'none'
               }}
             >
-              <Key size={15} /> Activate (Sign Up)
+              <Key size={14} /> Activate
             </button>
           </div>
 
@@ -236,24 +212,24 @@ export const AuthPage: React.FC<AuthPageProps> = ({
           {errorMsg && (
             <div style={{
               background: 'rgba(239, 68, 68, 0.15)', border: '1px solid #EF4444',
-              borderRadius: 12, padding: '12px 16px', color: '#FCA5A5',
-              fontSize: 13, display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 20,
+              borderRadius: 12, padding: '11px 14px', color: '#FCA5A5',
+              fontSize: 12.5, display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 16,
               lineHeight: 1.5
             }}>
-              <AlertCircle size={17} style={{ flexShrink: 0, marginTop: 2 }} />
+              <AlertCircle size={16} style={{ flexShrink: 0, marginTop: 2 }} />
               <div>
                 <span>{errorMsg}</span>
                 {tab === 'signup' && onOpenStatus && (
-                  <div style={{ marginTop: 8 }}>
+                  <div style={{ marginTop: 6 }}>
                     <button
                       type="button"
                       onClick={onOpenStatus}
                       style={{
                         background: 'none', border: 'none', padding: 0, color: RF_MINT_ACCENT,
-                        fontSize: 12.5, fontWeight: 700, textDecoration: 'underline', cursor: 'pointer'
+                        fontSize: 12, fontWeight: 700, textDecoration: 'underline', cursor: 'pointer'
                       }}
                     >
-                      Look up your Acceptance Code via Check Status →
+                      Look up code via Check Status →
                     </button>
                   </div>
                 )}
@@ -265,10 +241,10 @@ export const AuthPage: React.FC<AuthPageProps> = ({
           {tab === 'signup' && validationMsg && (
             <div style={{
               background: 'rgba(24, 252, 92, 0.12)', border: `1px solid ${RF_MINT_ACCENT}`,
-              borderRadius: 12, padding: '12px 16px', color: '#FFFFFF',
-              fontSize: 13, display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20
+              borderRadius: 12, padding: '11px 14px', color: '#FFFFFF',
+              fontSize: 12.5, display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16
             }}>
-              <CheckCircle2 size={18} color={RF_MINT_ACCENT} style={{ flexShrink: 0 }} />
+              <CheckCircle2 size={16} color={RF_MINT_ACCENT} style={{ flexShrink: 0 }} />
               <span style={{ fontWeight: 600 }}>{validationMsg}</span>
             </div>
           )}
@@ -279,47 +255,39 @@ export const AuthPage: React.FC<AuthPageProps> = ({
               <>
                 {/* Notice Box on Activation Prerequisites */}
                 <div style={{
-                  background: 'rgba(255, 184, 0, 0.08)', border: '1px solid rgba(255, 184, 0, 0.3)',
-                  borderRadius: 12, padding: '12px 14px', marginBottom: 18,
-                  fontSize: 12.5, color: '#FDE68A', display: 'flex', alignItems: 'flex-start', gap: 10,
-                  lineHeight: 1.5
+                  background: 'rgba(255, 184, 0, 0.08)', border: '1px solid rgba(255, 184, 0, 0.25)',
+                  borderRadius: 10, padding: '10px 12px', marginBottom: 14,
+                  fontSize: 12, color: '#FDE68A', display: 'flex', alignItems: 'flex-start', gap: 8,
+                  lineHeight: 1.45
                 }}>
-                  <HelpCircle size={17} color={RF_GOLD_YELLOW} style={{ flexShrink: 0, marginTop: 2 }} />
+                  <HelpCircle size={15} color={RF_GOLD_YELLOW} style={{ flexShrink: 0, marginTop: 2 }} />
                   <div>
-                    <strong style={{ color: '#FFFFFF' }}>Admission Verification:</strong> Enter your official <strong>Application ID</strong> and <strong>Acceptance Code</strong>. Your official Pioneer ID will be minted once you sign in and complete your contributor profile.
+                    <strong style={{ color: '#FFFFFF' }}>Admission Verification:</strong> Enter your <strong>Application ID</strong> and <strong>Acceptance Code</strong> to activate access.
                   </div>
                 </div>
 
                 {/* Application Number */}
-                <div style={{ marginBottom: 14 }}>
-                  <label style={{ display: 'block', fontSize: 12.5, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 6 }}>
-                    Application ID <span style={{ color: '#EF4444' }}>* (Mandatory)</span>
+                <div className="rp-auth-input-group">
+                  <label className="rp-auth-label">
+                    Application ID <span style={{ color: '#EF4444' }}>*</span>
                   </label>
                   <div style={{ position: 'relative' }}>
                     <input
                       type="text"
+                      className="rp-auth-input"
                       placeholder="e.g. RP-2026-849201"
                       value={appNumber}
                       onChange={e => setAppNumber(e.target.value.toUpperCase())}
-                      style={{
-                        width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.3)',
-                        border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10,
-                        padding: '11px 14px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
-                      }}
-                      onFocus={e => (e.target.style.borderColor = RF_MINT_ACCENT)}
-                      onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.15)')}
+                      style={{ paddingLeft: 12 }}
                     />
                   </div>
-                  <p style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.5)', margin: '4px 0 0' }}>
-                    Received upon submitting your initial pioneer recruitment application.
-                  </p>
                 </div>
 
                 {/* Acceptance Code */}
-                <div style={{ marginBottom: 16 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                    <label style={{ fontSize: 12.5, fontWeight: 700, color: 'rgba(255,255,255,0.85)' }}>
-                      Acceptance Code <span style={{ color: '#EF4444' }}>* (Mandatory)</span>
+                <div className="rp-auth-input-group">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                    <label className="rp-auth-label" style={{ marginBottom: 0 }}>
+                      Acceptance Code <span style={{ color: '#EF4444' }}>*</span>
                     </label>
                     {onOpenStatus && (
                       <button
@@ -327,165 +295,124 @@ export const AuthPage: React.FC<AuthPageProps> = ({
                         onClick={onOpenStatus}
                         style={{
                           background: 'none', border: 'none', color: RF_MINT_ACCENT,
-                          fontSize: 11.5, fontWeight: 600, cursor: 'pointer', textDecoration: 'underline'
+                          fontSize: 11, fontWeight: 600, cursor: 'pointer', textDecoration: 'underline', padding: 0
                         }}
                       >
-                        Don't have code? Check Status
+                        Check Status
                       </button>
                     )}
                   </div>
                   <div style={{ position: 'relative' }}>
                     <input
                       type="text"
+                      className="rp-auth-input"
                       placeholder="e.g. ACC-8492-9041"
                       value={acceptanceCode}
                       onChange={e => setAcceptanceCode(e.target.value.toUpperCase())}
-                      style={{
-                        width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.3)',
-                        border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10,
-                        padding: '11px 14px', color: '#FFFFFF', fontSize: 13.5, outline: 'none',
-                        letterSpacing: '0.04em'
-                      }}
-                      onFocus={e => (e.target.style.borderColor = RF_MINT_ACCENT)}
-                      onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.15)')}
+                      style={{ paddingLeft: 12, letterSpacing: '0.03em' }}
                     />
                   </div>
-                  <p style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.5)', margin: '4px 0 0' }}>
-                    Issued by the admissions board in your acceptance letter or on the status check tool.
-                  </p>
                 </div>
               </>
             )}
 
             {/* Email Field */}
-            <div style={{ marginBottom: 14 }}>
-              <label style={{ display: 'block', fontSize: 12.5, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 6 }}>
+            <div className="rp-auth-input-group">
+              <label className="rp-auth-label">
                 Email Address <span style={{ color: '#EF4444' }}>*</span>
               </label>
               <div style={{ position: 'relative' }}>
-                <Mail size={16} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)' }} />
+                <Mail size={15} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 13, top: '50%', transform: 'translateY(-50%)' }} />
                 <input
                   type="email"
+                  className="rp-auth-input"
                   placeholder="e.g. yourname@domain.com"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
-                  style={{
-                    width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.3)',
-                    border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10,
-                    padding: '11px 14px 11px 40px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
-                  }}
-                  onFocus={e => (e.target.style.borderColor = RF_MINT_ACCENT)}
-                  onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.15)')}
                 />
               </div>
             </div>
 
             {/* Password Field */}
-            <div style={{ marginBottom: 20 }}>
-              <label style={{ display: 'block', fontSize: 12.5, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 6 }}>
-                {tab === 'signin' ? 'Password' : 'Create Account Password'} <span style={{ color: '#EF4444' }}>*</span>
+            <div className="rp-auth-input-group" style={{ marginBottom: 16 }}>
+              <label className="rp-auth-label">
+                {tab === 'signin' ? 'Password' : 'Create Password'} <span style={{ color: '#EF4444' }}>*</span>
               </label>
               <div style={{ position: 'relative' }}>
-                <Lock size={16} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)' }} />
+                <Lock size={15} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 13, top: '50%', transform: 'translateY(-50%)' }} />
                 <input
                   type="password"
-                  placeholder={tab === 'signin' ? 'Enter your password' : 'Min 6 characters'}
+                  className="rp-auth-input"
+                  placeholder={tab === 'signin' ? 'Enter password' : 'Min 6 characters'}
                   value={password}
                   onChange={e => setPassword(e.target.value)}
-                  style={{
-                    width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.3)',
-                    border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10,
-                    padding: '11px 14px 11px 40px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
-                  }}
-                  onFocus={e => (e.target.style.borderColor = RF_MINT_ACCENT)}
-                  onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.15)')}
                 />
               </div>
             </div>
 
-            {/* Submit Button */}
+            {/* Submit Button (Concise & Minimalist) */}
             <button
               type="submit"
               disabled={loading}
-              style={{
-                width: '100%', background: RF_LEAF_GREEN, color: RF_DEEP_GREEN,
-                border: 'none', padding: '13px', borderRadius: 100, fontSize: 14.5,
-                fontWeight: 800, cursor: loading ? 'not-allowed' : 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                boxShadow: `0 4px 16px ${RF_LEAF_GREEN}44`, transition: 'all 0.2s',
-                opacity: loading ? 0.7 : 1
-              }}
-              onMouseEnter={e => { if (!loading) e.currentTarget.style.background = RF_MINT_ACCENT; }}
-              onMouseLeave={e => { if (!loading) e.currentTarget.style.background = RF_LEAF_GREEN; }}
+              className="rp-auth-submit-btn"
+              style={{ opacity: loading ? 0.7 : 1 }}
             >
               {loading ? (
                 'Processing...'
               ) : tab === 'signin' ? (
                 <>
-                  <LogIn size={16} /> Sign In to Contributor Portal
+                  <LogIn size={15} /> Sign In
                 </>
               ) : (
                 <>
-                  <UserCheck size={16} /> Verify & Activate Pioneer Profile
+                  <UserCheck size={15} /> Activate Profile
                 </>
               )}
             </button>
           </form>
 
-          {/* Quick Fill Test Accounts */}
-          <div style={{ marginTop: 24, paddingTop: 18, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-            <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.5)', marginBottom: 8, textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              Quick Test Profiles (Demo Candidates)
+          {/* Quick Demo Test Profiles */}
+          <div className="rp-auth-demo-box">
+            <div style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.45)', marginBottom: 7, textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              Quick Demo Fill
             </div>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            <div className="rp-auth-demo-grid">
               <button
                 type="button"
+                className="rp-auth-demo-btn"
                 onClick={() => handleTestFill('kwame_signin')}
-                style={{
-                  flex: 1, minWidth: 140, background: 'rgba(255,255,255,0.05)',
-                  border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8,
-                  padding: '7px 10px', fontSize: 11.5, color: 'rgba(255,255,255,0.8)',
-                  cursor: 'pointer', textAlign: 'center'
-                }}
+                title="Fill Kwame (Level 3)"
               >
-                Kwame (Lvl 3 Sign In)
+                Kwame (Lvl 3)
               </button>
               <button
                 type="button"
+                className="rp-auth-demo-btn"
                 onClick={() => handleTestFill('chidubem_signup')}
-                style={{
-                  flex: 1, minWidth: 140, background: 'rgba(255,255,255,0.05)',
-                  border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8,
-                  padding: '7px 10px', fontSize: 11.5, color: 'rgba(255,255,255,0.8)',
-                  cursor: 'pointer', textAlign: 'center'
-                }}
+                title="Fill Chidubem (Accepted Recruit)"
               >
-                Chidubem (Accepted Recruit)
+                Chidubem (Recruit)
               </button>
               <button
                 type="button"
+                className="rp-auth-demo-btn"
                 onClick={() => handleTestFill('amina_signup')}
-                style={{
-                  flex: 1, minWidth: 140, background: 'rgba(255,255,255,0.05)',
-                  border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8,
-                  padding: '7px 10px', fontSize: 11.5, color: 'rgba(255,255,255,0.8)',
-                  cursor: 'pointer', textAlign: 'center'
-                }}
+                title="Fill Amina (Accepted Recruit)"
               >
-                Amina (Accepted Recruit)
+                Amina (Recruit)
               </button>
             </div>
           </div>
 
           {/* Footer Assistance */}
-          <div style={{ marginTop: 22, textAlign: 'center', fontSize: 12.5, color: 'rgba(255,255,255,0.55)' }}>
-            Not yet applied to Refeir Pioneers?{' '}
+          <div style={{ marginTop: 18, textAlign: 'center', fontSize: 12, color: 'rgba(255,255,255,0.55)' }}>
+            Not yet applied?{' '}
             <button
               type="button"
               onClick={() => onNavigate('/#apply')}
               style={{
                 background: 'none', border: 'none', color: RF_MINT_ACCENT,
-                fontWeight: 600, cursor: 'pointer', textDecoration: 'underline'
+                fontWeight: 600, cursor: 'pointer', textDecoration: 'underline', padding: 0
               }}
             >
               Submit Application →

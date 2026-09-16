@@ -2967,3 +2967,252 @@ img, svg {
     font-size: 13px !important;
   }
 }
+
+/* ─── AUTH PAGE STYLING ─────────────────────────────────────────────────── */
+.rp-auth-wrapper {
+  background: #061A0F;
+  min-height: 100vh;
+  color: #FFFFFF;
+  padding-top: calc(var(--rp-nav-h, 72px) + 32px);
+  padding-bottom: 60px;
+  box-sizing: border-box;
+}
+
+.rp-auth-container {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+.rp-auth-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.rp-auth-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  border-radius: 100px;
+  background: rgba(24, 252, 92, 0.1);
+  border: 1px solid rgba(24, 252, 92, 0.25);
+  color: #18FC5C;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.rp-auth-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: clamp(24px, 4vw, 32px);
+  font-weight: 800;
+  line-height: 1.2;
+  margin: 0 0 8px;
+  color: #FFFFFF;
+  letter-spacing: -0.01em;
+}
+
+.rp-auth-subtitle {
+  font-size: 13.5px;
+  color: rgba(255, 255, 255, 0.65);
+  margin: 0 auto;
+  max-width: 400px;
+  line-height: 1.5;
+}
+
+.rp-auth-card {
+  background: linear-gradient(145deg, #092415 0%, #05180E 100%);
+  border: 1px solid rgba(102, 187, 42, 0.28);
+  border-radius: 20px;
+  padding: 28px 26px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.75), 0 0 30px rgba(24, 252, 92, 0.05);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-sizing: border-box;
+}
+
+.rp-auth-tabs {
+  display: flex;
+  background: rgba(0, 0, 0, 0.45);
+  border-radius: 100px;
+  padding: 3.5px;
+  margin-bottom: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.rp-auth-tab-btn {
+  flex: 1;
+  padding: 8px 14px;
+  border-radius: 100px;
+  border: none;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.18s ease;
+}
+
+.rp-auth-input-group {
+  margin-bottom: 14px;
+}
+
+.rp-auth-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 5px;
+}
+
+.rp-auth-input {
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(0, 0, 0, 0.32);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  padding: 10px 12px 10px 38px;
+  color: #FFFFFF;
+  font-size: 13px;
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+.rp-auth-input:focus {
+  border-color: #18FC5C;
+  box-shadow: 0 0 10px rgba(24, 252, 92, 0.15);
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.rp-auth-submit-btn {
+  width: 100%;
+  background: #66BB2A;
+  color: #061A0F;
+  border: none;
+  padding: 11px 18px;
+  border-radius: 100px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  box-shadow: 0 4px 16px rgba(102, 187, 42, 0.35);
+  transition: all 0.2s ease;
+  margin-top: 6px;
+}
+
+.rp-auth-submit-btn:hover:not(:disabled) {
+  background: #18FC5C;
+  box-shadow: 0 6px 20px rgba(24, 252, 92, 0.4);
+}
+
+.rp-auth-demo-box {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.rp-auth-demo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.rp-auth-demo-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 8px;
+  padding: 6px 8px;
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.75);
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rp-auth-demo-btn:hover {
+  background: rgba(24, 252, 92, 0.08);
+  border-color: rgba(24, 252, 92, 0.2);
+  color: #FFFFFF;
+}
+
+@media (max-width: 768px) {
+  .rp-auth-wrapper {
+    padding-top: calc(var(--rp-nav-h, 64px) + 14px) !important;
+    padding-bottom: 36px !important;
+  }
+
+  .rp-auth-container {
+    padding: 0 12px !important;
+  }
+
+  .rp-auth-header {
+    margin-bottom: 16px !important;
+  }
+
+  .rp-auth-badge {
+    padding: 4px 10px !important;
+    font-size: 10px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .rp-auth-title {
+    font-size: 23px !important;
+    margin-bottom: 6px !important;
+  }
+
+  .rp-auth-subtitle {
+    font-size: 12px !important;
+    line-height: 1.45 !important;
+  }
+
+  .rp-auth-card {
+    padding: 18px 14px !important;
+    border-radius: 16px !important;
+  }
+
+  .rp-auth-tabs {
+    margin-bottom: 16px !important;
+  }
+
+  .rp-auth-tab-btn {
+    padding: 7px 12px !important;
+    font-size: 12.5px !important;
+  }
+
+  .rp-auth-input-group {
+    margin-bottom: 12px !important;
+  }
+
+  .rp-auth-input {
+    padding: 9px 10px 9px 36px !important;
+    font-size: 12.5px !important;
+  }
+
+  .rp-auth-submit-btn {
+    padding: 10px 14px !important;
+    font-size: 13.5px !important;
+  }
+
+  .rp-auth-demo-grid {
+    grid-template-columns: 1fr 1fr 1fr !important;
+    gap: 4px !important;
+  }
+
+  .rp-auth-demo-btn {
+    padding: 5px 6px !important;
+    font-size: 10.5px !important;
+  }
+}
