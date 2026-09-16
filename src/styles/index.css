@@ -1371,3 +1371,124 @@ img, svg {
     justify-content: center !important;
   }
 }
+
+/* ─── TASK SUBMISSION NOTICE BANNERS ─── */
+.rp-banner-card {
+  border-radius: 16px;
+  padding: 18px 22px;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.rp-banner-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: rgba(24, 252, 92, 0.09);
+  border: 1px solid rgba(102, 187, 42, 0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #18FC5C;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.rp-banner-body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.rp-banner-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #FFFFFF;
+  line-height: 1.35;
+  margin-bottom: 3px;
+}
+
+.rp-banner-text {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.rp-banner-action-col {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  margin-left: auto;
+  align-self: center;
+}
+
+.rp-banner-btn {
+  background: #66BB2A;
+  color: #0F2E1E;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  line-height: 1;
+  white-space: nowrap;
+  flex-shrink: 0;
+  box-shadow: 0 2px 10px rgba(102, 187, 42, 0.25);
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.rp-banner-btn:hover {
+  background: #18FC5C;
+  transform: translateY(-1px);
+}
+
+.rp-banner-btn-signout {
+  transition: all 0.15s ease;
+}
+
+.rp-banner-btn-signout:hover {
+  background: rgba(239, 68, 68, 0.2) !important;
+  border-color: rgba(239, 68, 68, 0.5) !important;
+}
+
+@media (max-width: 640px) {
+  .rp-banner-card {
+    padding: 16px 16px !important;
+    margin-bottom: 12px !important;
+    gap: 12px !important;
+    flex-wrap: wrap !important;
+  }
+
+  .rp-banner-icon {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 10px !important;
+    margin-top: 2px !important;
+  }
+
+  .rp-banner-action-col {
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-top: 10px !important;
+    align-self: stretch !important;
+  }
+
+  .rp-banner-btn,
+  .rp-banner-btn-signout {
+    width: 100% !important;
+    padding: 10px 16px !important;
+    font-size: 13px !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+  }
+}

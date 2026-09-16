@@ -467,53 +467,36 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
             </div>
 
             {/* Verification Rule Notice Card */}
-            <div style={{
+            <div className="rp-banner-card" style={{
               background: 'rgba(15, 46, 30, 0.7)',
-              border: `1px solid ${RF_LEAF_GREEN}40`,
-              borderRadius: 18,
-              padding: '18px 24px',
-              marginBottom: 36,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 16
+              border: `1px solid ${RF_LEAF_GREEN}35`
             }}>
-              <div style={{
-                width: 44, height: 44, borderRadius: 12, background: `${RF_LEAF_GREEN}20`,
-                display: 'flex', alignItems: 'center', justifyContent: 'center', color: RF_MINT_ACCENT, flexShrink: 0
-              }}>
-                <ShieldCheck size={24} />
+              <div className="rp-banner-icon">
+                <ShieldCheck size={20} />
               </div>
-              <div>
-                <div style={{ fontSize: 14, fontWeight: 700, color: '#FFFFFF', marginBottom: 2 }}>
+              <div className="rp-banner-body">
+                <div className="rp-banner-title">
                   Advancing to Level 2 (Refeir Pioneer) &amp; Beyond
                 </div>
-                <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.45 }}>
+                <p className="rp-banner-text">
                   Submitting tangible proof of work (such as code PRs, Figma links, and screenshots) allows your squad leader and core team to upgrade your profile, mint your verified badge, and unlock commission multipliers.
-                </div>
+                </p>
               </div>
             </div>
 
             {/* Contributor Profile Banner / Sign In Trigger */}
-            <div style={{
+            <div className="rp-banner-card" style={{
               background: contributor ? 'rgba(24, 252, 92, 0.08)' : 'rgba(255, 255, 255, 0.04)',
-              border: contributor ? `1px solid ${RF_LEAF_GREEN}55` : '1px solid rgba(255, 255, 255, 0.12)',
-              borderRadius: 20,
-              padding: '18px 24px',
-              marginBottom: 26,
-              display: 'flex',
-              flexWrap: 'wrap',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: 16
+              border: contributor ? `1px solid ${RF_LEAF_GREEN}55` : '1px solid rgba(255, 255, 255, 0.12)'
             }}>
               {contributor ? (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 14, flex: '1 1 340px', minWidth: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14, flex: '1 1 auto', minWidth: 0 }}>
                   <div style={{
-                    width: 44, height: 44, borderRadius: '50%',
+                    width: 40, height: 40, borderRadius: '50%',
                     background: `linear-gradient(135deg, ${RF_LEAF_GREEN} 0%, ${RF_MINT_ACCENT} 100%)`,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    color: RF_DEEP_GREEN, fontWeight: 800, fontSize: 16,
-                    flexShrink: 0, overflow: 'hidden'
+                    color: RF_DEEP_GREEN, fontWeight: 800, fontSize: 15,
+                    flexShrink: 0, overflow: 'hidden', marginTop: 1
                   }}>
                     {contributor.avatar_url ? (
                       <img src={contributor.avatar_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -521,53 +504,50 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                       contributor.full_name.charAt(0).toUpperCase()
                     )}
                   </div>
-                  <div style={{ minWidth: 0, flex: '1 1 auto' }}>
+                  <div className="rp-banner-body">
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                      <span style={{ fontSize: 15, fontWeight: 700, color: '#FFFFFF' }}>
+                      <span style={{ fontSize: 14.5, fontWeight: 700, color: '#FFFFFF' }}>
                         {contributor.full_name}
                       </span>
                       <span style={{
-                        fontSize: 11, fontWeight: 700, color: RF_DEEP_GREEN, background: RF_MINT_ACCENT,
+                        fontSize: 10.5, fontWeight: 700, color: RF_DEEP_GREEN, background: RF_MINT_ACCENT,
                         padding: '2px 8px', borderRadius: 100, textTransform: 'uppercase', letterSpacing: '0.04em'
                       }}>
                         {contributor.contributor_level.replace('_', ' ')}
                       </span>
                       <span style={{
-                        fontSize: 11, color: 'rgba(255,255,255,0.7)', background: 'rgba(255,255,255,0.08)',
+                        fontSize: 10.5, color: 'rgba(255,255,255,0.7)', background: 'rgba(255,255,255,0.08)',
                         padding: '2px 8px', borderRadius: 100
                       }}>
                         {contributor.division}
                       </span>
                     </div>
-                    <div style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.6)', marginTop: 3, wordBreak: 'break-word' }}>
+                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', marginTop: 4, wordBreak: 'break-word', lineHeight: 1.45 }}>
                       {contributor.email} {contributor.application_number ? `• App: ${contributor.application_number}` : ''} {contributor.pioneer_id ? `• Pioneer Seat: ${contributor.pioneer_id}` : ''} — Task proofs are linked to your profile
                     </div>
                   </div>
                 </div>
               ) : (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 14, flex: '1 1 340px', minWidth: 0 }}>
-                  <div style={{
-                    width: 42, height: 42, borderRadius: 12, background: 'rgba(24, 252, 92, 0.1)',
-                    border: `1px solid ${RF_LEAF_GREEN}44`, display: 'flex', alignItems: 'center',
-                    justifyContent: 'center', color: RF_MINT_ACCENT, flexShrink: 0
-                  }}>
-                    <User size={20} />
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14, flex: '1 1 auto', minWidth: 0 }}>
+                  <div className="rp-banner-icon">
+                    <User size={19} />
                   </div>
-                  <div>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: '#FFFFFF' }}>
+                  <div className="rp-banner-body">
+                    <div className="rp-banner-title">
                       Track Missions with a Refeir Contributor Profile
                     </div>
-                    <div style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.65)' }}>
+                    <p className="rp-banner-text">
                       Sign in to avoid typing your Application ID &amp; Pioneer ID every time, and track all your approved proofs automatically.
-                    </div>
+                    </p>
                   </div>
                 </div>
               )}
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0, marginLeft: 'auto' }}>
+              <div className="rp-banner-action-col">
                 {contributor ? (
                   <button
                     onClick={() => signOutContributor()}
+                    className="rp-banner-btn-signout"
                     style={{
                       background: 'rgba(239, 68, 68, 0.1)',
                       border: '1px solid rgba(239, 68, 68, 0.3)',
@@ -580,48 +560,22 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                       display: 'inline-flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      gap: 7,
+                      gap: 6,
                       lineHeight: 1,
                       whiteSpace: 'nowrap',
-                      flexShrink: 0,
-                      transition: 'all 0.15s ease'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)';
-                      e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.5)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)';
-                      e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+                      flexShrink: 0
                     }}
                   >
-                    <LogOut size={14} style={{ flexShrink: 0 }} />
+                    <LogOut size={13} style={{ flexShrink: 0 }} />
                     <span>Sign Out</span>
                   </button>
                 ) : (
                   <button
                     onClick={() => onNavigate('/signin')}
-                    style={{
-                      background: RF_LEAF_GREEN,
-                      color: RF_DEEP_GREEN,
-                      border: 'none',
-                      padding: '8px 18px',
-                      borderRadius: 100,
-                      fontSize: 12.5,
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: 7,
-                      lineHeight: 1,
-                      whiteSpace: 'nowrap',
-                      flexShrink: 0,
-                      boxShadow: `0 2px 10px ${RF_LEAF_GREEN}33`
-                    }}
+                    className="rp-banner-btn"
                   >
                     <LogIn size={14} style={{ flexShrink: 0 }} />
-                    <span>Sign In / Register</span>
+                    <span>Sign In</span>
                   </button>
                 )}
               </div>
