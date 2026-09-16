@@ -437,25 +437,27 @@ export const DivisionsPage: React.FC<DivisionsPageProps> = ({ onNavigate }) => {
         background: `linear-gradient(135deg, ${RF_DEEP_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
         padding: '80px 24px', color: '#FFFFFF', textAlign: 'center'
       }}>
-        <div style={{ maxWidth: 800, margin: '0 auto' }}>
+        <div style={{ maxWidth: 1000, margin: '0 auto' }}>
           <h2 style={{
             fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 500, fontFamily: 'Plus Jakarta Sans, sans-serif',
             marginBottom: 16
           }}>
             What every Pioneer receives
           </h2>
-          <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, marginBottom: 40 }}>
+          <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, maxWidth: 640, margin: '0 auto 40px' }}>
             Pioneer membership is an exclusive community for builders who want priority access and economic equity in the Refeir ecosystem.
           </p>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 20, textAlign: 'left', marginBottom: 40 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20, textAlign: 'left', marginBottom: 40 }}>
             {[
               { title: 'Founding 100 ID', desc: 'Permanent on-chain badge signifying your inaugural builder status.' },
               { title: 'Referral Multiplier', desc: 'Guaranteed higher protocol commission tier upon public platform release.' },
               { title: 'Direct Access', desc: 'Weekly closed sessions with the founding executives and architects.' },
-              { title: 'Early Equity Pool', desc: 'Priority consideration for future contributor grants and equity distributions.' }
+              { title: 'Early Equity Pool', desc: 'Priority consideration for future contributor grants and equity distributions.' },
+              { title: 'Verified Credentials', desc: 'Official cryptographic certificate of contribution and executive recommendation letters.' },
+              { title: 'Priority Alpha Bounties', desc: 'First-look access to paid client pilot contracts, feature bounties, and platform launches.' }
             ].map((perk, i) => (
-              <div key={i} style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 14, padding: '20px 18px', border: '1px solid rgba(255,255,255,0.1)' }}>
+              <div key={i} style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 14, padding: '22px 20px', border: '1px solid rgba(255,255,255,0.1)' }}>
                 <h4 style={{ fontSize: 15, fontWeight: 700, color: RF_MINT_ACCENT, marginBottom: 6 }}>{perk.title}</h4>
                 <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.6, margin: 0 }}>{perk.desc}</p>
               </div>
