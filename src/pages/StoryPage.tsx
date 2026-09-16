@@ -151,10 +151,7 @@ export const StoryPage: React.FC<StoryPageProps> = ({ onNavigate }) => {
 
       {/* Chapter 1: The Genesis - How Refeir Was Born */}
       <section id="genesis" style={{ padding: '90px 24px', maxWidth: 1100, margin: '0 auto' }}>
-        <div style={{
-          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: 48, alignItems: 'center'
-        }}>
+        <div className="rp-story-genesis-grid">
           <div>
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
@@ -185,33 +182,47 @@ export const StoryPage: React.FC<StoryPageProps> = ({ onNavigate }) => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <div style={{
               background: 'rgba(255, 60, 60, 0.05)', border: '1px solid rgba(255, 75, 75, 0.2)',
-              borderRadius: 16, padding: '24px 22px'
+              borderRadius: 16, padding: '24px 24px'
             }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: '#FF7B7B', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 8 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#FF7B7B', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 14 }}>
                 The Legacy Gig Trap
               </div>
-              <ul style={{ margin: 0, paddingLeft: 18, fontSize: 13.5, color: 'rgba(255,255,255,0.7)', lineHeight: 1.7 }}>
-                <li>Cold, anonymous bidding wars where cheap rates beat real talent.</li>
-                <li>Middlemen pocket 20% to 30% without contributing any work.</li>
-                <li>Zero rewards for the connector or mentor who matched the client.</li>
-                <li>Vulnerable to foreign payment lockouts and sudden account bans.</li>
-              </ul>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
+                {[
+                  'Cold, anonymous bidding wars where cheap rates beat real talent.',
+                  'Middlemen pocket 20% to 30% without contributing any work.',
+                  'Zero rewards for the connector or mentor who matched the client.',
+                  'Vulnerable to foreign payment lockouts and sudden account bans.'
+                ].map((text, idx) => (
+                  <div key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 13.5, color: 'rgba(255,255,255,0.72)', lineHeight: 1.6 }}>
+                    <span style={{ color: '#FF7B7B', fontSize: 16, lineHeight: 1.2, flexShrink: 0 }}>•</span>
+                    <span>{text}</span>
+                  </div>
+                ))}
+              </div>
             </div>
 
             <div style={{
               background: `linear-gradient(135deg, ${RF_DEEP_GREEN}88 0%, rgba(15, 46, 30, 0.4) 100%)`,
               border: `1px solid ${RF_LEAF_GREEN}44`,
-              borderRadius: 16, padding: '24px 22px'
+              borderRadius: 16, padding: '24px 24px'
             }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: RF_MINT_ACCENT, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 8 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: RF_MINT_ACCENT, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 14 }}>
                 The Refeir Breakthrough
               </div>
-              <ul style={{ margin: 0, paddingLeft: 18, fontSize: 13.5, color: 'rgba(255,255,255,0.9)', lineHeight: 1.7 }}>
-                <li><strong>Referral-Powered Work</strong>: Earn transparent commissions for every talent or client you introduce.</li>
-                <li><strong>Strict Contributor Ladder</strong>: Advancement earned through verifiable delivered jobs, not lip service.</li>
-                <li><strong>Peer-Vouched Verification</strong>: Reputable Pioneers confirm deliverables before promotions occur.</li>
-                <li><strong>Sovereign Escrow Rails</strong>: Protected payments that guarantee immediate disbursements upon milestone clearance.</li>
-              </ul>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
+                {[
+                  { title: 'Referral-Powered Work', desc: 'Earn transparent commissions for every talent or client you introduce.' },
+                  { title: 'Strict Contributor Ladder', desc: 'Advancement earned through verifiable delivered jobs, not lip service.' },
+                  { title: 'Peer-Vouched Verification', desc: 'Reputable Pioneers confirm deliverables before promotions occur.' },
+                  { title: 'Sovereign Escrow Rails', desc: 'Protected payments that guarantee immediate disbursements upon milestone clearance.' }
+                ].map((item, idx) => (
+                  <div key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 13.5, color: 'rgba(255,255,255,0.85)', lineHeight: 1.6 }}>
+                    <span style={{ color: RF_MINT_ACCENT, fontSize: 16, lineHeight: 1.2, flexShrink: 0 }}>•</span>
+                    <span><strong style={{ color: '#FFFFFF' }}>{item.title}:</strong> {item.desc}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
