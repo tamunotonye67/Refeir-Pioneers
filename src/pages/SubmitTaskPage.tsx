@@ -299,15 +299,15 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
       paddingTop: 88,
       paddingBottom: 90
     }}>
-      <div style={{ maxWidth: 880, margin: '0 auto', padding: '0 24px' }}>
+      <div className="rp-submittask-container">
 
         {/* Breadcrumb */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'rgba(255,255,255,0.6)', marginBottom: 28 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'rgba(255,255,255,0.6)', marginBottom: 24, flexWrap: 'wrap' }}>
           <span style={{ cursor: 'pointer' }} onClick={() => onNavigate('/')}>Home</span>
           <ChevronRight size={14} />
           <span style={{ cursor: 'pointer' }} onClick={() => onNavigate('/rewards')}>Rewards Ladder</span>
           <ChevronRight size={14} />
-          <span style={{ color: RF_MINT_ACCENT, fontWeight: 600 }}>Submit Task Proof</span>
+          <span style={{ color: RF_MINT_ACCENT, fontWeight: 600 }}>Submit Task</span>
         </div>
 
         {/* ─── SUCCESS VIEW ────────────────────────────────────────────────────────── */}
@@ -316,120 +316,120 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
             background: 'rgba(15, 46, 30, 0.9)',
             border: `1.5px solid ${RF_MINT_ACCENT}55`,
             borderRadius: 24,
-            padding: '48px 36px',
+            padding: 'clamp(28px, 5vw, 48px) clamp(18px, 4vw, 36px)',
             textAlign: 'center',
             boxShadow: `0 24px 60px rgba(0,0,0,0.6), 0 0 40px ${RF_MINT_ACCENT}15`
           }}>
             <div style={{
-              width: 72, height: 72, borderRadius: '50%', background: `${RF_LEAF_GREEN}20`,
+              width: 64, height: 64, borderRadius: '50%', background: `${RF_LEAF_GREEN}20`,
               border: `2px solid ${RF_LEAF_GREEN}`, display: 'flex', alignItems: 'center',
-              justifyContent: 'center', margin: '0 auto 24px', color: RF_MINT_ACCENT
+              justifyContent: 'center', margin: '0 auto 20px', color: RF_MINT_ACCENT
             }}>
-              <CheckCircle2 size={40} />
+              <CheckCircle2 size={36} />
             </div>
 
             <div style={{
               display: 'inline-block', padding: '4px 14px', borderRadius: 100,
               background: 'rgba(24, 252, 92, 0.12)', border: `1px solid ${RF_LEAF_GREEN}44`,
-              color: RF_MINT_ACCENT, fontSize: 12, fontWeight: 700, letterSpacing: '0.08em',
+              color: RF_MINT_ACCENT, fontSize: 11.5, fontWeight: 700, letterSpacing: '0.08em',
               textTransform: 'uppercase', marginBottom: 12
             }}>
-              Proof of Work Queued for Verification
+              Proof Queued for Verification
             </div>
 
-            <h1 style={{ fontSize: 'clamp(26px, 4vw, 36px)', fontWeight: 800, color: '#FFFFFF', marginBottom: 12, lineHeight: 1.2 }}>
-              Task Submitted Successfully!
+            <h1 style={{ fontSize: 'clamp(24px, 4vw, 34px)', fontWeight: 800, color: '#FFFFFF', marginBottom: 10, lineHeight: 1.25 }}>
+              Task Submitted!
             </h1>
 
-            <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.75)', maxWidth: 600, margin: '0 auto 28px', lineHeight: 1.6 }}>
-              Thank you, <strong style={{ color: '#FFFFFF' }}>{fullName}</strong>. Your mission submission has been logged with reference code:
+            <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.75)', maxWidth: 540, margin: '0 auto 24px', lineHeight: 1.55 }}>
+              Thank you, <strong style={{ color: '#FFFFFF' }}>{fullName}</strong>. Your submission reference code:
             </p>
 
             <div style={{
-              display: 'inline-flex', alignItems: 'center', gap: 10,
-              background: 'rgba(7, 24, 15, 0.8)', padding: '12px 24px', borderRadius: 12,
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              background: 'rgba(7, 24, 15, 0.8)', padding: '10px 20px', borderRadius: 12,
               border: `1px solid ${RF_LEAF_GREEN}66`, color: RF_MINT_ACCENT,
-              fontSize: 20, fontWeight: 800, letterSpacing: '0.05em', marginBottom: 32
+              fontSize: 'clamp(16px, 3.5vw, 20px)', fontWeight: 800, letterSpacing: '0.05em', marginBottom: 28
             }}>
-              <Award size={22} />
+              <Award size={20} />
               {submittedRecord.referenceId}
             </div>
 
             {/* Submission Detail Summary Card */}
             <div style={{
               background: 'rgba(7, 24, 15, 0.6)', border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: 16, padding: '20px 24px', maxWidth: 640, margin: '0 auto 36px',
+              borderRadius: 16, padding: '18px 20px', maxWidth: 600, margin: '0 auto 28px',
               textAlign: 'left'
             }}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 14 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 14 }}>
                 <div>
-                  <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', display: 'block' }}>Target Ladder Rank</span>
-                  <span style={{ fontSize: 14, fontWeight: 700, color: RF_GOLD_YELLOW }}>
-                    {submittedRecord.targetLevel === 'LEVEL_2' && 'Level 2: Refeir Pioneer'}
-                    {submittedRecord.targetLevel === 'LEVEL_3' && 'Level 3: Refeir Builder'}
-                    {submittedRecord.targetLevel === 'LEVEL_4' && 'Level 4: Refeir Lead'}
-                    {submittedRecord.targetLevel === 'LEVEL_5' && 'Level 5: Refeir Core Team'}
+                  <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.5)', display: 'block' }}>Target Rank</span>
+                  <span style={{ fontSize: 13.5, fontWeight: 700, color: RF_GOLD_YELLOW }}>
+                    {submittedRecord.targetLevel === 'LEVEL_2' && 'Level 2: Pioneer'}
+                    {submittedRecord.targetLevel === 'LEVEL_3' && 'Level 3: Builder'}
+                    {submittedRecord.targetLevel === 'LEVEL_4' && 'Level 4: Lead'}
+                    {submittedRecord.targetLevel === 'LEVEL_5' && 'Level 5: Core Team'}
                   </span>
                 </div>
                 <div>
-                  <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', display: 'block' }}>Evidence Attachments</span>
-                  <span style={{ fontSize: 14, fontWeight: 600, color: '#FFFFFF' }}>
-                    {screenshots.length} Screenshot{screenshots.length === 1 ? '' : 's'} Uploaded
+                  <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.5)', display: 'block' }}>Attachments</span>
+                  <span style={{ fontSize: 13.5, fontWeight: 600, color: '#FFFFFF' }}>
+                    {screenshots.length} Uploaded
                   </span>
                 </div>
                 <div style={{ gridColumn: '1 / -1' }}>
-                  <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', display: 'block' }}>Task Title</span>
-                  <span style={{ fontSize: 15, fontWeight: 600, color: '#FFFFFF' }}>{submittedRecord.taskTitle}</span>
+                  <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.5)', display: 'block' }}>Task Title</span>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: '#FFFFFF' }}>{submittedRecord.taskTitle}</span>
                 </div>
               </div>
 
               <div style={{
-                marginTop: 18, paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.08)',
-                fontSize: 13, color: 'rgba(255,255,255,0.65)', lineHeight: 1.5
+                marginTop: 14, paddingTop: 12, borderTop: '1px solid rgba(255,255,255,0.08)',
+                fontSize: 12, color: 'rgba(255,255,255,0.65)', lineHeight: 1.45
               }}>
-                ⚡ <strong>What happens next:</strong> Your division squad lead and Admissions Team review submissions weekly. Once verified, your status on the Contributor Ladder is elevated and badge credentials are generated.
+                ⚡ <strong>What's next:</strong> Reviews run weekly. Once approved, your ladder status and badge credentials automatically update.
               </div>
             </div>
 
             {/* Action Buttons */}
-            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 14 }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 10 }}>
               <button
                 onClick={resetForm}
                 style={{
                   background: RF_LEAF_GREEN, color: RF_DEEP_GREEN, border: 'none',
-                  padding: '13px 26px', borderRadius: 100, fontSize: 14, fontWeight: 700,
-                  cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
+                  padding: '11px 22px', borderRadius: 100, fontSize: 13.5, fontWeight: 700,
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
                   transition: 'all 0.2s'
                 }}
                 onMouseEnter={e => (e.currentTarget.style.background = RF_MINT_ACCENT)}
                 onMouseLeave={e => (e.currentTarget.style.background = RF_LEAF_GREEN)}
               >
-                <RefreshCw size={16} /> Submit Another Mission
+                <RefreshCw size={15} /> Submit Another
               </button>
 
               <button
                 onClick={() => onNavigate('/rewards')}
                 style={{
                   background: 'rgba(255,255,255,0.06)', color: '#FFFFFF',
-                  border: '1px solid rgba(255,255,255,0.2)', padding: '13px 24px',
-                  borderRadius: 100, fontSize: 14, fontWeight: 600, cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', gap: 8
+                  border: '1px solid rgba(255,255,255,0.2)', padding: '11px 20px',
+                  borderRadius: 100, fontSize: 13.5, fontWeight: 600, cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', gap: 6
                 }}
                 onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.12)')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
               >
-                View Rewards Ladder <ArrowRight size={16} />
+                View Ladder <ArrowRight size={15} />
               </button>
 
               <button
                 onClick={onOpenStatus}
                 style={{
                   background: 'none', color: RF_MINT_ACCENT, border: 'none',
-                  padding: '13px 20px', fontSize: 13.5, fontWeight: 600, cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'underline'
+                  padding: '11px 16px', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', gap: 5, textDecoration: 'underline'
                 }}
               >
-                Check Application Status
+                Check Status
               </button>
             </div>
           </div>
@@ -437,32 +437,31 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
           /* ─── FORM VIEW ────────────────────────────────────────────────────────── */
           <div>
             {/* Header */}
-            <div style={{ textAlign: 'center', marginBottom: 38 }}>
+            <div className="rp-submittask-header">
               <div style={{
-                display: 'inline-flex', alignItems: 'center', gap: 8,
-                padding: '4px 14px', borderRadius: 100,
-                background: 'rgba(24, 252, 92, 0.1)', border: `1px solid ${RF_LEAF_GREEN}44`,
-                color: RF_MINT_ACCENT, fontSize: 12, fontWeight: 700, letterSpacing: '0.08em',
-                textTransform: 'uppercase', marginBottom: 14
+                display: 'inline-flex', alignItems: 'center', gap: 6,
+                padding: '4px 12px', borderRadius: 100,
+                background: 'rgba(24, 252, 92, 0.08)', border: `1px solid ${RF_LEAF_GREEN}44`,
+                color: RF_MINT_ACCENT, fontSize: 11, fontWeight: 700, letterSpacing: '0.08em',
+                textTransform: 'uppercase', marginBottom: 12
               }}>
-                <Shield size={13} />
+                <Shield size={12} />
                 PROOF OF WORK &amp; ADVANCEMENT
               </div>
 
               <h1 style={{
-                fontSize: 'clamp(28px, 4.5vw, 42px)', fontWeight: 800,
-                color: '#FFFFFF', lineHeight: 1.2, marginBottom: 16,
+                fontSize: 'clamp(24px, 4vw, 38px)', fontWeight: 800,
+                color: '#FFFFFF', lineHeight: 1.22, marginBottom: 12,
                 fontFamily: 'Plus Jakarta Sans, sans-serif'
               }}>
-                Report Completed Task &amp; <br />
-                <span style={{ whiteSpace: 'nowrap' }}>Submit Evidence</span>
+                Report Completed Task &amp; Evidence
               </h1>
 
               <p style={{
-                fontSize: 16, color: 'rgba(255,255,255,0.75)', lineHeight: 1.6,
-                maxWidth: 680, margin: '0 auto'
+                fontSize: 14.5, color: 'rgba(255,255,255,0.7)', lineHeight: 1.6,
+                maxWidth: 640, margin: '0 auto'
               }}>
-                Refeir operates on verified execution. When you complete a squad mission, bug bounty, growth loop, or campus milestone, report it here with screenshots and deliverables to advance on the <strong>Contributor Ladder</strong>.
+                Report your squad missions, bugs fixed, or milestones with proof to advance on the <strong>Contributor Ladder</strong>.
               </p>
             </div>
 
@@ -473,14 +472,14 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
             }}>
               <div className="rp-banner-content">
                 <div className="rp-banner-icon">
-                  <ShieldCheck size={20} />
+                  <ShieldCheck size={18} />
                 </div>
                 <div className="rp-banner-body">
                   <div className="rp-banner-title">
-                    Advancing to Level 2 (Refeir Pioneer) &amp; Beyond
+                    Advance to Level 2 (Pioneer) &amp; Beyond
                   </div>
                   <p className="rp-banner-text">
-                    Submitting tangible proof of work (such as code PRs, Figma links, and screenshots) allows your squad leader and core team to upgrade your profile, mint your verified badge, and unlock commission multipliers.
+                    Verified proof of work unlocks your Pioneer badge, squad ranking, and contributor reward multipliers.
                   </p>
                 </div>
               </div>
@@ -494,10 +493,10 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
               {contributor ? (
                 <div className="rp-banner-content">
                   <div className="rp-banner-avatar" style={{
-                    width: 40, height: 40, borderRadius: '50%',
+                    width: 38, height: 38, borderRadius: '50%',
                     background: `linear-gradient(135deg, ${RF_LEAF_GREEN} 0%, ${RF_MINT_ACCENT} 100%)`,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    color: RF_DEEP_GREEN, fontWeight: 800, fontSize: 15,
+                    color: RF_DEEP_GREEN, fontWeight: 800, fontSize: 14,
                     flexShrink: 0, overflow: 'hidden'
                   }}>
                     {contributor.avatar_url ? (
@@ -507,39 +506,39 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                     )}
                   </div>
                   <div className="rp-banner-body">
-                    <div className="rp-banner-contributor-header" style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                      <span style={{ fontSize: 14.5, fontWeight: 700, color: '#FFFFFF' }}>
+                    <div className="rp-banner-contributor-header" style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: 14, fontWeight: 700, color: '#FFFFFF' }}>
                         {contributor.full_name}
                       </span>
                       <span style={{
-                        fontSize: 10.5, fontWeight: 700, color: RF_DEEP_GREEN, background: RF_MINT_ACCENT,
-                        padding: '2px 8px', borderRadius: 100, textTransform: 'uppercase', letterSpacing: '0.04em'
+                        fontSize: 10, fontWeight: 700, color: RF_DEEP_GREEN, background: RF_MINT_ACCENT,
+                        padding: '2px 7px', borderRadius: 100, textTransform: 'uppercase', letterSpacing: '0.04em'
                       }}>
                         {contributor.contributor_level.replace('_', ' ')}
                       </span>
                       <span style={{
-                        fontSize: 10.5, color: 'rgba(255,255,255,0.7)', background: 'rgba(255,255,255,0.08)',
-                        padding: '2px 8px', borderRadius: 100
+                        fontSize: 10, color: 'rgba(255,255,255,0.7)', background: 'rgba(255,255,255,0.08)',
+                        padding: '2px 7px', borderRadius: 100
                       }}>
                         {contributor.division}
                       </span>
                     </div>
-                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', marginTop: 4, wordBreak: 'break-word', lineHeight: 1.45 }}>
-                      {contributor.email} {contributor.application_number ? `• App: ${contributor.application_number}` : ''} {contributor.pioneer_id ? `• Pioneer Seat: ${contributor.pioneer_id}` : ''} — Task proofs are linked to your profile
+                    <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.6)', marginTop: 3, wordBreak: 'break-word', lineHeight: 1.4 }}>
+                      {contributor.email} {contributor.application_number ? `• ${contributor.application_number}` : ''} {contributor.pioneer_id ? `• ${contributor.pioneer_id}` : ''}
                     </div>
                   </div>
                 </div>
               ) : (
                 <div className="rp-banner-content">
                   <div className="rp-banner-icon">
-                    <User size={19} />
+                    <User size={18} />
                   </div>
                   <div className="rp-banner-body">
                     <div className="rp-banner-title">
-                      Track Missions with a Refeir Contributor Profile
+                      Contributor Profile Sign In
                     </div>
                     <p className="rp-banner-text">
-                      Sign in to avoid typing your Application ID &amp; Pioneer ID every time, and track all your approved proofs automatically.
+                      Sign in to link task submissions and track approved proofs automatically.
                     </p>
                   </div>
                 </div>
@@ -554,21 +553,21 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                       background: 'rgba(239, 68, 68, 0.1)',
                       border: '1px solid rgba(239, 68, 68, 0.3)',
                       color: '#FCA5A5',
-                      padding: '8px 18px',
+                      padding: '7px 14px',
                       borderRadius: 100,
-                      fontSize: 12.5,
+                      fontSize: 12,
                       fontWeight: 600,
                       cursor: 'pointer',
                       display: 'inline-flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      gap: 6,
+                      gap: 5,
                       lineHeight: 1,
                       whiteSpace: 'nowrap',
                       flexShrink: 0
                     }}
                   >
-                    <LogOut size={13} style={{ flexShrink: 0 }} />
+                    <LogOut size={12} style={{ flexShrink: 0 }} />
                     <span>Sign Out</span>
                   </button>
                 ) : (
@@ -576,7 +575,7 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                     onClick={() => onNavigate('/signin')}
                     className="rp-banner-btn"
                   >
-                    <LogIn size={14} style={{ flexShrink: 0 }} />
+                    <LogIn size={13} style={{ flexShrink: 0 }} />
                     <span>Sign In</span>
                   </button>
                 )}
@@ -585,16 +584,16 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
 
             {contributor && !contributor.is_profile_completed && (
               <div style={{
-                background: 'rgba(255, 184, 0, 0.12)', border: '1px solid rgba(255, 184, 0, 0.4)',
-                borderRadius: 16, padding: '16px 20px', marginBottom: 24,
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 14
+                background: 'rgba(255, 184, 0, 0.1)', border: '1px solid rgba(255, 184, 0, 0.35)',
+                borderRadius: 14, padding: '14px 16px', marginBottom: 18,
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <AlertCircle size={22} color={RF_GOLD_YELLOW} style={{ flexShrink: 0 }} />
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: '1 1 240px' }}>
+                  <AlertCircle size={20} color={RF_GOLD_YELLOW} style={{ flexShrink: 0 }} />
                   <div>
-                    <strong style={{ color: '#FFFFFF', fontSize: 14 }}>Complete Your Contributor Profile</strong>
-                    <div style={{ fontSize: 12.5, color: '#FDE68A', marginTop: 2 }}>
-                      Your official Pioneer ID is minted once your profile is completed. Please complete your profile to unlock task verification and receive your credential pass.
+                    <strong style={{ color: '#FFFFFF', fontSize: 13.5 }}>Complete Your Profile</strong>
+                    <div style={{ fontSize: 12, color: '#FDE68A', marginTop: 1 }}>
+                      Mint your Pioneer ID to unlock credential verification.
                     </div>
                   </div>
                 </div>
@@ -602,12 +601,12 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                   onClick={() => onNavigate('/complete-profile')}
                   style={{
                     background: RF_GOLD_YELLOW, color: RF_DEEP_GREEN, border: 'none',
-                    padding: '9px 20px', borderRadius: 100, fontSize: 13, fontWeight: 800,
-                    cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
-                    boxShadow: '0 2px 10px rgba(255, 184, 0, 0.3)'
+                    padding: '8px 16px', borderRadius: 100, fontSize: 12.5, fontWeight: 700,
+                    cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5,
+                    boxShadow: '0 2px 8px rgba(255, 184, 0, 0.25)'
                   }}
                 >
-                  Complete Profile Now →
+                  Complete Profile →
                 </button>
               </div>
             )}
@@ -616,7 +615,7 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
               /* ─── PIONEER AUTHENTICATION REQUIRED GATE ─── */
               <div className="rp-auth-gate-card">
                 <div className="rp-auth-gate-icon-box">
-                  <Lock size={26} />
+                  <Lock size={24} />
                 </div>
 
                 <span className="rp-auth-gate-badge">
@@ -628,7 +627,7 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                 </h2>
 
                 <p className="rp-auth-gate-desc">
-                  Task reporting, mission deliverables, and Contributor Ladder upgrades are restricted to <strong>officially accepted Refeir Pioneers</strong>. Members must enter their mandatory <strong>Application ID</strong> &amp; <strong>Pioneer ID</strong>, and be issued an official Acceptance Code.
+                  Task reporting and ladder upgrades are restricted to <strong>officially accepted Refeir Pioneers</strong> with an active Application ID and Pioneer ID.
                 </p>
 
                 <div className="rp-auth-gate-steps">
@@ -636,7 +635,7 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                     <div className="rp-auth-gate-step-num">1</div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div className="rp-auth-gate-step-title">Application &amp; Pioneer ID</div>
-                      <div className="rp-auth-gate-step-desc">Both IDs are mandatory and assigned upon admission.</div>
+                      <div className="rp-auth-gate-step-desc">Assigned upon admission.</div>
                     </div>
                   </div>
 
@@ -644,7 +643,7 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                     <div className="rp-auth-gate-step-num">2</div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div className="rp-auth-gate-step-title">Acceptance Code</div>
-                      <div className="rp-auth-gate-step-desc">Issued by admissions to confirm your verified seat.</div>
+                      <div className="rp-auth-gate-step-desc">Issued by admissions.</div>
                     </div>
                   </div>
                 </div>
@@ -654,16 +653,16 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                     onClick={() => onNavigate('/signin')}
                     className="rp-auth-gate-btn-primary"
                   >
-                    <LogIn size={15} style={{ flexShrink: 0 }} />
-                    <span>Sign In / Activate</span>
+                    <LogIn size={14} style={{ flexShrink: 0 }} />
+                    <span>Sign In</span>
                   </button>
 
                   <button
                     onClick={onOpenStatus}
                     className="rp-auth-gate-btn-secondary"
                   >
-                    <Search size={15} style={{ flexShrink: 0, color: RF_MINT_ACCENT }} />
-                    <span>Check Admission Status</span>
+                    <Search size={14} style={{ flexShrink: 0, color: RF_MINT_ACCENT }} />
+                    <span>Check Status</span>
                   </button>
                 </div>
 
@@ -678,49 +677,42 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
               </div>
             ) : (
               <>
-                {/* View Mode Tabs (Submit New vs Past Missions History) */}
-                <div style={{
-                  display: 'flex', background: 'rgba(0,0,0,0.35)', borderRadius: 14,
-                  padding: 4, marginBottom: 26, border: '1px solid rgba(255,255,255,0.08)'
-                }}>
+                {/* View Mode Tabs (Submit vs History) */}
+                <div className="rp-submittask-tabs">
                   <button
                     type="button"
                     onClick={() => setActiveTab('submit')}
-                style={{
-                  flex: 1, padding: '11px 16px', borderRadius: 10, border: 'none',
-                  background: activeTab === 'submit' ? RF_LEAF_GREEN : 'transparent',
-                  color: activeTab === 'submit' ? RF_DEEP_GREEN : 'rgba(255,255,255,0.75)',
-                  fontSize: 13.5, fontWeight: 700, cursor: 'pointer', display: 'flex',
-                  alignItems: 'center', justifyContent: 'center', gap: 8, transition: 'all 0.15s'
-                }}
-              >
-                <Zap size={15} /> Submit New Mission Proof
-              </button>
+                    className="rp-submittask-tab-btn"
+                    style={{
+                      background: activeTab === 'submit' ? RF_LEAF_GREEN : 'transparent',
+                      color: activeTab === 'submit' ? RF_DEEP_GREEN : 'rgba(255,255,255,0.75)'
+                    }}
+                  >
+                    <Zap size={14} /> Submit Proof
+                  </button>
 
-              <button
-                type="button"
-                onClick={() => setActiveTab('history')}
-                style={{
-                  flex: 1, padding: '11px 16px', borderRadius: 10, border: 'none',
-                  background: activeTab === 'history' ? RF_LEAF_GREEN : 'transparent',
-                  color: activeTab === 'history' ? RF_DEEP_GREEN : 'rgba(255,255,255,0.75)',
-                  fontSize: 13.5, fontWeight: 700, cursor: 'pointer', display: 'flex',
-                  alignItems: 'center', justifyContent: 'center', gap: 8, transition: 'all 0.15s'
-                }}
-              >
-                <FileText size={15} />
-                My Mission History
-                {myTasks.length > 0 && (
-                  <span style={{
-                    background: activeTab === 'history' ? RF_DEEP_GREEN : 'rgba(24, 252, 92, 0.2)',
-                    color: activeTab === 'history' ? RF_MINT_ACCENT : '#FFFFFF',
-                    fontSize: 11, fontWeight: 800, padding: '1px 7px', borderRadius: 100
-                  }}>
-                    {myTasks.length}
-                  </span>
-                )}
-              </button>
-            </div>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('history')}
+                    className="rp-submittask-tab-btn"
+                    style={{
+                      background: activeTab === 'history' ? RF_LEAF_GREEN : 'transparent',
+                      color: activeTab === 'history' ? RF_DEEP_GREEN : 'rgba(255,255,255,0.75)'
+                    }}
+                  >
+                    <FileText size={14} />
+                    My History
+                    {myTasks.length > 0 && (
+                      <span style={{
+                        background: activeTab === 'history' ? RF_DEEP_GREEN : 'rgba(24, 252, 92, 0.2)',
+                        color: activeTab === 'history' ? RF_MINT_ACCENT : '#FFFFFF',
+                        fontSize: 10.5, fontWeight: 800, padding: '1px 6px', borderRadius: 100
+                      }}>
+                        {myTasks.length}
+                      </span>
+                    )}
+                  </button>
+                </div>
 
             {/* TAB: MISSION HISTORY */}
             {activeTab === 'history' && (
@@ -745,11 +737,11 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                     onClick={() => setActiveTab('submit')}
                     style={{
                       background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.2)',
-                      color: '#FFFFFF', padding: '8px 16px', borderRadius: 100, fontSize: 12.5,
-                      fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6
+                      color: '#FFFFFF', padding: '7px 14px', borderRadius: 100, fontSize: 12,
+                      fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5
                     }}
                   >
-                    <Zap size={14} color={RF_MINT_ACCENT} /> Submit Another Task
+                    <Zap size={13} color={RF_MINT_ACCENT} /> Submit Proof
                   </button>
                 </div>
 
@@ -774,11 +766,11 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                       onClick={() => setActiveTab('submit')}
                       style={{
                         background: RF_LEAF_GREEN, color: RF_DEEP_GREEN, border: 'none',
-                        padding: '10px 22px', borderRadius: 100, fontSize: 13, fontWeight: 700,
+                        padding: '9px 20px', borderRadius: 100, fontSize: 12.5, fontWeight: 700,
                         cursor: 'pointer'
                       }}
                     >
-                      Submit Your First Mission Proof
+                      Submit First Proof
                     </button>
                   </div>
                 ) : (
@@ -939,21 +931,14 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
 
             {/* TAB: SUBMIT NEW PROOF */}
             {activeTab === 'submit' && (
-              <form onSubmit={handleSubmit} style={{
-                background: 'rgba(7, 24, 15, 0.75)',
-                backdropFilter: 'blur(16px)',
-                border: '1px solid rgba(102, 187, 42, 0.2)',
-                borderRadius: 24,
-                padding: 'clamp(24px, 4vw, 40px)',
-                boxShadow: '0 20px 50px rgba(0,0,0,0.5)'
-              }}>
+              <form onSubmit={handleSubmit} className="rp-submittask-form-card">
 
                 {errorMessage && (
                   <div style={{
                     background: 'rgba(239, 68, 68, 0.15)', border: '1px solid #EF4444',
                     borderRadius: 12, padding: '12px 16px', color: '#FCA5A5',
-                    fontSize: 14, display: 'flex', alignItems: 'center', gap: 10,
-                    marginBottom: 24
+                    fontSize: 13.5, display: 'flex', alignItems: 'center', gap: 10,
+                    marginBottom: 20
                   }}>
                     <AlertCircle size={18} style={{ flexShrink: 0 }} />
                     <span>{errorMessage}</span>
@@ -961,19 +946,19 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                 )}
 
                 {/* Section 1: Contributor Identification */}
-                <div style={{ marginBottom: 32 }}>
-                  <h2 style={{ fontSize: 17, fontWeight: 700, color: RF_MINT_ACCENT, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ marginBottom: 28 }}>
+                  <h2 style={{ fontSize: 16, fontWeight: 700, color: RF_MINT_ACCENT, marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
                     <span style={{
-                      width: 22, height: 22, borderRadius: '50%', background: `${RF_LEAF_GREEN}33`,
-                      display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 12,
+                      width: 20, height: 20, borderRadius: '50%', background: `${RF_LEAF_GREEN}33`,
+                      display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 11,
                       lineHeight: 1, flexShrink: 0
                     }}>1</span>
                     Contributor Identification
                   </h2>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 18 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 14 }}>
                     <div>
-                      <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.85)', marginBottom: 6 }}>
+                      <label style={{ display: 'block', fontSize: 12.5, fontWeight: 600, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
                         Full Name *
                       </label>
                       <div style={{ position: 'relative' }}>
@@ -983,22 +968,22 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                           value={fullName}
                           onChange={e => setFullName(e.target.value)}
                           style={{
-                            width: '100%', padding: '12px 14px 12px 42px', borderRadius: 10,
+                            width: '100%', padding: '10px 12px 10px 38px', borderRadius: 10,
                             background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)',
-                            color: '#FFFFFF', fontSize: 14, outline: 'none', boxSizing: 'border-box'
+                            color: '#FFFFFF', fontSize: 13.5, outline: 'none', boxSizing: 'border-box'
                           }}
                         />
-                        <User size={16} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+                        <User size={15} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
                       </div>
                     </div>
 
                     <div>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-                        <label style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.85)' }}>
-                          Registered Email Address *
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 5 }}>
+                        <label style={{ fontSize: 12.5, fontWeight: 600, color: 'rgba(255,255,255,0.85)' }}>
+                          Registered Email *
                         </label>
-                        <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                          <Lock size={11} /> Locked
+                        <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.45)', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+                          <Lock size={10} /> Locked
                         </span>
                       </div>
                       <div style={{ position: 'relative' }}>
@@ -1008,23 +993,23 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                           value={email}
                           readOnly
                           style={{
-                            width: '100%', padding: '12px 14px 12px 42px', borderRadius: 10,
+                            width: '100%', padding: '10px 12px 10px 38px', borderRadius: 10,
                             background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)',
-                            color: 'rgba(255,255,255,0.7)', fontSize: 14, outline: 'none', boxSizing: 'border-box',
+                            color: 'rgba(255,255,255,0.7)', fontSize: 13.5, outline: 'none', boxSizing: 'border-box',
                             cursor: 'not-allowed'
                           }}
                         />
-                        <Mail size={16} color="rgba(255,255,255,0.3)" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+                        <Mail size={15} color="rgba(255,255,255,0.3)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
                       </div>
                     </div>
 
                     <div>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-                        <label style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.85)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 5 }}>
+                        <label style={{ fontSize: 12.5, fontWeight: 600, color: 'rgba(255,255,255,0.85)' }}>
                           Application ID *
                         </label>
-                        <span style={{ fontSize: 11, color: `${RF_LEAF_GREEN}cc`, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                          <Lock size={11} /> Locked
+                        <span style={{ fontSize: 10.5, color: `${RF_LEAF_GREEN}cc`, display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+                          <Lock size={10} /> Locked
                         </span>
                       </div>
                       <div style={{ position: 'relative' }}>
@@ -1034,23 +1019,23 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                           value={applicationNumber}
                           readOnly
                           style={{
-                            width: '100%', padding: '12px 14px 12px 42px', borderRadius: 10,
+                            width: '100%', padding: '10px 12px 10px 38px', borderRadius: 10,
                             background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(24, 252, 92, 0.2)',
-                            color: 'rgba(255,255,255,0.85)', fontSize: 14, outline: 'none', boxSizing: 'border-box',
+                            color: 'rgba(255,255,255,0.85)', fontSize: 13.5, outline: 'none', boxSizing: 'border-box',
                             fontFamily: 'monospace', textTransform: 'uppercase', cursor: 'not-allowed'
                           }}
                         />
-                        <Key size={16} color="rgba(24, 252, 92, 0.5)" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+                        <Key size={15} color="rgba(24, 252, 92, 0.5)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
                       </div>
                     </div>
 
                     <div>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-                        <label style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.85)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 5 }}>
+                        <label style={{ fontSize: 12.5, fontWeight: 600, color: 'rgba(255,255,255,0.85)' }}>
                           Pioneer ID *
                         </label>
-                        <span style={{ fontSize: 11, color: 'rgba(246, 178, 26, 0.85)', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                          <Lock size={11} /> Locked
+                        <span style={{ fontSize: 10.5, color: 'rgba(246, 178, 26, 0.85)', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+                          <Lock size={10} /> Locked
                         </span>
                       </div>
                       <div style={{ position: 'relative' }}>
@@ -1060,19 +1045,19 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                           value={pioneerId}
                           readOnly
                           style={{
-                            width: '100%', padding: '12px 14px 12px 42px', borderRadius: 10,
+                            width: '100%', padding: '10px 12px 10px 38px', borderRadius: 10,
                             background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(246, 178, 26, 0.25)',
-                            color: RF_GOLD_YELLOW, fontSize: 14, outline: 'none', boxSizing: 'border-box',
+                            color: RF_GOLD_YELLOW, fontSize: 13.5, outline: 'none', boxSizing: 'border-box',
                             fontFamily: 'monospace', textTransform: 'uppercase', fontWeight: 700,
                             cursor: 'not-allowed'
                           }}
                         />
-                        <Award size={16} color="rgba(246, 178, 26, 0.6)" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+                        <Award size={15} color="rgba(246, 178, 26, 0.6)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
                       </div>
                     </div>
 
                     <div>
-                      <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.85)', marginBottom: 6 }}>
+                      <label style={{ display: 'block', fontSize: 12.5, fontWeight: 600, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
                         Primary Division / Squad *
                       </label>
                       <div style={{ position: 'relative' }}>
@@ -1080,31 +1065,31 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                           value={division}
                           onChange={e => setDivision(e.target.value)}
                           style={{
-                            width: '100%', padding: '12px 14px 12px 42px', borderRadius: 10,
+                            width: '100%', padding: '10px 12px 10px 38px', borderRadius: 10,
                             background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.15)',
-                            color: '#FFFFFF', fontSize: 14, outline: 'none', boxSizing: 'border-box'
+                            color: '#FFFFFF', fontSize: 13.5, outline: 'none', boxSizing: 'border-box'
                           }}
                         >
                           {DIVISIONS_LIST.map(d => (
                             <option key={d.id} value={d.id}>{d.name}</option>
                           ))}
                         </select>
-                        <Briefcase size={16} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+                        <Briefcase size={15} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
                       </div>
                     </div>
                   </div>
 
                   {/* Target Contributor Level Selector */}
-                  <div style={{ marginTop: 20 }}>
-                    <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.85)', marginBottom: 8 }}>
-                      Which Contributor Ladder Rank are you qualifying for? *
+                  <div style={{ marginTop: 18 }}>
+                    <label style={{ display: 'block', fontSize: 12.5, fontWeight: 600, color: 'rgba(255,255,255,0.85)', marginBottom: 8 }}>
+                      Qualifying Contributor Rank *
                     </label>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: 10 }}>
+                    <div className="rp-target-levels-grid">
                       {[
                         { id: 'LEVEL_2', label: 'Level 2: Pioneer', subtitle: '1st Tangible Mission', color: RF_MINT_ACCENT, icon: Award },
                         { id: 'LEVEL_3', label: 'Level 3: Builder', subtitle: '4+ Missions Delivered', color: RF_GOLD_YELLOW, icon: Zap },
                         { id: 'LEVEL_4', label: 'Level 4: Lead', subtitle: 'Team / Squad Anchor', color: RF_ORANGE, icon: Shield },
-                        { id: 'LEVEL_5', label: 'Level 5: Core Team', subtitle: 'Strategic Protocol Delivery', color: '#60A5FA', icon: ShieldCheck },
+                        { id: 'LEVEL_5', label: 'Level 5: Core Team', subtitle: 'Protocol Delivery', color: '#60A5FA', icon: ShieldCheck },
                       ].map(lvl => {
                         const active = targetLevel === lvl.id;
                         const IconComp = lvl.icon;
@@ -1112,20 +1097,19 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                           <div
                             key={lvl.id}
                             onClick={() => setTargetLevel(lvl.id as any)}
+                            className="rp-target-level-card"
                             style={{
-                              padding: '12px 14px', borderRadius: 12, cursor: 'pointer',
                               background: active ? `${RF_LEAF_GREEN}22` : 'rgba(255,255,255,0.03)',
-                              border: `1.5px solid ${active ? lvl.color : 'rgba(255,255,255,0.1)'}`,
-                              transition: 'all 0.15s'
+                              borderColor: active ? lvl.color : 'rgba(255,255,255,0.1)'
                             }}
                           >
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-                              <span style={{ fontSize: 13, fontWeight: 700, color: active ? lvl.color : '#FFFFFF' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 3 }}>
+                              <span className="rp-target-level-card-label" style={{ fontWeight: 700, color: active ? lvl.color : '#FFFFFF' }}>
                                 {lvl.label}
                               </span>
-                              <IconComp size={14} color={active ? lvl.color : 'rgba(255,255,255,0.4)'} style={{ flexShrink: 0 }} />
+                              <IconComp size={13} color={active ? lvl.color : 'rgba(255,255,255,0.4)'} style={{ flexShrink: 0 }} />
                             </div>
-                            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)' }}>
+                            <div className="rp-target-level-card-sub" style={{ color: 'rgba(255,255,255,0.6)' }}>
                               {lvl.subtitle}
                             </div>
                           </div>
@@ -1136,39 +1120,39 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                 </div>
 
                 {/* Section 2: Task Details */}
-                <div style={{ marginBottom: 32 }}>
-                  <h2 style={{ fontSize: 17, fontWeight: 700, color: RF_MINT_ACCENT, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ marginBottom: 28 }}>
+                  <h2 style={{ fontSize: 16, fontWeight: 700, color: RF_MINT_ACCENT, marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
                     <span style={{
-                      width: 22, height: 22, borderRadius: '50%', background: `${RF_LEAF_GREEN}33`,
-                      display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 12,
+                      width: 20, height: 20, borderRadius: '50%', background: `${RF_LEAF_GREEN}33`,
+                      display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 11,
                       lineHeight: 1, flexShrink: 0
                     }}>2</span>
-                    Mission &amp; Task Deliverables
+                    Mission &amp; Deliverables
                   </h2>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 18, marginBottom: 18 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 14, marginBottom: 14 }}>
                     <div>
-                      <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.85)', marginBottom: 6 }}>
+                      <label style={{ display: 'block', fontSize: 12.5, fontWeight: 600, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
                         Task / Mission Title *
                       </label>
                       <div style={{ position: 'relative' }}>
                         <input
                           type="text"
-                          placeholder="e.g. Implemented responsive Escrow UI component"
+                          placeholder="e.g. Escrow UI component implementation"
                           value={taskTitle}
                           onChange={e => setTaskTitle(e.target.value)}
                           style={{
-                            width: '100%', padding: '12px 14px 12px 42px', borderRadius: 10,
+                            width: '100%', padding: '10px 12px 10px 38px', borderRadius: 10,
                             background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)',
-                            color: '#FFFFFF', fontSize: 14, outline: 'none', boxSizing: 'border-box'
+                            color: '#FFFFFF', fontSize: 13.5, outline: 'none', boxSizing: 'border-box'
                           }}
                         />
-                        <Zap size={16} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+                        <Zap size={15} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
                       </div>
                     </div>
 
                     <div>
-                      <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.85)', marginBottom: 6 }}>
+                      <label style={{ display: 'block', fontSize: 12.5, fontWeight: 600, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
                         Task Category *
                       </label>
                       <div style={{ position: 'relative' }}>
@@ -1176,42 +1160,42 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                           value={taskCategory}
                           onChange={e => setTaskCategory(e.target.value)}
                           style={{
-                            width: '100%', padding: '12px 14px 12px 42px', borderRadius: 10,
+                            width: '100%', padding: '10px 12px 10px 38px', borderRadius: 10,
                             background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.15)',
-                            color: '#FFFFFF', fontSize: 14, outline: 'none', boxSizing: 'border-box'
+                            color: '#FFFFFF', fontSize: 13.5, outline: 'none', boxSizing: 'border-box'
                           }}
                         >
                           {TASK_CATEGORIES.map(cat => (
                             <option key={cat} value={cat}>{cat}</option>
                           ))}
                         </select>
-                        <CheckCircle2 size={16} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+                        <CheckCircle2 size={15} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
                       </div>
                     </div>
                   </div>
 
-                  <div style={{ marginBottom: 18 }}>
-                    <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.85)', marginBottom: 6 }}>
-                      Description of Work Done &amp; Impact *
+                  <div style={{ marginBottom: 14 }}>
+                    <label style={{ display: 'block', fontSize: 12.5, fontWeight: 600, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
+                      Description &amp; Impact *
                     </label>
                     <textarea
-                      rows={4}
-                      placeholder="Describe what you built or accomplished, tools/technologies used, problems solved, and tangible metrics (e.g. lines of code, attendees, conversion numbers, links)..."
+                      rows={3}
+                      placeholder="Describe what was accomplished, metrics, problems solved, tools used..."
                       value={taskDescription}
                       onChange={e => setTaskDescription(e.target.value)}
                       style={{
-                        width: '100%', padding: '12px 14px', borderRadius: 10,
+                        width: '100%', padding: '10px 12px', borderRadius: 10,
                         background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)',
-                        color: '#FFFFFF', fontSize: 14, outline: 'none', boxSizing: 'border-box',
+                        color: '#FFFFFF', fontSize: 13.5, outline: 'none', boxSizing: 'border-box',
                         fontFamily: 'inherit', resize: 'vertical'
                       }}
                     />
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 18 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 14 }}>
                     <div>
-                      <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.85)', marginBottom: 6 }}>
-                        Primary Deliverable URL <span style={{ opacity: 0.6, fontWeight: 400 }}>(GitHub PR, Figma, Demo)</span>
+                      <label style={{ display: 'block', fontSize: 12.5, fontWeight: 600, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
+                        Primary Deliverable URL <span style={{ opacity: 0.6, fontWeight: 400 }}>(PR, Figma, Demo)</span>
                       </label>
                       <div style={{ position: 'relative' }}>
                         <input
@@ -1220,64 +1204,64 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                           value={deliverableUrl}
                           onChange={e => setDeliverableUrl(e.target.value)}
                           style={{
-                            width: '100%', padding: '12px 14px 12px 42px', borderRadius: 10,
+                            width: '100%', padding: '10px 12px 10px 38px', borderRadius: 10,
                             background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)',
-                            color: '#FFFFFF', fontSize: 14, outline: 'none', boxSizing: 'border-box'
+                            color: '#FFFFFF', fontSize: 13.5, outline: 'none', boxSizing: 'border-box'
                           }}
                         />
-                        <LinkIcon size={16} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+                        <LinkIcon size={15} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
                       </div>
                     </div>
 
                     <div>
-                      <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.85)', marginBottom: 6 }}>
-                        Additional Verification URL <span style={{ opacity: 0.6, fontWeight: 400 }}>(Tweet, Docs, Drive)</span>
+                      <label style={{ display: 'block', fontSize: 12.5, fontWeight: 600, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
+                        Additional Verification URL <span style={{ opacity: 0.6, fontWeight: 400 }}>(Tweet, Docs)</span>
                       </label>
                       <div style={{ position: 'relative' }}>
                         <input
                           type="url"
-                          placeholder="https://twitter.com/... or https://docs.google.com/..."
+                          placeholder="https://x.com/... or https://docs.google.com/..."
                           value={additionalUrl}
                           onChange={e => setAdditionalUrl(e.target.value)}
                           style={{
-                            width: '100%', padding: '12px 14px 12px 42px', borderRadius: 10,
+                            width: '100%', padding: '10px 12px 10px 38px', borderRadius: 10,
                             background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)',
-                            color: '#FFFFFF', fontSize: 14, outline: 'none', boxSizing: 'border-box'
+                            color: '#FFFFFF', fontSize: 13.5, outline: 'none', boxSizing: 'border-box'
                           }}
                         />
-                        <Globe size={16} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+                        <Globe size={15} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Section 3: Screenshots & Visual Evidence */}
-                <div style={{ marginBottom: 32 }}>
-                  <h2 style={{ fontSize: 17, fontWeight: 700, color: RF_MINT_ACCENT, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ marginBottom: 24 }}>
+                  <h2 style={{ fontSize: 16, fontWeight: 700, color: RF_MINT_ACCENT, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
                     <span style={{
-                      width: 22, height: 22, borderRadius: '50%', background: `${RF_LEAF_GREEN}33`,
-                      display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 12,
+                      width: 20, height: 20, borderRadius: '50%', background: `${RF_LEAF_GREEN}33`,
+                      display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 11,
                       lineHeight: 1, flexShrink: 0
                     }}>3</span>
-                    Screenshots &amp; Visual Evidence
+                    Screenshots &amp; Evidence
                   </h2>
 
-                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', marginBottom: 16 }}>
-                  Attach screenshots proving your work (e.g. terminal tests passing, code diffs, UI designs, event photos, or chat engagement). You can attach up to 5 images.
+                <p style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.65)', marginBottom: 14 }}>
+                  Attach screenshots proving your work (code diffs, test results, designs, event photos). Up to 5 images.
                 </p>
 
                 {/* Drag and Drop Zone */}
                 <div
                   onClick={() => fileInputRef.current?.click()}
                   style={{
-                    border: `2px dashed ${RF_LEAF_GREEN}55`,
-                    borderRadius: 16,
-                    padding: '28px 20px',
+                    border: `1.5px dashed ${RF_LEAF_GREEN}55`,
+                    borderRadius: 14,
+                    padding: '22px 16px',
                     textAlign: 'center',
                     background: 'rgba(15, 46, 30, 0.4)',
                     cursor: 'pointer',
                     transition: 'all 0.2s',
-                    marginBottom: 18
+                    marginBottom: 14
                   }}
                   onMouseEnter={e => {
                     e.currentTarget.style.borderColor = RF_MINT_ACCENT;
@@ -1298,38 +1282,38 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                   />
 
                   <div style={{
-                    width: 48, height: 48, borderRadius: '50%', background: `${RF_LEAF_GREEN}22`,
+                    width: 40, height: 40, borderRadius: '50%', background: `${RF_LEAF_GREEN}22`,
                     display: 'flex', alignItems: 'center', justifyContent: 'center', color: RF_MINT_ACCENT,
-                    margin: '0 auto 12px'
+                    margin: '0 auto 10px'
                   }}>
-                    <Upload size={22} />
+                    <Upload size={18} />
                   </div>
 
-                  <div style={{ fontSize: 14, fontWeight: 700, color: '#FFFFFF', marginBottom: 4 }}>
-                    {isCompressing ? 'Processing & optimizing images...' : 'Click to Browse or Drag & Drop Screenshots'}
+                  <div style={{ fontSize: 13.5, fontWeight: 700, color: '#FFFFFF', marginBottom: 3 }}>
+                    {isCompressing ? 'Optimizing images...' : 'Upload Screenshots'}
                   </div>
-                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>
-                    Supports PNG, JPG, JPEG, WEBP (Max 5 images)
+                  <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.5)' }}>
+                    PNG, JPG, WEBP (Max 5)
                   </div>
                 </div>
 
                 {/* Screenshot Thumbnails & Captions */}
                 {screenshots.length > 0 && (
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 14 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
                     {screenshots.map((s, idx) => (
                       <div
                         key={s.id}
                         style={{
                           background: 'rgba(7, 24, 15, 0.9)',
                           border: '1px solid rgba(255,255,255,0.12)',
-                          borderRadius: 12,
+                          borderRadius: 10,
                           overflow: 'hidden',
                           display: 'flex',
                           flexDirection: 'column'
                         }}
                       >
                         {/* Image Preview */}
-                        <div style={{ position: 'relative', height: 140, background: '#000000' }}>
+                        <div style={{ position: 'relative', height: 120, background: '#000000' }}>
                           <img
                             src={s.data_url}
                             alt={s.name}
@@ -1339,45 +1323,45 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                             type="button"
                             onClick={() => handleRemoveScreenshot(s.id)}
                             style={{
-                              position: 'absolute', top: 8, right: 8,
-                              width: 26, height: 26, borderRadius: '50%',
+                              position: 'absolute', top: 6, right: 6,
+                              width: 24, height: 24, borderRadius: '50%',
                               background: 'rgba(0,0,0,0.7)', border: 'none',
                               color: '#EF4444', display: 'flex', alignItems: 'center',
                               justifyContent: 'center', cursor: 'pointer'
                             }}
                             title="Remove image"
                           >
-                            <X size={14} />
+                            <X size={12} />
                           </button>
                           <button
                             type="button"
                             onClick={() => setPreviewModalImg(s.data_url)}
                             style={{
-                              position: 'absolute', bottom: 8, right: 8,
-                              padding: '4px 8px', borderRadius: 6,
+                              position: 'absolute', bottom: 6, right: 6,
+                              padding: '3px 6px', borderRadius: 4,
                               background: 'rgba(0,0,0,0.7)', border: 'none',
                               color: '#FFFFFF', display: 'flex', alignItems: 'center',
-                              gap: 4, fontSize: 11, cursor: 'pointer'
+                              gap: 3, fontSize: 10.5, cursor: 'pointer'
                             }}
                           >
-                            <Eye size={12} /> View
+                            <Eye size={11} /> View
                           </button>
                         </div>
 
                         {/* Caption input */}
-                        <div style={{ padding: '10px 12px', flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
-                          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <div style={{ padding: '8px 10px', flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                          <div style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                             #{idx + 1}: {s.name}
                           </div>
                           <input
                             type="text"
-                            placeholder="Optional caption (e.g. Dashboard view)"
+                            placeholder="Caption (optional)"
                             value={s.caption || ''}
                             onChange={e => handleCaptionChange(s.id, e.target.value)}
                             style={{
-                              width: '100%', padding: '6px 8px', borderRadius: 6,
+                              width: '100%', padding: '5px 8px', borderRadius: 6,
                               background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
-                              color: '#FFFFFF', fontSize: 12, outline: 'none', boxSizing: 'border-box'
+                              color: '#FFFFFF', fontSize: 11.5, outline: 'none', boxSizing: 'border-box'
                             }}
                           />
                         </div>
@@ -1389,22 +1373,22 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
 
               {/* Section 4: Declaration & Submit */}
               <div style={{
-                borderTop: '1px solid rgba(255,255,255,0.1)',
-                paddingTop: 24,
-                marginBottom: 24
+                borderTop: '1px solid rgba(255,255,255,0.08)',
+                paddingTop: 18,
+                marginBottom: 20
               }}>
                 <label style={{
-                  display: 'flex', alignItems: 'flex-start', gap: 12,
-                  cursor: 'pointer', fontSize: 13, color: 'rgba(255,255,255,0.85)', lineHeight: 1.5
+                  display: 'flex', alignItems: 'flex-start', gap: 10,
+                  cursor: 'pointer', fontSize: 12.5, color: 'rgba(255,255,255,0.8)', lineHeight: 1.45
                 }}>
                   <input
                     type="checkbox"
                     checked={agreeAuthentic}
                     onChange={e => setAgreeAuthentic(e.target.checked)}
-                    style={{ marginTop: 3, accentColor: RF_LEAF_GREEN, cursor: 'pointer', width: 16, height: 16, flexShrink: 0 }}
+                    style={{ marginTop: 2, accentColor: RF_LEAF_GREEN, cursor: 'pointer', width: 15, height: 15, flexShrink: 0 }}
                   />
                   <span>
-                    I confirm that the submitted task, deliverables, and screenshots represent my authentic individual or squad contribution to Refeir, adhere to community standards, and are ready for peer and leadership review.
+                    I confirm that this submission is my authentic work for Refeir and is ready for verification review.
                   </span>
                 </label>
               </div>
@@ -1413,46 +1397,21 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
               <button
                 type="submit"
                 disabled={submitting || isCompressing}
+                className="rp-submittask-submit-btn"
                 style={{
-                  width: '100%',
-                  background: submitting || isCompressing ? 'rgba(102, 187, 42, 0.5)' : RF_LEAF_GREEN,
-                  color: RF_DEEP_GREEN,
-                  border: 'none',
-                  padding: '16px',
-                  borderRadius: 100,
-                  fontSize: 16,
-                  fontWeight: 800,
-                  letterSpacing: '0.01em',
-                  cursor: submitting || isCompressing ? 'not-allowed' : 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 10,
-                  boxShadow: `0 4px 20px ${RF_LEAF_GREEN}44`,
-                  transition: 'all 0.2s'
-                }}
-                onMouseEnter={e => {
-                  if (!submitting && !isCompressing) {
-                    e.currentTarget.style.background = RF_MINT_ACCENT;
-                    e.currentTarget.style.transform = 'translateY(-1px)';
-                  }
-                }}
-                onMouseLeave={e => {
-                  if (!submitting && !isCompressing) {
-                    e.currentTarget.style.background = RF_LEAF_GREEN;
-                    e.currentTarget.style.transform = '';
-                  }
+                  background: submitting || isCompressing ? 'rgba(102, 187, 42, 0.5)' : undefined,
+                  cursor: submitting || isCompressing ? 'not-allowed' : 'pointer'
                 }}
               >
                 {submitting ? (
                   <>
-                    <RefreshCw size={18} className="animate-spin" style={{ flexShrink: 0 }} />
-                    Submitting for Verification...
+                    <RefreshCw size={16} className="animate-spin" style={{ flexShrink: 0 }} />
+                    Submitting...
                   </>
                 ) : (
                   <>
-                    <Zap size={18} style={{ flexShrink: 0 }} />
-                    Submit for Verification
+                    <Zap size={16} style={{ flexShrink: 0 }} />
+                    Submit Verification
                   </>
                 )}
               </button>

@@ -1514,76 +1514,82 @@ img, svg {
 
 @media (max-width: 640px) {
   .rp-banner-card {
-    padding: 22px 18px !important;
-    margin-bottom: 14px !important;
-    gap: 14px !important;
+    padding: 16px 14px !important;
+    margin-bottom: 12px !important;
+    gap: 12px !important;
     flex-direction: column !important;
-    align-items: center !important;
-    text-align: center !important;
+    align-items: flex-start !important;
+    text-align: left !important;
+    border-radius: 14px !important;
   }
 
   .rp-banner-content {
     display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    text-align: center !important;
-    gap: 10px !important;
+    flex-direction: row !important;
+    align-items: flex-start !important;
+    text-align: left !important;
+    gap: 12px !important;
     width: 100% !important;
   }
 
   .rp-banner-icon {
-    width: 44px !important;
-    height: 44px !important;
-    border-radius: 14px !important;
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 10px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    margin: 0 auto 4px auto !important;
+    margin: 0 !important;
     flex-shrink: 0 !important;
   }
 
   .rp-banner-avatar {
-    width: 44px !important;
-    height: 44px !important;
-    margin: 0 auto 4px auto !important;
+    width: 36px !important;
+    height: 36px !important;
+    margin: 0 !important;
     flex-shrink: 0 !important;
+    font-size: 14px !important;
   }
 
   .rp-banner-body {
-    text-align: center !important;
+    text-align: left !important;
     width: 100% !important;
   }
 
   .rp-banner-title {
-    font-size: 14.5px !important;
-    text-align: center !important;
-    margin-bottom: 6px !important;
+    font-size: 13.5px !important;
+    text-align: left !important;
+    margin-bottom: 4px !important;
+    line-height: 1.35 !important;
   }
 
   .rp-banner-text {
-    font-size: 12.5px !important;
-    text-align: center !important;
-    line-height: 1.55 !important;
+    font-size: 12px !important;
+    text-align: left !important;
+    line-height: 1.5 !important;
+    opacity: 0.8 !important;
   }
 
   .rp-banner-contributor-header {
-    justify-content: center !important;
+    justify-content: flex-start !important;
+    gap: 6px !important;
   }
 
   .rp-banner-action-col {
     width: 100% !important;
     margin-left: 0 !important;
-    margin-top: 4px !important;
+    margin-top: 2px !important;
     align-self: stretch !important;
   }
 
   .rp-banner-btn,
   .rp-banner-btn-signout {
     width: 100% !important;
-    padding: 11px 16px !important;
-    font-size: 13.5px !important;
+    padding: 8px 14px !important;
+    font-size: 12.5px !important;
     justify-content: center !important;
     box-sizing: border-box !important;
+    border-radius: 8px !important;
   }
 }
 
@@ -1599,5 +1605,160 @@ img, svg {
   .rp-story-genesis-grid {
     grid-template-columns: 1fr !important;
     gap: 36px !important;
+  }
+}
+
+/* ─── SUBMIT TASK PAGE MODERN RESPONSIVE STYLES ─── */
+.rp-submittask-container {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.rp-submittask-header {
+  text-align: center;
+  margin-bottom: 34px;
+}
+
+.rp-submittask-form-card {
+  background: rgba(7, 24, 15, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(102, 187, 42, 0.2);
+  border-radius: 20px;
+  padding: 36px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+.rp-submittask-tabs {
+  display: flex;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  gap: 4px;
+}
+
+.rp-submittask-tab-btn {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: none;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.rp-target-levels-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.rp-target-level-card {
+  padding: 12px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.15s ease;
+}
+
+.rp-submittask-submit-btn {
+  width: 100%;
+  background: #66BB2A;
+  color: #0F2E1E;
+  border: none;
+  padding: 15px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 18px rgba(102, 187, 42, 0.35);
+  transition: all 0.2s ease;
+}
+
+.rp-submittask-submit-btn:hover:not(:disabled) {
+  background: #18FC5C;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+  .rp-target-levels-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .rp-submittask-container {
+    padding: 0 14px !important;
+  }
+
+  .rp-submittask-header {
+    margin-bottom: 22px !important;
+  }
+
+  .rp-submittask-header h1 {
+    font-size: 24px !important;
+    line-height: 1.25 !important;
+    margin-bottom: 10px !important;
+  }
+
+  .rp-submittask-header p {
+    font-size: 13.5px !important;
+    line-height: 1.55 !important;
+  }
+
+  .rp-submittask-form-card {
+    padding: 20px 14px !important;
+    border-radius: 16px !important;
+  }
+
+  .rp-submittask-tabs {
+    border-radius: 10px !important;
+    padding: 3px !important;
+    margin-bottom: 18px !important;
+  }
+
+  .rp-submittask-tab-btn {
+    padding: 8px 8px !important;
+    font-size: 12px !important;
+    gap: 5px !important;
+  }
+
+  .rp-target-levels-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+
+  .rp-target-level-card {
+    padding: 10px 10px !important;
+    border-radius: 10px !important;
+  }
+
+  .rp-target-level-card-label {
+    font-size: 12px !important;
+  }
+
+  .rp-target-level-card-sub {
+    font-size: 10px !important;
+    line-height: 1.3 !important;
+  }
+
+  .rp-submittask-submit-btn {
+    padding: 13px !important;
+    font-size: 14px !important;
+    border-radius: 10px !important;
   }
 }
