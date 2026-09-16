@@ -1092,8 +1092,6 @@ img, svg {
 }
 
 /* ─── MOBILE VIEW TEXT BREAKS & ACTIONS ROW ──────────────────────────────── */
-.rp-founder-line1,
-.rp-founder-line2,
 .rp-scheme-line1,
 .rp-scheme-line2,
 .rp-ladder-title-p1,
@@ -1104,15 +1102,7 @@ img, svg {
 }
 
 @media (max-width: 640px) {
-  /* 1. Founder's Welcome Note: line 2 starts with NOTE */
-  .rp-founder-line1 {
-    display: block !important;
-  }
-  .rp-founder-line2 {
-    display: block !important;
-  }
-
-  /* 2. Video Actions Row: side-by-side on same line */
+  /* 1. Video Actions Row: side-by-side on same line */
   .rp-video-bottom-actions {
     flex-direction: row !important;
     flex-wrap: nowrap !important;

@@ -797,8 +797,7 @@ const FounderWelcomeSection: React.FC<FounderWelcomeSectionProps> = ({ onNavigat
             color: RF_MINT_ACCENT, fontSize: 11, fontWeight: 700, letterSpacing: '0.14em',
             textTransform: 'uppercase', marginBottom: 16
           }}>
-            <span className="rp-founder-line1">Founder's Welcome </span>
-            <span className="rp-founder-line2">Note • Cohorts 001–100</span>
+            FOUNDER'S WELCOME NOTE
           </div>
 
           <h2 style={{
@@ -1035,7 +1034,7 @@ const FounderWelcomeSection: React.FC<FounderWelcomeSectionProps> = ({ onNavigat
             onMouseEnter={e => (e.currentTarget.style.transform = 'translateY(-1px)')}
             onMouseLeave={e => (e.currentTarget.style.transform = 'translateY(0)')}
           >
-            <span>Apply for Cohort 001–100</span> <ArrowRight size={14} style={{ flexShrink: 0 }} />
+            <span>Join the Builders</span> <ArrowRight size={14} style={{ flexShrink: 0 }} />
           </button>
 
           <button
