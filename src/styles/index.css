@@ -825,36 +825,71 @@ img, svg {
   }
 }
 
-/* Story chapter anchor links (Horizontal scrollable category pill bar on phones) */
+/* Story chapter anchor links (Single line with horizontal swipe/scroll on mobile) */
+.rp-story-anchors-wrapper {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+}
+
 .rp-story-anchors {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   justify-content: center;
-  flex-wrap: wrap;
-  max-width: 860px;
+  align-items: center;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  max-width: 100%;
+  width: max-content;
   margin: 0 auto;
+  padding: 6px 12px 12px;
+}
+
+.rp-story-anchors::-webkit-scrollbar {
+  display: none;
+}
+
+.rp-story-anchors > button,
+.rp-story-anchors > a,
+.rp-story-pill {
+  flex-shrink: 0 !important;
+  white-space: nowrap !important;
+}
+
+@media (max-width: 900px) {
+  .rp-story-anchors-wrapper {
+    justify-content: flex-start;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .rp-story-anchors-wrapper::-webkit-scrollbar {
+    display: none;
+  }
+  .rp-story-anchors {
+    width: max-content !important;
+    max-width: none !important;
+    justify-content: flex-start !important;
+    padding: 6px 16px 12px !important;
+    scroll-padding: 0 16px;
+    margin: 0 !important;
+  }
 }
 
 @media (max-width: 640px) {
   .rp-story-anchors {
-    flex-wrap: nowrap !important;
-    overflow-x: auto !important;
-    justify-content: flex-start !important;
-    padding: 4px 6px 12px !important;
-    width: 100% !important;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-  .rp-story-anchors::-webkit-scrollbar {
-    display: none;
+    gap: 6px !important;
+    padding: 4px 14px 10px !important;
   }
   .rp-story-anchors > a,
-  .rp-story-anchors > button {
-    flex-shrink: 0 !important;
-    white-space: nowrap !important;
+  .rp-story-anchors > button,
+  .rp-story-pill {
     font-size: 12px !important;
-    padding: 8px 16px !important;
-    border-radius: 100px !important;
+    padding: 6px 12px !important;
   }
 }
 

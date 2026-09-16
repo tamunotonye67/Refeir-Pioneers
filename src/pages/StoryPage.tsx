@@ -99,52 +99,57 @@ export const StoryPage: React.FC<StoryPageProps> = ({ onNavigate }) => {
             From grassroots university chatrooms and broken freelance bidding boards to an unstoppable economic engine. Discover why Founder <strong style={{ color: '#FFFFFF', fontWeight: 600 }}>Tonye Taylor</strong> built Refeir, the untold history of our first cohorts, and the sovereign roadmap ahead.
           </p>
 
-          {/* Chapter Category Filter Pills (Horizontal swipeable on mobile) */}
-          <div className="rp-story-anchors">
-            {chapters.map(item => {
-              const IconComp = item.icon;
-              const isSelected = activeChapter === item.id;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => handlePillClick(item)}
-                  style={{
-                    fontSize: 12.5,
-                    fontWeight: isSelected ? 600 : 500,
-                    color: isSelected ? RF_DEEP_GREEN : 'rgba(255,255,255,0.8)',
-                    background: isSelected
-                      ? RF_LEAF_GREEN
-                      : 'rgba(255,255,255,0.05)',
-                    border: `1px solid ${isSelected ? RF_LEAF_GREEN : 'rgba(255,255,255,0.12)'}`,
-                    padding: '8px 16px',
-                    borderRadius: 100,
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    boxShadow: isSelected ? `0 4px 14px ${RF_LEAF_GREEN}40` : 'none'
-                  }}
-                  onMouseEnter={e => {
-                    if (!isSelected) {
-                      e.currentTarget.style.color = RF_MINT_ACCENT;
-                      e.currentTarget.style.borderColor = `${RF_MINT_ACCENT}55`;
-                      e.currentTarget.style.background = 'rgba(24, 252, 92, 0.08)';
-                    }
-                  }}
-                  onMouseLeave={e => {
-                    if (!isSelected) {
-                      e.currentTarget.style.color = 'rgba(255,255,255,0.8)';
-                      e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)';
-                      e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
-                    }
-                  }}
-                >
-                  <IconComp size={13} color={isSelected ? RF_DEEP_GREEN : RF_MINT_ACCENT} />
-                  {item.label}
-                </button>
-              );
-            })}
+          {/* Chapter Category Filter Pills (Horizontal swipeable on mobile, single line on desktop) */}
+          <div className="rp-story-anchors-wrapper">
+            <div className="rp-story-anchors">
+              {chapters.map(item => {
+                const IconComp = item.icon;
+                const isSelected = activeChapter === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => handlePillClick(item)}
+                    className="rp-story-pill"
+                    style={{
+                      fontSize: 12.5,
+                      fontWeight: isSelected ? 600 : 500,
+                      color: isSelected ? RF_DEEP_GREEN : 'rgba(255,255,255,0.8)',
+                      background: isSelected
+                        ? RF_LEAF_GREEN
+                        : 'rgba(255,255,255,0.05)',
+                      border: `1px solid ${isSelected ? RF_LEAF_GREEN : 'rgba(255,255,255,0.12)'}`,
+                      padding: '8px 16px',
+                      borderRadius: 100,
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      boxShadow: isSelected ? `0 4px 14px ${RF_LEAF_GREEN}40` : 'none',
+                      flexShrink: 0,
+                      whiteSpace: 'nowrap'
+                    }}
+                    onMouseEnter={e => {
+                      if (!isSelected) {
+                        e.currentTarget.style.color = RF_MINT_ACCENT;
+                        e.currentTarget.style.borderColor = `${RF_MINT_ACCENT}55`;
+                        e.currentTarget.style.background = 'rgba(24, 252, 92, 0.08)';
+                      }
+                    }}
+                    onMouseLeave={e => {
+                      if (!isSelected) {
+                        e.currentTarget.style.color = 'rgba(255,255,255,0.8)';
+                        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)';
+                        e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
+                      }
+                    }}
+                  >
+                    <IconComp size={13} color={isSelected ? RF_DEEP_GREEN : RF_MINT_ACCENT} />
+                    {item.label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
       </section>
