@@ -1700,17 +1700,21 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
         {/* Verification Summary Bar */}
         <div className="rp-profile-summary-bar">
           <div className="rp-profile-summary-item">
-            <div className="rp-profile-summary-label">Application ID</div>
-            <div className="rp-profile-summary-val">{contributor.application_number || 'Linked Applicant'}</div>
+            <div className="rp-profile-summary-label">Pioneer ID</div>
+            <div className="rp-profile-summary-val" style={{ color: contributor.pioneer_id ? RF_MINT_ACCENT : RF_GOLD_YELLOW }}>
+              {contributor.pioneer_id || 'Pending'}
+            </div>
           </div>
           <div className="rp-profile-summary-item">
             <div className="rp-profile-summary-label">Status</div>
-            <div className="rp-profile-summary-val" style={{ color: RF_MINT_ACCENT }}>ACCEPTED</div>
+            <div className="rp-profile-summary-val" style={{ color: RF_MINT_ACCENT }}>
+              {contributor.is_profile_completed ? 'ACTIVE' : 'ACCEPTED'}
+            </div>
           </div>
           <div className="rp-profile-summary-item">
-            <div className="rp-profile-summary-label">Pioneer ID</div>
-            <div className="rp-profile-summary-val" style={{ color: contributor.pioneer_id ? RF_MINT_ACCENT : RF_GOLD_YELLOW }}>
-              {contributor.pioneer_id || 'Pending Mint'}
+            <div className="rp-profile-summary-label">Squad</div>
+            <div className="rp-profile-summary-val">
+              {contributor.division || division || 'General'}
             </div>
           </div>
         </div>
@@ -1735,11 +1739,7 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                     if (el) el.scrollIntoView({ behavior: 'smooth' });
                   }, 150);
                 }}
-                style={{
-                  background: 'rgba(255, 184, 0, 0.12)', border: `1px solid ${RF_GOLD_YELLOW}`, color: RF_GOLD_YELLOW,
-                  padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer',
-                  display: 'inline-flex', alignItems: 'center', gap: 5
-                }}
+                className="rp-active-btn-gold"
               >
                 <Award size={13} /> Certificates ({certificates.length})
               </button>
@@ -1749,13 +1749,9 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                   setSuccessCard(contributor);
                   setStep('complete');
                 }}
-                style={{
-                  background: 'none', border: `1px solid ${RF_MINT_ACCENT}`, color: RF_MINT_ACCENT,
-                  padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer',
-                  display: 'inline-flex', alignItems: 'center'
-                }}
+                className="rp-active-btn-mint"
               >
-                Credential Pass
+                View Pass
               </button>
             </div>
           </div>
@@ -1792,8 +1788,12 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
             
             {/* Section 1: Official Headshot & Personal Contacts */}
             <div style={{ marginBottom: 26 }}>
-              <div style={{ fontSize: 11.5, fontWeight: 800, color: RF_MINT_ACCENT, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 14 }}>
-                1. Official Headshot &amp; Personal Contacts
+              <div className="rp-section-header">
+                <span className="rp-section-num">01</span>
+                <div>
+                  <h3 className="rp-section-title">Identity &amp; Contact</h3>
+                  <p className="rp-section-desc">Portrait photo and official contact channels</p>
+                </div>
               </div>
 
               {/* Photo Upload Area */}
@@ -1824,29 +1824,25 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       color: RF_MINT_ACCENT
                     }}>
-                      <Camera size={26} />
+                      <Camera size={24} />
                     </div>
                   )}
                 </div>
 
                 <div className="rp-profile-headshot-info">
-                  <div style={{ fontSize: 13.5, fontWeight: 700, color: '#FFFFFF', marginBottom: 3 }}>
-                    {avatarUrl ? 'Headshot Uploaded' : 'Profile Photo'}
+                  <div style={{ fontSize: 13, fontWeight: 700, color: '#FFFFFF', marginBottom: 2 }}>
+                    {avatarUrl ? 'Portrait Uploaded' : 'Profile Photo'}
                   </div>
-                  <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.6)', lineHeight: 1.45 }}>
-                    Clear portrait (PNG, JPG under 3MB) for your verified Pioneer credential.
+                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', lineHeight: 1.4 }}>
+                    PNG, JPG or WEBP under 3MB
                   </div>
                   <div className="rp-profile-headshot-btns">
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
-                      style={{
-                        background: 'rgba(24, 252, 92, 0.15)', border: `1px solid ${RF_LEAF_GREEN}`,
-                        color: RF_MINT_ACCENT, padding: '7px 14px', borderRadius: 8, fontSize: 12,
-                        fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 5
-                      }}
+                      className="rp-btn-xs-primary"
                     >
-                      <Upload size={12} /> {avatarUrl ? 'Change Photo' : 'Upload Photo'}
+                      <Upload size={12} /> {avatarUrl ? 'Change' : 'Upload'}
                     </button>
                     {avatarUrl && (
                       <button
@@ -1855,24 +1851,16 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                           setCropperImageSrc(rawUploadedImage || avatarUrl);
                           setCropperOpen(true);
                         }}
-                        style={{
-                          background: 'rgba(255, 255, 255, 0.08)', border: '1px solid rgba(255, 255, 255, 0.25)',
-                          color: '#FFFFFF', padding: '7px 12px', borderRadius: 8, fontSize: 12,
-                          fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 5
-                        }}
+                        className="rp-btn-xs-secondary"
                       >
-                        <Crop size={12} color={RF_MINT_ACCENT} /> Crop
+                        <Crop size={12} /> Crop
                       </button>
                     )}
                     {avatarUrl && (
                       <button
                         type="button"
                         onClick={handleRemoveAvatar}
-                        style={{
-                          background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.4)',
-                          color: '#FCA5A5', padding: '7px 12px', borderRadius: 8, fontSize: 12,
-                          fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 5
-                        }}
+                        className="rp-btn-xs-danger"
                       >
                         <Trash2 size={12} /> Remove
                       </button>
@@ -1884,7 +1872,7 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
               {/* Full Legal Name & Date of Birth */}
               <div className="rp-profile-grid-2col">
                 <div>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
+                  <label className="rp-profile-label">
                     Full Legal Name <span style={{ color: '#EF4444' }}>*</span>
                   </label>
                   <div style={{ position: 'relative' }}>
@@ -1894,20 +1882,14 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                       value={fullName}
                       onChange={e => setFullName(e.target.value)}
                       placeholder="e.g. Chidubem Nwosu"
-                      style={{
-                        width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.3)',
-                        border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10,
-                        padding: '10px 12px 10px 38px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
-                      }}
-                      onFocus={e => (e.target.style.borderColor = RF_MINT_ACCENT)}
-                      onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.15)')}
+                      className="rp-profile-input"
                     />
                   </div>
                 </div>
 
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 5 }}>
-                    <label style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.85)' }}>
+                    <label className="rp-profile-label" style={{ marginBottom: 0 }}>
                       Date of Birth <span style={{ color: '#EF4444' }}>*</span>
                     </label>
                     <span style={{ fontSize: 10.5, color: isDobLocked ? RF_GOLD_YELLOW : 'rgba(255,255,255,0.45)', fontWeight: isDobLocked ? 700 : 400 }}>
@@ -1921,10 +1903,11 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                         type="text"
                         value={dateOfBirth}
                         readOnly
+                        className="rp-profile-input"
                         style={{
-                          width: '100%', boxSizing: 'border-box', background: 'rgba(255,255,255,0.02)',
-                          border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10,
-                          padding: '10px 12px 10px 38px', color: 'rgba(255,255,255,0.75)', fontSize: 13.5, outline: 'none',
+                          background: 'rgba(255,255,255,0.02)',
+                          border: '1px solid rgba(255,255,255,0.08)',
+                          color: 'rgba(255,255,255,0.75)',
                           cursor: 'not-allowed', fontFamily: 'monospace'
                         }}
                       />
@@ -1934,14 +1917,8 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                         value={dateOfBirth}
                         onChange={e => setDateOfBirth(e.target.value)}
                         max={new Date().toISOString().split('T')[0]}
-                        style={{
-                          width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.3)',
-                          border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10,
-                          padding: '10px 12px 10px 38px', color: '#FFFFFF', fontSize: 13.5, outline: 'none',
-                          colorScheme: 'dark'
-                        }}
-                        onFocus={e => (e.target.style.borderColor = RF_MINT_ACCENT)}
-                        onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.15)')}
+                        className="rp-profile-input"
+                        style={{ colorScheme: 'dark' }}
                       />
                     )}
                   </div>
@@ -1951,45 +1928,33 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
               {/* WhatsApp Number & Telegram Handle */}
               <div className="rp-profile-grid-2col">
                 <div>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
+                  <label className="rp-profile-label">
                     WhatsApp / Primary Phone <span style={{ color: '#EF4444' }}>*</span>
                   </label>
                   <div style={{ position: 'relative' }}>
-                    <Phone size={15} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
+                    <Phone size={15} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
                     <input
                       type="text"
                       value={whatsapp}
                       onChange={e => setWhatsapp(e.target.value)}
                       placeholder="+234 812 345 6789"
-                      style={{
-                        width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.3)',
-                        border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10,
-                        padding: '10px 12px 10px 38px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
-                      }}
-                      onFocus={e => (e.target.style.borderColor = RF_MINT_ACCENT)}
-                      onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.15)')}
+                      className="rp-profile-input"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
+                  <label className="rp-profile-label">
                     Telegram / Discord Handle
                   </label>
                   <div style={{ position: 'relative' }}>
-                    <Send size={15} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
+                    <Send size={15} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
                     <input
                       type="text"
                       value={telegram}
                       onChange={e => setTelegram(e.target.value)}
                       placeholder="@username"
-                      style={{
-                        width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.3)',
-                        border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10,
-                        padding: '10px 12px 10px 38px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
-                      }}
-                      onFocus={e => (e.target.style.borderColor = RF_MINT_ACCENT)}
-                      onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.15)')}
+                      className="rp-profile-input"
                     />
                   </div>
                 </div>
@@ -1998,102 +1963,79 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
               {/* Country & City */}
               <div className="rp-profile-grid-2col" style={{ marginBottom: 0 }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
+                  <label className="rp-profile-label">
                     Country of Residence <span style={{ color: '#EF4444' }}>*</span>
                   </label>
                   <div style={{ position: 'relative' }}>
-                    <Globe size={15} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
+                    <Globe size={15} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
                     <input
                       type="text"
                       value={country}
                       onChange={e => setCountry(e.target.value)}
                       placeholder="e.g. Nigeria, Ghana, Kenya"
-                      style={{
-                        width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.3)',
-                        border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10,
-                        padding: '10px 12px 10px 38px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
-                      }}
-                      onFocus={e => (e.target.style.borderColor = RF_MINT_ACCENT)}
-                      onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.15)')}
+                      className="rp-profile-input"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
+                  <label className="rp-profile-label">
                     City / State <span style={{ color: '#EF4444' }}>*</span>
                   </label>
                   <div style={{ position: 'relative' }}>
-                    <MapPin size={15} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
+                    <MapPin size={15} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
                     <input
                       type="text"
                       value={city}
                       onChange={e => setCity(e.target.value)}
                       placeholder="e.g. Lagos / Nairobi / Accra"
-                      style={{
-                        width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.3)',
-                        border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10,
-                        padding: '10px 12px 10px 38px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
-                      }}
-                      onFocus={e => (e.target.style.borderColor = RF_MINT_ACCENT)}
-                      onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.15)')}
+                      className="rp-profile-input"
                     />
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Section 2: Online Persona & Social Proof Verification */}
-            <div style={{ marginBottom: 24, paddingTop: 18, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-              <div style={{ fontSize: 12, fontWeight: 800, color: RF_MINT_ACCENT, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>
-                2. Online Persona & Social Proof
+            {/* Section 2: Online Presence */}
+            <div style={{ marginBottom: 26, paddingTop: 20, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+              <div className="rp-section-header">
+                <span className="rp-section-num">02</span>
+                <div>
+                  <h3 className="rp-section-title">Online Presence</h3>
+                  <p className="rp-section-desc">Active social handles and portfolio link</p>
+                </div>
               </div>
-              <p style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.6)', margin: '0 0 14px', lineHeight: 1.45 }}>
-                Provide your active handles for admissions council and peer verification.
-              </p>
 
               {/* LinkedIn & X / Twitter */}
               <div className="rp-profile-grid-2col">
                 <div>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
+                  <label className="rp-profile-label">
                     LinkedIn URL
                   </label>
                   <div style={{ position: 'relative' }}>
-                    <Share2 size={15} color="#70B5F9" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
+                    <Share2 size={15} color="#70B5F9" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
                     <input
                       type="text"
                       value={linkedinUrl}
                       onChange={e => setLinkedinUrl(e.target.value)}
                       placeholder="https://linkedin.com/in/yourhandle"
-                      style={{
-                        width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.3)',
-                        border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10,
-                        padding: '10px 12px 10px 38px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
-                      }}
-                      onFocus={e => (e.target.style.borderColor = RF_MINT_ACCENT)}
-                      onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.15)')}
+                      className="rp-profile-input"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
+                  <label className="rp-profile-label">
                     X (Twitter) Handle
                   </label>
                   <div style={{ position: 'relative' }}>
-                    <AtSign size={15} color="rgba(255,255,255,0.5)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
+                    <AtSign size={15} color="rgba(255,255,255,0.5)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
                     <input
                       type="text"
                       value={twitterHandle}
                       onChange={e => setTwitterHandle(e.target.value)}
                       placeholder="@yourhandle"
-                      style={{
-                        width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.3)',
-                        border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10,
-                        padding: '10px 12px 10px 38px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
-                      }}
-                      onFocus={e => (e.target.style.borderColor = RF_MINT_ACCENT)}
-                      onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.15)')}
+                      className="rp-profile-input"
                     />
                   </div>
                 </div>
@@ -2102,45 +2044,33 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
               {/* Instagram & GitHub */}
               <div className="rp-profile-grid-2col">
                 <div>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
+                  <label className="rp-profile-label">
                     Instagram Handle
                   </label>
                   <div style={{ position: 'relative' }}>
-                    <AtSign size={15} color="#FF80AB" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
+                    <AtSign size={15} color="#FF80AB" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
                     <input
                       type="text"
                       value={instagramHandle}
                       onChange={e => setInstagramHandle(e.target.value)}
                       placeholder="@yourhandle"
-                      style={{
-                        width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.3)',
-                        border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10,
-                        padding: '10px 12px 10px 38px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
-                      }}
-                      onFocus={e => (e.target.style.borderColor = RF_MINT_ACCENT)}
-                      onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.15)')}
+                      className="rp-profile-input"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
+                  <label className="rp-profile-label">
                     GitHub Profile URL
                   </label>
                   <div style={{ position: 'relative' }}>
-                    <Code2 size={15} color="rgba(255,255,255,0.5)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
+                    <Code2 size={15} color="rgba(255,255,255,0.5)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
                     <input
                       type="text"
                       value={githubUrl}
                       onChange={e => setGithubUrl(e.target.value)}
                       placeholder="https://github.com/yourhandle"
-                      style={{
-                        width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.3)',
-                        border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10,
-                        padding: '10px 12px 10px 38px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
-                      }}
-                      onFocus={e => (e.target.style.borderColor = RF_MINT_ACCENT)}
-                      onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.15)')}
+                      className="rp-profile-input"
                     />
                   </div>
                 </div>
@@ -2148,76 +2078,68 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
 
               {/* Portfolio URL */}
               <div style={{ marginBottom: 0 }}>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
+                <label className="rp-profile-label">
                   Personal Portfolio / Showcase Website
                 </label>
                 <div style={{ position: 'relative' }}>
-                  <Globe size={15} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
+                  <Globe size={15} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
                   <input
                     type="text"
                     value={portfolioUrl}
                     onChange={e => setPortfolioUrl(e.target.value)}
                     placeholder="https://yourportfolio.com"
-                    style={{
-                      width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.3)',
-                      border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10,
-                      padding: '10px 12px 10px 38px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
-                    }}
-                    onFocus={e => (e.target.style.borderColor = RF_MINT_ACCENT)}
-                    onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.15)')}
+                    className="rp-profile-input"
                   />
                 </div>
               </div>
             </div>
 
             {/* Section 3: Academic & Professional */}
-            <div style={{ marginBottom: 24, paddingTop: 18, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-              <div style={{ fontSize: 12, fontWeight: 800, color: RF_MINT_ACCENT, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 12 }}>
-                3. Academic & Professional Background
+            <div style={{ marginBottom: 26, paddingTop: 20, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+              <div className="rp-section-header">
+                <span className="rp-section-num">03</span>
+                <div>
+                  <h3 className="rp-section-title">Academic &amp; Professional</h3>
+                  <p className="rp-section-desc">University, college, or organization</p>
+                </div>
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
+                <label className="rp-profile-label">
                   University / College / Organization <span style={{ color: '#EF4444' }}>*</span>
                 </label>
                 <div style={{ position: 'relative' }}>
-                  <GraduationCap size={15} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
+                  <GraduationCap size={15} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
                   <input
                     type="text"
                     value={institution}
                     onChange={e => setInstitution(e.target.value)}
                     placeholder="e.g. University of Lagos (UNILAG) / Covenant University"
-                    style={{
-                      width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.3)',
-                      border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10,
-                      padding: '10px 12px 10px 38px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
-                    }}
-                    onFocus={e => (e.target.style.borderColor = RF_MINT_ACCENT)}
-                    onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.15)')}
+                    className="rp-profile-input"
                   />
                 </div>
               </div>
             </div>
 
             {/* Section 4: Squad & Skills */}
-            <div style={{ marginBottom: 24, paddingTop: 18, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-              <div style={{ fontSize: 12, fontWeight: 800, color: RF_MINT_ACCENT, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 12 }}>
-                4. Primary Squad Specialization & Skills
+            <div style={{ marginBottom: 26, paddingTop: 20, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+              <div className="rp-section-header">
+                <span className="rp-section-num">04</span>
+                <div>
+                  <h3 className="rp-section-title">Squad &amp; Skills</h3>
+                  <p className="rp-section-desc">Primary squad division and core superpowers</p>
+                </div>
               </div>
 
               {/* Division Dropdown */}
               <div style={{ marginBottom: 14 }}>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
+                <label className="rp-profile-label">
                   Primary Pioneer Squad
                 </label>
                 <select
                   value={division}
                   onChange={e => setDivision(e.target.value)}
-                  style={{
-                    width: '100%', boxSizing: 'border-box', background: '#051A0E',
-                    border: '1px solid rgba(255,255,255,0.2)', borderRadius: 10,
-                    padding: '10px 12px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
-                  }}
+                  className="rp-profile-select"
                 >
                   <option value="TECHNOLOGY">Technology & Architecture (Engineering / Web3)</option>
                   <option value="DESIGN">Product, UI/UX & Brand Design</option>
@@ -2236,7 +2158,7 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
 
               {/* Skills Tags */}
               <div style={{ marginBottom: 14 }}>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 6 }}>
+                <label className="rp-profile-label">
                   Key Skills & Superpowers (Select all that apply)
                 </label>
                 <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
@@ -2289,7 +2211,7 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
 
               {/* Bio Statement */}
               <div style={{ marginBottom: 0 }}>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
+                <label className="rp-profile-label">
                   Contributor Bio & Motivation
                 </label>
                 <textarea
@@ -2297,59 +2219,47 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                   value={bio}
                   onChange={e => setBio(e.target.value)}
                   placeholder="Share a brief introduction, what problems you solve, and what you aim to achieve as a Refeir Pioneer..."
-                  style={{
-                    width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.3)',
-                    border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10,
-                    padding: '10px 12px', color: '#FFFFFF', fontSize: 13.5, outline: 'none',
-                    resize: 'vertical', lineHeight: 1.5
-                  }}
-                  onFocus={e => (e.target.style.borderColor = RF_MINT_ACCENT)}
-                  onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.15)')}
+                  className="rp-profile-textarea"
                 />
               </div>
             </div>
 
             {/* Section 5: Reward Settlement */}
-            <div style={{ marginBottom: 24, paddingTop: 18, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-              <div style={{ fontSize: 12, fontWeight: 800, color: RF_MINT_ACCENT, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>
-                5. Stipend & Milestone Settlement (Local Bank Account)
+            <div style={{ marginBottom: 26, paddingTop: 20, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+              <div className="rp-section-header">
+                <span className="rp-section-num">05</span>
+                <div>
+                  <h3 className="rp-section-title">Stipend &amp; Reward Settlement</h3>
+                  <p className="rp-section-desc">Local bank account for automated grant payouts</p>
+                </div>
               </div>
-              <p style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.6)', margin: '0 0 14px', lineHeight: 1.45 }}>
-                Refeir issues contributor stipends, milestone rewards, and sovereign grants directly to verified commercial or fintech bank accounts.
-              </p>
 
               {/* Active Settlement Badge */}
               <div style={{
                 display: 'inline-flex', alignItems: 'center', gap: 6,
-                padding: '5px 12px', borderRadius: 8,
-                background: 'rgba(24, 252, 92, 0.1)', border: `1px solid ${RF_LEAF_GREEN}55`,
-                color: RF_MINT_ACCENT, fontSize: 11.5, fontWeight: 700, marginBottom: 14
+                padding: '4px 10px', borderRadius: 6,
+                background: 'rgba(24, 252, 92, 0.08)', border: '1px solid rgba(24, 252, 92, 0.3)',
+                color: RF_MINT_ACCENT, fontSize: 11, fontWeight: 700, marginBottom: 14
               }}>
-                Local Bank Settlement (Active)
+                Direct Bank Deposit (Active)
               </div>
 
               {/* Bank Details: Bank Name and Account Number */}
               <div className="rp-profile-grid-2col">
                 {/* 1. Bank Name */}
                 <div>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
+                  <label className="rp-profile-label">
                     Bank Name <span style={{ color: '#EF4444' }}>*</span>
                   </label>
                   <div style={{ position: 'relative' }}>
-                    <Building2 size={15} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
+                    <Building2 size={15} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
                     <input
                       type="text"
                       list="popular-banks"
                       value={bankName}
                       onChange={e => setBankName(e.target.value)}
                       placeholder="e.g. GTBank / Access / Kuda / OPay"
-                      style={{
-                        width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.3)',
-                        border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10,
-                        padding: '10px 12px 10px 38px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
-                      }}
-                      onFocus={e => (e.target.style.borderColor = RF_MINT_ACCENT)}
-                      onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.15)')}
+                      className="rp-profile-input"
                     />
                     <datalist id="popular-banks">
                       <option value="Guaranty Trust Bank (GTBank)" />
@@ -2376,11 +2286,11 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
 
                 {/* 2. Account Digits or Numbers */}
                 <div>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
+                  <label className="rp-profile-label">
                     Account Number <span style={{ color: '#EF4444' }}>*</span>
                   </label>
                   <div style={{ position: 'relative' }}>
-                    <CreditCard size={15} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
+                    <CreditCard size={15} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
                     <input
                       type="text"
                       inputMode="numeric"
@@ -2388,13 +2298,7 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                       value={accountNumber}
                       onChange={e => setAccountNumber(e.target.value.replace(/[^\d]/g, ''))}
                       placeholder="e.g. 0123456789"
-                      style={{
-                        width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.3)',
-                        border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10,
-                        padding: '10px 12px 10px 38px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
-                      }}
-                      onFocus={e => (e.target.style.borderColor = RF_MINT_ACCENT)}
-                      onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.15)')}
+                      className="rp-profile-input"
                     />
                   </div>
                 </div>
@@ -2402,23 +2306,17 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
 
               {/* 3. Name of Beneficiary */}
               <div style={{ marginBottom: 0 }}>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
+                <label className="rp-profile-label">
                   Beneficiary Name (Account Legal Name) <span style={{ color: '#EF4444' }}>*</span>
                 </label>
                 <div style={{ position: 'relative' }}>
-                  <User size={15} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
+                  <User size={15} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
                   <input
                     type="text"
                     value={accountName}
                     onChange={e => setAccountName(e.target.value)}
                     placeholder="e.g. Chidubem Nwosu (Must match bank records)"
-                    style={{
-                      width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.3)',
-                      border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10,
-                      padding: '10px 12px 10px 38px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
-                    }}
-                    onFocus={e => (e.target.style.borderColor = RF_MINT_ACCENT)}
-                    onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.15)')}
+                    className="rp-profile-input"
                   />
                 </div>
                 <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', marginTop: 5 }}>
@@ -2447,7 +2345,15 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
               disabled={loading}
               className="rp-profile-submit-btn"
             >
-              {loading ? 'Saving...' : contributor?.is_profile_completed ? 'Save Changes' : <>Continue to Survey <ArrowRight size={16} /></>}
+              {loading ? (
+                'Saving...'
+              ) : contributor?.is_profile_completed ? (
+                'Save Changes'
+              ) : (
+                <>
+                  Continue to Survey <ArrowRight size={16} />
+                </>
+              )}
             </button>
           </form>
 

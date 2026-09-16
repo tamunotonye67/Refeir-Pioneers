@@ -1817,40 +1817,43 @@ img, svg {
 }
 
 .rp-profile-summary-bar {
-  background: rgba(0, 0, 0, 0.35);
+  background: rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 14px;
-  padding: 14px 18px;
+  border-radius: 12px;
+  padding: 10px 14px;
   margin-bottom: 16px;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  align-items: center;
+  gap: 8px;
+  text-align: center;
   box-sizing: border-box;
 }
 
 .rp-profile-summary-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   min-width: 0;
 }
 
 .rp-profile-summary-label {
-  font-size: 10.5px;
-  color: rgba(255, 255, 255, 0.5);
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.45);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  margin-bottom: 2px;
+  letter-spacing: 0.05em;
+  margin-bottom: 3px;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .rp-profile-summary-val {
-  font-size: 13.5px;
+  font-size: 12.5px;
   font-weight: 700;
   color: #FFFFFF;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .rp-profile-active-card {
@@ -1858,7 +1861,7 @@ img, svg {
   border: 1px solid rgba(24, 252, 92, 0.25);
   border-radius: 14px;
   padding: 14px 18px;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1873,30 +1876,171 @@ img, svg {
   flex-shrink: 0;
 }
 
+.rp-active-btn-gold {
+  background: rgba(255, 184, 0, 0.12);
+  border: 1px solid #FFB800;
+  color: #FFB800;
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.rp-active-btn-gold:hover {
+  background: rgba(255, 184, 0, 0.22);
+}
+
+.rp-active-btn-mint {
+  background: rgba(24, 252, 92, 0.1);
+  border: 1px solid #18FC5C;
+  color: #18FC5C;
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.rp-active-btn-mint:hover {
+  background: rgba(24, 252, 92, 0.2);
+}
+
 .rp-profile-form-card {
   background: linear-gradient(145deg, #0C281B 0%, #06180F 100%);
-  border: 1px solid rgba(102, 187, 42, 0.28);
+  border: 1px solid rgba(102, 187, 42, 0.25);
   border-radius: 20px;
-  padding: 30px 28px;
+  padding: 28px 24px;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 35px rgba(24, 252, 92, 0.05);
   box-sizing: border-box;
+}
+
+.rp-section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.rp-section-num {
+  font-size: 11px;
+  font-weight: 800;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  color: #18FC5C;
+  background: rgba(24, 252, 92, 0.1);
+  border: 1px solid rgba(24, 252, 92, 0.25);
+  border-radius: 6px;
+  padding: 2px 7px;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+
+.rp-section-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin: 0;
+  letter-spacing: 0.01em;
+}
+
+.rp-section-desc {
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 2px 0 0;
+  line-height: 1.4;
+}
+
+.rp-profile-input {
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  padding: 10px 12px 10px 38px;
+  color: #FFFFFF;
+  font-size: 13.5px;
+  outline: none;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.rp-profile-input:focus {
+  border-color: #18FC5C;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.rp-profile-input::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.rp-profile-select {
+  width: 100%;
+  box-sizing: border-box;
+  background: #051A0E;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: #FFFFFF;
+  font-size: 13.5px;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.rp-profile-select:focus {
+  border-color: #18FC5C;
+}
+
+.rp-profile-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: #FFFFFF;
+  font-size: 13.5px;
+  outline: none;
+  resize: vertical;
+  line-height: 1.5;
+  transition: border-color 0.15s ease;
+}
+
+.rp-profile-textarea:focus {
+  border-color: #18FC5C;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.rp-profile-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 5px;
 }
 
 .rp-profile-headshot-box {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 16px;
   background: rgba(0, 0, 0, 0.35);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 14px;
-  padding: 16px 18px;
-  margin-bottom: 18px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
   box-sizing: border-box;
 }
 
 .rp-profile-headshot-avatar {
-  width: 72px;
-  height: 72px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
   flex-shrink: 0;
   display: flex;
@@ -1911,9 +2055,68 @@ img, svg {
 
 .rp-profile-headshot-btns {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: wrap;
-  margin-top: 10px;
+  margin-top: 8px;
+}
+
+.rp-btn-xs-primary {
+  background: rgba(24, 252, 92, 0.15);
+  border: 1px solid rgba(24, 252, 92, 0.4);
+  color: #18FC5C;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s ease;
+}
+
+.rp-btn-xs-primary:hover {
+  background: rgba(24, 252, 92, 0.25);
+  border-color: #18FC5C;
+}
+
+.rp-btn-xs-secondary {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
+  padding: 6px 11px;
+  border-radius: 8px;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s ease;
+}
+
+.rp-btn-xs-secondary:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+.rp-btn-xs-danger {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #FCA5A5;
+  padding: 6px 11px;
+  border-radius: 8px;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s ease;
+}
+
+.rp-btn-xs-danger:hover {
+  background: rgba(239, 68, 68, 0.22);
 }
 
 .rp-profile-grid-2col {
@@ -1928,7 +2131,7 @@ img, svg {
   background: #66BB2A;
   color: #0F2E1E;
   border: none;
-  padding: 14px 24px;
+  padding: 13px 24px;
   border-radius: 100px;
   font-size: 14.5px;
   font-weight: 800;
@@ -1966,24 +2169,24 @@ img, svg {
   }
 
   .rp-profile-header {
-    margin-bottom: 18px !important;
+    margin-bottom: 16px !important;
   }
 
   .rp-profile-title {
-    font-size: 23px !important;
+    font-size: 22px !important;
     line-height: 1.25 !important;
     margin-bottom: 6px !important;
   }
 
   .rp-profile-subtitle {
-    font-size: 13px !important;
-    line-height: 1.5 !important;
+    font-size: 12.5px !important;
+    line-height: 1.45 !important;
   }
 
   .rp-profile-summary-bar {
-    padding: 12px 10px !important;
-    gap: 8px !important;
-    border-radius: 12px !important;
+    padding: 8px 10px !important;
+    gap: 6px !important;
+    border-radius: 10px !important;
   }
 
   .rp-profile-summary-label {
@@ -2018,16 +2221,16 @@ img, svg {
   }
 
   .rp-profile-form-card {
-    padding: 18px 14px !important;
-    border-radius: 16px !important;
+    padding: 16px 12px !important;
+    border-radius: 14px !important;
   }
 
   .rp-profile-headshot-box {
     flex-direction: column !important;
     align-items: center !important;
     text-align: center !important;
-    padding: 16px 12px !important;
-    gap: 12px !important;
+    padding: 14px 10px !important;
+    gap: 10px !important;
     border-radius: 12px !important;
   }
 
@@ -2040,7 +2243,7 @@ img, svg {
   .rp-profile-headshot-btns button {
     flex: 1 1 auto !important;
     justify-content: center !important;
-    padding: 8px 12px !important;
+    padding: 7px 10px !important;
   }
 
   .rp-profile-grid-2col {
