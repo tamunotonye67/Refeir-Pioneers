@@ -536,6 +536,101 @@ img, svg {
   display: none;
 }
 
+/* ─── DESKTOP PROFILE FLYOUT ────────────────────────────────────────────── */
+@keyframes rp-flyout-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.97);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.rp-profile-flyout-desk {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 274px;
+  background: rgba(7, 22, 14, 0.96);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(24, 252, 92, 0.2);
+  border-radius: 16px;
+  padding: 6px;
+  z-index: 500;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.8), 0 0 25px rgba(24, 252, 92, 0.05);
+  transform-origin: top right;
+  animation: rp-flyout-pop 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  box-sizing: border-box;
+}
+
+.rp-profile-flyout-header {
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  margin-bottom: 4px;
+  box-sizing: border-box;
+}
+
+.rp-desk-flyout-btn {
+  width: 100%;
+  text-align: left;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.15s ease;
+  margin: 1px 0;
+  box-sizing: border-box;
+}
+
+.rp-desk-flyout-btn:hover {
+  background: rgba(24, 252, 92, 0.07);
+  border-color: rgba(24, 252, 92, 0.14);
+  color: #FFFFFF;
+}
+
+.rp-desk-flyout-btn .rp-flyout-icon {
+  color: rgba(255, 255, 255, 0.5);
+  transition: color 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.rp-desk-flyout-btn:hover .rp-flyout-icon {
+  color: #18FC5C;
+}
+
+.rp-desk-flyout-btn-danger {
+  color: rgba(252, 165, 165, 0.85);
+}
+
+.rp-desk-flyout-btn-danger:hover {
+  background: rgba(239, 68, 68, 0.09);
+  border-color: rgba(239, 68, 68, 0.18);
+  color: #FCA5A5;
+}
+
+.rp-desk-flyout-btn-danger .rp-flyout-icon {
+  color: rgba(252, 165, 165, 0.65);
+}
+
+.rp-desk-flyout-btn-danger:hover .rp-flyout-icon {
+  color: #F87171;
+}
+
 .rp-profile-menu-box {
   position: absolute;
   top: 100%;
