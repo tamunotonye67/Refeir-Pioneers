@@ -365,6 +365,7 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
   const [step, setStep] = useState<'profile' | 'survey' | 'complete'>('profile');
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
   const [successCard, setSuccessCard] = useState<ContributorProfile | null>(null);
 
   // Form State
@@ -573,8 +574,8 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
     }));
   };
 
-  // Transition from Profile Form to Sequential Survey
-  const handleProceedToSurvey = (e: React.FormEvent) => {
+  // Transition from Profile Form to Sequential Survey or Direct Update
+  const handleProceedToSurvey = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!contributor) {
       onNavigate('/signin');
@@ -592,7 +593,7 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
       return;
     }
     if (!whatsapp.trim()) {
-      setErrorMsg('Please enter your active WhatsApp or contact number for squad communications.');
+      setErrorMsg('Please enter your active WhatsApp or contact number.');
       window.scrollTo({ top: 180, behavior: 'smooth' });
       return;
     }
@@ -607,12 +608,54 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
       return;
     }
     if (!bankName.trim() || !accountNumber.trim() || !accountName.trim()) {
-      setErrorMsg('Please complete your local bank settlement details (Bank Name, Account Digits, and Beneficiary Name) for milestone stipend settlement.');
+      setErrorMsg('Please complete your local bank settlement details (Bank Name, Account Digits, and Beneficiary Name).');
       window.scrollTo({ top: 600, behavior: 'smooth' });
       return;
     }
 
     setErrorMsg('');
+
+    // If profile is already completed (Pioneer ID minted), save directly!
+    if (contributor.is_profile_completed) {
+      setLoading(true);
+      try {
+        const formattedPayout = `Bank: ${bankName.trim()} | Account: ${accountNumber.trim()} | Beneficiary: ${accountName.trim()}`;
+        const updated = await completeContributorProfile(contributor.email, {
+          full_name: fullName.trim(),
+          avatar_url: avatarUrl,
+          date_of_birth: dateOfBirth.trim(),
+          whatsapp_number: whatsapp.trim(),
+          telegram_handle: telegram.trim(),
+          twitter_handle: twitterHandle.trim(),
+          instagram_handle: instagramHandle.trim(),
+          country: country.trim(),
+          city: city.trim(),
+          institution: institution.trim(),
+          division,
+          github_url: githubUrl.trim(),
+          linkedin_url: linkedinUrl.trim(),
+          portfolio_url: portfolioUrl.trim(),
+          bio: bio.trim(),
+          skills: selectedSkills,
+          payout_preference: 'BANK',
+          payout_details: formattedPayout,
+          bank_name: bankName.trim(),
+          account_number: accountNumber.trim(),
+          account_name: accountName.trim()
+        });
+        setSuccessCard(updated);
+        setContributor(updated);
+        setSuccessMsg('Profile updated successfully!');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setTimeout(() => setSuccessMsg(''), 5000);
+      } catch (err: any) {
+        setErrorMsg(err?.message || 'Failed to update profile.');
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
     setCurrentQuestionIndex(0);
     setStep('survey');
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1555,19 +1598,19 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
             )}
 
             {/* Navigation Actions */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 14, paddingTop: 14, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+            <div className="rp-profile-survey-nav">
               <button
                 type="button"
                 onClick={handlePrevQuestion}
                 style={{
                   background: 'rgba(255,255,255,0.06)', color: '#FFFFFF',
-                  border: '1px solid rgba(255,255,255,0.2)', padding: '12px 20px',
-                  borderRadius: 100, fontSize: 13.5, fontWeight: 600, cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', gap: 6, transition: 'all 0.2s'
+                  border: '1px solid rgba(255,255,255,0.2)', padding: '11px 18px',
+                  borderRadius: 100, fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                  display: 'inline-flex', alignItems: 'center', gap: 6, transition: 'all 0.2s'
                 }}
               >
-                <ArrowLeft size={15} />
-                {currentQuestionIndex === 0 ? 'Back to Profile' : `Previous Question`}
+                <ArrowLeft size={14} />
+                {currentQuestionIndex === 0 ? 'Back' : 'Previous'}
               </button>
 
               {!isFinalQuestion ? (
@@ -1578,10 +1621,10 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                   style={{
                     background: currentAnswer?.optionId ? RF_LEAF_GREEN : 'rgba(255,255,255,0.1)',
                     color: currentAnswer?.optionId ? RF_DEEP_GREEN : 'rgba(255,255,255,0.4)',
-                    border: 'none', padding: '12px 26px',
-                    borderRadius: 100, fontSize: 14, fontWeight: 800,
+                    border: 'none', padding: '11px 22px',
+                    borderRadius: 100, fontSize: 13.5, fontWeight: 800,
                     cursor: currentAnswer?.optionId ? 'pointer' : 'not-allowed',
-                    display: 'flex', alignItems: 'center', gap: 8,
+                    display: 'inline-flex', alignItems: 'center', gap: 6,
                     boxShadow: currentAnswer?.optionId ? `0 4px 16px ${RF_LEAF_GREEN}44` : 'none',
                     transition: 'all 0.2s'
                   }}
@@ -1592,7 +1635,7 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                     if (currentAnswer?.optionId) e.currentTarget.style.background = RF_LEAF_GREEN;
                   }}
                 >
-                  Next Question <ArrowRight size={15} />
+                  Next <ArrowRight size={14} />
                 </button>
               ) : (
                 <button
@@ -1602,10 +1645,10 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                   style={{
                     background: (writtenReflection.trim().length >= 30 && !loading) ? RF_LEAF_GREEN : 'rgba(255,255,255,0.1)',
                     color: (writtenReflection.trim().length >= 30 && !loading) ? RF_DEEP_GREEN : 'rgba(255,255,255,0.4)',
-                    border: 'none', padding: '13px 28px',
-                    borderRadius: 100, fontSize: 14.5, fontWeight: 800,
+                    border: 'none', padding: '12px 24px',
+                    borderRadius: 100, fontSize: 13.5, fontWeight: 800,
                     cursor: (writtenReflection.trim().length >= 30 && !loading) ? 'pointer' : 'not-allowed',
-                    display: 'flex', alignItems: 'center', gap: 8,
+                    display: 'inline-flex', alignItems: 'center', gap: 6,
                     boxShadow: (writtenReflection.trim().length >= 30 && !loading) ? `0 4px 18px ${RF_LEAF_GREEN}44` : 'none',
                     transition: 'all 0.2s'
                   }}
@@ -1617,10 +1660,10 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                   }}
                 >
                   {loading ? (
-                    'Minting Official Pioneer ID...'
+                    'Minting ID...'
                   ) : (
                     <>
-                      <Award size={16} /> Mint Pioneer ID
+                      <Award size={15} /> Mint Pioneer ID
                     </>
                   )}
                 </button>
@@ -1635,74 +1678,53 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
   }
 
   return (
-    <div style={{ background: RF_DEEP_GREEN, minHeight: '100vh', color: '#FFFFFF', paddingTop: 100, paddingBottom: 90 }}>
-      <div style={{ maxWidth: 640, margin: '0 auto', padding: '0 20px' }}>
+    <div className="rp-profile-page">
+      <div className="rp-profile-container">
         
         {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: 32 }}>
-          <div style={{
-            display: 'inline-flex', alignItems: 'center', gap: 8,
-            padding: '6px 16px', borderRadius: 100,
-            background: 'rgba(24, 252, 92, 0.1)', border: '1px solid rgba(24, 252, 92, 0.25)',
-            color: RF_MINT_ACCENT, fontSize: 12, fontWeight: 700, letterSpacing: '0.04em',
-            textTransform: 'uppercase', marginBottom: 16
-          }}>
-            <Shield size={14} /> Contributor Onboarding
+        <div className="rp-profile-header">
+          <div className="rp-profile-eyebrow">
+            Contributor Onboarding
           </div>
 
-          <h1 style={{
-            fontFamily: 'Plus Jakarta Sans, sans-serif',
-            fontSize: 'clamp(28px, 5vw, 36px)',
-            fontWeight: 800,
-            lineHeight: 1.2,
-            margin: '0 0 10px',
-            color: '#FFFFFF'
-          }}>
-            {contributor.is_profile_completed ? 'Update Contributor Profile' : 'Complete Your Profile & Mint Pioneer ID'}
+          <h1 className="rp-profile-title">
+            {contributor.is_profile_completed ? 'Update Contributor Profile' : 'Complete Your Profile'}
           </h1>
-          <p style={{ fontSize: 14.5, color: 'rgba(255,255,255,0.7)', margin: 0, lineHeight: 1.6 }}>
+          <p className="rp-profile-subtitle">
             {contributor.is_profile_completed
               ? 'Keep your squad specialization, contact handles, and settlement details up to date.'
-              : 'Provide your verified background and squad details. Upon completion, your official Pioneer ID will be minted.'}
+              : 'Provide your verified background and squad details to mint your Pioneer ID.'}
           </p>
         </div>
 
         {/* Verification Summary Bar */}
-        <div style={{
-          background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(255,255,255,0.1)',
-          borderRadius: 16, padding: '16px 20px', marginBottom: 24,
-          display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12
-        }}>
-          <div>
-            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>Verified Application</div>
-            <div style={{ fontSize: 13.5, fontWeight: 700, color: '#FFFFFF' }}>{contributor.application_number || 'Linked Applicant'}</div>
+        <div className="rp-profile-summary-bar">
+          <div className="rp-profile-summary-item">
+            <div className="rp-profile-summary-label">Application ID</div>
+            <div className="rp-profile-summary-val">{contributor.application_number || 'Linked Applicant'}</div>
           </div>
-          <div>
-            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>Admissions Status</div>
-            <div style={{ fontSize: 12.5, fontWeight: 700, color: RF_MINT_ACCENT, display: 'flex', alignItems: 'center', gap: 4 }}>
-              <Check size={14} /> ACCEPTED
-            </div>
+          <div className="rp-profile-summary-item">
+            <div className="rp-profile-summary-label">Status</div>
+            <div className="rp-profile-summary-val" style={{ color: RF_MINT_ACCENT }}>ACCEPTED</div>
           </div>
-          <div>
-            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>Pioneer ID</div>
-            <div style={{ fontSize: 13.5, fontWeight: 800, color: contributor.pioneer_id ? RF_MINT_ACCENT : RF_GOLD_YELLOW }}>
-              {contributor.pioneer_id || 'Minted After Survey'}
+          <div className="rp-profile-summary-item">
+            <div className="rp-profile-summary-label">Pioneer ID</div>
+            <div className="rp-profile-summary-val" style={{ color: contributor.pioneer_id ? RF_MINT_ACCENT : RF_GOLD_YELLOW }}>
+              {contributor.pioneer_id || 'Pending Mint'}
             </div>
           </div>
         </div>
 
         {/* If already completed, option to jump directly to credential card */}
         {contributor.is_profile_completed && (
-          <div style={{
-            background: 'rgba(24, 252, 92, 0.08)', border: '1px solid rgba(24, 252, 92, 0.25)',
-            borderRadius: 14, padding: '14px 18px', marginBottom: 24,
-            display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12
-          }}>
+          <div className="rp-profile-active-card">
             <div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: '#FFFFFF' }}>You are an Active Sovereign Pioneer</div>
-              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)' }}>Pioneer ID: <strong style={{ color: RF_MINT_ACCENT }}>{contributor.pioneer_id}</strong></div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#FFFFFF' }}>Active Sovereign Pioneer</div>
+              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', marginTop: 2 }}>
+                Pioneer ID: <strong style={{ color: RF_MINT_ACCENT }}>{contributor.pioneer_id}</strong>
+              </div>
             </div>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            <div className="rp-profile-active-actions">
               <button
                 type="button"
                 onClick={() => {
@@ -1715,11 +1737,11 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                 }}
                 style={{
                   background: 'rgba(255, 184, 0, 0.12)', border: `1px solid ${RF_GOLD_YELLOW}`, color: RF_GOLD_YELLOW,
-                  padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', gap: 6
+                  padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer',
+                  display: 'inline-flex', alignItems: 'center', gap: 5
                 }}
               >
-                <Award size={13} /> My Certificates ({certificates.length})
+                <Award size={13} /> Certificates ({certificates.length})
               </button>
               <button
                 type="button"
@@ -1729,23 +1751,30 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                 }}
                 style={{
                   background: 'none', border: `1px solid ${RF_MINT_ACCENT}`, color: RF_MINT_ACCENT,
-                  padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer'
+                  padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer',
+                  display: 'inline-flex', alignItems: 'center'
                 }}
               >
-                View Credential Pass
+                Credential Pass
               </button>
             </div>
           </div>
         )}
 
+        {/* Success Notice */}
+        {successMsg && (
+          <div style={{
+            background: 'rgba(24, 252, 92, 0.12)', border: `1px solid ${RF_LEAF_GREEN}`,
+            borderRadius: 12, padding: '12px 16px', color: RF_MINT_ACCENT,
+            fontSize: 13, display: 'flex', alignItems: 'center', gap: 8, marginBottom: 18
+          }}>
+            <CheckCircle2 size={16} />
+            <span>{successMsg}</span>
+          </div>
+        )}
+
         {/* Form Container */}
-        <div style={{
-          background: `linear-gradient(145deg, ${RF_DARK_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
-          border: '1px solid rgba(102, 187, 42, 0.35)',
-          borderRadius: 24,
-          padding: '32px 30px',
-          boxShadow: '0 25px 60px rgba(0,0,0,0.8), 0 0 35px rgba(24, 252, 92, 0.08)'
-        }}>
+        <div className="rp-profile-form-card">
 
           {errorMsg && (
             <div style={{
@@ -1763,8 +1792,8 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
             
             {/* Section 1: Official Headshot & Personal Contacts */}
             <div style={{ marginBottom: 26 }}>
-              <div style={{ fontSize: 12, fontWeight: 800, color: RF_MINT_ACCENT, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 14 }}>
-                1. Official Headshot & Personal Contacts
+              <div style={{ fontSize: 11.5, fontWeight: 800, color: RF_MINT_ACCENT, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 14 }}>
+                1. Official Headshot &amp; Personal Contacts
               </div>
 
               {/* Photo Upload Area */}
@@ -1776,27 +1805,23 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                 style={{ display: 'none' }}
               />
 
-              <div style={{
-                display: 'flex', alignItems: 'center', gap: 18,
-                background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(255,255,255,0.12)',
-                borderRadius: 16, padding: '16px 20px', marginBottom: 18
-              }}>
-                <div style={{ position: 'relative', flexShrink: 0 }}>
+              <div className="rp-profile-headshot-box">
+                <div className="rp-profile-headshot-avatar">
                   {avatarUrl ? (
                     <img
                       src={avatarUrl}
                       alt="Headshot Preview"
                       style={{
-                        width: 76, height: 76, borderRadius: '50%', objectFit: 'cover',
+                        width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover',
                         border: `2px solid ${RF_MINT_ACCENT}`,
                         boxShadow: `0 0 16px ${RF_MINT_ACCENT}33`
                       }}
                     />
                   ) : (
                     <div style={{
-                      width: 76, height: 76, borderRadius: '50%',
+                      width: '100%', height: '100%', borderRadius: '50%',
                       background: 'rgba(24, 252, 92, 0.08)', border: `2px dashed ${RF_LEAF_GREEN}88`,
-                      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
                       color: RF_MINT_ACCENT
                     }}>
                       <Camera size={26} />
@@ -1804,24 +1829,24 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                   )}
                 </div>
 
-                <div style={{ flex: 1 }}>
+                <div className="rp-profile-headshot-info">
                   <div style={{ fontSize: 13.5, fontWeight: 700, color: '#FFFFFF', marginBottom: 3 }}>
-                    {avatarUrl ? 'Official Headshot Uploaded ✓' : 'Upload Profile Photo / Headshot'}
+                    {avatarUrl ? 'Headshot Uploaded' : 'Profile Photo'}
                   </div>
-                  <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.6)', lineHeight: 1.45, marginBottom: 10 }}>
-                    A clear, professional portrait (PNG, JPG, or WEBP under 3MB). This photo will be engraved on your verified Sovereign Pioneer Credential Card.
+                  <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.6)', lineHeight: 1.45 }}>
+                    Clear portrait (PNG, JPG under 3MB) for your verified Pioneer credential.
                   </div>
-                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  <div className="rp-profile-headshot-btns">
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
                       style={{
                         background: 'rgba(24, 252, 92, 0.15)', border: `1px solid ${RF_LEAF_GREEN}`,
                         color: RF_MINT_ACCENT, padding: '7px 14px', borderRadius: 8, fontSize: 12,
-                        fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6
+                        fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 5
                       }}
                     >
-                      <Upload size={13} /> {avatarUrl ? 'Change Photo' : 'Choose Headshot'}
+                      <Upload size={12} /> {avatarUrl ? 'Change Photo' : 'Upload Photo'}
                     </button>
                     {avatarUrl && (
                       <button
@@ -1833,10 +1858,10 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                         style={{
                           background: 'rgba(255, 255, 255, 0.08)', border: '1px solid rgba(255, 255, 255, 0.25)',
                           color: '#FFFFFF', padding: '7px 12px', borderRadius: 8, fontSize: 12,
-                          fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5
+                          fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 5
                         }}
                       >
-                        <Crop size={13} color={RF_MINT_ACCENT} /> Crop / Adjust
+                        <Crop size={12} color={RF_MINT_ACCENT} /> Crop
                       </button>
                     )}
                     {avatarUrl && (
@@ -1846,10 +1871,10 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                         style={{
                           background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.4)',
                           color: '#FCA5A5', padding: '7px 12px', borderRadius: 8, fontSize: 12,
-                          fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5
+                          fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 5
                         }}
                       >
-                        <Trash2 size={13} /> Remove
+                        <Trash2 size={12} /> Remove
                       </button>
                     )}
                   </div>
@@ -1857,13 +1882,13 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
               </div>
 
               {/* Full Legal Name & Date of Birth */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 14, marginBottom: 14 }}>
+              <div className="rp-profile-grid-2col">
                 <div>
-                  <label style={{ display: 'block', fontSize: 12.5, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 6 }}>
-                    Full Legal / Professional Name <span style={{ color: '#EF4444' }}>*</span>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
+                    Full Legal Name <span style={{ color: '#EF4444' }}>*</span>
                   </label>
                   <div style={{ position: 'relative' }}>
-                    <User size={16} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+                    <User size={15} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
                     <input
                       type="text"
                       value={fullName}
@@ -1872,7 +1897,7 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                       style={{
                         width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.3)',
                         border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10,
-                        padding: '11px 14px 11px 40px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
+                        padding: '10px 12px 10px 38px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
                       }}
                       onFocus={e => (e.target.style.borderColor = RF_MINT_ACCENT)}
                       onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.15)')}
@@ -1881,22 +1906,16 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                 </div>
 
                 <div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-                    <label style={{ fontSize: 12.5, fontWeight: 700, color: 'rgba(255,255,255,0.85)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 5 }}>
+                    <label style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.85)' }}>
                       Date of Birth <span style={{ color: '#EF4444' }}>*</span>
                     </label>
-                    {isDobLocked ? (
-                      <span style={{ fontSize: 11, color: RF_GOLD_YELLOW, display: 'inline-flex', alignItems: 'center', gap: 4, fontWeight: 700 }}>
-                        <Lock size={11} /> Locked • Permanent
-                      </span>
-                    ) : (
-                      <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.45)' }}>
-                        Permanent once saved
-                      </span>
-                    )}
+                    <span style={{ fontSize: 10.5, color: isDobLocked ? RF_GOLD_YELLOW : 'rgba(255,255,255,0.45)', fontWeight: isDobLocked ? 700 : 400 }}>
+                      {isDobLocked ? 'Locked • Permanent' : 'Permanent once saved'}
+                    </span>
                   </div>
                   <div style={{ position: 'relative' }}>
-                    <Calendar size={16} color={isDobLocked ? 'rgba(255,255,255,0.3)' : RF_MINT_ACCENT} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+                    <Calendar size={15} color={isDobLocked ? 'rgba(255,255,255,0.3)' : RF_MINT_ACCENT} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
                     {isDobLocked ? (
                       <input
                         type="text"
@@ -1905,7 +1924,7 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                         style={{
                           width: '100%', boxSizing: 'border-box', background: 'rgba(255,255,255,0.02)',
                           border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10,
-                          padding: '11px 14px 11px 40px', color: 'rgba(255,255,255,0.75)', fontSize: 13.5, outline: 'none',
+                          padding: '10px 12px 10px 38px', color: 'rgba(255,255,255,0.75)', fontSize: 13.5, outline: 'none',
                           cursor: 'not-allowed', fontFamily: 'monospace'
                         }}
                       />
@@ -1918,7 +1937,7 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                         style={{
                           width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.3)',
                           border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10,
-                          padding: '11px 14px 11px 40px', color: '#FFFFFF', fontSize: 13.5, outline: 'none',
+                          padding: '10px 12px 10px 38px', color: '#FFFFFF', fontSize: 13.5, outline: 'none',
                           colorScheme: 'dark'
                         }}
                         onFocus={e => (e.target.style.borderColor = RF_MINT_ACCENT)}
@@ -1926,22 +1945,17 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                       />
                     )}
                   </div>
-                  {!isDobLocked && (
-                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', marginTop: 4 }}>
-                      ⚠️ Once saved, Date of Birth cannot be edited for accreditation security.
-                    </div>
-                  )}
                 </div>
               </div>
 
               {/* WhatsApp Number & Telegram Handle */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 14, marginBottom: 14 }}>
+              <div className="rp-profile-grid-2col">
                 <div>
-                  <label style={{ display: 'block', fontSize: 12.5, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 6 }}>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
                     WhatsApp / Primary Phone <span style={{ color: '#EF4444' }}>*</span>
                   </label>
                   <div style={{ position: 'relative' }}>
-                    <Phone size={16} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)' }} />
+                    <Phone size={15} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
                     <input
                       type="text"
                       value={whatsapp}
@@ -1950,7 +1964,7 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                       style={{
                         width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.3)',
                         border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10,
-                        padding: '11px 14px 11px 40px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
+                        padding: '10px 12px 10px 38px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
                       }}
                       onFocus={e => (e.target.style.borderColor = RF_MINT_ACCENT)}
                       onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.15)')}
@@ -1959,11 +1973,11 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: 12.5, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 6 }}>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
                     Telegram / Discord Handle
                   </label>
                   <div style={{ position: 'relative' }}>
-                    <Send size={16} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)' }} />
+                    <Send size={15} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
                     <input
                       type="text"
                       value={telegram}
@@ -1972,7 +1986,7 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                       style={{
                         width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.3)',
                         border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10,
-                        padding: '11px 14px 11px 40px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
+                        padding: '10px 12px 10px 38px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
                       }}
                       onFocus={e => (e.target.style.borderColor = RF_MINT_ACCENT)}
                       onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.15)')}
@@ -1982,13 +1996,13 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
               </div>
 
               {/* Country & City */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 14 }}>
+              <div className="rp-profile-grid-2col" style={{ marginBottom: 0 }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: 12.5, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 6 }}>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
                     Country of Residence <span style={{ color: '#EF4444' }}>*</span>
                   </label>
                   <div style={{ position: 'relative' }}>
-                    <Globe size={16} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)' }} />
+                    <Globe size={15} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
                     <input
                       type="text"
                       value={country}
@@ -1997,7 +2011,7 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                       style={{
                         width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.3)',
                         border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10,
-                        padding: '11px 14px 11px 40px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
+                        padding: '10px 12px 10px 38px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
                       }}
                       onFocus={e => (e.target.style.borderColor = RF_MINT_ACCENT)}
                       onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.15)')}
@@ -2006,11 +2020,11 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: 12.5, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 6 }}>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
                     City / State <span style={{ color: '#EF4444' }}>*</span>
                   </label>
                   <div style={{ position: 'relative' }}>
-                    <MapPin size={16} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)' }} />
+                    <MapPin size={15} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
                     <input
                       type="text"
                       value={city}
@@ -2019,7 +2033,7 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                       style={{
                         width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.3)',
                         border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10,
-                        padding: '11px 14px 11px 40px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
+                        padding: '10px 12px 10px 38px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
                       }}
                       onFocus={e => (e.target.style.borderColor = RF_MINT_ACCENT)}
                       onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.15)')}
@@ -2030,22 +2044,22 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
             </div>
 
             {/* Section 2: Online Persona & Social Proof Verification */}
-            <div style={{ marginBottom: 26, paddingTop: 20, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+            <div style={{ marginBottom: 24, paddingTop: 18, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
               <div style={{ fontSize: 12, fontWeight: 800, color: RF_MINT_ACCENT, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>
-                2. Online Persona & Social Proof Verification
+                2. Online Persona & Social Proof
               </div>
-              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', margin: '0 0 16px', lineHeight: 1.45 }}>
-                Provide your active social handles so our admissions council and community peers can verify your authentic persona, credibility, and track record.
+              <p style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.6)', margin: '0 0 14px', lineHeight: 1.45 }}>
+                Provide your active handles for admissions council and peer verification.
               </p>
 
               {/* LinkedIn & X / Twitter */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 14, marginBottom: 14 }}>
+              <div className="rp-profile-grid-2col">
                 <div>
-                  <label style={{ display: 'block', fontSize: 12.5, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 6 }}>
-                    LinkedIn Profile URL
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
+                    LinkedIn URL
                   </label>
                   <div style={{ position: 'relative' }}>
-                    <Share2 size={16} color="#70B5F9" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)' }} />
+                    <Share2 size={15} color="#70B5F9" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
                     <input
                       type="text"
                       value={linkedinUrl}
@@ -2054,7 +2068,7 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                       style={{
                         width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.3)',
                         border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10,
-                        padding: '11px 14px 11px 40px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
+                        padding: '10px 12px 10px 38px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
                       }}
                       onFocus={e => (e.target.style.borderColor = RF_MINT_ACCENT)}
                       onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.15)')}
@@ -2063,20 +2077,20 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: 12.5, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 6 }}>
-                    X (Twitter) Handle / Profile
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
+                    X (Twitter) Handle
                   </label>
                   <div style={{ position: 'relative' }}>
-                    <AtSign size={16} color="rgba(255,255,255,0.5)" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)' }} />
+                    <AtSign size={15} color="rgba(255,255,255,0.5)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
                     <input
                       type="text"
                       value={twitterHandle}
                       onChange={e => setTwitterHandle(e.target.value)}
-                      placeholder="@yourhandle or https://x.com/yourhandle"
+                      placeholder="@yourhandle"
                       style={{
                         width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.3)',
                         border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10,
-                        padding: '11px 14px 11px 40px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
+                        padding: '10px 12px 10px 38px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
                       }}
                       onFocus={e => (e.target.style.borderColor = RF_MINT_ACCENT)}
                       onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.15)')}
@@ -2086,22 +2100,22 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
               </div>
 
               {/* Instagram & GitHub */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 14, marginBottom: 14 }}>
+              <div className="rp-profile-grid-2col">
                 <div>
-                  <label style={{ display: 'block', fontSize: 12.5, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 6 }}>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
                     Instagram Handle
                   </label>
                   <div style={{ position: 'relative' }}>
-                    <AtSign size={16} color="#FF80AB" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)' }} />
+                    <AtSign size={15} color="#FF80AB" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
                     <input
                       type="text"
                       value={instagramHandle}
                       onChange={e => setInstagramHandle(e.target.value)}
-                      placeholder="@yourhandle or https://instagram.com/yourhandle"
+                      placeholder="@yourhandle"
                       style={{
                         width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.3)',
                         border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10,
-                        padding: '11px 14px 11px 40px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
+                        padding: '10px 12px 10px 38px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
                       }}
                       onFocus={e => (e.target.style.borderColor = RF_MINT_ACCENT)}
                       onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.15)')}
@@ -2110,11 +2124,11 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: 12.5, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 6 }}>
-                    GitHub / Code Profile URL
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
+                    GitHub Profile URL
                   </label>
                   <div style={{ position: 'relative' }}>
-                    <Code2 size={16} color="rgba(255,255,255,0.5)" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)' }} />
+                    <Code2 size={15} color="rgba(255,255,255,0.5)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
                     <input
                       type="text"
                       value={githubUrl}
@@ -2123,7 +2137,7 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                       style={{
                         width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.3)',
                         border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10,
-                        padding: '11px 14px 11px 40px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
+                        padding: '10px 12px 10px 38px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
                       }}
                       onFocus={e => (e.target.style.borderColor = RF_MINT_ACCENT)}
                       onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.15)')}
@@ -2133,21 +2147,21 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
               </div>
 
               {/* Portfolio URL */}
-              <div>
-                <label style={{ display: 'block', fontSize: 12.5, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 6 }}>
-                  Personal Portfolio / Live Showcase Website
+              <div style={{ marginBottom: 0 }}>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
+                  Personal Portfolio / Showcase Website
                 </label>
                 <div style={{ position: 'relative' }}>
-                  <Globe size={16} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)' }} />
+                  <Globe size={15} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
                   <input
                     type="text"
                     value={portfolioUrl}
                     onChange={e => setPortfolioUrl(e.target.value)}
-                    placeholder="https://yourportfolio.com or https://behance.net/..."
+                    placeholder="https://yourportfolio.com"
                     style={{
                       width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.3)',
                       border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10,
-                      padding: '11px 14px 11px 40px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
+                      padding: '10px 12px 10px 38px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
                     }}
                     onFocus={e => (e.target.style.borderColor = RF_MINT_ACCENT)}
                     onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.15)')}
@@ -2157,17 +2171,17 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
             </div>
 
             {/* Section 3: Academic & Professional */}
-            <div style={{ marginBottom: 26, paddingTop: 20, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-              <div style={{ fontSize: 12, fontWeight: 800, color: RF_MINT_ACCENT, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 14 }}>
+            <div style={{ marginBottom: 24, paddingTop: 18, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+              <div style={{ fontSize: 12, fontWeight: 800, color: RF_MINT_ACCENT, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 12 }}>
                 3. Academic & Professional Background
               </div>
 
-              <div style={{ marginBottom: 14 }}>
-                <label style={{ display: 'block', fontSize: 12.5, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 6 }}>
+              <div>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
                   University / College / Organization <span style={{ color: '#EF4444' }}>*</span>
                 </label>
                 <div style={{ position: 'relative' }}>
-                  <GraduationCap size={16} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)' }} />
+                  <GraduationCap size={15} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
                   <input
                     type="text"
                     value={institution}
@@ -2176,7 +2190,7 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                     style={{
                       width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.3)',
                       border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10,
-                      padding: '11px 14px 11px 40px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
+                      padding: '10px 12px 10px 38px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
                     }}
                     onFocus={e => (e.target.style.borderColor = RF_MINT_ACCENT)}
                     onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.15)')}
@@ -2186,14 +2200,14 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
             </div>
 
             {/* Section 4: Squad & Skills */}
-            <div style={{ marginBottom: 26, paddingTop: 20, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-              <div style={{ fontSize: 12, fontWeight: 800, color: RF_MINT_ACCENT, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 14 }}>
+            <div style={{ marginBottom: 24, paddingTop: 18, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+              <div style={{ fontSize: 12, fontWeight: 800, color: RF_MINT_ACCENT, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 12 }}>
                 4. Primary Squad Specialization & Skills
               </div>
 
               {/* Division Dropdown */}
               <div style={{ marginBottom: 14 }}>
-                <label style={{ display: 'block', fontSize: 12.5, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 6 }}>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
                   Primary Pioneer Squad
                 </label>
                 <select
@@ -2202,7 +2216,7 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                   style={{
                     width: '100%', boxSizing: 'border-box', background: '#051A0E',
                     border: '1px solid rgba(255,255,255,0.2)', borderRadius: 10,
-                    padding: '11px 14px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
+                    padding: '10px 12px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
                   }}
                 >
                   <option value="TECHNOLOGY">Technology & Architecture (Engineering / Web3)</option>
@@ -2213,17 +2227,19 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                   <option value="BUSINESS">Business Development & Strategic Partnerships</option>
                   <option value="GENERAL">General Cross-Functional Squad</option>
                 </select>
-                <div style={{ fontSize: 11.5, color: RF_MINT_ACCENT, marginTop: 4 }}>
-                  Your 10-question cognitive survey will adapt dynamically to this squad choice.
-                </div>
+                {!contributor?.is_profile_completed && (
+                  <div style={{ fontSize: 11.5, color: RF_MINT_ACCENT, marginTop: 5 }}>
+                    Your 10-question cognitive survey will adapt dynamically to this squad choice.
+                  </div>
+                )}
               </div>
 
               {/* Skills Tags */}
               <div style={{ marginBottom: 14 }}>
-                <label style={{ display: 'block', fontSize: 12.5, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 8 }}>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 6 }}>
                   Key Skills & Superpowers (Select all that apply)
                 </label>
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 10 }}>
+                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
                   {POPULAR_SKILLS.map(skill => {
                     const active = selectedSkills.includes(skill);
                     return (
@@ -2235,7 +2251,7 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                           background: active ? RF_LEAF_GREEN : 'rgba(255,255,255,0.05)',
                           color: active ? RF_DEEP_GREEN : 'rgba(255,255,255,0.8)',
                           border: `1px solid ${active ? RF_LEAF_GREEN : 'rgba(255,255,255,0.15)'}`,
-                          borderRadius: 100, padding: '5px 12px', fontSize: 12, fontWeight: active ? 700 : 500,
+                          borderRadius: 100, padding: '5px 12px', fontSize: 11.5, fontWeight: active ? 700 : 500,
                           cursor: 'pointer', transition: 'all 0.15s'
                         }}
                       >
@@ -2272,8 +2288,8 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
               </div>
 
               {/* Bio Statement */}
-              <div style={{ marginBottom: 14 }}>
-                <label style={{ display: 'block', fontSize: 12.5, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 6 }}>
+              <div style={{ marginBottom: 0 }}>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
                   Contributor Bio & Motivation
                 </label>
                 <textarea
@@ -2284,7 +2300,7 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                   style={{
                     width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.3)',
                     border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10,
-                    padding: '11px 14px', color: '#FFFFFF', fontSize: 13.5, outline: 'none',
+                    padding: '10px 12px', color: '#FFFFFF', fontSize: 13.5, outline: 'none',
                     resize: 'vertical', lineHeight: 1.5
                   }}
                   onFocus={e => (e.target.style.borderColor = RF_MINT_ACCENT)}
@@ -2294,33 +2310,33 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
             </div>
 
             {/* Section 5: Reward Settlement */}
-            <div style={{ marginBottom: 28, paddingTop: 20, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+            <div style={{ marginBottom: 24, paddingTop: 18, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
               <div style={{ fontSize: 12, fontWeight: 800, color: RF_MINT_ACCENT, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>
                 5. Stipend & Milestone Settlement (Local Bank Account)
               </div>
-              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', margin: '0 0 16px', lineHeight: 1.45 }}>
+              <p style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.6)', margin: '0 0 14px', lineHeight: 1.45 }}>
                 Refeir issues contributor stipends, milestone rewards, and sovereign grants directly to verified commercial or fintech bank accounts.
               </p>
 
               {/* Active Settlement Badge */}
               <div style={{
-                display: 'inline-flex', alignItems: 'center', gap: 8,
-                padding: '6px 14px', borderRadius: 8,
+                display: 'inline-flex', alignItems: 'center', gap: 6,
+                padding: '5px 12px', borderRadius: 8,
                 background: 'rgba(24, 252, 92, 0.1)', border: `1px solid ${RF_LEAF_GREEN}55`,
-                color: RF_MINT_ACCENT, fontSize: 12, fontWeight: 700, marginBottom: 16
+                color: RF_MINT_ACCENT, fontSize: 11.5, fontWeight: 700, marginBottom: 14
               }}>
-                <Building2 size={14} /> Local Bank Account Settlement (Primary & Active)
+                Local Bank Settlement (Active)
               </div>
 
-              {/* Bank Details: 3 Dedicated Separate Fields */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 14, marginBottom: 14 }}>
+              {/* Bank Details: Bank Name and Account Number */}
+              <div className="rp-profile-grid-2col">
                 {/* 1. Bank Name */}
                 <div>
-                  <label style={{ display: 'block', fontSize: 12.5, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 6 }}>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
                     Bank Name <span style={{ color: '#EF4444' }}>*</span>
                   </label>
                   <div style={{ position: 'relative' }}>
-                    <Building2 size={16} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)' }} />
+                    <Building2 size={15} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
                     <input
                       type="text"
                       list="popular-banks"
@@ -2330,7 +2346,7 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                       style={{
                         width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.3)',
                         border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10,
-                        padding: '11px 14px 11px 40px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
+                        padding: '10px 12px 10px 38px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
                       }}
                       onFocus={e => (e.target.style.borderColor = RF_MINT_ACCENT)}
                       onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.15)')}
@@ -2360,11 +2376,11 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
 
                 {/* 2. Account Digits or Numbers */}
                 <div>
-                  <label style={{ display: 'block', fontSize: 12.5, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 6 }}>
-                    Account Digits or Numbers <span style={{ color: '#EF4444' }}>*</span>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
+                    Account Number <span style={{ color: '#EF4444' }}>*</span>
                   </label>
                   <div style={{ position: 'relative' }}>
-                    <CreditCard size={16} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)' }} />
+                    <CreditCard size={15} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
                     <input
                       type="text"
                       inputMode="numeric"
@@ -2375,7 +2391,7 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                       style={{
                         width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.3)',
                         border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10,
-                        padding: '11px 14px 11px 40px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
+                        padding: '10px 12px 10px 38px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
                       }}
                       onFocus={e => (e.target.style.borderColor = RF_MINT_ACCENT)}
                       onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.15)')}
@@ -2385,12 +2401,12 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
               </div>
 
               {/* 3. Name of Beneficiary */}
-              <div style={{ marginBottom: 8 }}>
-                <label style={{ display: 'block', fontSize: 12.5, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 6 }}>
-                  Name of Beneficiary (Account Holder Legal Name) <span style={{ color: '#EF4444' }}>*</span>
+              <div style={{ marginBottom: 0 }}>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
+                  Beneficiary Name (Account Legal Name) <span style={{ color: '#EF4444' }}>*</span>
                 </label>
                 <div style={{ position: 'relative' }}>
-                  <User size={16} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)' }} />
+                  <User size={15} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
                   <input
                     type="text"
                     value={accountName}
@@ -2399,44 +2415,39 @@ export const CompleteProfilePage: React.FC<CompleteProfilePageProps> = ({ onNavi
                     style={{
                       width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.3)',
                       border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10,
-                      padding: '11px 14px 11px 40px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
+                      padding: '10px 12px 10px 38px', color: '#FFFFFF', fontSize: 13.5, outline: 'none'
                     }}
                     onFocus={e => (e.target.style.borderColor = RF_MINT_ACCENT)}
                     onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.15)')}
                   />
                 </div>
-                <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.5)', marginTop: 5 }}>
-                  Please verify that this name strictly matches your commercial bank registration to ensure automated stipend clearance.
+                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', marginTop: 5 }}>
+                  Must match your bank account name for automated clearance.
                 </div>
               </div>
             </div>
 
-            {/* Next Step Banner */}
-            <div style={{
-              background: 'rgba(24, 252, 92, 0.06)', border: `1px solid ${RF_LEAF_GREEN}33`,
-              borderRadius: 12, padding: '14px 16px', marginBottom: 20,
-              display: 'flex', alignItems: 'center', gap: 12
-            }}>
-              <Brain size={22} style={{ color: RF_MINT_ACCENT, flexShrink: 0 }} />
-              <div style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.8)', lineHeight: 1.5 }}>
-                <strong style={{ color: '#FFFFFF' }}>Next: 10-Question Pioneer Squad Survey</strong>. A tailored 10-question sequential scenario evaluation based on your selected squad to analyze your reasoning, judgment, and sovereign work ethic before your official Pioneer ID is minted.
+            {/* Next Step Banner (Only for initial onboarding before survey) */}
+            {!contributor?.is_profile_completed && (
+              <div style={{
+                background: 'rgba(24, 252, 92, 0.06)', border: `1px solid ${RF_LEAF_GREEN}33`,
+                borderRadius: 12, padding: '12px 14px', marginBottom: 20,
+                display: 'flex', alignItems: 'center', gap: 10
+              }}>
+                <Brain size={18} style={{ color: RF_MINT_ACCENT, flexShrink: 0 }} />
+                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.8)', lineHeight: 1.45 }}>
+                  <strong style={{ color: '#FFFFFF' }}>Next: 10-Question Reasoning Survey</strong>. Dynamic scenario evaluation based on your selected squad.
+                </div>
               </div>
-            </div>
+            )}
 
-            {/* Proceed to Survey Button */}
+            {/* Submit Button */}
             <button
               type="submit"
-              style={{
-                width: '100%', background: RF_LEAF_GREEN, color: RF_DEEP_GREEN,
-                border: 'none', padding: '15px', borderRadius: 100, fontSize: 15,
-                fontWeight: 800, cursor: 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                boxShadow: `0 4px 16px ${RF_LEAF_GREEN}44`, transition: 'all 0.2s'
-              }}
-              onMouseEnter={e => { e.currentTarget.style.background = RF_MINT_ACCENT; }}
-              onMouseLeave={e => { e.currentTarget.style.background = RF_LEAF_GREEN; }}
+              disabled={loading}
+              className="rp-profile-submit-btn"
             >
-              Continue to 10-Question Reasoning Survey <ArrowRight size={17} />
+              {loading ? 'Saving...' : contributor?.is_profile_completed ? 'Save Changes' : <>Continue to Survey <ArrowRight size={16} /></>}
             </button>
           </form>
 
