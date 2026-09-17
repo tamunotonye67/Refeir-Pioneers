@@ -3458,13 +3458,13 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               <div style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
-                gap: 6,
+                gap: 0,
                 alignItems: 'center',
                 width: '100%',
                 maxWidth: '100%',
                 boxSizing: 'border-box'
               }}>
-                <div style={{ minWidth: 0, textAlign: 'left' }}>
+                <div style={{ minWidth: 0, textAlign: 'left', paddingRight: 12 }}>
                   <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 800, color: RF_MINT_ACCENT }}>{analytics.acceptanceRate}%</div>
                   <span style={{ fontSize: isMobile ? 10 : 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     Accept ({analytics.acceptedApps})
@@ -3476,7 +3476,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                     Pending ({analytics.pendingApps})
                   </span>
                 </div>
-                <div style={{ minWidth: 0, textAlign: 'left' }}>
+                <div style={{ minWidth: 0, textAlign: 'left', paddingLeft: 12 }}>
                   <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 800, color: '#38BDF8' }}>{analytics.waitlistedApps}</div>
                   <span style={{ fontSize: isMobile ? 10 : 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     Waitlisted
