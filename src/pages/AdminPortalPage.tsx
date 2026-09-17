@@ -1758,11 +1758,11 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          flexWrap: 'wrap',
+          flexWrap: isMobile ? 'nowrap' : 'wrap',
           gap: isMobile ? 8 : 14
         }}>
           {/* Brand & Suite Indicator */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 8 : 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 8 : 10, minWidth: 0, flexShrink: 1 }}>
             {/* Mobile Admin Navigation Hamburger Toggle */}
             {isMobile && (
               <button
@@ -1775,25 +1775,26 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                   background: adminMobileNavOpen ? 'rgba(24, 252, 92, 0.16)' : 'rgba(255, 255, 255, 0.05)',
                   border: `1px solid ${adminMobileNavOpen ? RF_MINT_ACCENT : 'rgba(255, 255, 255, 0.12)'}`,
                   color: adminMobileNavOpen ? RF_MINT_ACCENT : '#FFFFFF',
-                  width: 32,
-                  height: 32,
-                  borderRadius: 8,
+                  width: 34,
+                  height: 34,
+                  borderRadius: 9,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   cursor: 'pointer',
-                  flexShrink: 0
+                  flexShrink: 0,
+                  transition: 'all 0.15s ease'
                 }}
               >
-                {adminMobileNavOpen ? <X size={16} /> : <Menu size={16} />}
+                {adminMobileNavOpen ? <X size={17} /> : <Menu size={17} />}
               </button>
             )}
 
             <div style={{
               background: 'rgba(24, 252, 92, 0.12)',
               border: '1px solid rgba(24, 252, 92, 0.28)',
-              width: isMobile ? 30 : 34,
-              height: isMobile ? 30 : 34,
+              width: isMobile ? 28 : 34,
+              height: isMobile ? 28 : 34,
               borderRadius: 8,
               display: 'flex',
               alignItems: 'center',
@@ -1803,16 +1804,19 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             }}>
               <Shield size={isMobile ? 15 : 17} />
             </div>
-            <div>
+            <div style={{ minWidth: 0 }}>
               <h1 style={{
-                fontSize: isMobile ? 16.5 : 19,
+                fontSize: isMobile ? 15 : 19,
                 fontWeight: 800,
                 color: '#FFFFFF',
                 letterSpacing: '-0.02em',
                 margin: 0,
-                lineHeight: 1.2
+                lineHeight: 1.2,
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
               }}>
-                Refeir Admissions Suite
+                {isMobile ? 'Refeir Admissions' : 'Refeir Admissions Suite'}
               </h1>
               <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', display: isMobile ? 'none' : 'block', marginTop: 2 }}>
                 Live admissions, verification &amp; pioneer governance console
@@ -1820,10 +1824,98 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             </div>
           </div>
 
-          {/* Right Action Cluster: Staff + Notifications + Refresh + Export + Exit */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 6 : 8, position: 'relative' }} ref={notifDropdownRef}>
-            {/* Staff Profile Badge */}
-            {loggedInStaff && (
+          {/* Right Action Cluster */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 8 : 8, position: 'relative', flexShrink: 0 }} ref={notifDropdownRef}>
+            {/* Notification Center Trigger */}
+            <button
+              onClick={() => {
+                setNotificationOpen(prev => !prev);
+                setAdminMobileNavOpen(false);
+              }}
+              title="Notification Center"
+              style={{
+                background: notificationOpen ? 'rgba(24, 252, 92, 0.18)' : 'rgba(255,255,255,0.05)',
+                border: notificationOpen ? `1px solid ${RF_MINT_ACCENT}55` : '1px solid rgba(255,255,255,0.12)',
+                color: notificationOpen ? RF_MINT_ACCENT : '#FFFFFF',
+                height: 34,
+                width: 34,
+                borderRadius: 9,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                position: 'relative',
+                transition: 'all 0.15s ease',
+                flexShrink: 0
+              }}
+            >
+              <Bell size={15} />
+              {unreadNotifCount > 0 && (
+                <span style={{
+                  position: 'absolute',
+                  top: -3,
+                  right: -3,
+                  minWidth: 16,
+                  height: 16,
+                  borderRadius: 8,
+                  background: RF_MINT_ACCENT,
+                  color: RF_DEEP_GREEN,
+                  fontSize: 9.5,
+                  fontWeight: 800,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '0 4px',
+                  boxShadow: '0 0 8px rgba(24, 252, 92, 0.6)'
+                }}>
+                  {unreadNotifCount}
+                </span>
+              )}
+            </button>
+
+            {/* Mobile Staff Avatar Button (Tapping opens Drawer to view Identity & Quick Actions) */}
+            {isMobile && loggedInStaff && (
+              <button
+                onClick={() => {
+                  setAdminMobileNavOpen(prev => !prev);
+                  setNotificationOpen(false);
+                }}
+                title={`Staff Profile: ${loggedInStaff.name} (${loggedInStaff.role})`}
+                style={{
+                  width: 34,
+                  height: 34,
+                  borderRadius: '50%',
+                  background: adminMobileNavOpen ? 'rgba(24, 252, 92, 0.22)' : 'rgba(24, 252, 92, 0.12)',
+                  border: `1.5px solid ${adminMobileNavOpen ? RF_MINT_ACCENT : 'rgba(24, 252, 92, 0.35)'}`,
+                  color: RF_MINT_ACCENT,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 11,
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  position: 'relative',
+                  flexShrink: 0,
+                  transition: 'all 0.15s ease',
+                  padding: 0
+                }}
+              >
+                {loggedInStaff.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                <span style={{
+                  position: 'absolute',
+                  bottom: -1,
+                  right: -1,
+                  width: 8,
+                  height: 8,
+                  borderRadius: '50%',
+                  background: RF_MINT_ACCENT,
+                  border: '1.5px solid #07180F'
+                }} />
+              </button>
+            )}
+
+            {/* Desktop Staff Profile Badge */}
+            {!isMobile && loggedInStaff && (
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -1850,7 +1942,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                   {loggedInStaff.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
                 </div>
                 <span style={{ fontSize: 12, fontWeight: 600, color: '#FFFFFF', whiteSpace: 'nowrap' }}>
-                  {isMobile ? loggedInStaff.name.split(' ')[0] : loggedInStaff.name}
+                  {loggedInStaff.name}
                 </span>
                 <span style={{
                   fontSize: 9,
@@ -1861,133 +1953,91 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                   padding: '1px 5px',
                   borderRadius: 4,
                   textTransform: 'uppercase',
-                  letterSpacing: '0.04em',
-                  display: isMobile ? 'none' : 'inline-block'
+                  letterSpacing: '0.04em'
                 }}>
                   {loggedInStaff.role.replace('_', ' ')}
                 </span>
               </div>
             )}
 
-            {/* Notification Center Trigger */}
-            <button
-              onClick={() => {
-                setNotificationOpen(prev => !prev);
-                setAdminMobileNavOpen(false);
-              }}
-              title="Notification Center"
-              style={{
-                background: notificationOpen ? 'rgba(24, 252, 92, 0.15)' : 'rgba(255,255,255,0.05)',
-                border: notificationOpen ? `1px solid ${RF_MINT_ACCENT}55` : '1px solid rgba(255,255,255,0.1)',
-                color: notificationOpen ? RF_MINT_ACCENT : '#FFFFFF',
-                height: 32,
-                minWidth: 32,
-                padding: '0 8px',
-                borderRadius: 8,
-                cursor: 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                position: 'relative',
-                transition: 'all 0.15s ease'
-              }}
-            >
-              <Bell size={14} />
-              {unreadNotifCount > 0 && (
-                <span style={{
-                  position: 'absolute',
-                  top: -3,
-                  right: -3,
-                  minWidth: 16,
-                  height: 16,
+            {/* Desktop Refresh */}
+            {!isMobile && (
+              <button
+                onClick={fetchApplications}
+                disabled={loading}
+                title="Refresh Data"
+                style={{
+                  background: 'rgba(255,255,255,0.05)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  color: '#FFFFFF',
+                  height: 32,
+                  padding: '0 12px',
                   borderRadius: 8,
-                  background: RF_MINT_ACCENT,
-                  color: RF_DEEP_GREEN,
-                  fontSize: 9.5,
-                  fontWeight: 800,
-                  display: 'flex',
+                  fontSize: 12,
+                  fontWeight: 500,
+                  cursor: 'pointer',
+                  display: 'inline-flex',
                   alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: '0 4px',
-                  boxShadow: '0 0 8px rgba(24, 252, 92, 0.6)'
-                }}>
-                  {unreadNotifCount}
-                </span>
-              )}
-            </button>
+                  gap: 5,
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                <RefreshCw size={12} className={loading ? 'rp-spin' : ''} />
+                <span>Refresh</span>
+              </button>
+            )}
 
-            {/* Refresh */}
-            <button
-              onClick={fetchApplications}
-              disabled={loading}
-              title="Refresh Data"
-              style={{
-                background: 'rgba(255,255,255,0.05)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                color: '#FFFFFF',
-                height: 32,
-                padding: isMobile ? '0 9px' : '0 12px',
-                borderRadius: 8,
-                fontSize: 12,
-                fontWeight: 500,
-                cursor: 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 5,
-                transition: 'all 0.15s ease'
-              }}
-            >
-              <RefreshCw size={12} className={loading ? 'rp-spin' : ''} />
-              {!isMobile && <span>Refresh</span>}
-            </button>
+            {/* Desktop Export CSV */}
+            {!isMobile && (
+              <button
+                onClick={handleExportCSV}
+                title="Export CSV"
+                style={{
+                  background: 'rgba(255,255,255,0.05)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  color: '#FFFFFF',
+                  height: 32,
+                  padding: '0 12px',
+                  borderRadius: 8,
+                  fontSize: 12,
+                  fontWeight: 500,
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 5,
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                <Download size={12} />
+                <span>Export</span>
+              </button>
+            )}
 
-            {/* Export CSV */}
-            <button
-              onClick={handleExportCSV}
-              title="Export CSV"
-              style={{
-                background: 'rgba(255,255,255,0.05)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                color: '#FFFFFF',
-                height: 32,
-                padding: isMobile ? '0 9px' : '0 12px',
-                borderRadius: 8,
-                fontSize: 12,
-                fontWeight: 500,
-                cursor: 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 5,
-                transition: 'all 0.15s ease'
-              }}
-            >
-              <Download size={12} />
-              {!isMobile && <span>Export</span>}
-            </button>
-
-            {/* Exit / Sign Out */}
-            <button
-              onClick={handleLogout}
-              title="Sign Out"
-              style={{
-                background: 'rgba(239, 68, 68, 0.08)',
-                border: '1px solid rgba(239, 68, 68, 0.22)',
-                color: '#FCA5A5',
-                height: 32,
-                padding: isMobile ? '0 9px' : '0 12px',
-                borderRadius: 8,
-                fontSize: 12,
-                fontWeight: 500,
-                cursor: 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 5,
-                transition: 'all 0.15s ease'
-              }}
-            >
-              <LogOut size={12} />
-              {!isMobile && <span>Exit</span>}
-            </button>
+            {/* Desktop Exit / Sign Out */}
+            {!isMobile && (
+              <button
+                onClick={handleLogout}
+                title="Sign Out"
+                style={{
+                  background: 'rgba(239, 68, 68, 0.08)',
+                  border: '1px solid rgba(239, 68, 68, 0.22)',
+                  color: '#FCA5A5',
+                  height: 32,
+                  padding: '0 12px',
+                  borderRadius: 8,
+                  fontSize: 12,
+                  fontWeight: 500,
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 5,
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                <LogOut size={12} />
+                <span>Exit</span>
+              </button>
+            )}
 
             {/* Notification Center Popover (Desktop only) */}
             {notificationOpen && !isMobile && (
@@ -2403,11 +2453,12 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             onClick={e => e.stopPropagation()}
             style={{
               flex: 1,
+              minHeight: 0,
               overflowY: 'auto',
               WebkitOverflowScrolling: 'touch',
               overscrollBehavior: 'contain',
               touchAction: 'pan-y',
-              padding: '14px 18px 30px',
+              padding: '14px 18px 24px',
               display: 'flex',
               flexDirection: 'column',
               gap: 10
@@ -2507,7 +2558,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           <div
             onClick={e => e.stopPropagation()}
             style={{
-              padding: '12px 18px',
+              padding: '13px 18px calc(14px + env(safe-area-inset-bottom, 16px))',
               borderTop: '1px solid rgba(255, 255, 255, 0.08)',
               display: 'flex',
               alignItems: 'center',
@@ -2616,11 +2667,12 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             onClick={e => e.stopPropagation()}
             style={{
               flex: 1,
+              minHeight: 0,
               overflowY: 'auto',
               WebkitOverflowScrolling: 'touch',
               overscrollBehavior: 'contain',
               touchAction: 'pan-y',
-              padding: '16px 18px 24px',
+              padding: '16px 18px calc(24px + env(safe-area-inset-bottom, 20px))',
               display: 'flex',
               flexDirection: 'column',
               gap: 14
@@ -2719,7 +2771,9 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             {/* Quick action bar */}
             <div style={{
               display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8,
-              paddingTop: 12, borderTop: '1px solid rgba(255,255,255,0.07)', marginTop: 'auto'
+              paddingTop: 14,
+              paddingBottom: 'calc(10px + env(safe-area-inset-bottom, 14px))',
+              borderTop: '1px solid rgba(255,255,255,0.07)', marginTop: 'auto'
             }}>
               <button
                 onClick={() => { fetchApplications(); setAdminMobileNavOpen(false); }}
@@ -2756,7 +2810,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
         </div>
       )}
 
-      <div style={{ maxWidth: 1280, margin: '0 auto', padding: isMobile ? '16px 14px 60px' : '26px 24px 80px' }}>
+      <div style={{ maxWidth: 1280, margin: '0 auto', padding: isMobile ? '16px 14px calc(90px + env(safe-area-inset-bottom, 24px))' : '26px 24px 80px' }}>
         {/* Mobile Active Section Breadcrumb & Switcher Trigger */}
         {isMobile && (
           <div style={{
@@ -6349,12 +6403,14 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
         <div style={{
           position: 'fixed', inset: 0, zIndex: 1000,
           background: 'rgba(5, 18, 11, 0.85)', backdropFilter: 'blur(12px)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: isMobile ? '12px 10px' : 20
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: isMobile ? '12px 10px calc(16px + env(safe-area-inset-bottom, 16px))' : 20
         }} onClick={() => setModalOpen(false)}>
           <div style={{
             background: 'linear-gradient(145deg, #0B2416 0%, #061A0F 100%)',
             border: '1px solid rgba(102, 187, 42, 0.35)',
-            borderRadius: isMobile ? 18 : 24, maxWidth: 680, width: '100%', maxHeight: isMobile ? '94vh' : '90vh',
+            borderRadius: isMobile ? 18 : 24, maxWidth: 680, width: '100%',
+            maxHeight: isMobile ? 'calc(100dvh - 28px - env(safe-area-inset-bottom, 16px))' : '90vh',
             boxShadow: '0 25px 60px rgba(0,0,0,0.85)', position: 'relative',
             display: 'flex', flexDirection: 'column', overflow: 'hidden'
           }} onClick={e => e.stopPropagation()}>
@@ -6388,7 +6444,17 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             </div>
 
             {/* Modal Scrollable Body */}
-            <div style={{ padding: isMobile ? '16px 14px' : '24px 28px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 20 }}>
+            <div style={{
+              flex: 1,
+              minHeight: 0,
+              padding: isMobile ? '16px 14px' : '24px 28px',
+              overflowY: 'auto',
+              WebkitOverflowScrolling: 'touch',
+              overscrollBehavior: 'contain',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 20
+            }}>
               {/* Quick Contact Bar */}
               <div style={{
                 background: 'rgba(255,255,255,0.04)', borderRadius: 14, padding: '14px 18px',
@@ -6648,8 +6714,11 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
             {/* Modal Footer Actions */}
             <div style={{
-              padding: isMobile ? '14px 18px' : '18px 28px', borderTop: '1px solid rgba(255,255,255,0.08)',
-              display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+              flexShrink: 0,
+              padding: isMobile ? '12px 16px calc(14px + env(safe-area-inset-bottom, 12px))' : '18px 28px',
+              borderTop: '1px solid rgba(255,255,255,0.08)',
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+              background: 'rgba(5, 18, 11, 0.95)'
             }}>
               <button
                 type="button"
@@ -6685,12 +6754,14 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
         <div style={{
           position: 'fixed', inset: 0, zIndex: 1000,
           background: 'rgba(5, 18, 11, 0.85)', backdropFilter: 'blur(12px)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: isMobile ? '12px 10px' : 20
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: isMobile ? '12px 10px calc(16px + env(safe-area-inset-bottom, 16px))' : 20
         }} onClick={() => setTaskModalOpen(false)}>
           <div style={{
             background: 'linear-gradient(145deg, #0B2416 0%, #061A0F 100%)',
             border: '1px solid rgba(102, 187, 42, 0.35)',
-            borderRadius: isMobile ? 18 : 24, maxWidth: 740, width: '100%', maxHeight: isMobile ? '94vh' : '90vh',
+            borderRadius: isMobile ? 18 : 24, maxWidth: 740, width: '100%',
+            maxHeight: isMobile ? 'calc(100dvh - 28px - env(safe-area-inset-bottom, 16px))' : '90vh',
             boxShadow: '0 25px 60px rgba(0,0,0,0.85)', position: 'relative',
             display: 'flex', flexDirection: 'column', overflow: 'hidden'
           }} onClick={e => e.stopPropagation()}>
@@ -6724,7 +6795,17 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             </div>
 
             {/* Modal Body */}
-            <div style={{ padding: isMobile ? '16px 14px' : '24px 28px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 20 }}>
+            <div style={{
+              flex: 1,
+              minHeight: 0,
+              padding: isMobile ? '16px 14px' : '24px 28px',
+              overflowY: 'auto',
+              WebkitOverflowScrolling: 'touch',
+              overscrollBehavior: 'contain',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 20
+            }}>
               {/* Contributor Card */}
               <div style={{
                 background: 'rgba(255,255,255,0.04)', borderRadius: 14, padding: '14px 18px',
@@ -6941,8 +7022,11 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
             {/* Modal Actions */}
             <div style={{
-              padding: isMobile ? '14px 18px' : '18px 28px', borderTop: '1px solid rgba(255,255,255,0.08)',
-              display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: 10
+              flexShrink: 0,
+              padding: isMobile ? '12px 16px calc(14px + env(safe-area-inset-bottom, 12px))' : '18px 28px',
+              borderTop: '1px solid rgba(255,255,255,0.08)',
+              display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: 10,
+              background: 'rgba(5, 18, 11, 0.95)'
             }}>
               <button
                 type="button"
@@ -7014,17 +7098,31 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           style={{
             position: 'fixed', inset: 0, zIndex: 1100,
             background: 'rgba(5, 18, 11, 0.92)', backdropFilter: 'blur(12px)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: isMobile ? '12px 10px' : 24
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            padding: isMobile ? '12px 10px calc(16px + env(safe-area-inset-bottom, 16px))' : 24
           }}
         >
           <div
             onClick={e => e.stopPropagation()}
-            style={{ position: 'relative', maxWidth: '92vw', maxHeight: '92vh' }}
+            style={{
+              position: 'relative',
+              maxWidth: '92vw',
+              maxHeight: isMobile ? 'calc(100dvh - 32px - env(safe-area-inset-bottom, 16px))' : '92vh',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center'
+            }}
           >
             <img
               src={screenshotModalUrl}
               alt="Screenshot Full View"
-              style={{ maxWidth: '100%', maxHeight: '88vh', borderRadius: isMobile ? 12 : 16, border: '1px solid rgba(255,255,255,0.2)' }}
+              style={{
+                maxWidth: '100%',
+                maxHeight: isMobile ? 'calc(100dvh - 60px - env(safe-area-inset-bottom, 20px))' : '88vh',
+                borderRadius: isMobile ? 12 : 16,
+                border: '1px solid rgba(255,255,255,0.2)',
+                objectFit: 'contain'
+              }}
             />
             <button
               onClick={() => setScreenshotModalUrl(null)}
@@ -7049,7 +7147,8 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           style={{
             position: 'fixed', inset: 0, zIndex: 1100,
             background: 'rgba(5, 18, 11, 0.85)', backdropFilter: 'blur(12px)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: isMobile ? '12px 10px' : 20
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            padding: isMobile ? '12px 10px calc(16px + env(safe-area-inset-bottom, 16px))' : 20
           }}
         >
           <div
@@ -7058,13 +7157,14 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               background: 'linear-gradient(145deg, #0B2416 0%, #061A0F 100%)',
               border: '1px solid rgba(102, 187, 42, 0.35)',
               borderRadius: isMobile ? 18 : 24, maxWidth: 500, width: '100%',
-              maxHeight: isMobile ? '94vh' : '90vh',
+              maxHeight: isMobile ? 'calc(100dvh - 28px - env(safe-area-inset-bottom, 16px))' : '90vh',
               boxShadow: '0 25px 60px rgba(0,0,0,0.85)',
               position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column'
             }}
           >
             {/* Header */}
             <div style={{
+              flexShrink: 0,
               padding: isMobile ? '16px 18px 14px' : '24px 28px 18px', borderBottom: '1px solid rgba(255,255,255,0.08)',
               display: 'flex', justifyContent: 'space-between', alignItems: 'center'
             }}>
@@ -7099,7 +7199,17 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             </div>
 
             {/* Form */}
-            <form onSubmit={handleCreateWorker} style={{ padding: isMobile ? '16px 18px 20px' : '24px 28px', overflowY: 'auto' }}>
+            <form
+              onSubmit={handleCreateWorker}
+              style={{
+                flex: 1,
+                minHeight: 0,
+                padding: isMobile ? '16px 18px calc(24px + env(safe-area-inset-bottom, 18px))' : '24px 28px',
+                overflowY: 'auto',
+                WebkitOverflowScrolling: 'touch',
+                overscrollBehavior: 'contain'
+              }}
+            >
               {workerFormError && (
                 <div style={{
                   background: 'rgba(239, 68, 68, 0.15)', border: '1px solid #EF4444',
@@ -7248,16 +7358,22 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           style={{
             position: 'fixed', inset: 0, zIndex: 1000,
             background: 'rgba(5, 18, 11, 0.85)', backdropFilter: 'blur(12px)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: isMobile ? '12px 10px' : 20
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            padding: isMobile ? '12px 10px calc(16px + env(safe-area-inset-bottom, 16px))' : 20
           }}
         >
           <div
             onClick={e => e.stopPropagation()}
             style={{
-              maxWidth: 900, width: '100%', maxHeight: isMobile ? '94vh' : '92vh', overflowY: 'auto',
+              maxWidth: 900, width: '100%',
+              maxHeight: isMobile ? 'calc(100dvh - 28px - env(safe-area-inset-bottom, 16px))' : '92vh',
+              overflowY: 'auto',
+              WebkitOverflowScrolling: 'touch',
+              overscrollBehavior: 'contain',
               background: 'linear-gradient(145deg, #0B2416 0%, #061A0F 100%)',
               borderRadius: isMobile ? 18 : 24, border: '1px solid rgba(102, 187, 42, 0.35)',
-              padding: isMobile ? '20px 16px 24px' : '32px 32px 36px', position: 'relative',
+              padding: isMobile ? '20px 16px calc(30px + env(safe-area-inset-bottom, 24px))' : '32px 32px 36px',
+              position: 'relative',
               boxShadow: '0 25px 60px rgba(0,0,0,0.85)'
             }}
           >
@@ -7805,15 +7921,21 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           style={{
             position: 'fixed', inset: 0, zIndex: 1100,
             background: 'rgba(5, 18, 11, 0.85)', backdropFilter: 'blur(12px)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: isMobile ? '12px 10px' : 20
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            padding: isMobile ? '12px 10px calc(16px + env(safe-area-inset-bottom, 16px))' : 20
           }}
         >
           <div
             onClick={e => e.stopPropagation()}
             style={{
-              maxWidth: 540, width: '100%', maxHeight: isMobile ? '94vh' : '90vh', overflowY: 'auto',
+              maxWidth: 540, width: '100%',
+              maxHeight: isMobile ? 'calc(100dvh - 28px - env(safe-area-inset-bottom, 16px))' : '90vh',
+              overflowY: 'auto',
+              WebkitOverflowScrolling: 'touch',
+              overscrollBehavior: 'contain',
               background: 'linear-gradient(145deg, #180B0B 0%, #0D0505 100%)', borderRadius: isMobile ? 18 : 24,
-              border: '1px solid rgba(239, 68, 68, 0.45)', padding: isMobile ? '20px 18px 24px' : 32,
+              border: '1px solid rgba(239, 68, 68, 0.45)',
+              padding: isMobile ? '20px 18px calc(24px + env(safe-area-inset-bottom, 18px))' : 32,
               boxShadow: '0 25px 60px rgba(0,0,0,0.9)'
             }}
           >
@@ -7927,15 +8049,21 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           style={{
             position: 'fixed', inset: 0, zIndex: 1100,
             background: 'rgba(5, 18, 11, 0.85)', backdropFilter: 'blur(12px)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: isMobile ? '12px 10px' : 20
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            padding: isMobile ? '12px 10px calc(16px + env(safe-area-inset-bottom, 16px))' : 20
           }}
         >
           <div
             onClick={e => e.stopPropagation()}
             style={{
-              maxWidth: 580, width: '100%', maxHeight: isMobile ? '94vh' : '90vh', overflowY: 'auto',
+              maxWidth: 580, width: '100%',
+              maxHeight: isMobile ? 'calc(100dvh - 28px - env(safe-area-inset-bottom, 16px))' : '90vh',
+              overflowY: 'auto',
+              WebkitOverflowScrolling: 'touch',
+              overscrollBehavior: 'contain',
               background: 'linear-gradient(145deg, #0B2416 0%, #061A0F 100%)', borderRadius: isMobile ? 18 : 24,
-              border: '1px solid rgba(102, 187, 42, 0.35)', padding: isMobile ? '20px 16px' : '32px',
+              border: '1px solid rgba(102, 187, 42, 0.35)',
+              padding: isMobile ? '20px 16px calc(28px + env(safe-area-inset-bottom, 20px))' : '32px',
               boxShadow: '0 25px 60px rgba(0,0,0,0.9)', position: 'relative'
             }}
           >
@@ -8097,15 +8225,21 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           style={{
             position: 'fixed', inset: 0, zIndex: 1100,
             background: 'rgba(5, 18, 11, 0.85)', backdropFilter: 'blur(12px)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: isMobile ? '12px 10px' : 20
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            padding: isMobile ? '12px 10px calc(16px + env(safe-area-inset-bottom, 16px))' : 20
           }}
         >
           <div
             onClick={e => e.stopPropagation()}
             style={{
-              maxWidth: 720, width: '100%', maxHeight: isMobile ? '94vh' : '90vh', overflowY: 'auto',
+              maxWidth: 720, width: '100%',
+              maxHeight: isMobile ? 'calc(100dvh - 28px - env(safe-area-inset-bottom, 16px))' : '90vh',
+              overflowY: 'auto',
+              WebkitOverflowScrolling: 'touch',
+              overscrollBehavior: 'contain',
               background: 'linear-gradient(145deg, #0B2416 0%, #061A0F 100%)', borderRadius: isMobile ? 18 : 24,
-              border: '1px solid rgba(102, 187, 42, 0.35)', padding: isMobile ? '20px 16px' : '32px',
+              border: '1px solid rgba(102, 187, 42, 0.35)',
+              padding: isMobile ? '20px 16px calc(30px + env(safe-area-inset-bottom, 20px))' : '32px',
               boxShadow: '0 25px 60px rgba(0,0,0,0.9)'
             }}
           >

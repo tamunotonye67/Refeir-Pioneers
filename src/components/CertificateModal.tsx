@@ -153,8 +153,9 @@ export const CertificateModal: React.FC<CertificateModalProps> = ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: isMobile ? '8px' : '20px',
-        overflowY: 'auto'
+        padding: isMobile ? '10px 8px calc(16px + env(safe-area-inset-bottom, 16px))' : '20px',
+        overflowY: 'auto',
+        WebkitOverflowScrolling: 'touch'
       }}
       onClick={onClose}
     >
@@ -162,13 +163,16 @@ export const CertificateModal: React.FC<CertificateModalProps> = ({
         style={{
           maxWidth: 960,
           width: '100%',
+          maxHeight: isMobile ? 'calc(100dvh - 28px - env(safe-area-inset-bottom, 16px))' : '92vh',
           margin: 'auto',
           background: '#0B2115',
           borderRadius: isMobile ? 14 : 20,
           border: '1px solid rgba(24, 252, 92, 0.25)',
           boxShadow: '0 30px 80px rgba(0, 0, 0, 0.95), 0 0 50px rgba(24, 252, 92, 0.08)',
           position: 'relative',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column'
         }}
         onClick={e => e.stopPropagation()}
       >
@@ -176,6 +180,7 @@ export const CertificateModal: React.FC<CertificateModalProps> = ({
         <div
           className="no-print"
           style={{
+            flexShrink: 0,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -329,6 +334,8 @@ export const CertificateModal: React.FC<CertificateModalProps> = ({
           /* Mobile Rotated View: Stretches landscape certificate to fill full mobile width */
           <div
             style={{
+              flex: 1,
+              minHeight: 0,
               width: '100%',
               height: `${rotatedCertWidth + 20}px`,
               position: 'relative',
@@ -361,6 +368,11 @@ export const CertificateModal: React.FC<CertificateModalProps> = ({
           /* Standard Responsive Landscape View */
           <div
             style={{
+              flex: 1,
+              minHeight: 0,
+              overflowY: 'auto',
+              WebkitOverflowScrolling: 'touch',
+              overscrollBehavior: 'contain',
               padding: isMobile ? '12px' : '28px',
               background: '#FAF9F5',
               position: 'relative',
