@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Printer, Copy, Check, X, RotateCw
+  Download, Copy, Check, X
 } from 'lucide-react';
 import { PioneerCertificate } from '../lib/certificates';
 import {
@@ -101,11 +101,9 @@ export const CertificateModal: React.FC<CertificateModalProps> = ({
   onClose
 }) => {
   const [copied, setCopied] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
   const [windowWidth, setWindowWidth] = useState(() =>
     typeof window !== 'undefined' ? window.innerWidth : 1024
-  );
-  const [isRotated, setIsRotated] = useState(() =>
-    typeof window !== 'undefined' ? window.innerWidth <= 768 : false
   );
 
   useEffect(() => {
@@ -121,12 +119,31 @@ export const CertificateModal: React.FC<CertificateModalProps> = ({
 
   const isMobile = windowWidth <= 768;
 
-  // On mobile rotated view: calculate dimensions so the rotated certificate height fits the mobile width
-  const rotatedCertHeight = Math.min(Math.max(windowWidth - 28, 320), 430);
-  const rotatedCertWidth = Math.round(rotatedCertHeight * 1.414); // A4 Landscape ratio (297 / 210)
-
-  const handlePrint = () => {
-    window.print();
+  const handleDownload = async () => {
+    const el = document.getElementById('refeir-certificate-printable');
+    if (!el) return;
+    setIsDownloading(true);
+    try {
+      const html2canvas = (await import('html2canvas')).default;
+      const canvas = await html2canvas(el, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#FAF9F5'
+      });
+      const dataUrl = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.href = dataUrl;
+      link.download = `Refeir-Certificate-${certificate.pioneer_id || certificate.id || 'Accreditation'}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      console.error('Failed to download certificate image', err);
+      window.print();
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   const handleCopyLink = () => {
@@ -226,54 +243,31 @@ export const CertificateModal: React.FC<CertificateModalProps> = ({
 
           {/* Minimalist Action Controls */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-            {/* Mobile Rotation Toggle Button */}
-            {isMobile && (
-              <button
-                onClick={() => setIsRotated(prev => !prev)}
-                title={isRotated ? 'Switch to portrait view' : 'Rotate to full view'}
-                style={{
-                  background: isRotated ? 'rgba(24, 252, 92, 0.16)' : 'rgba(255,255,255,0.08)',
-                  color: isRotated ? RF_MINT_ACCENT : '#FFFFFF',
-                  border: isRotated ? `1px solid ${RF_LEAF_GREEN}66` : '1px solid rgba(255,255,255,0.18)',
-                  padding: '6px 10px',
-                  borderRadius: 100,
-                  fontSize: 11.5,
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 5,
-                  transition: 'all 0.2s'
-                }}
-              >
-                <RotateCw size={12} />
-                <span>{isRotated ? 'Portrait' : 'Rotate'}</span>
-              </button>
-            )}
-
-            {/* Print Button */}
+            {/* Download Certificate Button */}
             <button
-              onClick={handlePrint}
+              onClick={handleDownload}
+              disabled={isDownloading}
               style={{
                 background: RF_LEAF_GREEN,
                 color: RF_DEEP_GREEN,
                 border: 'none',
-                padding: '6px 12px',
+                padding: '6px 14px',
                 borderRadius: 100,
                 fontSize: 11.5,
                 fontWeight: 700,
-                cursor: 'pointer',
+                cursor: isDownloading ? 'wait' : 'pointer',
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 5,
                 boxShadow: `0 2px 10px ${RF_LEAF_GREEN}44`,
-                transition: 'all 0.2s'
+                transition: 'all 0.2s',
+                whiteSpace: 'nowrap'
               }}
               onMouseEnter={e => (e.currentTarget.style.background = RF_MINT_ACCENT)}
               onMouseLeave={e => (e.currentTarget.style.background = RF_LEAF_GREEN)}
             >
-              <Printer size={12} />
-              <span>Print</span>
+              <Download size={13} />
+              <span>{isDownloading ? 'Generating...' : 'Download'}</span>
             </button>
 
             {/* Copy Link Button */}
@@ -330,70 +324,33 @@ export const CertificateModal: React.FC<CertificateModalProps> = ({
         </div>
 
         {/* Certificate Display Container */}
-        {isMobile && isRotated ? (
-          /* Mobile Rotated View: Stretches landscape certificate to fill full mobile width */
+        <div
+          style={{
+            flex: 1,
+            minHeight: 0,
+            overflowY: 'auto',
+            overflowX: 'auto',
+            WebkitOverflowScrolling: 'touch',
+            overscrollBehavior: 'contain',
+            padding: isMobile ? '12px 10px 24px' : '28px',
+            background: '#FAF9F5',
+            position: 'relative'
+          }}
+        >
           <div
+            id="refeir-certificate-printable"
             style={{
-              flex: 1,
-              minHeight: 0,
               width: '100%',
-              height: `${rotatedCertWidth + 20}px`,
-              position: 'relative',
-              overflow: 'hidden',
-              background: '#FAF9F5',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
+              maxWidth: 920,
+              minWidth: isMobile ? 480 : undefined,
+              aspectRatio: '1.414 / 1',
+              margin: '0 auto',
+              boxSizing: 'border-box'
             }}
           >
-            <div
-              id="refeir-certificate-printable"
-              style={{
-                width: `${rotatedCertWidth}px`,
-                height: `${rotatedCertHeight}px`,
-                position: 'absolute',
-                left: '50%',
-                top: '50%',
-                transform: 'translate(-50%, -50%) rotate(90deg)',
-                transformOrigin: 'center center',
-                background: '#FAF9F5',
-                padding: '10px',
-                boxSizing: 'border-box'
-              }}
-            >
-              {renderCertificateContent(true)}
-            </div>
+            {renderCertificateContent(isMobile)}
           </div>
-        ) : (
-          /* Standard Responsive Landscape View */
-          <div
-            style={{
-              flex: 1,
-              minHeight: 0,
-              overflowY: 'auto',
-              WebkitOverflowScrolling: 'touch',
-              overscrollBehavior: 'contain',
-              padding: isMobile ? '12px' : '28px',
-              background: '#FAF9F5',
-              position: 'relative',
-              overflowX: isMobile ? 'auto' : 'visible'
-            }}
-          >
-            <div
-              id="refeir-certificate-printable"
-              style={{
-                width: '100%',
-                maxWidth: 920,
-                margin: '0 auto',
-                aspectRatio: '1.414 / 1',
-                minWidth: isMobile ? 480 : undefined,
-                boxSizing: 'border-box'
-              }}
-            >
-              {renderCertificateContent(false)}
-            </div>
-          </div>
-        )}
+        </div>
       </div>
 
       {/* Print Stylesheet (Strict A4 Landscape Full Bleed) */}

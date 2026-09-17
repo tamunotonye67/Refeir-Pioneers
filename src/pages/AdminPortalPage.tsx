@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   Shield, Search, Filter, CheckCircle2, Clock, XCircle, AlertCircle,
   ExternalLink, Download, MessageSquare, Mail, RefreshCw, UserCheck,
-  ChevronDown, Edit3, Save, Lock, LogOut, ArrowRight, Star,
+  ChevronDown, ChevronRight, Edit3, Save, Lock, LogOut, ArrowRight, Star,
   Image as ImageIcon, Award, Eye, Check, FileCheck, Users,
   UserPlus, Trash2, Key, EyeOff, Copy, Ban, UserX, Calendar,
   Building2, Globe, Phone, Send, AtSign, Share2, Briefcase,
@@ -264,6 +264,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
   });
 
   const [adminMobileNavOpen, setAdminMobileNavOpen] = useState(false);
+  const [adminProfileDockerOpen, setAdminProfileDockerOpen] = useState(false);
   const [applications, setApplications] = useState<ApplicationRecord[]>([]);
   const [taskSubmissions, setTaskSubmissions] = useState<TaskSubmissionRecord[]>([]);
   const [membersList, setMembersList] = useState<ContributorProfile[]>(() => getAllContributors());
@@ -1166,9 +1167,9 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
     };
   }, [notificationOpen]);
 
-  // Prevent body scroll jitter/shaking on mobile when full-screen drawer or notification docker is open
+  // Prevent body scroll jitter/shaking on mobile when full-screen drawer or notification/profile docker is open
   useEffect(() => {
-    if ((adminMobileNavOpen && isMobile) || (notificationOpen && isMobile)) {
+    if ((adminMobileNavOpen && isMobile) || (notificationOpen && isMobile) || (adminProfileDockerOpen && isMobile)) {
       const origBodyOverflow = document.body.style.overflow;
       const origHtmlOverflow = document.documentElement.style.overflow;
       const origTouchAction = document.body.style.touchAction;
@@ -1189,7 +1190,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
         document.documentElement.style.overscrollBehavior = origHtmlOverscroll;
       };
     }
-  }, [adminMobileNavOpen, notificationOpen, isMobile]);
+  }, [adminMobileNavOpen, notificationOpen, adminProfileDockerOpen, isMobile]);
 
   const notificationsList = useMemo(() => {
     const list: Array<{
@@ -1873,11 +1874,12 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               )}
             </button>
 
-            {/* Mobile Staff Avatar Button (Tapping opens Drawer to view Identity & Quick Actions) */}
+            {/* Mobile Staff Avatar Button (Tapping opens dedicated Staff Profile Docker) */}
             {isMobile && loggedInStaff && (
               <button
                 onClick={() => {
-                  setAdminMobileNavOpen(prev => !prev);
+                  setAdminProfileDockerOpen(prev => !prev);
+                  setAdminMobileNavOpen(false);
                   setNotificationOpen(false);
                 }}
                 title={`Staff Profile: ${loggedInStaff.name} (${loggedInStaff.role})`}
@@ -1885,8 +1887,8 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                   width: 34,
                   height: 34,
                   borderRadius: '50%',
-                  background: adminMobileNavOpen ? 'rgba(24, 252, 92, 0.22)' : 'rgba(24, 252, 92, 0.12)',
-                  border: `1.5px solid ${adminMobileNavOpen ? RF_MINT_ACCENT : 'rgba(24, 252, 92, 0.35)'}`,
+                  background: adminProfileDockerOpen ? 'rgba(24, 252, 92, 0.22)' : 'rgba(24, 252, 92, 0.12)',
+                  border: `1.5px solid ${adminProfileDockerOpen ? RF_MINT_ACCENT : 'rgba(24, 252, 92, 0.35)'}`,
                   color: RF_MINT_ACCENT,
                   display: 'flex',
                   alignItems: 'center',
@@ -2799,11 +2801,301 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 onClick={() => { handleLogout(); setAdminMobileNavOpen(false); }}
                 style={{
                   background: 'rgba(239, 68, 68, 0.12)', border: '1px solid rgba(239, 68, 68, 0.3)',
-                  color: '#FCA5A5', padding: '10px 8px', borderRadius: 10, fontSize: 12, fontWeight: 600,
+                  color: '#FCA5A5', padding: '10px 8px', borderRadius: 100, fontSize: 12, fontWeight: 600,
                   cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6
                 }}
               >
                 <LogOut size={13} /> Exit
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ─── MOBILE STAFF PROFILE DOCKER (Bottom Sheet) ─── */}
+      {isMobile && adminProfileDockerOpen && loggedInStaff && (
+        <div
+          onClick={() => setAdminProfileDockerOpen(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 10000,
+            background: 'rgba(3, 10, 6, 0.72)',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'flex-end',
+            animation: 'fadeIn 0.2s ease-out'
+          }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              background: '#081C12',
+              borderTop: `1.5px solid ${RF_MINT_ACCENT}55`,
+              borderRadius: '24px 24px 0 0',
+              padding: '16px 20px calc(24px + env(safe-area-inset-bottom, 20px))',
+              boxShadow: '0 -10px 40px rgba(0,0,0,0.6)',
+              maxHeight: '85dvh',
+              overflowY: 'auto',
+              WebkitOverflowScrolling: 'touch',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 16
+            }}
+          >
+            {/* Drag Pill */}
+            <div
+              style={{
+                width: 40,
+                height: 4,
+                borderRadius: 2,
+                background: 'rgba(255,255,255,0.2)',
+                margin: '0 auto 4px',
+                cursor: 'pointer'
+              }}
+              onClick={() => setAdminProfileDockerOpen(false)}
+            />
+
+            {/* Header */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div>
+                <span style={{ fontSize: 11, color: RF_MINT_ACCENT, textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700, display: 'block' }}>
+                  Authenticated Staff Docker
+                </span>
+                <h3 style={{ margin: 0, fontSize: 17, fontWeight: 800, color: '#FFFFFF' }}>
+                  Reviewer Profile &amp; Settings
+                </h3>
+              </div>
+              <button
+                onClick={() => setAdminProfileDockerOpen(false)}
+                style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: '50%',
+                  background: 'rgba(255,255,255,0.06)',
+                  border: '1px solid rgba(255,255,255,0.12)',
+                  color: 'rgba(255,255,255,0.7)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  fontSize: 14
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Profile Identity Card */}
+            <div style={{
+              background: 'rgba(24, 252, 92, 0.04)',
+              border: '1px solid rgba(24, 252, 92, 0.18)',
+              borderRadius: 16,
+              padding: '14px 16px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 14
+            }}>
+              <div style={{
+                width: 48,
+                height: 48,
+                borderRadius: '50%',
+                background: 'rgba(24, 252, 92, 0.15)',
+                border: `2px solid ${RF_MINT_ACCENT}`,
+                color: RF_MINT_ACCENT,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 17,
+                fontWeight: 800,
+                flexShrink: 0
+              }}>
+                {loggedInStaff.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: 15, fontWeight: 700, color: '#FFFFFF', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {loggedInStaff.name}
+                  </span>
+                  <span style={{
+                    fontSize: 10,
+                    fontWeight: 800,
+                    color: isSuperAdmin ? RF_GOLD_YELLOW : RF_MINT_ACCENT,
+                    background: isSuperAdmin ? 'rgba(246, 178, 26, 0.15)' : 'rgba(24, 252, 92, 0.12)',
+                    padding: '2px 7px',
+                    borderRadius: 100,
+                    border: `1px solid ${isSuperAdmin ? 'rgba(246, 178, 26, 0.35)' : 'rgba(24, 252, 92, 0.3)'}`,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.04em'
+                  }}>
+                    {loggedInStaff.role === 'SUPER_ADMIN' ? 'Super Admin' : loggedInStaff.role.replace('_', ' ')}
+                  </span>
+                </div>
+                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {loggedInStaff.email}
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: RF_MINT_ACCENT, boxShadow: `0 0 6px ${RF_MINT_ACCENT}` }} />
+                  <span style={{ fontSize: 11, color: RF_MINT_ACCENT, fontWeight: 600 }}>Active Session</span>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>•</span>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)' }}>
+                    {loggedInStaff.assigned_division ? loggedInStaff.assigned_division.replace('_', ' ') : 'All Squads'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Session Stats Bar */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: 8
+            }}>
+              <div style={{
+                background: 'rgba(255,255,255,0.03)',
+                border: '1px solid rgba(255,255,255,0.07)',
+                borderRadius: 12,
+                padding: '10px 8px',
+                textAlign: 'center'
+              }}>
+                <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', display: 'block' }}>Applicants</span>
+                <span style={{ fontSize: 16, fontWeight: 800, color: '#FFFFFF', marginTop: 2, display: 'block' }}>{stats.total}</span>
+              </div>
+              <div style={{
+                background: 'rgba(255,255,255,0.03)',
+                border: '1px solid rgba(255,255,255,0.07)',
+                borderRadius: 12,
+                padding: '10px 8px',
+                textAlign: 'center'
+              }}>
+                <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', display: 'block' }}>Pending</span>
+                <span style={{ fontSize: 16, fontWeight: 800, color: RF_GOLD_YELLOW, marginTop: 2, display: 'block' }}>{stats.pending}</span>
+              </div>
+              <div style={{
+                background: 'rgba(255,255,255,0.03)',
+                border: '1px solid rgba(255,255,255,0.07)',
+                borderRadius: 12,
+                padding: '10px 8px',
+                textAlign: 'center'
+              }}>
+                <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', display: 'block' }}>Verified</span>
+                <span style={{ fontSize: 16, fontWeight: 800, color: RF_MINT_ACCENT, marginTop: 2, display: 'block' }}>{taskStats.verified}</span>
+              </div>
+            </div>
+
+            {/* Actions List */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {/* Switch Profile Button */}
+              <button
+                onClick={() => {
+                  setAdminProfileDockerOpen(false);
+                  handleLogout();
+                }}
+                style={{
+                  background: 'rgba(24, 252, 92, 0.12)',
+                  border: `1px solid ${RF_MINT_ACCENT}55`,
+                  color: RF_MINT_ACCENT,
+                  padding: '12px 16px',
+                  borderRadius: 12,
+                  fontSize: 13,
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  transition: 'all 0.15s'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <Users size={16} />
+                  <span>Switch Reviewer Profile</span>
+                </div>
+                <ChevronRight size={15} style={{ opacity: 0.6 }} />
+              </button>
+
+              {/* Refresh Pipeline Data */}
+              <button
+                onClick={() => {
+                  fetchApplications();
+                  refreshTasks();
+                  setAdminProfileDockerOpen(false);
+                }}
+                style={{
+                  background: 'rgba(255,255,255,0.04)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  color: '#FFFFFF',
+                  padding: '12px 16px',
+                  borderRadius: 12,
+                  fontSize: 13,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <RefreshCw size={16} />
+                  <span>Sync &amp; Refresh Portal Data</span>
+                </div>
+                <ChevronRight size={15} style={{ opacity: 0.6 }} />
+              </button>
+
+              {/* Export Applications CSV */}
+              <button
+                onClick={() => {
+                  handleExportCSV();
+                  setAdminProfileDockerOpen(false);
+                }}
+                style={{
+                  background: 'rgba(255,255,255,0.04)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  color: '#FFFFFF',
+                  padding: '12px 16px',
+                  borderRadius: 12,
+                  fontSize: 13,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <Download size={16} />
+                  <span>Export Applications (.CSV)</span>
+                </div>
+                <ChevronRight size={15} style={{ opacity: 0.6 }} />
+              </button>
+
+              {/* Sign Out / Exit */}
+              <button
+                onClick={() => {
+                  setAdminProfileDockerOpen(false);
+                  handleLogout();
+                }}
+                style={{
+                  background: 'rgba(239, 68, 68, 0.1)',
+                  border: '1px solid rgba(239, 68, 68, 0.3)',
+                  color: '#FCA5A5',
+                  padding: '12px 16px',
+                  borderRadius: 12,
+                  fontSize: 13,
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  marginTop: 4
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <LogOut size={16} />
+                  <span>Sign Out of Admin Portal</span>
+                </div>
+                <ChevronRight size={15} style={{ opacity: 0.6 }} />
               </button>
             </div>
           </div>
@@ -2839,12 +3131,12 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                   Current Section
                 </span>
                 <div style={{ fontSize: 13, fontWeight: 700, color: '#FFFFFF' }}>
-                  {adminTab === 'applications' && 'Candidate Applications'}
-                  {adminTab === 'proofs' && 'Task Proofs of Work'}
+                  {adminTab === 'applications' && (isMobile ? 'Admissions' : 'Candidate Applications')}
+                  {adminTab === 'proofs' && (isMobile ? 'Task Proofs' : 'Task Proofs of Work')}
                   {adminTab === 'members' && 'Pioneer Profiles Registry'}
-                  {adminTab === 'workers' && 'Review Staff Team'}
+                  {adminTab === 'workers' && (isMobile ? 'Review Team' : 'Review Staff Team')}
                   {adminTab === 'certificates' && 'Pioneer Certifications'}
-                  {adminTab === 'tasks' && 'Squad Missions & Bounties'}
+                  {adminTab === 'tasks' && (isMobile ? 'Squad Missions' : 'Squad Missions & Bounties')}
                   {adminTab === 'analytics' && 'Analytics Dashboard'}
                 </div>
               </div>
@@ -2943,7 +3235,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '0 0 6px', flexWrap: 'wrap' }}>
                   <h2 style={{ fontSize: isMobile ? 20 : 24, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
-                    Pioneer Admissions &amp; Applications
+                    {isMobile ? 'Admissions' : 'Pioneer Admissions & Applications'}
                   </h2>
                   <span style={{
                     fontSize: 10.5, fontWeight: 700, background: 'rgba(24, 252, 92, 0.12)',
@@ -3041,7 +3333,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 <Activity size={15} />
               </div>
               <span style={{ fontSize: isMobile ? 13.5 : 15, fontWeight: 700, color: '#FFFFFF' }}>
-                Admissions Funnel &amp; Capacity Telemetry
+                {isMobile ? 'Admissions Telemetry' : 'Admissions Funnel & Capacity Telemetry'}
               </span>
             </div>
             <span style={{
@@ -3093,20 +3385,29 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 10 }}>
                 Conversion Velocity
               </span>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
-                <div>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: isMobile ? 'flex-start' : 'space-between',
+                gap: isMobile ? 14 : 10,
+                overflowX: isMobile ? 'auto' : 'visible',
+                WebkitOverflowScrolling: 'touch',
+                scrollbarWidth: 'none',
+                paddingBottom: isMobile ? 4 : 0
+              }}>
+                <div style={{ flexShrink: 0, minWidth: isMobile ? 100 : 'auto' }}>
                   <div style={{ fontSize: 18, fontWeight: 800, color: RF_MINT_ACCENT }}>{analytics.acceptanceRate}%</div>
-                  <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)' }}>Acceptance Rate ({analytics.acceptedApps})</span>
+                  <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap' }}>Acceptance ({analytics.acceptedApps})</span>
                 </div>
-                <div style={{ height: 26, width: 1, background: 'rgba(255,255,255,0.1)' }} />
-                <div>
+                <div style={{ height: 26, width: 1, background: 'rgba(255,255,255,0.1)', flexShrink: 0 }} />
+                <div style={{ flexShrink: 0, minWidth: isMobile ? 100 : 'auto' }}>
                   <div style={{ fontSize: 18, fontWeight: 800, color: RF_GOLD_YELLOW }}>{analytics.pendingRate}%</div>
-                  <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)' }}>Pending Backlog ({analytics.pendingApps})</span>
+                  <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap' }}>Pending ({analytics.pendingApps})</span>
                 </div>
-                <div style={{ height: 26, width: 1, background: 'rgba(255,255,255,0.1)' }} />
-                <div>
+                <div style={{ height: 26, width: 1, background: 'rgba(255,255,255,0.1)', flexShrink: 0 }} />
+                <div style={{ flexShrink: 0, minWidth: isMobile ? 80 : 'auto' }}>
                   <div style={{ fontSize: 18, fontWeight: 800, color: '#38BDF8' }}>{analytics.waitlistedApps}</div>
-                  <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)' }}>Waitlisted</span>
+                  <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap' }}>Waitlisted</span>
                 </div>
               </div>
             </div>
@@ -3121,9 +3422,17 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 8 }}>
                 Squad Division Pipeline
               </span>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+              <div style={{
+                display: 'flex',
+                flexWrap: isMobile ? 'nowrap' : 'wrap',
+                overflowX: isMobile ? 'auto' : 'visible',
+                WebkitOverflowScrolling: 'touch',
+                scrollbarWidth: 'none',
+                gap: 6,
+                paddingBottom: isMobile ? 4 : 0
+              }}>
                 {Object.keys(analytics.appsByDivision).length === 0 ? (
-                  <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.4)' }}>No division data yet</span>
+                  <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.4)', whiteSpace: 'nowrap' }}>No division data yet</span>
                 ) : (
                   Object.entries(analytics.appsByDivision).map(([div, count]) => (
                     <span
@@ -3137,7 +3446,9 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                         color: '#FFFFFF',
                         display: 'inline-flex',
                         alignItems: 'center',
-                        gap: 5
+                        gap: 5,
+                        flexShrink: 0,
+                        whiteSpace: 'nowrap'
                       }}
                     >
                       <span style={{ color: 'rgba(255,255,255,0.6)' }}>{div.replace('_', ' ')}</span>
@@ -3230,15 +3541,15 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           overflow: 'hidden'
         }}>
           <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-            <table style={{ width: '100%', minWidth: 700, borderCollapse: 'collapse', textAlign: 'left', fontSize: 13 }}>
+            <table style={{ width: '100%', minWidth: isMobile ? 920 : 700, borderCollapse: 'collapse', textAlign: 'left', fontSize: 13 }}>
               <thead>
                 <tr style={{ background: 'rgba(255,255,255,0.04)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                  <th style={{ padding: '14px 18px', fontWeight: 600, color: 'rgba(255,255,255,0.6)' }}>Application ID</th>
-                  <th style={{ padding: '14px 18px', fontWeight: 600, color: 'rgba(255,255,255,0.6)' }}>Candidate</th>
-                  <th style={{ padding: '14px 18px', fontWeight: 600, color: 'rgba(255,255,255,0.6)' }}>Division & Roles</th>
-                  <th style={{ padding: '14px 18px', fontWeight: 600, color: 'rgba(255,255,255,0.6)' }}>Status</th>
-                  <th style={{ padding: '14px 18px', fontWeight: 600, color: 'rgba(255,255,255,0.6)' }}>Submitted</th>
-                  <th style={{ padding: '14px 18px', fontWeight: 600, color: 'rgba(255,255,255,0.6)', textAlign: 'right' }}>Actions</th>
+                  <th style={{ padding: '14px 18px', fontWeight: 600, color: 'rgba(255,255,255,0.6)', whiteSpace: 'nowrap' }}>Application ID</th>
+                  <th style={{ padding: '14px 18px', fontWeight: 600, color: 'rgba(255,255,255,0.6)', whiteSpace: 'nowrap' }}>Candidate</th>
+                  <th style={{ padding: '14px 18px', fontWeight: 600, color: 'rgba(255,255,255,0.6)', whiteSpace: 'nowrap' }}>Division &amp; Roles</th>
+                  <th style={{ padding: '14px 18px', fontWeight: 600, color: 'rgba(255,255,255,0.6)', whiteSpace: 'nowrap' }}>Status</th>
+                  <th style={{ padding: '14px 18px', fontWeight: 600, color: 'rgba(255,255,255,0.6)', whiteSpace: 'nowrap' }}>Submitted</th>
+                  <th style={{ padding: '14px 18px', fontWeight: 600, color: 'rgba(255,255,255,0.6)', textAlign: 'right', whiteSpace: 'nowrap' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -3383,7 +3694,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '0 0 6px', flexWrap: 'wrap' }}>
               <h2 style={{ fontSize: isMobile ? 20 : 24, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
-                Proof of Work &amp; Task Verifications
+                {isMobile ? 'Task Proofs' : 'Proof of Work & Task Verifications'}
               </h2>
               <span style={{
                 fontSize: 10.5, fontWeight: 700, background: 'rgba(255, 209, 102, 0.12)',
@@ -3477,7 +3788,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 <TrendingUp size={15} />
               </div>
               <span style={{ fontSize: isMobile ? 13.5 : 15, fontWeight: 700, color: '#FFFFFF' }}>
-                Deliverable Verification &amp; Throughput Analytics
+                {isMobile ? 'Throughput Analytics' : 'Deliverable Verification & Throughput Analytics'}
               </span>
             </div>
             <span style={{
@@ -3532,20 +3843,29 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 10 }}>
                 Audit Pipeline State
               </span>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
-                <div>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: isMobile ? 'flex-start' : 'space-between',
+                gap: isMobile ? 14 : 10,
+                overflowX: isMobile ? 'auto' : 'visible',
+                WebkitOverflowScrolling: 'touch',
+                scrollbarWidth: 'none',
+                paddingBottom: isMobile ? 4 : 0
+              }}>
+                <div style={{ flexShrink: 0, minWidth: isMobile ? 90 : 'auto' }}>
                   <div style={{ fontSize: 18, fontWeight: 800, color: RF_GOLD_YELLOW }}>{analytics.pendingProofs}</div>
-                  <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)' }}>Pending Audit</span>
+                  <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap' }}>Pending Audit</span>
                 </div>
-                <div style={{ height: 26, width: 1, background: 'rgba(255,255,255,0.1)' }} />
-                <div>
+                <div style={{ height: 26, width: 1, background: 'rgba(255,255,255,0.1)', flexShrink: 0 }} />
+                <div style={{ flexShrink: 0, minWidth: isMobile ? 90 : 'auto' }}>
                   <div style={{ fontSize: 18, fontWeight: 800, color: RF_MINT_ACCENT }}>{analytics.verifiedProofs}</div>
-                  <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)' }}>Promoted Pass</span>
+                  <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap' }}>Promoted Pass</span>
                 </div>
-                <div style={{ height: 26, width: 1, background: 'rgba(255,255,255,0.1)' }} />
-                <div>
+                <div style={{ height: 26, width: 1, background: 'rgba(255,255,255,0.1)', flexShrink: 0 }} />
+                <div style={{ flexShrink: 0, minWidth: isMobile ? 90 : 'auto' }}>
                   <div style={{ fontSize: 18, fontWeight: 800, color: '#FFB27D' }}>{analytics.revisionProofs}</div>
-                  <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)' }}>Revision Loop</span>
+                  <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap' }}>Revision Loop</span>
                 </div>
               </div>
             </div>
@@ -3560,9 +3880,17 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 8 }}>
                 Squad Deliverables Output
               </span>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+              <div style={{
+                display: 'flex',
+                flexWrap: isMobile ? 'nowrap' : 'wrap',
+                overflowX: isMobile ? 'auto' : 'visible',
+                WebkitOverflowScrolling: 'touch',
+                scrollbarWidth: 'none',
+                gap: 6,
+                paddingBottom: isMobile ? 4 : 0
+              }}>
                 {Object.keys(analytics.proofsByDivision).length === 0 ? (
-                  <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.4)' }}>No squad submissions yet</span>
+                  <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.4)', whiteSpace: 'nowrap' }}>No squad submissions yet</span>
                 ) : (
                   Object.entries(analytics.proofsByDivision).map(([div, count]) => (
                     <span
@@ -3576,7 +3904,9 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                         color: '#FFFFFF',
                         display: 'inline-flex',
                         alignItems: 'center',
-                        gap: 5
+                        gap: 5,
+                        flexShrink: 0,
+                        whiteSpace: 'nowrap'
                       }}
                     >
                       <span style={{ color: 'rgba(255,255,255,0.6)' }}>{div.replace('_', ' ')}</span>
@@ -3655,16 +3985,16 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             border: '1px solid rgba(255,255,255,0.08)', overflow: 'hidden'
           }}>
             <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-              <table style={{ width: '100%', minWidth: 700, borderCollapse: 'collapse', textAlign: 'left' }}>
+              <table style={{ width: '100%', minWidth: isMobile ? 920 : 700, borderCollapse: 'collapse', textAlign: 'left' }}>
               <thead>
                 <tr style={{ background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                  <th style={{ padding: '14px 18px', fontSize: 11.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>Reference / Date</th>
-                  <th style={{ padding: '14px 18px', fontSize: 11.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>Contributor</th>
-                  <th style={{ padding: '14px 18px', fontSize: 11.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>Target Rank</th>
-                  <th style={{ padding: '14px 18px', fontSize: 11.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>Mission &amp; Category</th>
-                  <th style={{ padding: '14px 18px', fontSize: 11.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>Evidence</th>
-                  <th style={{ padding: '14px 18px', fontSize: 11.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>Status</th>
-                  <th style={{ padding: '14px 18px', fontSize: 11.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', textAlign: 'right' }}>Action</th>
+                  <th style={{ padding: '14px 18px', fontSize: 11.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Reference / Date</th>
+                  <th style={{ padding: '14px 18px', fontSize: 11.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Contributor</th>
+                  <th style={{ padding: '14px 18px', fontSize: 11.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Target Rank</th>
+                  <th style={{ padding: '14px 18px', fontSize: 11.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Mission &amp; Category</th>
+                  <th style={{ padding: '14px 18px', fontSize: 11.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Evidence</th>
+                  <th style={{ padding: '14px 18px', fontSize: 11.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Status</th>
+                  <th style={{ padding: '14px 18px', fontSize: 11.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', textAlign: 'right', whiteSpace: 'nowrap' }}>Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -4322,7 +4652,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '0 0 6px', flexWrap: 'wrap' }}>
                 <h2 style={{ fontSize: isMobile ? 20 : 24, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
-                  Review Team &amp; Squad Workers
+                  {isMobile ? 'Review Team' : 'Review Team & Squad Workers'}
                 </h2>
                 {isSuperAdmin ? (
                   <span style={{
@@ -4331,7 +4661,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                     padding: '3px 10px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 4,
                     textTransform: 'uppercase'
                   }}>
-                    <Shield size={11} /> Super Admin Privilege Active
+                    <Shield size={11} /> {isMobile ? 'Super Admin' : 'Super Admin Privilege Active'}
                   </span>
                 ) : (
                   <span style={{
@@ -4340,7 +4670,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                     padding: '3px 10px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 4,
                     textTransform: 'uppercase'
                   }}>
-                    <Lock size={11} /> Read-Only Staff Directory
+                    <Lock size={11} /> {isMobile ? 'Staff Directory' : 'Read-Only Staff Directory'}
                   </span>
                 )}
               </div>
@@ -4479,16 +4809,16 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             overflow: 'hidden'
           }}>
             <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-              <table style={{ width: '100%', minWidth: 700, borderCollapse: 'collapse', textAlign: 'left' }}>
+              <table style={{ width: '100%', minWidth: isMobile ? 900 : 700, borderCollapse: 'collapse', textAlign: 'left' }}>
               <thead>
                 <tr style={{ background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                  <th style={{ padding: '16px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Worker / Reviewer</th>
-                  <th style={{ padding: '16px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Role</th>
-                  <th style={{ padding: '16px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Assigned Squad</th>
-                  <th style={{ padding: '16px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Access Passcode</th>
-                  <th style={{ padding: '16px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Reviews Handled</th>
-                  <th style={{ padding: '16px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Status</th>
-                  <th style={{ padding: '16px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: 'right' }}>Actions</th>
+                  <th style={{ padding: '16px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>Worker / Reviewer</th>
+                  <th style={{ padding: '16px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>Role</th>
+                  <th style={{ padding: '16px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>Assigned Squad</th>
+                  <th style={{ padding: '16px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>Access Passcode</th>
+                  <th style={{ padding: '16px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>Reviews Handled</th>
+                  <th style={{ padding: '16px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>Status</th>
+                  <th style={{ padding: '16px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: 'right', whiteSpace: 'nowrap' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -5096,7 +5426,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                               }}
                               onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255, 209, 102, 0.22)')}
                               onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255, 209, 102, 0.12)')}
-                              title="Inspect & Print Credential"
+                              title="Inspect & Download Credential"
                             >
                               <Eye size={13} style={{ flexShrink: 0 }} /> Inspect
                             </button>
@@ -5153,7 +5483,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '0 0 6px', flexWrap: 'wrap' }}>
                 <h2 style={{ fontSize: isMobile ? 20 : 24, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
-                  Daily Squad Tasks &amp; Bounties Management
+                  {isMobile ? 'Squad Missions' : 'Daily Squad Tasks & Bounties Management'}
                 </h2>
                 <span style={{
                   fontSize: 10.5, fontWeight: 700, background: 'rgba(24, 252, 92, 0.12)',
@@ -5248,7 +5578,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                   <Zap size={15} />
                 </div>
                 <span style={{ fontSize: isMobile ? 13.5 : 15, fontWeight: 700, color: '#FFFFFF' }}>
-                  Bounty Pool Valuation &amp; Mission Economics
+                  {isMobile ? 'Bounty Economics' : 'Bounty Pool Valuation & Mission Economics'}
                 </span>
               </div>
               <span style={{
@@ -5292,20 +5622,29 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 10 }}>
                   Network Utility Bounties
                 </span>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
-                  <div>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: isMobile ? 'flex-start' : 'space-between',
+                  gap: isMobile ? 14 : 10,
+                  overflowX: isMobile ? 'auto' : 'visible',
+                  WebkitOverflowScrolling: 'touch',
+                  scrollbarWidth: 'none',
+                  paddingBottom: isMobile ? 4 : 0
+                }}>
+                  <div style={{ flexShrink: 0, minWidth: isMobile ? 90 : 'auto' }}>
                     <div style={{ fontSize: 18, fontWeight: 800, color: RF_GOLD_YELLOW }}>{analytics.airtimeBounties}</div>
-                    <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)' }}>Airtime Top-ups</span>
+                    <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap' }}>Airtime Top-ups</span>
                   </div>
-                  <div style={{ height: 26, width: 1, background: 'rgba(255,255,255,0.1)' }} />
-                  <div>
+                  <div style={{ height: 26, width: 1, background: 'rgba(255,255,255,0.1)', flexShrink: 0 }} />
+                  <div style={{ flexShrink: 0, minWidth: isMobile ? 90 : 'auto' }}>
                     <div style={{ fontSize: 18, fontWeight: 800, color: '#38BDF8' }}>{analytics.dataBounties}</div>
-                    <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)' }}>Data Subscriptions</span>
+                    <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap' }}>Data Subscriptions</span>
                   </div>
-                  <div style={{ height: 26, width: 1, background: 'rgba(255,255,255,0.1)' }} />
-                  <div>
+                  <div style={{ height: 26, width: 1, background: 'rgba(255,255,255,0.1)', flexShrink: 0 }} />
+                  <div style={{ flexShrink: 0, minWidth: isMobile ? 90 : 'auto' }}>
                     <div style={{ fontSize: 18, fontWeight: 800, color: '#FFFFFF' }}>{analytics.activeTasksCount}</div>
-                    <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)' }}>Total Active</span>
+                    <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap' }}>Total Active</span>
                   </div>
                 </div>
               </div>
@@ -5440,14 +5779,14 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             border: '1px solid rgba(255,255,255,0.08)', overflow: 'hidden'
           }}>
             <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-              <table style={{ width: '100%', minWidth: 880, borderCollapse: 'collapse', textAlign: 'left', fontSize: 13 }}>
+              <table style={{ width: '100%', minWidth: isMobile ? 920 : 880, borderCollapse: 'collapse', textAlign: 'left', fontSize: 13 }}>
               <thead>
                 <tr style={{ background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                  <th style={{ padding: '14px 20px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Target Squad &amp; Mission</th>
-                  <th style={{ padding: '14px 20px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Cycle &amp; Deadline</th>
-                  <th style={{ padding: '14px 20px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Special Bounty Incentive</th>
-                  <th style={{ padding: '14px 20px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Status</th>
-                  <th style={{ padding: '14px 20px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: 'right' }}>Broadcast &amp; Actions</th>
+                  <th style={{ padding: '14px 20px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>Target Squad &amp; Mission</th>
+                  <th style={{ padding: '14px 20px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>Cycle &amp; Deadline</th>
+                  <th style={{ padding: '14px 20px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>Special Bounty Incentive</th>
+                  <th style={{ padding: '14px 20px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>Status</th>
+                  <th style={{ padding: '14px 20px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: 'right', whiteSpace: 'nowrap' }}>Broadcast &amp; Actions</th>
                 </tr>
               </thead>
               <tbody>
