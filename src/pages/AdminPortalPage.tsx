@@ -7,7 +7,7 @@ import {
   UserPlus, Trash2, Key, EyeOff, Copy, Ban, UserX, Calendar,
   Building2, Globe, Phone, Send, AtSign, Share2, Briefcase,
   AlertTriangle, Brain, Gift, Zap, Megaphone, PlusCircle, Radio, DollarSign,
-  Bell, X, CheckCheck, Menu, BarChart3, Activity, TrendingUp, Target, PieChart
+  Bell, X, CheckCheck, Menu, BarChart3, Activity, TrendingUp, Target, PieChart, Info
 } from 'lucide-react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import {
@@ -1149,7 +1149,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
   // Close notifications popover on click outside or escape key
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (notifDropdownRef.current && !notifDropdownRef.current.contains(e.target as Node)) {
+      if (!isMobile && notifDropdownRef.current && !notifDropdownRef.current.contains(e.target as Node)) {
         setNotificationOpen(false);
       }
     };
@@ -1166,13 +1166,27 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
     };
   }, [notificationOpen]);
 
-  // Prevent body scroll jitter/shaking on mobile when full-screen drawer or notification sheet is open
+  // Prevent body scroll jitter/shaking on mobile when full-screen drawer or notification docker is open
   useEffect(() => {
     if ((adminMobileNavOpen && isMobile) || (notificationOpen && isMobile)) {
-      const origOverflow = document.body.style.overflow;
+      const origBodyOverflow = document.body.style.overflow;
+      const origHtmlOverflow = document.documentElement.style.overflow;
+      const origTouchAction = document.body.style.touchAction;
+      const origBodyOverscroll = document.body.style.overscrollBehavior;
+      const origHtmlOverscroll = document.documentElement.style.overscrollBehavior;
+
       document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.touchAction = 'none';
+      document.body.style.overscrollBehavior = 'none';
+      document.documentElement.style.overscrollBehavior = 'none';
+
       return () => {
-        document.body.style.overflow = origOverflow;
+        document.body.style.overflow = origBodyOverflow;
+        document.documentElement.style.overflow = origHtmlOverflow;
+        document.body.style.touchAction = origTouchAction;
+        document.body.style.overscrollBehavior = origBodyOverscroll;
+        document.documentElement.style.overscrollBehavior = origHtmlOverscroll;
       };
     }
   }, [adminMobileNavOpen, notificationOpen, isMobile]);
@@ -1752,7 +1766,10 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             {/* Mobile Admin Navigation Hamburger Toggle */}
             {isMobile && (
               <button
-                onClick={() => setAdminMobileNavOpen(prev => !prev)}
+                onClick={() => {
+                  setAdminMobileNavOpen(prev => !prev);
+                  setNotificationOpen(false);
+                }}
                 aria-label="Toggle Admin Navigation Menu"
                 style={{
                   background: adminMobileNavOpen ? 'rgba(24, 252, 92, 0.16)' : 'rgba(255, 255, 255, 0.05)',
@@ -1854,7 +1871,10 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
             {/* Notification Center Trigger */}
             <button
-              onClick={() => setNotificationOpen(prev => !prev)}
+              onClick={() => {
+                setNotificationOpen(prev => !prev);
+                setAdminMobileNavOpen(false);
+              }}
               title="Notification Center"
               style={{
                 background: notificationOpen ? 'rgba(24, 252, 92, 0.15)' : 'rgba(255,255,255,0.05)',
@@ -1969,244 +1989,9 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               {!isMobile && <span>Exit</span>}
             </button>
 
-            {/* Notification Center Popover (Desktop) / Bottom Sheet (Mobile) */}
-            {notificationOpen && (
-              isMobile ? (
-                <div
-                  onClick={() => setNotificationOpen(false)}
-                  style={{
-                    position: 'fixed',
-                    inset: 0,
-                    zIndex: 100000,
-                    background: 'rgba(3, 10, 6, 0.85)',
-                    backdropFilter: 'blur(16px)',
-                    WebkitBackdropFilter: 'blur(16px)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'flex-end'
-                  }}
-                >
-                  <div
-                    onClick={e => e.stopPropagation()}
-                    style={{
-                      background: 'linear-gradient(180deg, #0C2918 0%, #06160C 100%)',
-                      borderTop: '1px solid rgba(24, 252, 92, 0.35)',
-                      borderRadius: '24px 24px 0 0',
-                      boxShadow: '0 -15px 40px rgba(0,0,0,0.85)',
-                      width: '100%',
-                      maxHeight: '84dvh',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      overflow: 'hidden'
-                    }}
-                  >
-                    {/* Pull Handle Bar */}
-                    <div style={{ display: 'flex', justifyContent: 'center', padding: '10px 0 4px' }}>
-                      <div style={{ width: 38, height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.2)' }} />
-                    </div>
-
-                    {/* Header */}
-                    <div style={{
-                      padding: '12px 18px',
-                      borderBottom: '1px solid rgba(255,255,255,0.08)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between'
-                    }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <Bell size={16} color={RF_MINT_ACCENT} />
-                        <span style={{ fontSize: 14, fontWeight: 700, color: '#FFFFFF' }}>
-                          Notification Center
-                        </span>
-                        {unreadNotifCount > 0 && (
-                          <span style={{
-                            fontSize: 10,
-                            fontWeight: 700,
-                            padding: '2px 8px',
-                            borderRadius: 10,
-                            background: 'rgba(24, 252, 92, 0.15)',
-                            color: RF_MINT_ACCENT,
-                            border: '1px solid rgba(24, 252, 92, 0.3)'
-                          }}>
-                            {unreadNotifCount} unread
-                          </span>
-                        )}
-                      </div>
-
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        {unreadNotifCount > 0 && (
-                          <button
-                            onClick={handleMarkAllNotificationsRead}
-                            style={{
-                              background: 'transparent',
-                              border: 'none',
-                              color: RF_MINT_ACCENT,
-                              fontSize: 12,
-                              fontWeight: 600,
-                              cursor: 'pointer',
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: 4,
-                              padding: '4px 8px',
-                              borderRadius: 4
-                            }}
-                          >
-                            <CheckCheck size={14} />
-                            Mark read
-                          </button>
-                        )}
-                        <button
-                          onClick={() => setNotificationOpen(false)}
-                          style={{
-                            background: 'rgba(255,255,255,0.08)',
-                            border: 'none',
-                            color: '#FFFFFF',
-                            width: 28,
-                            height: 28,
-                            borderRadius: '50%',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          <X size={14} />
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Filter chips */}
-                    <div style={{
-                      display: 'flex',
-                      gap: 8,
-                      padding: '10px 18px',
-                      borderBottom: '1px solid rgba(255,255,255,0.05)',
-                      background: 'rgba(0,0,0,0.2)'
-                    }}>
-                      <button
-                        onClick={() => setNotifFilter('all')}
-                        style={{
-                          background: notifFilter === 'all' ? 'rgba(24, 252, 92, 0.15)' : 'rgba(255,255,255,0.05)',
-                          border: notifFilter === 'all' ? '1px solid rgba(24, 252, 92, 0.35)' : '1px solid rgba(255,255,255,0.1)',
-                          color: notifFilter === 'all' ? RF_MINT_ACCENT : 'rgba(255,255,255,0.6)',
-                          padding: '5px 12px',
-                          borderRadius: 100,
-                          fontSize: 11.5,
-                          fontWeight: 600,
-                          cursor: 'pointer'
-                        }}
-                      >
-                        All ({notificationsList.length})
-                      </button>
-                      <button
-                        onClick={() => setNotifFilter('action')}
-                        style={{
-                          background: notifFilter === 'action' ? 'rgba(251, 191, 36, 0.15)' : 'rgba(255,255,255,0.05)',
-                          border: notifFilter === 'action' ? '1px solid rgba(251, 191, 36, 0.35)' : '1px solid rgba(255,255,255,0.1)',
-                          color: notifFilter === 'action' ? RF_GOLD_YELLOW : 'rgba(255,255,255,0.6)',
-                          padding: '5px 12px',
-                          borderRadius: 100,
-                          fontSize: 11.5,
-                          fontWeight: 600,
-                          cursor: 'pointer'
-                        }}
-                      >
-                        Action Needed ({notificationsList.filter(n => n.type === 'action').length})
-                      </button>
-                    </div>
-
-                    {/* Notifications List */}
-                    <div style={{ flex: 1, overflowY: 'auto', padding: '8px 14px 18px', WebkitOverflowScrolling: 'touch' }}>
-                      {notificationsList
-                        .filter(n => notifFilter === 'all' || n.type === 'action')
-                        .map(n => {
-                          const isUnread = n.unread;
-                          return (
-                            <div
-                              key={n.id}
-                              onClick={() => {
-                                handleNotificationClick(n);
-                                setNotificationOpen(false);
-                              }}
-                              style={{
-                                padding: '12px 14px',
-                                borderRadius: 12,
-                                background: isUnread ? 'rgba(24, 252, 92, 0.05)' : 'rgba(255,255,255,0.02)',
-                                border: isUnread ? '1px solid rgba(24, 252, 92, 0.2)' : '1px solid rgba(255,255,255,0.05)',
-                                marginBottom: 6,
-                                cursor: 'pointer',
-                                display: 'flex',
-                                gap: 12,
-                                alignItems: 'flex-start'
-                              }}
-                            >
-                              <div style={{
-                                width: 32,
-                                height: 32,
-                                borderRadius: 8,
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                flexShrink: 0,
-                                marginTop: 1,
-                                background:
-                                  n.type === 'action' ? 'rgba(251, 191, 36, 0.12)' :
-                                  n.type === 'success' ? 'rgba(24, 252, 92, 0.12)' :
-                                  n.type === 'alert' ? 'rgba(239, 68, 68, 0.12)' :
-                                  'rgba(96, 165, 250, 0.12)',
-                                color:
-                                  n.type === 'action' ? RF_GOLD_YELLOW :
-                                  n.type === 'success' ? RF_MINT_ACCENT :
-                                  n.type === 'alert' ? '#FCA5A5' :
-                                  '#60A5FA'
-                              }}>
-                                {n.type === 'action' ? <AlertCircle size={15} /> :
-                                 n.type === 'success' ? <CheckCircle2 size={15} /> :
-                                 n.type === 'alert' ? <AlertTriangle size={15} /> :
-                                 <Shield size={15} />}
-                              </div>
-
-                              <div style={{ flex: 1, minWidth: 0 }}>
-                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6, marginBottom: 2 }}>
-                                  <span style={{ fontSize: 13, fontWeight: isUnread ? 700 : 600, color: '#FFFFFF' }}>
-                                    {n.title}
-                                  </span>
-                                  <span style={{
-                                    fontSize: 10,
-                                    fontWeight: 700,
-                                    padding: '1px 6px',
-                                    borderRadius: 4,
-                                    flexShrink: 0,
-                                    background: n.type === 'action' ? 'rgba(251, 191, 36, 0.15)' : 'rgba(255,255,255,0.08)',
-                                    color: n.type === 'action' ? RF_GOLD_YELLOW : 'rgba(255,255,255,0.5)'
-                                  }}>
-                                    {n.time}
-                                  </span>
-                                </div>
-                                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.65)', margin: 0, lineHeight: 1.4 }}>
-                                  {n.desc}
-                                </p>
-                              </div>
-
-                              {isUnread && (
-                                <div style={{
-                                  width: 7,
-                                  height: 7,
-                                  borderRadius: '50%',
-                                  background: RF_MINT_ACCENT,
-                                  marginTop: 7,
-                                  flexShrink: 0,
-                                  boxShadow: '0 0 6px rgba(24, 252, 92, 0.8)'
-                                }} />
-                              )}
-                            </div>
-                          );
-                        })}
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                /* Desktop Popover Dropdown */
+            {/* Notification Center Popover (Desktop only) */}
+            {notificationOpen && !isMobile && (
+              /* Desktop Popover Dropdown */
                 <div style={{
                   position: 'absolute',
                   top: 'calc(100% + 8px)',
@@ -2440,11 +2225,308 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                     </span>
                   </div>
                 </div>
-              )
             )}
           </div>
         </div>
       </header>
+
+      {/* Full-Viewport Mobile Notification Docker (Mounted at root level above all tabs) */}
+      {notificationOpen && isMobile && (
+        <div
+          onClick={() => setNotificationOpen(false)}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            width: '100%',
+            height: '100%',
+            minHeight: '100dvh',
+            maxHeight: '100dvh',
+            zIndex: 999999,
+            background: 'rgba(3, 12, 7, 0.98)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
+            overscrollBehavior: 'none',
+            touchAction: 'none'
+          }}
+        >
+          {/* Top Docker Header Bar */}
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              padding: '14px 18px',
+              borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              background: 'rgba(15, 46, 30, 0.95)',
+              flexShrink: 0,
+              touchAction: 'none'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{
+                background: 'rgba(24, 252, 92, 0.15)',
+                border: '1px solid rgba(24, 252, 92, 0.35)',
+                width: 32,
+                height: 32,
+                borderRadius: 8,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: RF_MINT_ACCENT
+              }}>
+                <Bell size={16} />
+              </div>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{ fontSize: 14.5, fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.01em' }}>
+                    Notification Center
+                  </span>
+                  {unreadNotifCount > 0 && (
+                    <span style={{
+                      fontSize: 10,
+                      fontWeight: 700,
+                      padding: '2px 8px',
+                      borderRadius: 10,
+                      background: 'rgba(24, 252, 92, 0.18)',
+                      color: RF_MINT_ACCENT,
+                      border: '1px solid rgba(24, 252, 92, 0.35)'
+                    }}>
+                      {unreadNotifCount} unread
+                    </span>
+                  )}
+                </div>
+                <div style={{ fontSize: 10.5, color: 'rgba(255, 255, 255, 0.5)' }}>
+                  Platform Activity &amp; Live Alerts
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              {unreadNotifCount > 0 && (
+                <button
+                  onClick={handleMarkAllNotificationsRead}
+                  style={{
+                    background: 'rgba(24, 252, 92, 0.12)',
+                    border: '1px solid rgba(24, 252, 92, 0.3)',
+                    color: RF_MINT_ACCENT,
+                    fontSize: 11.5,
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 4,
+                    padding: '6px 10px',
+                    borderRadius: 8
+                  }}
+                >
+                  <CheckCheck size={13} />
+                  Mark read
+                </button>
+              )}
+              <button
+                onClick={() => setNotificationOpen(false)}
+                aria-label="Close notification center"
+                style={{
+                  width: 34,
+                  height: 34,
+                  borderRadius: '50%',
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  color: '#FFFFFF',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer'
+                }}
+              >
+                <X size={17} />
+              </button>
+            </div>
+          </div>
+
+          {/* Filter Chips Bar */}
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              display: 'flex',
+              gap: 8,
+              padding: '10px 18px',
+              borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+              background: 'rgba(0, 0, 0, 0.25)',
+              flexShrink: 0,
+              touchAction: 'none'
+            }}
+          >
+            <button
+              onClick={() => setNotifFilter('all')}
+              style={{
+                background: notifFilter === 'all' ? 'rgba(24, 252, 92, 0.15)' : 'rgba(255,255,255,0.05)',
+                border: notifFilter === 'all' ? '1px solid rgba(24, 252, 92, 0.35)' : '1px solid rgba(255,255,255,0.1)',
+                color: notifFilter === 'all' ? RF_MINT_ACCENT : 'rgba(255,255,255,0.65)',
+                padding: '6px 14px',
+                borderRadius: 100,
+                fontSize: 12,
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.15s ease'
+              }}
+            >
+              All ({notificationsList.length})
+            </button>
+            <button
+              onClick={() => setNotifFilter('action')}
+              style={{
+                background: notifFilter === 'action' ? 'rgba(251, 191, 36, 0.18)' : 'rgba(255,255,255,0.05)',
+                border: notifFilter === 'action' ? '1px solid rgba(251, 191, 36, 0.35)' : '1px solid rgba(255,255,255,0.1)',
+                color: notifFilter === 'action' ? RF_GOLD_YELLOW : 'rgba(255,255,255,0.65)',
+                padding: '6px 14px',
+                borderRadius: 100,
+                fontSize: 12,
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.15s ease'
+              }}
+            >
+              Action Needed ({notificationsList.filter(n => n.type === 'action').length})
+            </button>
+          </div>
+
+          {/* Scrollable Notifications List */}
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              flex: 1,
+              overflowY: 'auto',
+              WebkitOverflowScrolling: 'touch',
+              overscrollBehavior: 'contain',
+              touchAction: 'pan-y',
+              padding: '14px 18px 30px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 10
+            }}
+          >
+            {notificationsList
+              .filter(n => notifFilter === 'all' || n.type === 'action')
+              .map(n => {
+                const isUnread = n.unread;
+                return (
+                  <div
+                    key={n.id}
+                    onClick={() => handleNotificationClick(n)}
+                    style={{
+                      padding: '13px 15px',
+                      borderRadius: 12,
+                      background: isUnread ? 'rgba(24, 252, 92, 0.08)' : 'rgba(255, 255, 255, 0.03)',
+                      border: isUnread ? '1px solid rgba(24, 252, 92, 0.28)' : '1px solid rgba(255, 255, 255, 0.07)',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'flex-start',
+                      gap: 12,
+                      transition: 'all 0.15s ease'
+                    }}
+                  >
+                    <div style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: 8,
+                      background: n.type === 'action' ? 'rgba(251, 191, 36, 0.15)' :
+                                  n.type === 'alert' ? 'rgba(239, 68, 68, 0.15)' :
+                                  n.type === 'success' ? 'rgba(24, 252, 92, 0.15)' : 'rgba(56, 189, 248, 0.15)',
+                      border: `1px solid ${
+                        n.type === 'action' ? 'rgba(251, 191, 36, 0.3)' :
+                        n.type === 'alert' ? 'rgba(239, 68, 68, 0.3)' :
+                        n.type === 'success' ? 'rgba(24, 252, 92, 0.3)' : 'rgba(56, 189, 248, 0.3)'
+                      }`,
+                      color: n.type === 'action' ? RF_GOLD_YELLOW :
+                             n.type === 'alert' ? '#F87171' :
+                             n.type === 'success' ? RF_MINT_ACCENT : '#38BDF8',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                      marginTop: 2
+                    }}>
+                      {n.type === 'action' && <AlertCircle size={16} />}
+                      {n.type === 'alert' && <AlertTriangle size={16} />}
+                      {n.type === 'success' && <CheckCircle2 size={16} />}
+                      {n.type === 'info' && <Info size={16} />}
+                    </div>
+
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6, marginBottom: 3 }}>
+                        <h4 style={{
+                          fontSize: 13.5,
+                          fontWeight: isUnread ? 700 : 600,
+                          color: isUnread ? '#FFFFFF' : 'rgba(255, 255, 255, 0.85)',
+                          margin: 0,
+                          lineHeight: 1.3
+                        }}>
+                          {n.title}
+                        </h4>
+                        <span style={{
+                          fontSize: 10,
+                          color: 'rgba(255, 255, 255, 0.4)',
+                          whiteSpace: 'nowrap',
+                          padding: '2px 6px',
+                          borderRadius: 4,
+                          background: 'rgba(255, 255, 255, 0.05)'
+                        }}>
+                          {n.time}
+                        </span>
+                      </div>
+                      <p style={{ fontSize: 12, color: 'rgba(255, 255, 255, 0.65)', margin: 0, lineHeight: 1.4 }}>
+                        {n.desc}
+                      </p>
+                    </div>
+
+                    {isUnread && (
+                      <div style={{
+                        width: 8,
+                        height: 8,
+                        borderRadius: '50%',
+                        background: RF_MINT_ACCENT,
+                        marginTop: 6,
+                        flexShrink: 0,
+                        boxShadow: '0 0 8px rgba(24, 252, 92, 0.9)'
+                      }} />
+                    )}
+                  </div>
+                );
+              })}
+          </div>
+
+          {/* Docker Footer */}
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              padding: '12px 18px',
+              borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              background: 'rgba(5, 20, 12, 0.95)',
+              flexShrink: 0,
+              touchAction: 'none'
+            }}
+          >
+            <span style={{ fontSize: 11, color: 'rgba(255, 255, 255, 0.45)', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: RF_MINT_ACCENT }} />
+              Live Activity Pulse
+            </span>
+            <span style={{ fontSize: 11, color: 'rgba(255, 255, 255, 0.45)' }}>
+              Refeir Admissions Suite
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* Full-Viewport Mobile Admin Navigation Drawer */}
       {adminMobileNavOpen && isMobile && (
@@ -2452,15 +2534,23 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           onClick={() => setAdminMobileNavOpen(false)}
           style={{
             position: 'fixed',
-            inset: 0,
-            width: '100vw',
-            height: '100dvh',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            width: '100%',
+            height: '100%',
+            minHeight: '100dvh',
+            maxHeight: '100dvh',
             zIndex: 99999,
             background: 'rgba(3, 12, 7, 0.98)',
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
             display: 'flex',
-            flexDirection: 'column'
+            flexDirection: 'column',
+            overflow: 'hidden',
+            overscrollBehavior: 'none',
+            touchAction: 'none'
           }}
         >
           {/* Drawer Top Navigation Bar */}
@@ -2473,7 +2563,8 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               alignItems: 'center',
               justifyContent: 'space-between',
               background: 'rgba(15, 46, 30, 0.95)',
-              flexShrink: 0
+              flexShrink: 0,
+              touchAction: 'none'
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -2527,6 +2618,8 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               flex: 1,
               overflowY: 'auto',
               WebkitOverflowScrolling: 'touch',
+              overscrollBehavior: 'contain',
+              touchAction: 'pan-y',
               padding: '16px 18px 24px',
               display: 'flex',
               flexDirection: 'column',
