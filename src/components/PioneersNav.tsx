@@ -605,36 +605,47 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
                 }}
                 aria-expanded={profileMenuOpen}
                 aria-haspopup="true"
-                aria-label="Contributor profile menu"
                 style={{
-                  background: profileMenuOpen ? 'rgba(24, 252, 92, 0.12)' : 'rgba(24, 252, 92, 0.08)',
-                  border: `1px solid ${profileMenuOpen ? RF_MINT_ACCENT : 'rgba(24, 252, 92, 0.28)'}`,
-                  padding: '4px 10px 4px 6px',
-                  borderRadius: 100,
+                  width: 36,
+                  height: 36,
+                  borderRadius: '50%',
+                  padding: 2,
+                  background: profileMenuOpen ? 'rgba(24, 252, 92, 0.16)' : 'rgba(255, 255, 255, 0.05)',
+                  border: `2px solid ${profileMenuOpen ? RF_MINT_ACCENT : (theme === 'light' ? 'rgba(21, 128, 61, 0.35)' : 'rgba(24, 252, 92, 0.35)')}`,
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 8,
+                  justifyContent: 'center',
                   cursor: 'pointer',
-                  color: '#FFFFFF',
-                  transition: 'all 0.2s',
-                  boxShadow: profileMenuOpen ? '0 0 12px rgba(24, 252, 92, 0.15)' : 'none'
+                  transition: 'all 0.2s ease',
+                  boxShadow: profileMenuOpen ? '0 0 14px rgba(24, 252, 92, 0.25)' : 'none',
+                  flexShrink: 0
                 }}
+                aria-label={`Contributor profile menu for ${contributor.full_name}`}
+                title={contributor.full_name}
                 onMouseEnter={e => {
                   e.currentTarget.style.borderColor = RF_MINT_ACCENT;
-                  e.currentTarget.style.background = 'rgba(24, 252, 92, 0.14)';
+                  e.currentTarget.style.transform = 'scale(1.05)';
+                  e.currentTarget.style.boxShadow = '0 0 12px rgba(24, 252, 92, 0.25)';
                 }}
                 onMouseLeave={e => {
+                  e.currentTarget.style.transform = '';
                   if (!profileMenuOpen) {
-                    e.currentTarget.style.borderColor = 'rgba(24, 252, 92, 0.28)';
-                    e.currentTarget.style.background = 'rgba(24, 252, 92, 0.08)';
+                    e.currentTarget.style.borderColor = theme === 'light' ? 'rgba(21, 128, 61, 0.35)' : 'rgba(24, 252, 92, 0.35)';
+                    e.currentTarget.style.boxShadow = 'none';
                   }
                 }}
               >
                 <div style={{
-                  width: 26, height: 26, borderRadius: '50%',
+                  width: '100%',
+                  height: '100%',
+                  borderRadius: '50%',
                   background: `linear-gradient(135deg, ${RF_LEAF_GREEN} 0%, ${RF_MINT_ACCENT} 100%)`,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: RF_DEEP_GREEN, fontWeight: 700, fontSize: 11,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: RF_DEEP_GREEN,
+                  fontWeight: 700,
+                  fontSize: 13,
                   overflow: 'hidden'
                 }}>
                   {contributor.avatar_url ? (
@@ -643,23 +654,6 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
                     contributor.full_name.charAt(0).toUpperCase()
                   )}
                 </div>
-                <div style={{ textAlign: 'left' }}>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: '#FFFFFF', lineHeight: 1.1 }}>
-                    {contributor.full_name.split(' ')[0]}
-                  </div>
-                  <div style={{ fontSize: 9.5, color: RF_MINT_ACCENT, fontWeight: 700, letterSpacing: '0.04em' }}>
-                    {contributor.contributor_level.replace('_', ' ')}
-                  </div>
-                </div>
-                <ChevronDown
-                  size={13}
-                  style={{
-                    color: 'rgba(255,255,255,0.65)',
-                    marginLeft: 2,
-                    transform: profileMenuOpen ? 'rotate(180deg)' : 'none',
-                    transition: 'transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)'
-                  }}
-                />
               </button>
 
               {/* Profile Menu: Desktop Dropdown in-place */}
