@@ -7,6 +7,8 @@ export interface StaffMember {
   role: StaffRole;
   assigned_division: string;
   passcode: string;
+  /** Optional hashed/plain password for email+password login */
+  password?: string;
   status: 'ACTIVE' | 'SUSPENDED';
   reviews_count: number;
   added_at: string;
@@ -23,6 +25,7 @@ const DEFAULT_STAFF: StaffMember[] = [
     role: 'SUPER_ADMIN',
     assigned_division: 'ALL',
     passcode: 'refeir2026',
+    password: 'Refeir@2026!',
     status: 'ACTIVE',
     reviews_count: 84,
     added_at: '2026-01-15T00:00:00.000Z'
@@ -34,6 +37,7 @@ const DEFAULT_STAFF: StaffMember[] = [
     role: 'ADMISSIONS_REVIEWER',
     assigned_division: 'GROWTH',
     passcode: 'admit2026',
+    password: 'Sarah@Admit2026',
     status: 'ACTIVE',
     reviews_count: 32,
     added_at: '2026-02-01T00:00:00.000Z'
@@ -45,6 +49,7 @@ const DEFAULT_STAFF: StaffMember[] = [
     role: 'SQUAD_LEAD',
     assigned_division: 'TECHNOLOGY',
     passcode: 'techlead26',
+    password: 'Chidi@TechLead26',
     status: 'ACTIVE',
     reviews_count: 19,
     added_at: '2026-02-10T00:00:00.000Z'
@@ -55,7 +60,17 @@ export const getStaffMembers = (): StaffMember[] => {
   const data = localStorage.getItem(STAFF_STORAGE_KEY);
   if (data) {
     try {
-      return JSON.parse(data);
+      const parsed: StaffMember[] = JSON.parse(data);
+      // Back-fill default passwords for legacy records that don't have one
+      const defaults = DEFAULT_STAFF;
+      const patched = parsed.map(s => {
+        if (!s.password) {
+          const match = defaults.find(d => d.id === s.id);
+          if (match?.password) return { ...s, password: match.password };
+        }
+        return s;
+      });
+      return patched;
     } catch {
       // ignore
     }
@@ -92,6 +107,9 @@ export const deleteStaffMember = (id: string): void => {
   saveStaffMembers(all);
 };
 
+/**
+ * Legacy: verify by passcode (still works as fallback / master key)
+ */
 export const verifyStaffPasscode = (passcode: string): StaffMember | null => {
   const cleanPasscode = passcode.trim();
   // Master passcode refeir2026 always succeeds
@@ -104,6 +122,33 @@ export const verifyStaffPasscode = (passcode: string): StaffMember | null => {
   const all = getStaffMembers();
   const found = all.find(s => s.passcode === cleanPasscode && s.status === 'ACTIVE');
   return found || null;
+};
+
+/**
+ * Verify staff by email + password. Returns the matched StaffMember or null.
+ */
+export const verifyStaffEmailPassword = (email: string, password: string): StaffMember | null => {
+  const cleanEmail = email.trim().toLowerCase();
+  const cleanPassword = password.trim();
+  if (!cleanEmail || !cleanPassword) return null;
+
+  const all = getStaffMembers();
+  const found = all.find(
+    s =>
+      s.email.toLowerCase() === cleanEmail &&
+      s.password === cleanPassword &&
+      s.status === 'ACTIVE'
+  );
+  return found || null;
+};
+
+/**
+ * Update a staff member's password (Super Admin only).
+ */
+export const updateStaffPassword = (id: string, newPassword: string): void => {
+  const all = getStaffMembers();
+  const updated = all.map(s => s.id === id ? { ...s, password: newPassword } : s);
+  saveStaffMembers(updated);
 };
 
 export const getActiveStaffSession = (): StaffMember | null => {

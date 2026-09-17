@@ -42,6 +42,7 @@ import {
   toggleStaffStatus,
   deleteStaffMember,
   verifyStaffPasscode,
+  verifyStaffEmailPassword,
   getActiveStaffSession,
   setActiveStaffSession
 } from '../lib/staffManagement';
@@ -241,11 +242,15 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
     return sessionStorage.getItem('refeir_admin_auth') === 'true';
   });
   const [loggedInStaff, setLoggedInStaff] = useState<StaffMember | null>(() => getActiveStaffSession());
+  const [loginMode, setLoginMode] = useState<'email' | 'passcode'>('email');
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
   const [passcode, setPasscode] = useState('');
   const [authError, setAuthError] = useState('');
 
   // Data & Management State
-  const [adminTab, setAdminTab] = useState<'applications' | 'proofs' | 'members' | 'workers' | 'certificates' | 'tasks'>(() => {
+  const [adminTab, setAdminTab] = useState<'applications' | 'proofs' | 'members' | 'workers' | 'certificates' | 'tasks' | 'analytics'>(() => {
     try {
       const params = new URLSearchParams(window.location.search);
       const tabParam = params.get('tab')?.toLowerCase();
@@ -330,20 +335,37 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
   const [savingChanges, setSavingChanges] = useState(false);
   const [saveSuccessMsg, setSaveSuccessMsg] = useState('');
 
-  // Handle Passcode Login with Staff Registry
+  // Handle Login — supports email+password (primary) and passcode (legacy)
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    const cleanPass = passcode.trim();
-    const staff = verifyStaffPasscode(cleanPass);
-    if (staff) {
-      sessionStorage.setItem('refeir_admin_auth', 'true');
-      setActiveStaffSession(staff);
-      setLoggedInStaff(staff);
-      setIsAuthenticated(true);
-      setAuthError('');
+    setAuthError('');
+
+    let staff = null;
+
+    if (loginMode === 'email') {
+      const email = loginEmail.trim();
+      const pwd = loginPassword.trim();
+      if (!email) { setAuthError('Please enter your email address.'); return; }
+      if (!pwd) { setAuthError('Please enter your password.'); return; }
+      staff = verifyStaffEmailPassword(email, pwd);
+      if (!staff) {
+        setAuthError('No matching active staff account. Check your email or password, or contact the Super Admin.');
+        return;
+      }
     } else {
-      setAuthError('Invalid passcode. Use your assigned worker passcode or master key "refeir2026".');
+      const cleanPass = passcode.trim();
+      staff = verifyStaffPasscode(cleanPass);
+      if (!staff) {
+        setAuthError('Invalid passcode. Use your assigned worker passcode or master key "refeir2026".');
+        return;
+      }
     }
+
+    sessionStorage.setItem('refeir_admin_auth', 'true');
+    setActiveStaffSession(staff);
+    setLoggedInStaff(staff);
+    setIsAuthenticated(true);
+    setAuthError('');
   };
 
   const handleLogout = () => {
@@ -352,6 +374,8 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
     setLoggedInStaff(null);
     setIsAuthenticated(false);
     setPasscode('');
+    setLoginEmail('');
+    setLoginPassword('');
   };
 
   const isSuperAdmin = loggedInStaff?.role === 'SUPER_ADMIN';
@@ -1531,10 +1555,10 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
         padding: isMobile ? '24px 16px' : 32, color: '#FFFFFF'
       }}>
         <div style={{
-          maxWidth: 440, width: '100%', background: 'rgba(15, 42, 26, 0.82)',
+          maxWidth: 440, width: '100%', background: 'rgba(15, 42, 26, 0.88)',
           borderRadius: isMobile ? 20 : 24, padding: isMobile ? '32px 20px' : '40px 32px',
           border: '1px solid rgba(102, 187, 42, 0.3)',
-          boxShadow: '0 25px 60px rgba(0,0,0,0.65)', textAlign: 'center', backdropFilter: 'blur(16px)'
+          boxShadow: '0 25px 60px rgba(0,0,0,0.65)', textAlign: 'center', backdropFilter: 'blur(20px)'
         }}>
           <div style={{
             width: 52, height: 52, borderRadius: 14, background: `${RF_LEAF_GREEN}20`,
@@ -1545,18 +1569,80 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           </div>
 
           <h2 style={{
-            fontSize: 26, fontWeight: 500, fontFamily: 'Plus Jakarta Sans, sans-serif',
-            marginBottom: 8, color: '#FFFFFF'
+            fontSize: 24, fontWeight: 700, fontFamily: 'Plus Jakarta Sans, sans-serif',
+            marginBottom: 6, color: '#FFFFFF', letterSpacing: '-0.02em'
           }}>
             Refeir Admissions Suite
           </h2>
 
-          <p style={{ fontSize: 13.5, color: 'rgba(255,255,255,0.7)', lineHeight: 1.6, marginBottom: 26 }}>
-            Internal review portal for evaluating Pioneer candidate applications, managing squad placements, and issuing Founding 100 seats.
+          <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, marginBottom: 24 }}>
+            Staff-only access portal. Sign in with your assigned credentials.
           </p>
 
-          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <div>
+          {/* Login Mode Toggle */}
+          <div style={{
+            display: 'flex', background: 'rgba(255,255,255,0.05)', borderRadius: 100,
+            padding: 3, marginBottom: 22, border: '1px solid rgba(255,255,255,0.1)'
+          }}>
+            {(['email', 'passcode'] as const).map(mode => (
+              <button
+                key={mode}
+                type="button"
+                onClick={() => { setLoginMode(mode); setAuthError(''); }}
+                style={{
+                  flex: 1, padding: '7px 0', borderRadius: 100, border: 'none', fontSize: 12.5,
+                  fontWeight: loginMode === mode ? 700 : 500,
+                  background: loginMode === mode ? RF_LEAF_GREEN : 'transparent',
+                  color: loginMode === mode ? RF_DEEP_GREEN : 'rgba(255,255,255,0.6)',
+                  cursor: 'pointer', transition: 'all 0.2s'
+                }}
+              >
+                {mode === 'email' ? '✉ Email & Password' : '🔑 Passcode'}
+              </button>
+            ))}
+          </div>
+
+          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {loginMode === 'email' ? (
+              <>
+                <input
+                  type="email"
+                  placeholder="your@email.com"
+                  value={loginEmail}
+                  onChange={e => setLoginEmail(e.target.value)}
+                  autoFocus
+                  style={{
+                    width: '100%', padding: '12px 16px', borderRadius: 12, boxSizing: 'border-box',
+                    background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(102, 187, 42, 0.25)',
+                    color: '#FFFFFF', fontSize: 14, outline: 'none'
+                  }}
+                />
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type={showLoginPassword ? 'text' : 'password'}
+                    placeholder="Password"
+                    value={loginPassword}
+                    onChange={e => setLoginPassword(e.target.value)}
+                    style={{
+                      width: '100%', padding: '12px 44px 12px 16px', borderRadius: 12, boxSizing: 'border-box',
+                      background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(102, 187, 42, 0.25)',
+                      color: '#FFFFFF', fontSize: 14, outline: 'none'
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowLoginPassword(p => !p)}
+                    style={{
+                      position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)',
+                      background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)',
+                      cursor: 'pointer', padding: 4, display: 'flex', alignItems: 'center'
+                    }}
+                  >
+                    {showLoginPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+              </>
+            ) : (
               <input
                 type="password"
                 placeholder="Enter admissions passcode..."
@@ -1564,17 +1650,17 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 onChange={e => setPasscode(e.target.value)}
                 autoFocus
                 style={{
-                  width: '100%', padding: '13px 18px', borderRadius: 100,
-                  background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(102, 187, 42, 0.3)',
+                  width: '100%', padding: '12px 16px', borderRadius: 12, boxSizing: 'border-box',
+                  background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(102, 187, 42, 0.25)',
                   color: '#FFFFFF', fontSize: 14, outline: 'none', textAlign: 'center'
                 }}
               />
-            </div>
+            )}
 
             {authError && (
               <div style={{
-                padding: '10px 14px', borderRadius: 8, background: 'rgba(239, 68, 68, 0.15)',
-                border: '1px solid rgba(239, 68, 68, 0.4)', color: '#FCA5A5', fontSize: 12.5
+                padding: '10px 14px', borderRadius: 10, background: 'rgba(239, 68, 68, 0.15)',
+                border: '1px solid rgba(239, 68, 68, 0.4)', color: '#FCA5A5', fontSize: 12.5, textAlign: 'left'
               }}>
                 {authError}
               </div>
@@ -1584,51 +1670,49 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               type="submit"
               style={{
                 background: RF_LEAF_GREEN, color: RF_DEEP_GREEN, border: 'none',
-                padding: '12px 24px', borderRadius: 100, fontSize: 14, fontWeight: 600,
-                cursor: 'pointer', transition: 'all 0.2s', boxShadow: `0 4px 16px ${RF_LEAF_GREEN}44`
+                padding: '13px 24px', borderRadius: 100, fontSize: 14, fontWeight: 700,
+                cursor: 'pointer', transition: 'all 0.2s', boxShadow: `0 4px 16px ${RF_LEAF_GREEN}44`,
+                marginTop: 4
               }}
             >
-              Access Admissions Portal
+              {loginMode === 'email' ? 'Sign In to Portal' : 'Access Admissions Portal'}
             </button>
           </form>
 
-          <div style={{ marginTop: 24, paddingTop: 18, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-            <p style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.55)', margin: '0 0 10px' }}>
-              Quick Staff Passcodes (Click to fill):
-            </p>
-            <div style={{ display: 'flex', justifyContent: 'center', gap: 6, flexWrap: 'wrap' }}>
-              <button
-                type="button"
-                onClick={() => setPasscode('refeir2026')}
-                style={{
-                  background: 'rgba(24, 252, 92, 0.08)', border: '1px solid rgba(24, 252, 92, 0.25)',
-                  color: RF_MINT_ACCENT, padding: '3px 9px', borderRadius: 100, fontSize: 11, cursor: 'pointer'
-                }}
-              >
-                Tonye (Super Admin)
-              </button>
-              <button
-                type="button"
-                onClick={() => setPasscode('admit2026')}
-                style={{
-                  background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)',
-                  color: 'rgba(255,255,255,0.85)', padding: '3px 9px', borderRadius: 100, fontSize: 11, cursor: 'pointer'
-                }}
-              >
-                Sarah (Admissions)
-              </button>
-              <button
-                type="button"
-                onClick={() => setPasscode('techlead26')}
-                style={{
-                  background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)',
-                  color: 'rgba(255,255,255,0.85)', padding: '3px 9px', borderRadius: 100, fontSize: 11, cursor: 'pointer'
-                }}
-              >
-                Chidi (Tech Lead)
-              </button>
+          {loginMode === 'passcode' && (
+            <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', margin: '0 0 8px' }}>
+                Quick fill (demo):
+              </p>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: 6, flexWrap: 'wrap' }}>
+                {[
+                  { label: 'Tonye', code: 'refeir2026', accent: true },
+                  { label: 'Sarah', code: 'admit2026', accent: false },
+                  { label: 'Chidi', code: 'techlead26', accent: false },
+                ].map(({ label, code, accent }) => (
+                  <button
+                    key={code}
+                    type="button"
+                    onClick={() => setPasscode(code)}
+                    style={{
+                      background: accent ? 'rgba(24, 252, 92, 0.08)' : 'rgba(255,255,255,0.06)',
+                      border: `1px solid ${accent ? 'rgba(24, 252, 92, 0.25)' : 'rgba(255,255,255,0.15)'}`,
+                      color: accent ? RF_MINT_ACCENT : 'rgba(255,255,255,0.8)',
+                      padding: '3px 10px', borderRadius: 100, fontSize: 11, cursor: 'pointer'
+                    }}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
+
+          {loginMode === 'email' && (
+            <p style={{ marginTop: 16, fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>
+              Don't have login credentials? Contact the Super Admin to be added to the staff registry.
+            </p>
+          )}
         </div>
       </div>
     );
@@ -2487,6 +2571,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 { id: 'workers', label: 'Review Team & Staff', icon: Briefcase, count: staffList.length, desc: 'Manage reviewer credentials & passcodes' },
                 { id: 'certificates', label: 'Pioneer Certifications', icon: Award, count: certificatesList.length, desc: 'Issue & inspect sovereign completion credentials', onClick: refreshCertificates },
                 { id: 'tasks', label: 'Squad Missions & Bounties', icon: Megaphone, count: tasksList.filter(t => t.status === 'ACTIVE').length, desc: 'Broadcast daily missions with airtime & cash', onClick: refreshTasks },
+                { id: 'analytics', label: 'Analytics Dashboard', icon: BarChart3, count: 0, desc: 'Platform telemetry, growth trends & live charts' },
               ].map(item => {
                 const isActive = adminTab === item.id;
                 const Icon = item.icon;
@@ -2600,6 +2685,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 {adminTab === 'workers' && <Briefcase size={15} />}
                 {adminTab === 'certificates' && <Award size={15} />}
                 {adminTab === 'tasks' && <Megaphone size={15} />}
+                {adminTab === 'analytics' && <BarChart3 size={15} />}
               </div>
               <div>
                 <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block' }}>
@@ -2612,6 +2698,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                   {adminTab === 'workers' && 'Review Staff Team'}
                   {adminTab === 'certificates' && 'Pioneer Certifications'}
                   {adminTab === 'tasks' && 'Squad Missions & Bounties'}
+                  {adminTab === 'analytics' && 'Analytics Dashboard'}
                 </div>
               </div>
             </div>
@@ -2651,6 +2738,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               { id: 'workers', label: 'Review Team', icon: Briefcase, count: staffList.length },
               { id: 'certificates', label: 'Certifications', icon: Award, count: certificatesList.length, onClick: refreshCertificates },
               { id: 'tasks', label: 'Squad Missions', icon: Megaphone, count: tasksList.filter(t => t.status === 'ACTIVE').length, onClick: refreshTasks },
+              { id: 'analytics', label: 'Analytics', icon: BarChart3, count: 0 },
             ].map(tab => {
               const isActive = adminTab === tab.id;
               const Icon = tab.icon;
@@ -7536,6 +7624,346 @@ ${newTaskBountyType !== 'NONE' ? `🎁 *Bounty Reward:* ${newTaskBountyReward ||
           </div>
         </div>
       )}
+
+      {/* ─── ANALYTICS DASHBOARD TAB ─────────────────────────────────────── */}
+      {adminTab === 'analytics' && (() => {
+        // ── Helper: tiny SVG sparkline / bar renderer ──
+        const Sparkline = ({ values, color, height = 48 }: { values: number[]; color: string; height?: number }) => {
+          if (!values.length) return null;
+          const max = Math.max(...values, 1);
+          const w = 240;
+          const pts = values.map((v, i) => `${(i / (values.length - 1)) * w},${height - (v / max) * (height - 4)}`).join(' ');
+          return (
+            <svg width="100%" viewBox={`0 0 ${w} ${height}`} preserveAspectRatio="none" style={{ display: 'block' }}>
+              <defs>
+                <linearGradient id={`sg-${color.replace('#','')}`} x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={color} stopOpacity="0.35" />
+                  <stop offset="100%" stopColor={color} stopOpacity="0.02" />
+                </linearGradient>
+              </defs>
+              <polygon points={`0,${height} ${pts} ${w},${height}`} fill={`url(#sg-${color.replace('#','')})`} />
+              <polyline points={pts} fill="none" stroke={color} strokeWidth="2.2" strokeLinejoin="round" strokeLinecap="round" />
+            </svg>
+          );
+        };
+
+        const BarChart = ({ data, color }: { data: { label: string; value: number }[]; color: string }) => {
+          const max = Math.max(...data.map(d => d.value), 1);
+          return (
+            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, height: 80, width: '100%' }}>
+              {data.map((d, i) => (
+                <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+                  <div style={{
+                    width: '100%', borderRadius: 4,
+                    height: max > 0 ? `${Math.max(4, (d.value / max) * 64)}px` : '4px',
+                    background: `linear-gradient(180deg, ${color} 0%, ${color}88 100%)`,
+                    transition: 'height 0.4s ease'
+                  }} />
+                  <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.45)', whiteSpace: 'nowrap', overflow: 'hidden', maxWidth: '100%', textOverflow: 'ellipsis', textAlign: 'center' }}>
+                    {d.label}
+                  </span>
+                </div>
+              ))}
+            </div>
+          );
+        };
+
+        const DonutRing = ({ pct, color, size = 72 }: { pct: number; color: string; size?: number }) => {
+          const r = size / 2 - 8;
+          const circ = 2 * Math.PI * r;
+          const dash = (pct / 100) * circ;
+          return (
+            <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+              <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="8" />
+              <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color} strokeWidth="8"
+                strokeDasharray={`${dash} ${circ - dash}`} strokeDashoffset={circ / 4}
+                strokeLinecap="round" style={{ transition: 'stroke-dasharray 0.6s ease' }}
+              />
+              <text x="50%" y="50%" dominantBaseline="middle" textAnchor="middle"
+                fill="#FFFFFF" fontSize="13" fontWeight="700" fontFamily="Plus Jakarta Sans, sans-serif">
+                {pct}%
+              </text>
+            </svg>
+          );
+        };
+
+        // Build some simulated time-series from real data (grouped by day buckets)
+        const nowMs = Date.now();
+        const DAY = 86400000;
+        const days7 = Array.from({ length: 7 }, (_, i) => ({
+          label: new Date(nowMs - (6 - i) * DAY).toLocaleDateString('en', { weekday: 'short' }),
+          apps: applications.filter(a => {
+            const d = new Date(a.created_at).getTime();
+            return d >= nowMs - (7 - i) * DAY && d < nowMs - (6 - i) * DAY;
+          }).length,
+          proofs: taskSubmissions.filter(t => {
+            const d = new Date(t.created_at).getTime();
+            return d >= nowMs - (7 - i) * DAY && d < nowMs - (6 - i) * DAY;
+          }).length,
+        }));
+        const appsTrend = days7.map(d => d.apps);
+        const proofsTrend = days7.map(d => d.proofs);
+
+        // Division breakdown for bar charts
+        const divColors: Record<string, string> = {
+          TECHNOLOGY: '#60A5FA', BUSINESS: '#F59E0B', GROWTH: '#34D399',
+          CREATIVE: '#F472B6', OPERATIONS: '#A78BFA', GENERAL: '#94A3B8'
+        };
+        const appDivData = Object.entries(analytics.appsByDivision).map(([k, v]) => ({ label: k.slice(0, 3), value: v as number }));
+        const proofDivData = Object.entries(analytics.proofsByDivision).map(([k, v]) => ({ label: k.slice(0, 3), value: v as number }));
+        const levelData = [
+          { label: 'L1', value: analytics.levelCounts.LEVEL_1 },
+          { label: 'L2', value: analytics.levelCounts.LEVEL_2 },
+          { label: 'L3', value: analytics.levelCounts.LEVEL_3 },
+          { label: 'L4', value: analytics.levelCounts.LEVEL_4 },
+          { label: 'L5', value: analytics.levelCounts.LEVEL_5 },
+        ];
+
+        const cardStyle: React.CSSProperties = {
+          background: 'rgba(11, 36, 22, 0.85)', border: '1px solid rgba(102, 187, 42, 0.2)',
+          borderRadius: 18, padding: isMobile ? '18px 16px' : 24, backdropFilter: 'blur(12px)'
+        };
+        const labelStyle: React.CSSProperties = {
+          fontSize: 10.5, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase',
+          letterSpacing: '0.08em', fontWeight: 600, marginBottom: 4
+        };
+        const bigNumStyle: React.CSSProperties = { fontSize: 32, fontWeight: 800, color: '#FFFFFF', lineHeight: 1.1, letterSpacing: '-0.03em' };
+        const subStyle: React.CSSProperties = { fontSize: 11.5, color: 'rgba(255,255,255,0.5)', marginTop: 2 };
+
+        return (
+          <div style={{ paddingBottom: 48 }}>
+            {/* Header */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 28 }}>
+              <div style={{
+                width: 44, height: 44, borderRadius: 12, background: 'rgba(24, 252, 92, 0.12)',
+                border: '1px solid rgba(24, 252, 92, 0.3)', color: RF_MINT_ACCENT,
+                display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+              }}>
+                <BarChart3 size={22} />
+              </div>
+              <div>
+                <h2 style={{ fontSize: isMobile ? 19 : 22, fontWeight: 800, color: '#FFFFFF', margin: 0, letterSpacing: '-0.02em' }}>
+                  Analytics Dashboard
+                </h2>
+                <p style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.5)', margin: 0, marginTop: 2 }}>
+                  Platform-wide telemetry, cohort growth trends & live funnel metrics
+                </p>
+              </div>
+            </div>
+
+            {/* ── Row 1: Top-level KPI snapshot ── */}
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)', gap: 12, marginBottom: 20 }}>
+              {[
+                { label: 'Total Applicants', value: analytics.totalApps, sub: `${analytics.acceptedApps} accepted`, color: RF_MINT_ACCENT },
+                { label: 'Acceptance Rate', value: `${analytics.acceptanceRate}%`, sub: `${analytics.pendingApps} still pending`, color: '#60A5FA' },
+                { label: 'Pioneer Members', value: analytics.totalMembers, sub: `${analytics.activeRate}% active`, color: '#F59E0B' },
+                { label: 'Certs Issued', value: analytics.totalCerts, sub: `${analytics.activeCertRate}% active`, color: '#F472B6' },
+              ].map(({ label, value, sub, color }) => (
+                <div key={label} style={{ ...cardStyle }}>
+                  <div style={labelStyle}>{label}</div>
+                  <div style={{ ...bigNumStyle, color, fontSize: 28 }}>{value}</div>
+                  <div style={subStyle}>{sub}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* ── Row 2: 7-day Trend Charts ── */}
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 14, marginBottom: 20 }}>
+              {/* Applications over 7 days */}
+              <div style={cardStyle}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+                  <div>
+                    <div style={labelStyle}>Applications — Last 7 Days</div>
+                    <div style={{ ...bigNumStyle, fontSize: 24, color: RF_MINT_ACCENT }}>{analytics.totalApps}</div>
+                  </div>
+                  <div style={{ display: 'flex', gap: 14 }}>
+                    {[
+                      { label: 'Accepted', val: analytics.acceptedApps, color: RF_MINT_ACCENT },
+                      { label: 'Pending', val: analytics.pendingApps, color: '#F59E0B' },
+                      { label: 'Rejected', val: analytics.rejectedApps, color: '#F87171' },
+                    ].map(({ label, val, color }) => (
+                      <div key={label} style={{ textAlign: 'center' }}>
+                        <div style={{ fontSize: 16, fontWeight: 800, color }}>{val}</div>
+                        <div style={{ fontSize: 9.5, color: 'rgba(255,255,255,0.4)' }}>{label}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <Sparkline values={appsTrend.length > 1 ? appsTrend : [0, analytics.totalApps]} color={RF_MINT_ACCENT} height={52} />
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6 }}>
+                  {days7.map((d, i) => (
+                    <span key={i} style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)' }}>{d.label}</span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Proofs over 7 days */}
+              <div style={cardStyle}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+                  <div>
+                    <div style={labelStyle}>Task Proofs — Last 7 Days</div>
+                    <div style={{ ...bigNumStyle, fontSize: 24, color: '#60A5FA' }}>{analytics.totalProofs}</div>
+                  </div>
+                  <div style={{ display: 'flex', gap: 14 }}>
+                    {[
+                      { label: 'Verified', val: analytics.verifiedProofs, color: '#34D399' },
+                      { label: 'Pending', val: analytics.pendingProofs, color: '#F59E0B' },
+                      { label: 'Revision', val: analytics.revisionProofs, color: '#F87171' },
+                    ].map(({ label, val, color }) => (
+                      <div key={label} style={{ textAlign: 'center' }}>
+                        <div style={{ fontSize: 16, fontWeight: 800, color }}>{val}</div>
+                        <div style={{ fontSize: 9.5, color: 'rgba(255,255,255,0.4)' }}>{label}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <Sparkline values={proofsTrend.length > 1 ? proofsTrend : [0, analytics.totalProofs]} color="#60A5FA" height={52} />
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6 }}>
+                  {days7.map((d, i) => (
+                    <span key={i} style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)' }}>{d.label}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* ── Row 3: Division breakdowns + donut rings ── */}
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: 14, marginBottom: 20 }}>
+              {/* Applications by division bar chart */}
+              <div style={cardStyle}>
+                <div style={labelStyle}>Apps by Division</div>
+                {appDivData.length > 0
+                  ? <BarChart data={appDivData} color={RF_MINT_ACCENT} />
+                  : <div style={{ height: 80, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.3)', fontSize: 12 }}>No data yet</div>
+                }
+              </div>
+
+              {/* Pioneer level distribution */}
+              <div style={cardStyle}>
+                <div style={labelStyle}>Pioneer Tier Distribution</div>
+                <BarChart data={levelData} color="#F59E0B" />
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px 12px', marginTop: 10 }}>
+                  {levelData.map(d => (
+                    <span key={d.label} style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)' }}>
+                      <span style={{ color: '#F59E0B', fontWeight: 700 }}>{d.value}</span> {d.label}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Proofs by division */}
+              <div style={cardStyle}>
+                <div style={labelStyle}>Proofs by Division</div>
+                {proofDivData.length > 0
+                  ? <BarChart data={proofDivData} color="#60A5FA" />
+                  : <div style={{ height: 80, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.3)', fontSize: 12 }}>No data yet</div>
+                }
+              </div>
+            </div>
+
+            {/* ── Row 4: Donut rings — funnel health ── */}
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)', gap: 14, marginBottom: 20 }}>
+              {[
+                { label: 'Acceptance Rate', pct: Math.round(parseFloat(analytics.acceptanceRate)), color: RF_MINT_ACCENT },
+                { label: 'Active Members', pct: Math.round(parseFloat(analytics.activeRate)), color: '#60A5FA' },
+                { label: 'Proof Verified', pct: Math.round(parseFloat(analytics.verificationRate)), color: '#34D399' },
+                { label: 'Cert Integrity', pct: Math.round(parseFloat(analytics.activeCertRate)), color: '#F59E0B' },
+              ].map(({ label, pct, color }) => (
+                <div key={label} style={{ ...cardStyle, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
+                  <DonutRing pct={pct} color={color} size={80} />
+                  <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.6)', textAlign: 'center', fontWeight: 600 }}>{label}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* ── Row 5: Founding Cap + Bounty Pool ── */}
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 14, marginBottom: 20 }}>
+              {/* Founding 100 progress */}
+              <div style={cardStyle}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+                  <div>
+                    <div style={labelStyle}>Founding 100 Cap</div>
+                    <div style={{ ...bigNumStyle, fontSize: 26, color: RF_GOLD_YELLOW }}>{analytics.foundingApps} <span style={{ fontSize: 14, fontWeight: 500, color: 'rgba(255,255,255,0.4)' }}>/ 100</span></div>
+                  </div>
+                  <Target size={28} style={{ color: RF_GOLD_YELLOW, opacity: 0.7 }} />
+                </div>
+                <div style={{ background: 'rgba(255,255,255,0.08)', borderRadius: 100, height: 8, overflow: 'hidden' }}>
+                  <div style={{
+                    width: `${analytics.foundingCapPct}%`, height: '100%', borderRadius: 100,
+                    background: `linear-gradient(90deg, ${RF_GOLD_YELLOW} 0%, ${RF_ORANGE} 100%)`,
+                    transition: 'width 0.6s ease'
+                  }} />
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8 }}>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>0 seats</span>
+                  <span style={{ fontSize: 11, color: RF_GOLD_YELLOW, fontWeight: 700 }}>{analytics.foundingCapPct}% filled</span>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>100 seats</span>
+                </div>
+              </div>
+
+              {/* Bounty pool breakdown */}
+              <div style={cardStyle}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+                  <div>
+                    <div style={labelStyle}>Active Bounty Pool</div>
+                    <div style={{ ...bigNumStyle, fontSize: 26, color: '#34D399' }}>
+                      ₦{analytics.totalCashBountyVal.toLocaleString()}
+                    </div>
+                    <div style={subStyle}>{analytics.activeTasksCount} active missions</div>
+                  </div>
+                  <DollarSign size={28} style={{ color: '#34D399', opacity: 0.7 }} />
+                </div>
+                <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
+                  {[
+                    { label: 'Cash', val: analytics.totalCashBountyVal > 0 ? `₦${analytics.totalCashBountyVal.toLocaleString()}` : '—', color: '#34D399' },
+                    { label: 'Airtime', val: `${analytics.airtimeBounties} tasks`, color: '#60A5FA' },
+                    { label: 'Data', val: `${analytics.dataBounties} tasks`, color: '#F59E0B' },
+                  ].map(({ label, val, color }) => (
+                    <div key={label} style={{
+                      flex: 1, background: 'rgba(255,255,255,0.04)', borderRadius: 10,
+                      border: '1px solid rgba(255,255,255,0.08)', padding: '10px 12px', textAlign: 'center'
+                    }}>
+                      <div style={{ fontSize: 13, fontWeight: 700, color }}>{val}</div>
+                      <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>{label}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* ── Row 6: Staff team overview ── */}
+            <div style={cardStyle}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                <div>
+                  <div style={labelStyle}>Review Team Composition</div>
+                  <div style={{ ...bigNumStyle, fontSize: 22, color: '#A78BFA' }}>{staffList.length} <span style={{ fontSize: 13, fontWeight: 500, color: 'rgba(255,255,255,0.4)' }}>staff members</span></div>
+                </div>
+                <Briefcase size={22} style={{ color: '#A78BFA', opacity: 0.7 }} />
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)', gap: 10 }}>
+                {(['SUPER_ADMIN', 'ADMISSIONS_REVIEWER', 'TASK_VERIFIER', 'SQUAD_LEAD'] as const).map(role => {
+                  const count = staffList.filter(s => s.role === role).length;
+                  const active = staffList.filter(s => s.role === role && s.status === 'ACTIVE').length;
+                  const colors: Record<string, string> = { SUPER_ADMIN: RF_GOLD_YELLOW, ADMISSIONS_REVIEWER: RF_MINT_ACCENT, TASK_VERIFIER: '#60A5FA', SQUAD_LEAD: '#F59E0B' };
+                  return (
+                    <div key={role} style={{
+                      background: 'rgba(255,255,255,0.04)', borderRadius: 12,
+                      border: '1px solid rgba(255,255,255,0.08)', padding: '12px 14px'
+                    }}>
+                      <div style={{ fontSize: 20, fontWeight: 800, color: colors[role] }}>{count}</div>
+                      <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', marginTop: 2 }}>
+                        {role.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, c => c.toUpperCase())}
+                      </div>
+                      <div style={{ fontSize: 10, color: active === count ? '#34D399' : '#F59E0B', marginTop: 4, fontWeight: 600 }}>
+                        {active}/{count} active
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* ─── CERTIFICATE INSPECTION / PRINT MODAL ───────────────────────── */}
       {isCertificateModalOpen && selectedCertificateForModal && (
