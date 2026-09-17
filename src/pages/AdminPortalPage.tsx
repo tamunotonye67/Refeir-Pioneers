@@ -3863,14 +3863,19 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           border: '1px solid rgba(24, 252, 92, 0.16)',
           borderRadius: isMobile ? 14 : 18,
           padding: isMobile ? '16px' : '20px 24px',
-          marginBottom: isMobile ? 18 : 28
+          marginBottom: isMobile ? 18 : 28,
+          overflow: 'hidden',
+          width: '100%',
+          maxWidth: '100%',
+          boxSizing: 'border-box'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 10, minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
               <div style={{
                 width: 28, height: 28, borderRadius: 8,
                 background: 'rgba(24, 252, 92, 0.12)', color: RF_MINT_ACCENT,
-                display: 'flex', alignItems: 'center', justifyContent: 'center'
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                flexShrink: 0
               }}>
                 <TrendingUp size={15} />
               </div>
@@ -3880,7 +3885,8 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             </div>
             <span style={{
               fontSize: 11, color: RF_MINT_ACCENT, background: 'rgba(24, 252, 92, 0.1)',
-              padding: '3px 10px', borderRadius: 100, fontWeight: 600, border: '1px solid rgba(24, 252, 92, 0.2)'
+              padding: '3px 10px', borderRadius: 100, fontWeight: 600, border: '1px solid rgba(24, 252, 92, 0.2)',
+              flexShrink: 0
             }}>
               Throughput Rate: {analytics.verificationRate}% Verified
             </span>
@@ -3888,7 +3894,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
           <div style={{
             display: 'grid',
-            gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+            gridTemplateColumns: isMobile ? 'minmax(0, 1fr)' : 'repeat(3, minmax(0, 1fr))',
             gap: isMobile ? 14 : 20
           }}>
             {/* Verification Velocity Bar */}
@@ -3896,7 +3902,11 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               background: 'rgba(255, 255, 255, 0.02)',
               borderRadius: 12,
               padding: '14px 16px',
-              border: '1px solid rgba(255, 255, 255, 0.06)'
+              border: '1px solid rgba(255, 255, 255, 0.06)',
+              minWidth: 0,
+              overflow: 'hidden',
+              width: '100%',
+              boxSizing: 'border-box'
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                 <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Verification Ratio</span>
@@ -3914,9 +3924,9 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                   background: '#FFB27D'
                 }} />
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, fontSize: 11, color: 'rgba(255,255,255,0.45)' }}>
-                <span>{analytics.verifiedProofs} Verified</span>
-                <span>{analytics.revisionProofs} Revisions ({analytics.revisionRate}%)</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 4, marginTop: 8, fontSize: 11, color: 'rgba(255,255,255,0.45)' }}>
+                <span style={{ whiteSpace: 'nowrap' }}>{analytics.verifiedProofs} Verified</span>
+                <span style={{ whiteSpace: 'nowrap' }}>{analytics.revisionProofs} Revisions ({analytics.revisionRate}%)</span>
               </div>
             </div>
 
@@ -3925,7 +3935,11 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               background: 'rgba(255, 255, 255, 0.02)',
               borderRadius: 12,
               padding: '14px 16px',
-              border: '1px solid rgba(255, 255, 255, 0.06)'
+              border: '1px solid rgba(255, 255, 255, 0.06)',
+              minWidth: 0,
+              overflow: 'hidden',
+              width: '100%',
+              boxSizing: 'border-box'
             }}>
               <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 10 }}>
                 Audit Pipeline State
@@ -3962,7 +3976,11 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               background: 'rgba(255, 255, 255, 0.02)',
               borderRadius: 12,
               padding: '14px 16px',
-              border: '1px solid rgba(255, 255, 255, 0.06)'
+              border: '1px solid rgba(255, 255, 255, 0.06)',
+              minWidth: 0,
+              overflow: 'hidden',
+              width: '100%',
+              boxSizing: 'border-box'
             }}>
               <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 8 }}>
                 Squad Deliverables Output
@@ -4274,14 +4292,19 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             border: '1px solid rgba(24, 252, 92, 0.16)',
             borderRadius: isMobile ? 14 : 18,
             padding: isMobile ? '16px' : '20px 24px',
-            marginBottom: isMobile ? 18 : 28
+            marginBottom: isMobile ? 18 : 28,
+            overflow: 'hidden',
+            width: '100%',
+            maxWidth: '100%',
+            boxSizing: 'border-box'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 10, minWidth: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
                 <div style={{
                   width: 28, height: 28, borderRadius: 8,
                   background: 'rgba(24, 252, 92, 0.12)', color: RF_MINT_ACCENT,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  flexShrink: 0
                 }}>
                   <Users size={15} />
                 </div>
@@ -4291,7 +4314,8 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               </div>
               <span style={{
                 fontSize: 11, color: RF_MINT_ACCENT, background: 'rgba(24, 252, 92, 0.1)',
-                padding: '3px 10px', borderRadius: 100, fontWeight: 600, border: '1px solid rgba(24, 252, 92, 0.2)'
+                padding: '3px 10px', borderRadius: 100, fontWeight: 600, border: '1px solid rgba(24, 252, 92, 0.2)',
+                flexShrink: 0
               }}>
                 Network Vitality: {analytics.activeRate}% Active
               </span>
@@ -4299,7 +4323,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
             <div style={{
               display: 'grid',
-              gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+              gridTemplateColumns: isMobile ? 'minmax(0, 1fr)' : 'repeat(3, minmax(0, 1fr))',
               gap: isMobile ? 14 : 20
             }}>
               {/* Profile Completion Ratio */}
@@ -5185,14 +5209,19 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             border: '1px solid rgba(24, 252, 92, 0.16)',
             borderRadius: isMobile ? 14 : 18,
             padding: isMobile ? '16px' : '20px 24px',
-            marginBottom: isMobile ? 18 : 28
+            marginBottom: isMobile ? 18 : 28,
+            overflow: 'hidden',
+            width: '100%',
+            maxWidth: '100%',
+            boxSizing: 'border-box'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 10, minWidth: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
                 <div style={{
                   width: 28, height: 28, borderRadius: 8,
                   background: 'rgba(24, 252, 92, 0.12)', color: RF_MINT_ACCENT,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  flexShrink: 0
                 }}>
                   <Award size={15} />
                 </div>
@@ -5202,7 +5231,8 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               </div>
               <span style={{
                 fontSize: 11, color: RF_MINT_ACCENT, background: 'rgba(24, 252, 92, 0.1)',
-                padding: '3px 10px', borderRadius: 100, fontWeight: 600, border: '1px solid rgba(24, 252, 92, 0.2)'
+                padding: '3px 10px', borderRadius: 100, fontWeight: 600, border: '1px solid rgba(24, 252, 92, 0.2)',
+                flexShrink: 0
               }}>
                 Integrity Rate: {analytics.activeCertRate}% Valid
               </span>
@@ -5210,7 +5240,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
             <div style={{
               display: 'grid',
-              gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+              gridTemplateColumns: isMobile ? 'minmax(0, 1fr)' : 'repeat(3, minmax(0, 1fr))',
               gap: isMobile ? 14 : 20
             }}>
               {/* Level 1 vs Advanced Tier Minting */}
@@ -5653,14 +5683,19 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             border: '1px solid rgba(24, 252, 92, 0.16)',
             borderRadius: isMobile ? 14 : 18,
             padding: isMobile ? '16px' : '20px 24px',
-            marginBottom: isMobile ? 18 : 28
+            marginBottom: isMobile ? 18 : 28,
+            overflow: 'hidden',
+            width: '100%',
+            maxWidth: '100%',
+            boxSizing: 'border-box'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 10, minWidth: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
                 <div style={{
                   width: 28, height: 28, borderRadius: 8,
                   background: 'rgba(24, 252, 92, 0.12)', color: RF_MINT_ACCENT,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  flexShrink: 0
                 }}>
                   <Zap size={15} />
                 </div>
@@ -5670,7 +5705,8 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               </div>
               <span style={{
                 fontSize: 11, color: RF_MINT_ACCENT, background: 'rgba(24, 252, 92, 0.1)',
-                padding: '3px 10px', borderRadius: 100, fontWeight: 600, border: '1px solid rgba(24, 252, 92, 0.2)'
+                padding: '3px 10px', borderRadius: 100, fontWeight: 600, border: '1px solid rgba(24, 252, 92, 0.2)',
+                flexShrink: 0
               }}>
                 Active Pool: ₦{analytics.totalCashBountyVal.toLocaleString()} Cash Value
               </span>
@@ -5678,7 +5714,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
             <div style={{
               display: 'grid',
-              gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+              gridTemplateColumns: isMobile ? 'minmax(0, 1fr)' : 'repeat(3, minmax(0, 1fr))',
               gap: isMobile ? 14 : 20
             }}>
               {/* Monetary Bounty Valuation */}
@@ -6734,7 +6770,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                     Total active escrow-ready reward pool
                   </span>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginTop: 14 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 8, marginTop: 14 }}>
                     {[
                       { label: 'Cash', value: analytics.totalCashBountyVal > 0 ? `₦${(analytics.totalCashBountyVal / 1000).toFixed(0)}k` : '—', color: RF_MINT_ACCENT },
                       { label: 'Airtime', value: `${analytics.airtimeBounties} tasks`, color: RF_GOLD_YELLOW },
