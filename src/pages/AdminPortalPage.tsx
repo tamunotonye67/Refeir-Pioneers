@@ -6,10 +6,9 @@ import {
   Image as ImageIcon, Award, Eye, Check, FileCheck, Users,
   UserPlus, Trash2, Key, EyeOff, Copy, Ban, UserX, Calendar,
   Building2, Globe, Phone, Send, AtSign, Share2, Briefcase,
-  AlertTriangle, Brain, Gift, Zap, Megaphone, PlusCircle, Radio, DollarSign,
-  Database, Server, HardDrive, Terminal, Wifi, WifiOff, UploadCloud, DownloadCloud, Code, Layers, Activity
+  AlertTriangle, Brain, Gift, Zap, Megaphone, PlusCircle, Radio, DollarSign
 } from 'lucide-react';
-import { supabase, isSupabaseConfigured, checkSupabaseConnection, SupabaseDiagnostics } from '../lib/supabase';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import {
   TaskSubmissionRecord,
   getTaskSubmissions,
@@ -72,7 +71,6 @@ import {
   syncSquadTasksToSupabase,
   fetchSquadTasksFromDatabase
 } from '../lib/squadTasks';
-import { SCHEMA_SQL } from '../lib/schemaSql';
 import {
   RF_DEEP_GREEN,
   RF_DARK_GREEN,
@@ -246,11 +244,10 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
   const [authError, setAuthError] = useState('');
 
   // Data & Management State
-  const [adminTab, setAdminTab] = useState<'applications' | 'proofs' | 'members' | 'workers' | 'certificates' | 'tasks' | 'database'>(() => {
+  const [adminTab, setAdminTab] = useState<'applications' | 'proofs' | 'members' | 'workers' | 'certificates' | 'tasks'>(() => {
     try {
       const params = new URLSearchParams(window.location.search);
       const tabParam = params.get('tab')?.toLowerCase();
-      if (tabParam === 'database' || tabParam === 'supabase' || tabParam === 'backend') return 'database';
       if (tabParam === 'tasks' || tabParam === 'squad-tasks' || tabParam === 'bounties') return 'tasks';
       if (tabParam === 'proofs') return 'proofs';
       if (tabParam === 'members') return 'members';
@@ -260,13 +257,6 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
     return 'applications';
   });
 
-  // Database & Supabase Management State
-  const [dbDiagnostics, setDbDiagnostics] = useState<SupabaseDiagnostics | null>(null);
-  const [dbTesting, setDbTesting] = useState<boolean>(false);
-  const [dbSyncing, setDbSyncing] = useState<boolean>(false);
-  const [dbSyncResult, setDbSyncResult] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
-  const [dbSchemaCopied, setDbSchemaCopied] = useState<boolean>(false);
-  const [dbActiveSubTab, setDbActiveSubTab] = useState<'overview' | 'tables' | 'schema' | 'instructions'>('overview');
 
   const [applications, setApplications] = useState<ApplicationRecord[]>([]);
   const [taskSubmissions, setTaskSubmissions] = useState<TaskSubmissionRecord[]>([]);
@@ -923,121 +913,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
     });
   };
 
-  // Database Management Handlers
-  const handleTestDatabase = async () => {
-    setDbTesting(true);
-    setDbSyncResult(null);
-    try {
-      const diag = await checkSupabaseConnection();
-      setDbDiagnostics(diag);
-      if (diag.connected) {
-        setDbSyncResult({
-          message: `Supabase PostgreSQL is connected! Ping latency: ${diag.latencyMs}ms. Schema and RLS active.`,
-          type: 'success'
-        });
-      } else {
-        setDbSyncResult({
-          message: `Running in Local Reactive Mode: ${diag.message || 'Configure VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to enable cloud sync'}. All features continue to function seamlessly.`,
-          type: 'error'
-        });
-      }
-    } catch (err: any) {
-      setDbSyncResult({
-        message: `Connection test error: ${err?.message || 'Check failed'}`,
-        type: 'error'
-      });
-    } finally {
-      setDbTesting(false);
-    }
-  };
 
-  const handleSyncAllToSupabase = async () => {
-    if (!isSupabaseConfigured) {
-      alert('Supabase credentials are not detected in your .env file. Please add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY first.');
-      return;
-    }
-    setDbSyncing(true);
-    setDbSyncResult(null);
-    try {
-      const appsRes = await syncApplicationsToSupabase();
-      const contribsRes = await syncContributorsToSupabase();
-      const tasksRes = await syncSquadTasksToSupabase();
-      const powRes = await syncTaskSubmissionsToSupabase();
-      const certsRes = await syncCertificatesToSupabase();
-
-      const totalSynced = (appsRes.count ?? 0) + (contribsRes.count ?? 0) + (tasksRes.synced ?? 0) + (powRes.synced ?? 0) + (certsRes.synced ?? 0);
-      const anyError = appsRes.error || contribsRes.error || tasksRes.error || powRes.error || certsRes.error;
-
-      if (anyError) {
-        setDbSyncResult({
-          message: `Synced ${totalSynced} local records with notice: ${anyError}`,
-          type: 'error'
-        });
-      } else {
-        setDbSyncResult({
-          message: `Successfully synchronized ${totalSynced} records across all 6 tables to live Supabase PostgreSQL!`,
-          type: 'success'
-        });
-      }
-      const diag = await checkSupabaseConnection();
-      setDbDiagnostics(diag);
-    } catch (err: any) {
-      setDbSyncResult({
-        message: `Sync failed: ${err?.message || 'Network error'}`,
-        type: 'error'
-      });
-    } finally {
-      setDbSyncing(false);
-    }
-  };
-
-  const handleFetchAllFromDatabase = async () => {
-    if (!isSupabaseConfigured) {
-      alert('Supabase credentials are not configured in your environment.');
-      return;
-    }
-    setDbSyncing(true);
-    setDbSyncResult(null);
-    try {
-      const [fetchedApps, fetchedContribs, fetchedTasks, fetchedCerts] = await Promise.all([
-        fetchApplicationsFromDatabase(),
-        fetchContributorsFromDatabase(),
-        fetchSquadTasksFromDatabase(),
-        fetchCertificatesFromDatabase()
-      ]);
-      setApplications(fetchedApps);
-      setMembersList(fetchedContribs);
-      setTasksList(fetchedTasks);
-      setCertificatesList(fetchedCerts);
-      const fetchedSubmissions = await getTaskSubmissions();
-      setTaskSubmissions(fetchedSubmissions);
-
-      setDbSyncResult({
-        message: `Refreshed all local state from live Supabase: ${fetchedApps.length} applications, ${fetchedContribs.length} members, ${fetchedTasks.length} missions, ${fetchedCerts.length} certificates.`,
-        type: 'success'
-      });
-    } catch (err: any) {
-      setDbSyncResult({
-        message: `Pull error: ${err?.message || 'Failed to pull'}`,
-        type: 'error'
-      });
-    } finally {
-      setDbSyncing(false);
-    }
-  };
-
-  const handleCopySchema = () => {
-    navigator.clipboard.writeText(SCHEMA_SQL);
-    setDbSchemaCopied(true);
-    setTimeout(() => setDbSchemaCopied(false), 3000);
-  };
-
-  // Run diagnostics automatically when opening database tab
-  useEffect(() => {
-    if (adminTab === 'database' && !dbDiagnostics && !dbTesting) {
-      handleTestDatabase();
-    }
-  }, [adminTab]);
 
 
   const filteredSquadTasks = useMemo(() => {
@@ -1330,136 +1206,18 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
     }
   };
 
-  // ─── MOBILE LOCKOUT GUARD ──────────────────────────────────────────────────
-  if (isMobile) {
-    return (
-      <div style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: `linear-gradient(135deg, ${RF_DEEP_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
-        padding: '30px 20px',
-        color: '#FFFFFF',
-        fontFamily: 'Plus Jakarta Sans, sans-serif'
-      }}>
-        <div style={{
-          maxWidth: 460,
-          width: '100%',
-          background: 'rgba(15, 42, 26, 0.85)',
-          borderRadius: 24,
-          padding: '44px 28px',
-          border: `1px solid ${RF_LEAF_GREEN}40`,
-          boxShadow: '0 25px 60px rgba(0,0,0,0.7)',
-          textAlign: 'center',
-          backdropFilter: 'blur(20px)'
-        }}>
-          <div style={{
-            width: 64,
-            height: 64,
-            borderRadius: 20,
-            background: `${RF_LEAF_GREEN}18`,
-            border: `1px solid ${RF_LEAF_GREEN}50`,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            margin: '0 auto 22px',
-            color: RF_MINT_ACCENT,
-            boxShadow: `0 0 25px ${RF_LEAF_GREEN}25`
-          }}>
-            <Shield size={32} />
-          </div>
-
-          <span style={{
-            fontSize: 11,
-            fontWeight: 700,
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
-            color: RF_MINT_ACCENT,
-            background: `${RF_LEAF_GREEN}20`,
-            border: `1px solid ${RF_LEAF_GREEN}40`,
-            padding: '4px 12px',
-            borderRadius: 100,
-            display: 'inline-block',
-            marginBottom: 14
-          }}>
-            Desktop Workstation Required
-          </span>
-
-          <h2 style={{
-            fontSize: 22,
-            fontWeight: 600,
-            color: '#FFFFFF',
-            margin: '0 0 12px',
-            lineHeight: 1.3
-          }}>
-            Admissions Portal Not Supported on Mobile
-          </h2>
-
-          <p style={{
-            fontSize: 14,
-            color: 'rgba(255,255,255,0.75)',
-            lineHeight: 1.65,
-            margin: '0 0 24px'
-          }}>
-            The Refeir Admissions & Staff Suite contains extensive applicant dossiers, proof-of-work inspection tools, and batch verification matrices that require a desktop display (minimum 1024px width).
-          </p>
-
-          <div style={{
-            background: 'rgba(0,0,0,0.25)',
-            borderRadius: 12,
-            padding: '12px 16px',
-            border: '1px solid rgba(255,255,255,0.08)',
-            marginBottom: 28,
-            fontSize: 12.5,
-            color: 'rgba(255,255,255,0.6)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 8
-          }}>
-            <Lock size={14} color={RF_MINT_ACCENT} />
-            <span>Please log in from your computer or laptop workstation.</span>
-          </div>
-
-          <button
-            onClick={() => onNavigate('/')}
-            style={{
-              width: '100%',
-              background: RF_LEAF_GREEN,
-              color: RF_DEEP_GREEN,
-              border: 'none',
-              padding: '14px 24px',
-              borderRadius: 100,
-              fontSize: 14.5,
-              fontWeight: 700,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 8,
-              boxShadow: `0 4px 18px ${RF_LEAF_GREEN}40`,
-              transition: 'all 0.2s'
-            }}
-          >
-            Return to Refeir Pioneers <ArrowRight size={16} />
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   // ─── LOGIN SCREEN ────────────────────────────────────────────────────────────
   if (!isAuthenticated) {
     return (
       <div style={{
         minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
         background: `linear-gradient(135deg, ${RF_DEEP_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
-        padding: 24, color: '#FFFFFF', paddingTop: 72
+        padding: isMobile ? '20px 14px' : 24, color: '#FFFFFF', paddingTop: isMobile ? 84 : 72
       }}>
         <div style={{
-          maxWidth: 440, width: '100%', background: 'rgba(15, 42, 26, 0.75)',
-          borderRadius: 24, padding: '40px 32px', border: '1px solid rgba(102, 187, 42, 0.3)',
+          maxWidth: 440, width: '100%', background: 'rgba(15, 42, 26, 0.82)',
+          borderRadius: isMobile ? 20 : 24, padding: isMobile ? '32px 20px' : '40px 32px',
+          border: '1px solid rgba(102, 187, 42, 0.3)',
           boxShadow: '0 25px 60px rgba(0,0,0,0.65)', textAlign: 'center', backdropFilter: 'blur(16px)'
         }}>
           <div style={{
@@ -1563,48 +1321,49 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
   // ─── AUTHENTICATED ADMIN SUITE ───────────────────────────────────────────────
   return (
     <div style={{
-      minHeight: '100vh', background: '#07180F', color: '#FFFFFF', paddingTop: 72,
+      minHeight: '100vh', background: '#07180F', color: '#FFFFFF', paddingTop: isMobile ? 80 : 72,
       fontFamily: 'Plus Jakarta Sans, sans-serif'
     }}>
       {/* Top Admin Navigation Bar */}
       <div style={{
         background: 'rgba(15, 46, 30, 0.95)', borderBottom: '1px solid rgba(102, 187, 42, 0.18)',
-        padding: '16px 24px'
+        padding: isMobile ? '12px 16px' : '16px 24px',
+        position: 'sticky', top: 0, zIndex: 100, backdropFilter: 'blur(12px)'
       }}>
         <div style={{
           maxWidth: 1280, margin: '0 auto', display: 'flex',
-          justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 14
+          justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: isMobile ? 10 : 14
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 8 : 12 }}>
             <div style={{
               background: `${RF_LEAF_GREEN}20`, border: `1px solid ${RF_LEAF_GREEN}44`,
-              width: 32, height: 32, borderRadius: 8, display: 'flex', alignItems: 'center',
+              width: isMobile ? 28 : 32, height: isMobile ? 28 : 32, borderRadius: 8, display: 'flex', alignItems: 'center',
               justifyContent: 'center', color: RF_MINT_ACCENT
             }}>
-              <Shield size={16} />
+              <Shield size={isMobile ? 14 : 16} />
             </div>
             <div>
-              <span style={{ fontSize: 14, fontWeight: 700, color: '#FFFFFF', display: 'block' }}>
+              <span style={{ fontSize: isMobile ? 13 : 14, fontWeight: 700, color: '#FFFFFF', display: 'block' }}>
                 Refeir Admissions Suite
               </span>
-              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)' }}>
+              <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)' }}>
                 Founding Cohort 001 Candidate Reviews
               </span>
             </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 6 : 10, flexWrap: 'wrap' }}>
             {/* Logged in Worker Role Badge */}
             {loggedInStaff && (
               <div style={{
-                display: 'flex', alignItems: 'center', gap: 8,
+                display: 'flex', alignItems: 'center', gap: 6,
                 background: 'rgba(24, 252, 92, 0.08)', border: '1px solid rgba(24, 252, 92, 0.25)',
-                padding: '5px 12px', borderRadius: 100
+                padding: '4px 10px', borderRadius: 100
               }}>
-                <span style={{ fontSize: 12, fontWeight: 700, color: '#FFFFFF' }}>{loggedInStaff.name}</span>
+                <span style={{ fontSize: 11.5, fontWeight: 700, color: '#FFFFFF' }}>{loggedInStaff.name}</span>
                 <span style={{
-                  fontSize: 10, fontWeight: 700, color: RF_DEEP_GREEN, background: RF_MINT_ACCENT,
-                  padding: '1px 6px', borderRadius: 100, textTransform: 'uppercase', letterSpacing: '0.04em'
+                  fontSize: 9.5, fontWeight: 700, color: RF_DEEP_GREEN, background: RF_MINT_ACCENT,
+                  padding: '1px 5px', borderRadius: 100, textTransform: 'uppercase', letterSpacing: '0.04em'
                 }}>
                   {loggedInStaff.role.replace('_', ' ')}
                 </span>
@@ -1616,11 +1375,11 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               disabled={loading}
               style={{
                 background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)',
-                color: '#FFFFFF', padding: '7px 14px', borderRadius: 100, fontSize: 12,
-                fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6
+                color: '#FFFFFF', padding: isMobile ? '6px 10px' : '7px 14px', borderRadius: 100, fontSize: isMobile ? 11.5 : 12,
+                fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5
               }}
             >
-              <RefreshCw size={13} className={loading ? 'rp-spin' : ''} />
+              <RefreshCw size={12} className={loading ? 'rp-spin' : ''} />
               Refresh
             </button>
 
@@ -1628,44 +1387,57 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               onClick={handleExportCSV}
               style={{
                 background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)',
-                color: '#FFFFFF', padding: '7px 14px', borderRadius: 100, fontSize: 12,
-                fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6
+                color: '#FFFFFF', padding: isMobile ? '6px 10px' : '7px 14px', borderRadius: 100, fontSize: isMobile ? 11.5 : 12,
+                fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5
               }}
             >
-              <Download size={13} />
-              Export CSV
+              <Download size={12} />
+              Export
             </button>
 
             <button
               onClick={handleLogout}
               style={{
                 background: 'rgba(239, 68, 68, 0.12)', border: '1px solid rgba(239, 68, 68, 0.3)',
-                color: '#FCA5A5', padding: '7px 14px', borderRadius: 100, fontSize: 12,
-                fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6
+                color: '#FCA5A5', padding: isMobile ? '6px 10px' : '7px 14px', borderRadius: 100, fontSize: isMobile ? 11.5 : 12,
+                fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5
               }}
             >
-              <LogOut size={13} />
-              Exit Admin
+              <LogOut size={12} />
+              Exit
             </button>
           </div>
         </div>
       </div>
 
-      <div style={{ maxWidth: 1280, margin: '0 auto', padding: '36px 24px 80px' }}>
-        {/* Navigation Tabs between Applications, Proofs of Work, and Review Team & Workers */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 28, borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: 16, flexWrap: 'wrap' }}>
+      <div style={{ maxWidth: 1280, margin: '0 auto', padding: isMobile ? '20px 14px 60px' : '36px 24px 80px' }}>
+        {/* Navigation Tabs */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: isMobile ? 8 : 12,
+          marginBottom: isMobile ? 20 : 28,
+          borderBottom: '1px solid rgba(255,255,255,0.08)',
+          paddingBottom: 14,
+          overflowX: 'auto',
+          WebkitOverflowScrolling: 'touch',
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none'
+        }}>
           <button
             onClick={() => setAdminTab('applications')}
             style={{
+              flexShrink: 0,
+              whiteSpace: 'nowrap',
               background: adminTab === 'applications' ? RF_LEAF_GREEN : 'rgba(255,255,255,0.05)',
               color: adminTab === 'applications' ? RF_DEEP_GREEN : '#FFFFFF',
-              border: 'none', padding: '10px 20px', borderRadius: 100, fontSize: 13.5,
+              border: 'none', padding: isMobile ? '8px 14px' : '10px 20px', borderRadius: 100, fontSize: isMobile ? 12.5 : 13.5,
               fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
               transition: 'all 0.2s'
             }}
           >
-            <UserCheck size={16} />
-            Applications &amp; Admissions
+            <UserCheck size={isMobile ? 14 : 16} />
+            Applications
             <span style={{
               background: adminTab === 'applications' ? 'rgba(15, 46, 30, 0.25)' : 'rgba(255,255,255,0.15)',
               padding: '2px 8px', borderRadius: 100, fontSize: 11
@@ -1677,15 +1449,17 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           <button
             onClick={() => setAdminTab('proofs')}
             style={{
+              flexShrink: 0,
+              whiteSpace: 'nowrap',
               background: adminTab === 'proofs' ? RF_LEAF_GREEN : 'rgba(255,255,255,0.05)',
               color: adminTab === 'proofs' ? RF_DEEP_GREEN : '#FFFFFF',
-              border: 'none', padding: '10px 20px', borderRadius: 100, fontSize: 13.5,
+              border: 'none', padding: isMobile ? '8px 14px' : '10px 20px', borderRadius: 100, fontSize: isMobile ? 12.5 : 13.5,
               fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
               transition: 'all 0.2s'
             }}
           >
-            <FileCheck size={16} />
-            Task Submissions &amp; Proofs
+            <FileCheck size={isMobile ? 14 : 16} />
+            Task Proofs
             <span style={{
               background: adminTab === 'proofs' ? 'rgba(15, 46, 30, 0.25)' : RF_MINT_ACCENT,
               color: adminTab === 'proofs' ? RF_DEEP_GREEN : RF_DEEP_GREEN,
@@ -1698,14 +1472,16 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           <button
             onClick={() => { setAdminTab('members'); refreshMembers(); }}
             style={{
+              flexShrink: 0,
+              whiteSpace: 'nowrap',
               background: adminTab === 'members' ? RF_LEAF_GREEN : 'rgba(255,255,255,0.05)',
               color: adminTab === 'members' ? RF_DEEP_GREEN : '#FFFFFF',
-              border: 'none', padding: '10px 20px', borderRadius: 100, fontSize: 13.5,
+              border: 'none', padding: isMobile ? '8px 14px' : '10px 20px', borderRadius: 100, fontSize: isMobile ? 12.5 : 13.5,
               fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
               transition: 'all 0.2s'
             }}
           >
-            <Award size={16} />
+            <Award size={isMobile ? 14 : 16} />
             Pioneer Profiles
             <span style={{
               background: adminTab === 'members' ? 'rgba(15, 46, 30, 0.25)' : 'rgba(255,255,255,0.15)',
@@ -1718,14 +1494,16 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           <button
             onClick={() => setAdminTab('workers')}
             style={{
+              flexShrink: 0,
+              whiteSpace: 'nowrap',
               background: adminTab === 'workers' ? RF_LEAF_GREEN : 'rgba(255,255,255,0.05)',
               color: adminTab === 'workers' ? RF_DEEP_GREEN : '#FFFFFF',
-              border: 'none', padding: '10px 20px', borderRadius: 100, fontSize: 13.5,
+              border: 'none', padding: isMobile ? '8px 14px' : '10px 20px', borderRadius: 100, fontSize: isMobile ? 12.5 : 13.5,
               fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
               transition: 'all 0.2s'
             }}
           >
-            <Users size={16} />
+            <Users size={isMobile ? 14 : 16} />
             Review Team &amp; Workers
             <span style={{
               background: adminTab === 'workers' ? 'rgba(15, 46, 30, 0.25)' : 'rgba(255,255,255,0.15)',
@@ -1738,14 +1516,16 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           <button
             onClick={() => { setAdminTab('certificates'); refreshCertificates(); }}
             style={{
+              flexShrink: 0,
+              whiteSpace: 'nowrap',
               background: adminTab === 'certificates' ? RF_LEAF_GREEN : 'rgba(255,255,255,0.05)',
               color: adminTab === 'certificates' ? RF_DEEP_GREEN : '#FFFFFF',
-              border: 'none', padding: '10px 20px', borderRadius: 100, fontSize: 13.5,
+              border: 'none', padding: isMobile ? '8px 14px' : '10px 20px', borderRadius: 100, fontSize: isMobile ? 12.5 : 13.5,
               fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
               transition: 'all 0.2s'
             }}
           >
-            <Award size={16} />
+            <Award size={isMobile ? 14 : 16} />
             Certifications
             <span style={{
               background: adminTab === 'certificates' ? 'rgba(15, 46, 30, 0.25)' : RF_GOLD_YELLOW,
@@ -1759,15 +1539,17 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           <button
             onClick={() => { setAdminTab('tasks'); refreshTasks(); }}
             style={{
+              flexShrink: 0,
+              whiteSpace: 'nowrap',
               background: adminTab === 'tasks' ? RF_LEAF_GREEN : 'rgba(255,255,255,0.05)',
               color: adminTab === 'tasks' ? RF_DEEP_GREEN : '#FFFFFF',
-              border: 'none', padding: '10px 20px', borderRadius: 100, fontSize: 13.5,
+              border: 'none', padding: isMobile ? '8px 14px' : '10px 20px', borderRadius: 100, fontSize: isMobile ? 12.5 : 13.5,
               fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
               transition: 'all 0.2s'
             }}
           >
-            <Megaphone size={16} />
-            Squad Tasks &amp; Bounties
+            <Megaphone size={isMobile ? 14 : 16} />
+            Squad Missions
             <span style={{
               background: adminTab === 'tasks' ? 'rgba(15, 46, 30, 0.25)' : RF_MINT_ACCENT,
               color: adminTab === 'tasks' ? RF_DEEP_GREEN : RF_DEEP_GREEN,
@@ -1776,59 +1558,37 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               {tasksList.filter(t => t.status === 'ACTIVE').length}
             </span>
           </button>
-
-          <button
-            onClick={() => setAdminTab('database')}
-            style={{
-              background: adminTab === 'database' ? RF_LEAF_GREEN : 'rgba(255,255,255,0.05)',
-              color: adminTab === 'database' ? RF_DEEP_GREEN : '#FFFFFF',
-              border: 'none', padding: '10px 20px', borderRadius: 100, fontSize: 13.5,
-              fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
-              transition: 'all 0.2s'
-            }}
-          >
-            <Database size={16} />
-            Database &amp; Supabase
-            <span style={{
-              background: isSupabaseConfigured ? 'rgba(24, 252, 92, 0.2)' : 'rgba(246, 178, 26, 0.2)',
-              color: isSupabaseConfigured ? (adminTab === 'database' ? RF_DEEP_GREEN : RF_MINT_ACCENT) : (adminTab === 'database' ? RF_DEEP_GREEN : RF_GOLD_YELLOW),
-              padding: '2px 8px', borderRadius: 100, fontSize: 10.5, fontWeight: 800,
-              letterSpacing: '0.04em'
-            }}>
-              {isSupabaseConfigured ? 'CONNECTED' : 'LOCAL'}
-            </span>
-          </button>
         </div>
 
         {adminTab === 'applications' && (
           <div>
             {/* KPI & Metrics Bar */}
         <div style={{
-          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: 16, marginBottom: 32
+          display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fit, minmax(200px, 1fr))',
+          gap: isMobile ? 10 : 16, marginBottom: isMobile ? 20 : 32
         }}>
-          <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
-            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Total Applications</span>
-            <div style={{ fontSize: 32, fontWeight: 700, color: '#FFFFFF', marginTop: 4 }}>{stats.total}</div>
-            <span style={{ fontSize: 12, color: RF_MINT_ACCENT }}>All time received</span>
+          <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: isMobile ? 14 : 16, padding: isMobile ? '14px 14px' : '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Total Applications</span>
+            <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: '#FFFFFF', marginTop: 4 }}>{stats.total}</div>
+            <span style={{ fontSize: isMobile ? 11 : 12, color: RF_MINT_ACCENT }}>All time received</span>
           </div>
 
-          <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
-            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Pending Review</span>
-            <div style={{ fontSize: 32, fontWeight: 700, color: RF_GOLD_YELLOW, marginTop: 4 }}>{stats.pending}</div>
-            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>Requires decision</span>
+          <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: isMobile ? 14 : 16, padding: isMobile ? '14px 14px' : '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Pending Review</span>
+            <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: RF_GOLD_YELLOW, marginTop: 4 }}>{stats.pending}</div>
+            <span style={{ fontSize: isMobile ? 11 : 12, color: 'rgba(255,255,255,0.5)' }}>Requires decision</span>
           </div>
 
-          <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
-            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Accepted Pioneers</span>
-            <div style={{ fontSize: 32, fontWeight: 700, color: RF_MINT_ACCENT, marginTop: 4 }}>{stats.accepted}</div>
-            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>Approved candidates</span>
+          <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: isMobile ? 14 : 16, padding: isMobile ? '14px 14px' : '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Accepted Pioneers</span>
+            <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: RF_MINT_ACCENT, marginTop: 4 }}>{stats.accepted}</div>
+            <span style={{ fontSize: isMobile ? 11 : 12, color: 'rgba(255,255,255,0.5)' }}>Approved candidates</span>
           </div>
 
-          <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
-            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Founding 100 Seats</span>
-            <div style={{ fontSize: 32, fontWeight: 700, color: '#FFFFFF', marginTop: 4 }}>
-              {stats.founding} <span style={{ fontSize: 18, color: 'rgba(255,255,255,0.4)' }}>/ 100</span>
+          <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: isMobile ? 14 : 16, padding: isMobile ? '14px 14px' : '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Founding 100 Seats</span>
+            <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: '#FFFFFF', marginTop: 4 }}>
+              {stats.founding} <span style={{ fontSize: isMobile ? 14 : 18, color: 'rgba(255,255,255,0.4)' }}>/ 100</span>
             </div>
             <div style={{ width: '100%', height: 4, borderRadius: 100, background: 'rgba(255,255,255,0.1)', marginTop: 8 }}>
               <div style={{ width: `${Math.min(100, stats.founding)}%`, height: '100%', borderRadius: 100, background: RF_MINT_ACCENT }} />
@@ -1838,16 +1598,16 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
         {/* Filters & Search Controls */}
         <div style={{
-          background: 'rgba(255,255,255,0.02)', borderRadius: 18, padding: '20px 22px',
-          border: '1px solid rgba(255,255,255,0.08)', marginBottom: 24,
-          display: 'flex', flexWrap: 'wrap', gap: 14, alignItems: 'center', justifyContent: 'space-between'
+          background: 'rgba(255,255,255,0.02)', borderRadius: isMobile ? 14 : 18, padding: isMobile ? '14px' : '20px 22px',
+          border: '1px solid rgba(255,255,255,0.08)', marginBottom: isMobile ? 16 : 24,
+          display: 'flex', flexWrap: 'wrap', gap: isMobile ? 10 : 14, alignItems: 'center', justifyContent: 'space-between'
         }}>
           {/* Search Bar */}
-          <div style={{ position: 'relative', flex: '1 1 280px', maxWidth: 420 }}>
+          <div style={{ position: 'relative', flex: isMobile ? '1 1 100%' : '1 1 280px', maxWidth: isMobile ? '100%' : 420 }}>
             <Search size={16} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)' }} />
             <input
               type="text"
-              placeholder="Search by name, email, RP-2026 number, country..."
+              placeholder="Search candidate, email, ID..."
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
               style={{
@@ -1859,13 +1619,14 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           </div>
 
           {/* Filter Dropdowns */}
-          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', width: isMobile ? '100%' : 'auto' }}>
             <select
               value={statusFilter}
               onChange={e => setStatusFilter(e.target.value)}
               style={{
                 background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)',
-                color: '#FFFFFF', padding: '9px 16px', borderRadius: 100, fontSize: 12.5, outline: 'none'
+                color: '#FFFFFF', padding: isMobile ? '7px 12px' : '9px 16px', borderRadius: 100, fontSize: 12, outline: 'none',
+                flex: isMobile ? 1 : 'none'
               }}
             >
               <option value="ALL">All Statuses</option>
@@ -1881,7 +1642,8 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               onChange={e => setDivisionFilter(e.target.value)}
               style={{
                 background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)',
-                color: '#FFFFFF', padding: '9px 16px', borderRadius: 100, fontSize: 12.5, outline: 'none'
+                color: '#FFFFFF', padding: isMobile ? '7px 12px' : '9px 16px', borderRadius: 100, fontSize: 12, outline: 'none',
+                flex: isMobile ? 1 : 'none'
               }}
             >
               <option value="ALL">All Divisions</option>
@@ -1894,7 +1656,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             </select>
 
             <label style={{
-              display: 'flex', alignItems: 'center', gap: 6, fontSize: 12.5,
+              display: 'flex', alignItems: 'center', gap: 6, fontSize: 12,
               color: 'rgba(255,255,255,0.75)', cursor: 'pointer', userSelect: 'none'
             }}>
               <input
@@ -1913,8 +1675,8 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           background: 'rgba(255,255,255,0.02)', borderRadius: 18, border: '1px solid rgba(255,255,255,0.08)',
           overflow: 'hidden'
         }}>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: 13 }}>
+          <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+            <table style={{ width: '100%', minWidth: 700, borderCollapse: 'collapse', textAlign: 'left', fontSize: 13 }}>
               <thead>
                 <tr style={{ background: 'rgba(255,255,255,0.04)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
                   <th style={{ padding: '14px 18px', fontWeight: 600, color: 'rgba(255,255,255,0.6)' }}>Application ID</th>
@@ -2164,7 +1926,8 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             background: 'rgba(255,255,255,0.02)', borderRadius: 18,
             border: '1px solid rgba(255,255,255,0.08)', overflow: 'hidden'
           }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+            <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+              <table style={{ width: '100%', minWidth: 700, borderCollapse: 'collapse', textAlign: 'left' }}>
               <thead>
                 <tr style={{ background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
                   <th style={{ padding: '14px 18px', fontSize: 11.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>Reference / Date</th>
@@ -2269,6 +2032,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 )}
               </tbody>
             </table>
+            </div>
           </div>
         </div>
       )}
@@ -2452,7 +2216,8 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             background: 'rgba(255,255,255,0.02)', borderRadius: 20, border: '1px solid rgba(255,255,255,0.08)',
             overflow: 'hidden'
           }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+            <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+              <table style={{ width: '100%', minWidth: 720, borderCollapse: 'collapse', textAlign: 'left' }}>
               <thead>
                 <tr style={{ background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
                   <th style={{ padding: '16px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Member / Pioneer</th>
@@ -2676,6 +2441,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 )}
               </tbody>
             </table>
+            </div>
           </div>
         </div>
       )}
@@ -2839,7 +2605,8 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             background: 'rgba(255,255,255,0.02)', borderRadius: 20, border: '1px solid rgba(255,255,255,0.08)',
             overflow: 'hidden'
           }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+            <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+              <table style={{ width: '100%', minWidth: 700, borderCollapse: 'collapse', textAlign: 'left' }}>
               <thead>
                 <tr style={{ background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
                   <th style={{ padding: '16px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Worker / Reviewer</th>
@@ -3017,6 +2784,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 )}
               </tbody>
             </table>
+            </div>
           </div>
         </div>
       )}
@@ -3192,7 +2960,8 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             background: 'rgba(255,255,255,0.02)', borderRadius: 20, border: '1px solid rgba(255,255,255,0.08)',
             overflow: 'hidden'
           }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+            <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+              <table style={{ width: '100%', minWidth: 720, borderCollapse: 'collapse', textAlign: 'left' }}>
               <thead>
                 <tr style={{ background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
                   <th style={{ padding: '16px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Certificate Serial &amp; Hash</th>
@@ -3347,6 +3116,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 )}
               </tbody>
             </table>
+            </div>
           </div>
         </div>
       )}
@@ -3554,7 +3324,8 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             background: 'rgba(255,255,255,0.02)', borderRadius: 18,
             border: '1px solid rgba(255,255,255,0.08)', overflow: 'hidden'
           }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: 13 }}>
+            <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+              <table style={{ width: '100%', minWidth: 700, borderCollapse: 'collapse', textAlign: 'left', fontSize: 13 }}>
               <thead>
                 <tr style={{ background: 'rgba(0,0,0,0.3)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
                   <th style={{ padding: '16px 20px', color: 'rgba(255,255,255,0.6)', fontWeight: 600, fontSize: 11.5, textTransform: 'uppercase' }}>Target Squad &amp; Mission</th>
@@ -3746,572 +3517,32 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 )}
               </tbody>
             </table>
+            </div>
           </div>
         </div>
       )}
-
-        {/* ═════════════════════════════════════════════════════════════════════════ */}
-        {/* ─── TAB 7: DATABASE & SUPABASE BACKEND MANAGEMENT ───────────────────── */}
-        {/* ═════════════════════════════════════════════════════════════════════════ */}
-        {adminTab === 'database' && (
-          <div>
-            {/* Header with Title & Action Controls */}
-            <div style={{
-              display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
-              flexWrap: 'wrap', gap: 16, marginBottom: 24
-            }}>
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
-                  <div style={{
-                    width: 36, height: 36, borderRadius: 10, background: 'rgba(24, 252, 92, 0.12)',
-                    border: `1px solid ${RF_LEAF_GREEN}55`, display: 'flex', alignItems: 'center',
-                    justifyContent: 'center', color: RF_MINT_ACCENT
-                  }}>
-                    <Database size={20} />
-                  </div>
-                  <h2 style={{ fontSize: 24, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
-                    Database &amp; Backend Infrastructure
-                  </h2>
-                </div>
-                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', margin: 0 }}>
-                  Dual-mode persistence engine: Local Reactive Storage ↔ Live PostgreSQL via Supabase
-                </p>
-              </div>
-
-              {/* Action Buttons */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-                <button
-                  onClick={handleTestDatabase}
-                  disabled={dbTesting}
-                  style={{
-                    background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)',
-                    color: '#FFFFFF', padding: '9px 16px', borderRadius: 100, fontSize: 13,
-                    fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
-                    transition: 'all 0.2s'
-                  }}
-                >
-                  <RefreshCw size={14} className={dbTesting ? 'animate-spin' : ''} />
-                  {dbTesting ? 'Checking Latency...' : 'Test Connection'}
-                </button>
-
-                <button
-                  onClick={handleSyncAllToSupabase}
-                  disabled={dbSyncing}
-                  style={{
-                    background: RF_LEAF_GREEN, color: RF_DEEP_GREEN, border: 'none',
-                    padding: '9px 18px', borderRadius: 100, fontSize: 13, fontWeight: 700,
-                    cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
-                    boxShadow: `0 4px 14px ${RF_LEAF_GREEN}44`
-                  }}
-                >
-                  <UploadCloud size={15} />
-                  {dbSyncing ? 'Syncing to Cloud...' : 'Push Local → Supabase'}
-                </button>
-
-                <button
-                  onClick={handleFetchAllFromDatabase}
-                  disabled={dbSyncing || !isSupabaseConfigured}
-                  style={{
-                    background: 'rgba(24, 252, 92, 0.1)', border: `1px solid ${RF_LEAF_GREEN}55`,
-                    color: RF_MINT_ACCENT, padding: '9px 16px', borderRadius: 100, fontSize: 13,
-                    fontWeight: 600, cursor: isSupabaseConfigured ? 'pointer' : 'not-allowed',
-                    display: 'flex', alignItems: 'center', gap: 8
-                  }}
-                  title={!isSupabaseConfigured ? 'Supabase not configured in .env' : 'Pull latest records from cloud'}
-                >
-                  <DownloadCloud size={15} />
-                  Pull Supabase → Local
-                </button>
-
-                <button
-                  onClick={handleCopySchema}
-                  style={{
-                    background: dbSchemaCopied ? 'rgba(24, 252, 92, 0.2)' : 'rgba(255, 209, 102, 0.12)',
-                    border: `1px solid ${dbSchemaCopied ? RF_MINT_ACCENT : RF_GOLD_YELLOW}55`,
-                    color: dbSchemaCopied ? RF_MINT_ACCENT : RF_GOLD_YELLOW,
-                    padding: '9px 16px', borderRadius: 100, fontSize: 13, fontWeight: 700,
-                    cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8
-                  }}
-                >
-                  <Copy size={14} />
-                  {dbSchemaCopied ? 'Copied schema.sql!' : 'Copy SQL Schema'}
-                </button>
-              </div>
-            </div>
-
-            {/* Notification / Toast Banner */}
-            {dbSyncResult && (
-              <div style={{
-                marginBottom: 24, padding: '14px 18px', borderRadius: 14,
-                background: dbSyncResult.type === 'success' ? 'rgba(24, 252, 92, 0.1)' : 'rgba(246, 178, 26, 0.1)',
-                border: `1px solid ${dbSyncResult.type === 'success' ? RF_LEAF_GREEN : RF_GOLD_YELLOW}66`,
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  {dbSyncResult.type === 'success' ? (
-                    <CheckCircle2 size={18} color={RF_MINT_ACCENT} />
-                  ) : (
-                    <AlertCircle size={18} color={RF_GOLD_YELLOW} />
-                  )}
-                  <span style={{ fontSize: 13, color: '#FFFFFF', fontWeight: 500 }}>
-                    {dbSyncResult.message}
-                  </span>
-                </div>
-                <button
-                  onClick={() => setDbSyncResult(null)}
-                  style={{
-                    background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.6)',
-                    cursor: 'pointer', fontSize: 16
-                  }}
-                >
-                  ✕
-                </button>
-              </div>
-            )}
-
-            {/* Sub-tab Navigation */}
-            <div style={{
-              display: 'flex', gap: 8, marginBottom: 24,
-              borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: 12
-            }}>
-              <button
-                onClick={() => setDbActiveSubTab('overview')}
-                style={{
-                  background: dbActiveSubTab === 'overview' ? 'rgba(24, 252, 92, 0.15)' : 'transparent',
-                  color: dbActiveSubTab === 'overview' ? RF_MINT_ACCENT : 'rgba(255,255,255,0.7)',
-                  border: dbActiveSubTab === 'overview' ? `1px solid ${RF_LEAF_GREEN}66` : '1px solid transparent',
-                  padding: '7px 16px', borderRadius: 100, fontSize: 12.5, fontWeight: 700, cursor: 'pointer'
-                }}
-              >
-                Engine Overview &amp; Health
-              </button>
-
-              <button
-                onClick={() => setDbActiveSubTab('tables')}
-                style={{
-                  background: dbActiveSubTab === 'tables' ? 'rgba(24, 252, 92, 0.15)' : 'transparent',
-                  color: dbActiveSubTab === 'tables' ? RF_MINT_ACCENT : 'rgba(255,255,255,0.7)',
-                  border: dbActiveSubTab === 'tables' ? `1px solid ${RF_LEAF_GREEN}66` : '1px solid transparent',
-                  padding: '7px 16px', borderRadius: 100, fontSize: 12.5, fontWeight: 700, cursor: 'pointer'
-                }}
-              >
-                Database Tables (6)
-              </button>
-
-              <button
-                onClick={() => setDbActiveSubTab('schema')}
-                style={{
-                  background: dbActiveSubTab === 'schema' ? 'rgba(24, 252, 92, 0.15)' : 'transparent',
-                  color: dbActiveSubTab === 'schema' ? RF_MINT_ACCENT : 'rgba(255,255,255,0.7)',
-                  border: dbActiveSubTab === 'schema' ? `1px solid ${RF_LEAF_GREEN}66` : '1px solid transparent',
-                  padding: '7px 16px', borderRadius: 100, fontSize: 12.5, fontWeight: 700, cursor: 'pointer'
-                }}
-              >
-                PostgreSQL Schema Viewer
-              </button>
-
-              <button
-                onClick={() => setDbActiveSubTab('instructions')}
-                style={{
-                  background: dbActiveSubTab === 'instructions' ? 'rgba(24, 252, 92, 0.15)' : 'transparent',
-                  color: dbActiveSubTab === 'instructions' ? RF_MINT_ACCENT : 'rgba(255,255,255,0.7)',
-                  border: dbActiveSubTab === 'instructions' ? `1px solid ${RF_LEAF_GREEN}66` : '1px solid transparent',
-                  padding: '7px 16px', borderRadius: 100, fontSize: 12.5, fontWeight: 700, cursor: 'pointer'
-                }}
-              >
-                Setup Guide (.env)
-              </button>
-            </div>
-
-            {/* Sub-tab 1: Engine Overview & Health */}
-            {dbActiveSubTab === 'overview' && (
-              <div>
-                {/* Diagnostics Grid */}
-                <div style={{
-                  display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-                  gap: 16, marginBottom: 28
-                }}>
-                  {/* Card 1: Connection Mode */}
-                  <div style={{
-                    background: 'rgba(255,255,255,0.03)', borderRadius: 18, padding: '22px 24px',
-                    border: `1px solid ${isSupabaseConfigured ? RF_LEAF_GREEN : RF_GOLD_YELLOW}44`,
-                    position: 'relative', overflow: 'hidden'
-                  }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600 }}>
-                        Active Database Mode
-                      </span>
-                      {isSupabaseConfigured ? (
-                        <span style={{
-                          background: 'rgba(24, 252, 92, 0.15)', color: RF_MINT_ACCENT,
-                          padding: '3px 10px', borderRadius: 100, fontSize: 11, fontWeight: 700,
-                          display: 'flex', alignItems: 'center', gap: 5
-                        }}>
-                          <Wifi size={12} /> SUPABASE CONNECTED
-                        </span>
-                      ) : (
-                        <span style={{
-                          background: 'rgba(246, 178, 26, 0.15)', color: RF_GOLD_YELLOW,
-                          padding: '3px 10px', borderRadius: 100, fontSize: 11, fontWeight: 700,
-                          display: 'flex', alignItems: 'center', gap: 5
-                        }}>
-                          <HardDrive size={12} /> LOCAL REACTIVE
-                        </span>
-                      )}
-                    </div>
-                    <div style={{ fontSize: 22, fontWeight: 700, color: '#FFFFFF', marginBottom: 6 }}>
-                      {isSupabaseConfigured ? 'Live PostgreSQL Backend' : 'Client-Side Offline Engine'}
-                    </div>
-                    <p style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.65)', lineHeight: 1.5, margin: 0 }}>
-                      {isSupabaseConfigured
-                        ? 'Connected to live cloud PostgreSQL cluster. Data writes and updates replicate directly to cloud tables.'
-                        : 'Operating via localStorage cache. Zero latency, instant responses, fully operational without cloud credentials.'}
-                    </p>
-                  </div>
-
-                  {/* Card 2: Cluster Latency */}
-                  <div style={{
-                    background: 'rgba(255,255,255,0.03)', borderRadius: 18, padding: '22px 24px',
-                    border: '1px solid rgba(255,255,255,0.08)'
-                  }}>
-                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600 }}>
-                      Ping Latency &amp; Speed
-                    </span>
-                    <div style={{ fontSize: 28, fontWeight: 700, color: RF_MINT_ACCENT, marginTop: 8, marginBottom: 4 }}>
-                      {dbDiagnostics?.latencyMs !== undefined ? `${dbDiagnostics.latencyMs} ms` : (isSupabaseConfigured ? 'Ready' : '< 1 ms (Local)')}
-                    </div>
-                    <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', margin: 0 }}>
-                      {isSupabaseConfigured
-                        ? `Project: ${dbDiagnostics?.projectUrl || 'Supabase Endpoint'}`
-                        : 'Local memory storage provides instantaneous microsecond reads & writes.'}
-                    </p>
-                  </div>
-
-                  {/* Card 3: Fault-Tolerance & Auto-Failover */}
-                  <div style={{
-                    background: 'rgba(255,255,255,0.03)', borderRadius: 18, padding: '22px 24px',
-                    border: '1px solid rgba(255,255,255,0.08)'
-                  }}>
-                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600 }}>
-                      Offline Failover Status
-                    </span>
-                    <div style={{ fontSize: 24, fontWeight: 700, color: '#FFFFFF', marginTop: 8, marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <CheckCircle2 size={22} color={RF_MINT_ACCENT} /> Active &amp; Guarded
-                    </div>
-                    <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', margin: 0 }}>
-                      If network connectivity drops, the app automatically falls back to local storage without throwing unhandled exceptions.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Table Record Counters */}
-                <h3 style={{ fontSize: 16, fontWeight: 700, color: '#FFFFFF', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <Layers size={18} color={RF_MINT_ACCENT} />
-                  Table Entities &amp; Cached Records
-                </h3>
-
-                <div style={{
-                  display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-                  gap: 14, marginBottom: 32
-                }}>
-                  <div style={{ background: 'rgba(0,0,0,0.3)', borderRadius: 14, padding: '16px 18px', border: '1px solid rgba(255,255,255,0.08)' }}>
-                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>Applications</div>
-                    <div style={{ fontSize: 26, fontWeight: 700, color: '#FFFFFF', marginTop: 4 }}>{applications.length}</div>
-                    <div style={{ fontSize: 11.5, color: RF_MINT_ACCENT, marginTop: 2 }}>pioneer_applications</div>
-                  </div>
-
-                  <div style={{ background: 'rgba(0,0,0,0.3)', borderRadius: 14, padding: '16px 18px', border: '1px solid rgba(255,255,255,0.08)' }}>
-                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>Pioneers</div>
-                    <div style={{ fontSize: 26, fontWeight: 700, color: '#FFFFFF', marginTop: 4 }}>{membersList.length}</div>
-                    <div style={{ fontSize: 11.5, color: RF_MINT_ACCENT, marginTop: 2 }}>contributor_profiles</div>
-                  </div>
-
-                  <div style={{ background: 'rgba(0,0,0,0.3)', borderRadius: 14, padding: '16px 18px', border: '1px solid rgba(255,255,255,0.08)' }}>
-                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>Squad Missions</div>
-                    <div style={{ fontSize: 26, fontWeight: 700, color: '#FFFFFF', marginTop: 4 }}>{tasksList.length}</div>
-                    <div style={{ fontSize: 11.5, color: RF_MINT_ACCENT, marginTop: 2 }}>squad_tasks</div>
-                  </div>
-
-                  <div style={{ background: 'rgba(0,0,0,0.3)', borderRadius: 14, padding: '16px 18px', border: '1px solid rgba(255,255,255,0.08)' }}>
-                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>Deliverables</div>
-                    <div style={{ fontSize: 26, fontWeight: 700, color: '#FFFFFF', marginTop: 4 }}>{taskSubmissions.length}</div>
-                    <div style={{ fontSize: 11.5, color: RF_MINT_ACCENT, marginTop: 2 }}>pioneer_proof_of_work</div>
-                  </div>
-
-                  <div style={{ background: 'rgba(0,0,0,0.3)', borderRadius: 14, padding: '16px 18px', border: '1px solid rgba(255,255,255,0.08)' }}>
-                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>Certificates</div>
-                    <div style={{ fontSize: 26, fontWeight: 700, color: '#FFFFFF', marginTop: 4 }}>{certificatesList.length}</div>
-                    <div style={{ fontSize: 11.5, color: RF_MINT_ACCENT, marginTop: 2 }}>pioneer_certificates</div>
-                  </div>
-
-                  <div style={{ background: 'rgba(0,0,0,0.3)', borderRadius: 14, padding: '16px 18px', border: '1px solid rgba(255,255,255,0.08)' }}>
-                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>Staff Team</div>
-                    <div style={{ fontSize: 26, fontWeight: 700, color: '#FFFFFF', marginTop: 4 }}>{staffList.length}</div>
-                    <div style={{ fontSize: 11.5, color: RF_MINT_ACCENT, marginTop: 2 }}>staff_members</div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Sub-tab 2: Database Tables Inspector */}
-            {dbActiveSubTab === 'tables' && (
-              <div style={{
-                background: 'rgba(0,0,0,0.25)', borderRadius: 16, border: '1px solid rgba(255,255,255,0.08)',
-                overflow: 'hidden'
-              }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: 13 }}>
-                  <thead>
-                    <tr style={{ background: 'rgba(255,255,255,0.04)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                      <th style={{ padding: '14px 18px', color: 'rgba(255,255,255,0.6)', fontWeight: 600 }}>Table Name</th>
-                      <th style={{ padding: '14px 18px', color: 'rgba(255,255,255,0.6)', fontWeight: 600 }}>Entity Description</th>
-                      <th style={{ padding: '14px 18px', color: 'rgba(255,255,255,0.6)', fontWeight: 600 }}>Local Count</th>
-                      <th style={{ padding: '14px 18px', color: 'rgba(255,255,255,0.6)', fontWeight: 600 }}>Supabase Table Status</th>
-                      <th style={{ padding: '14px 18px', color: 'rgba(255,255,255,0.6)', fontWeight: 600 }}>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {[
-                      {
-                        name: 'pioneer_applications',
-                        desc: 'Founding Cohort applicant submissions, contact info, squad, review decisions',
-                        count: applications.length,
-                        tab: 'applications' as const
-                      },
-                      {
-                        name: 'contributor_profiles',
-                        desc: 'Pioneer contributor logins, profile details, social handles, payout info',
-                        count: membersList.length,
-                        tab: 'members' as const
-                      },
-                      {
-                        name: 'squad_tasks',
-                        desc: 'Sprint tasks, daily missions, and bounties (Airtime, Data, Cash)',
-                        count: tasksList.length,
-                        tab: 'tasks' as const
-                      },
-                      {
-                        name: 'pioneer_proof_of_work',
-                        desc: 'Deliverable submissions, screenshots, URLs, verification status & feedback',
-                        count: taskSubmissions.length,
-                        tab: 'proofs' as const
-                      },
-                      {
-                        name: 'pioneer_certificates',
-                        desc: 'Official tamper-evident certificates with cryptographic verification hash',
-                        count: certificatesList.length,
-                        tab: 'certificates' as const
-                      },
-                      {
-                        name: 'staff_members',
-                        desc: 'Admissions reviewers, verifiers, squad leads, and administrator credentials',
-                        count: staffList.length,
-                        tab: 'workers' as const
-                      }
-                    ].map((tbl, i) => {
-                      const keyMap: Record<string, keyof NonNullable<SupabaseDiagnostics['tablesFound']>> = {
-                        pioneer_applications: 'applications',
-                        contributor_profiles: 'profiles',
-                        squad_tasks: 'tasks',
-                        pioneer_proof_of_work: 'proofOfWork',
-                        pioneer_certificates: 'certificates',
-                        staff_members: 'staff'
-                      };
-                      const foundKey = keyMap[tbl.name];
-                      const isFound = dbDiagnostics?.tablesFound && foundKey ? dbDiagnostics.tablesFound[foundKey] : false;
-                      const tableStatus = isFound ? 'READY' : (isSupabaseConfigured ? 'CHECKING' : 'LOCAL');
-                      return (
-                        <tr
-                          key={tbl.name}
-                          style={{
-                            borderBottom: i < 5 ? '1px solid rgba(255,255,255,0.06)' : 'none',
-                            background: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.015)'
-                          }}
-                        >
-                          <td style={{ padding: '14px 18px', fontFamily: 'monospace', fontWeight: 700, color: RF_MINT_ACCENT }}>
-                            {tbl.name}
-                          </td>
-                          <td style={{ padding: '14px 18px', color: 'rgba(255,255,255,0.75)', maxWidth: 380 }}>
-                            {tbl.desc}
-                          </td>
-                          <td style={{ padding: '14px 18px', fontWeight: 700, color: '#FFFFFF' }}>
-                            {tbl.count}
-                          </td>
-                          <td style={{ padding: '14px 18px' }}>
-                            <span style={{
-                              background: tableStatus === 'READY' ? 'rgba(24, 252, 92, 0.12)' : 'rgba(246, 178, 26, 0.12)',
-                              color: tableStatus === 'READY' ? RF_MINT_ACCENT : RF_GOLD_YELLOW,
-                              border: `1px solid ${tableStatus === 'READY' ? RF_LEAF_GREEN : RF_GOLD_YELLOW}44`,
-                              padding: '3px 10px', borderRadius: 100, fontSize: 11, fontWeight: 700
-                            }}>
-                              {tableStatus}
-                            </span>
-                          </td>
-                          <td style={{ padding: '14px 18px' }}>
-                            <button
-                              onClick={() => setAdminTab(tbl.tab)}
-                              style={{
-                                background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)',
-                                color: '#FFFFFF', padding: '5px 12px', borderRadius: 100, fontSize: 11.5,
-                                cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4
-                              }}
-                            >
-                              Manage Records →
-                            </button>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            )}
-
-            {/* Sub-tab 3: PostgreSQL Schema Viewer */}
-            {dbActiveSubTab === 'schema' && (
-              <div>
-                <div style={{
-                  background: 'rgba(24, 252, 92, 0.06)', border: `1px solid ${RF_LEAF_GREEN}44`,
-                  borderRadius: 14, padding: '16px 20px', marginBottom: 20,
-                  display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 14
-                }}>
-                  <div>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: '#FFFFFF', marginBottom: 4 }}>
-                      Ready-to-Run PostgreSQL Migration Script (`supabase/schema.sql`)
-                    </div>
-                    <p style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.7)', margin: 0 }}>
-                      Copy this SQL and run it directly in your Supabase project's SQL Editor to set up all 6 tables, triggers, and Row Level Security.
-                    </p>
-                  </div>
-
-                  <button
-                    onClick={handleCopySchema}
-                    style={{
-                      background: dbSchemaCopied ? RF_MINT_ACCENT : RF_LEAF_GREEN,
-                      color: RF_DEEP_GREEN, border: 'none',
-                      padding: '9px 20px', borderRadius: 100, fontSize: 13, fontWeight: 700,
-                      cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
-                      boxShadow: `0 4px 14px ${RF_LEAF_GREEN}44`
-                    }}
-                  >
-                    <Copy size={15} />
-                    {dbSchemaCopied ? 'Copied to Clipboard!' : 'Copy Entire SQL Schema'}
-                  </button>
-                </div>
-
-                <div style={{
-                  background: '#040d08', borderRadius: 14, padding: '20px 24px',
-                  border: '1px solid rgba(255,255,255,0.12)', maxHeight: 500, overflowY: 'auto'
-                }}>
-                  <pre style={{
-                    margin: 0, fontFamily: 'monospace', fontSize: 12, color: 'rgba(255,255,255,0.85)',
-                    whiteSpace: 'pre-wrap', lineHeight: 1.6
-                  }}>
-                    {SCHEMA_SQL}
-                  </pre>
-                </div>
-              </div>
-            )}
-
-            {/* Sub-tab 4: Setup Guide */}
-            {dbActiveSubTab === 'instructions' && (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20 }}>
-                {/* Step 1 */}
-                <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: '24px', border: '1px solid rgba(255,255,255,0.08)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-                    <div style={{
-                      width: 30, height: 30, borderRadius: '50%', background: RF_LEAF_GREEN,
-                      color: RF_DEEP_GREEN, fontWeight: 800, display: 'flex', alignItems: 'center',
-                      justifyContent: 'center', fontSize: 14
-                    }}>
-                      1
-                    </div>
-                    <h4 style={{ fontSize: 16, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>Create Supabase Project</h4>
-                  </div>
-                  <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.5 }}>
-                    Go to <a href="https://supabase.com" target="_blank" rel="noopener noreferrer" style={{ color: RF_MINT_ACCENT }}>supabase.com</a> and sign in. Create a new free project titled <strong>"Refeir Pioneers"</strong>. Choose Frankfurt or London for African latency optimization.
-                  </p>
-                </div>
-
-                {/* Step 2 */}
-                <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: '24px', border: '1px solid rgba(255,255,255,0.08)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-                    <div style={{
-                      width: 30, height: 30, borderRadius: '50%', background: RF_LEAF_GREEN,
-                      color: RF_DEEP_GREEN, fontWeight: 800, display: 'flex', alignItems: 'center',
-                      justifyContent: 'center', fontSize: 14
-                    }}>
-                      2
-                    </div>
-                    <h4 style={{ fontSize: 16, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>Run Database Schema</h4>
-                  </div>
-                  <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.5 }}>
-                    In your Supabase project dashboard, open the <strong>SQL Editor</strong> tab on the left. Click "New Query", paste the contents from the <strong>schema.sql</strong> tab above, and click <strong>"Run"</strong>.
-                  </p>
-                </div>
-
-                {/* Step 3 */}
-                <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: '24px', border: '1px solid rgba(255,255,255,0.08)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-                    <div style={{
-                      width: 30, height: 30, borderRadius: '50%', background: RF_LEAF_GREEN,
-                      color: RF_DEEP_GREEN, fontWeight: 800, display: 'flex', alignItems: 'center',
-                      justifyContent: 'center', fontSize: 14
-                    }}>
-                      3
-                    </div>
-                    <h4 style={{ fontSize: 16, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>Configure Environment (.env)</h4>
-                  </div>
-                  <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.5, marginBottom: 12 }}>
-                    Copy your Project URL and Anon API Key from Project Settings → API, and add them to your <code style={{ background: 'rgba(0,0,0,0.4)', padding: '2px 6px', borderRadius: 4, color: RF_MINT_ACCENT }}>.env</code> file:
-                  </p>
-                  <pre style={{
-                    background: 'rgba(0,0,0,0.5)', padding: '10px 12px', borderRadius: 8,
-                    fontSize: 11.5, color: RF_GOLD_YELLOW, margin: 0, fontFamily: 'monospace'
-                  }}>
-{`VITE_SUPABASE_URL=https://your-id.supabase.co
-VITE_SUPABASE_ANON_KEY=your-anon-key`}
-                  </pre>
-                </div>
-
-                {/* Step 4 */}
-                <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: '24px', border: '1px solid rgba(255,255,255,0.08)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-                    <div style={{
-                      width: 30, height: 30, borderRadius: '50%', background: RF_LEAF_GREEN,
-                      color: RF_DEEP_GREEN, fontWeight: 800, display: 'flex', alignItems: 'center',
-                      justifyContent: 'center', fontSize: 14
-                    }}>
-                      4
-                    </div>
-                    <h4 style={{ fontSize: 16, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>1-Click Sync Local Data</h4>
-                  </div>
-                  <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.5 }}>
-                    Return to this tab and click <strong>"Push Local → Supabase"</strong>. All seeded applications, contributor accounts, squad missions, deliverables, and certificates will immediately sync into your live PostgreSQL tables!
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
       </div>
+
+
+
 
       {/* ─── DETAILED APPLICANT REVIEW MODAL ────────────────────────────────────── */}
       {modalOpen && activeApp && (
         <div style={{
           position: 'fixed', inset: 0, zIndex: 1000,
           background: 'rgba(5, 18, 11, 0.85)', backdropFilter: 'blur(10px)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20
+          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: isMobile ? '12px 10px' : 20
         }} onClick={() => setModalOpen(false)}>
           <div style={{
             background: `linear-gradient(135deg, ${RF_DARK_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
             border: '1px solid rgba(102, 187, 42, 0.35)',
-            borderRadius: 24, maxWidth: 680, width: '100%', maxHeight: '90vh',
+            borderRadius: isMobile ? 18 : 24, maxWidth: 680, width: '100%', maxHeight: isMobile ? '94vh' : '90vh',
             boxShadow: '0 25px 60px rgba(0,0,0,0.85)', position: 'relative',
             display: 'flex', flexDirection: 'column', overflow: 'hidden'
           }} onClick={e => e.stopPropagation()}>
             {/* Modal Header */}
             <div style={{
-              padding: '24px 28px', borderBottom: '1px solid rgba(255,255,255,0.08)',
+              padding: isMobile ? '16px 18px' : '24px 28px', borderBottom: '1px solid rgba(255,255,255,0.08)',
               display: 'flex', justifyContent: 'space-between', alignItems: 'center'
             }}>
               <div>
@@ -4636,18 +3867,18 @@ VITE_SUPABASE_ANON_KEY=your-anon-key`}
         <div style={{
           position: 'fixed', inset: 0, zIndex: 1000,
           background: 'rgba(5, 18, 11, 0.85)', backdropFilter: 'blur(10px)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20
+          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: isMobile ? '12px 10px' : 20
         }} onClick={() => setTaskModalOpen(false)}>
           <div style={{
             background: `linear-gradient(135deg, ${RF_DARK_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
             border: '1px solid rgba(102, 187, 42, 0.35)',
-            borderRadius: 24, maxWidth: 740, width: '100%', maxHeight: '90vh',
+            borderRadius: isMobile ? 18 : 24, maxWidth: 740, width: '100%', maxHeight: isMobile ? '94vh' : '90vh',
             boxShadow: '0 25px 60px rgba(0,0,0,0.85)', position: 'relative',
             display: 'flex', flexDirection: 'column', overflow: 'hidden'
           }} onClick={e => e.stopPropagation()}>
             {/* Modal Header */}
             <div style={{
-              padding: '24px 28px', borderBottom: '1px solid rgba(255,255,255,0.08)',
+              padding: isMobile ? '16px 18px' : '24px 28px', borderBottom: '1px solid rgba(255,255,255,0.08)',
               display: 'flex', justifyContent: 'space-between', alignItems: 'center'
             }}>
               <div>
