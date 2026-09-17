@@ -1770,6 +1770,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 onClick={() => {
                   setAdminMobileNavOpen(prev => !prev);
                   setNotificationOpen(false);
+                  setAdminProfileDockerOpen(false);
                 }}
                 aria-label="Toggle Admin Navigation Menu"
                 style={{
@@ -1832,6 +1833,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               onClick={() => {
                 setNotificationOpen(prev => !prev);
                 setAdminMobileNavOpen(false);
+                setAdminProfileDockerOpen(false);
               }}
               title="Notification Center"
               style={{
@@ -2044,239 +2046,251 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             {/* Notification Center Popover (Desktop only) */}
             {notificationOpen && !isMobile && (
               /* Desktop Popover Dropdown */
+              <div style={{
+                position: 'absolute',
+                top: 'calc(100% + 10px)',
+                right: 0,
+                width: 420,
+                maxWidth: 'calc(100vw - 32px)',
+                background: 'rgba(7, 22, 14, 0.96)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                borderRadius: 16,
+                boxShadow: '0 24px 60px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(24, 252, 92, 0.08)',
+                backdropFilter: 'blur(30px) saturate(160%)',
+                WebkitBackdropFilter: 'blur(30px) saturate(160%)',
+                zIndex: 1000,
+                overflow: 'hidden',
+                animation: 'rp-fade-slide 0.2s ease-out'
+              }}>
+                {/* Header */}
                 <div style={{
-                  position: 'absolute',
-                  top: 'calc(100% + 8px)',
-                  right: 0,
-                  width: 390,
-                  maxWidth: 400,
-                  background: 'rgba(8, 26, 17, 0.98)',
-                  border: '1px solid rgba(102, 187, 42, 0.28)',
-                  borderRadius: 14,
-                  boxShadow: '0 20px 50px rgba(0,0,0,0.7), 0 0 1px rgba(24, 252, 92, 0.4)',
-                  backdropFilter: 'blur(24px)',
-                  WebkitBackdropFilter: 'blur(24px)',
-                  zIndex: 1000,
-                  overflow: 'hidden'
+                  padding: '14px 18px',
+                  borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  background: 'rgba(255, 255, 255, 0.02)'
                 }}>
-                  {/* Header */}
-                  <div style={{
-                    padding: '12px 16px',
-                    borderBottom: '1px solid rgba(255,255,255,0.08)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    background: 'rgba(255,255,255,0.02)'
-                  }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <Bell size={15} color={RF_MINT_ACCENT} />
-                      <span style={{ fontSize: 13, fontWeight: 700, color: '#FFFFFF' }}>
-                        Notification Center
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <Bell size={15} color={RF_MINT_ACCENT} />
+                    <span style={{ fontSize: 13.5, fontWeight: 700, color: '#FFFFFF', letterSpacing: '-0.01em' }}>
+                      Notifications
+                    </span>
+                    {unreadNotifCount > 0 && (
+                      <span style={{
+                        fontSize: 10.5,
+                        fontWeight: 700,
+                        padding: '1px 8px',
+                        borderRadius: 100,
+                        background: 'rgba(24, 252, 92, 0.12)',
+                        color: RF_MINT_ACCENT,
+                        border: '1px solid rgba(24, 252, 92, 0.25)'
+                      }}>
+                        {unreadNotifCount} new
                       </span>
-                      {unreadNotifCount > 0 && (
-                        <span style={{
-                          fontSize: 10,
-                          fontWeight: 700,
-                          padding: '1px 7px',
-                          borderRadius: 10,
-                          background: 'rgba(24, 252, 92, 0.15)',
-                          color: RF_MINT_ACCENT,
-                          border: '1px solid rgba(24, 252, 92, 0.3)'
-                        }}>
-                          {unreadNotifCount} new
-                        </span>
-                      )}
-                    </div>
-
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      {unreadNotifCount > 0 && (
-                        <button
-                          onClick={handleMarkAllNotificationsRead}
-                          style={{
-                            background: 'transparent',
-                            border: 'none',
-                            color: RF_MINT_ACCENT,
-                            fontSize: 11,
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: 4,
-                            padding: '2px 6px',
-                            borderRadius: 4
-                          }}
-                        >
-                          <CheckCheck size={13} />
-                          Mark read
-                        </button>
-                      )}
-                      <button
-                        onClick={() => setNotificationOpen(false)}
-                        style={{
-                          background: 'rgba(255,255,255,0.06)',
-                          border: 'none',
-                          color: 'rgba(255,255,255,0.6)',
-                          width: 24,
-                          height: 24,
-                          borderRadius: 6,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        <X size={13} />
-                      </button>
-                    </div>
+                    )}
                   </div>
 
-                  {/* Filter chips */}
-                  <div style={{
-                    display: 'flex',
-                    gap: 6,
-                    padding: '8px 14px',
-                    borderBottom: '1px solid rgba(255,255,255,0.05)',
-                    background: 'rgba(0,0,0,0.15)'
-                  }}>
+                  {unreadNotifCount > 0 && (
                     <button
-                      onClick={() => setNotifFilter('all')}
+                      onClick={handleMarkAllNotificationsRead}
                       style={{
-                        background: notifFilter === 'all' ? 'rgba(24, 252, 92, 0.15)' : 'transparent',
-                        border: notifFilter === 'all' ? '1px solid rgba(24, 252, 92, 0.3)' : '1px solid transparent',
-                        color: notifFilter === 'all' ? RF_MINT_ACCENT : 'rgba(255,255,255,0.5)',
-                        padding: '3px 9px',
-                        borderRadius: 6,
-                        fontSize: 11,
+                        background: 'rgba(255, 255, 255, 0.04)',
+                        border: '1px solid rgba(255, 255, 255, 0.08)',
+                        color: RF_MINT_ACCENT,
+                        fontSize: 11.5,
                         fontWeight: 600,
-                        cursor: 'pointer'
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 5,
+                        padding: '4px 10px',
+                        borderRadius: 100,
+                        transition: 'all 0.15s ease'
+                      }}
+                      onMouseEnter={e => {
+                        e.currentTarget.style.background = 'rgba(24, 252, 92, 0.12)';
+                        e.currentTarget.style.borderColor = 'rgba(24, 252, 92, 0.3)';
+                      }}
+                      onMouseLeave={e => {
+                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.04)';
+                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
                       }}
                     >
-                      All ({notificationsList.length})
+                      <CheckCheck size={13} />
+                      Mark read
                     </button>
-                    <button
-                      onClick={() => setNotifFilter('action')}
-                      style={{
-                        background: notifFilter === 'action' ? 'rgba(251, 191, 36, 0.15)' : 'transparent',
-                        border: notifFilter === 'action' ? '1px solid rgba(251, 191, 36, 0.3)' : '1px solid transparent',
-                        color: notifFilter === 'action' ? RF_GOLD_YELLOW : 'rgba(255,255,255,0.5)',
-                        padding: '3px 9px',
-                        borderRadius: 6,
-                        fontSize: 11,
-                        fontWeight: 600,
-                        cursor: 'pointer'
-                      }}
-                    >
-                      Action Needed ({notificationsList.filter(n => n.type === 'action').length})
-                    </button>
-                  </div>
-
-                  {/* Notifications List */}
-                  <div style={{ maxHeight: 320, overflowY: 'auto', padding: '6px' }}>
-                    {notificationsList
-                      .filter(n => notifFilter === 'all' || n.type === 'action')
-                      .map(n => {
-                        const isUnread = n.unread;
-                        return (
-                          <div
-                            key={n.id}
-                            onClick={() => handleNotificationClick(n)}
-                            style={{
-                              padding: '10px 12px',
-                              borderRadius: 8,
-                              background: isUnread ? 'rgba(24, 252, 92, 0.04)' : 'transparent',
-                              border: isUnread ? '1px solid rgba(24, 252, 92, 0.15)' : '1px solid transparent',
-                              marginBottom: 4,
-                              cursor: 'pointer',
-                              transition: 'all 0.15s ease',
-                              display: 'flex',
-                              gap: 10,
-                              alignItems: 'flex-start'
-                            }}
-                            onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
-                            onMouseLeave={e => e.currentTarget.style.background = isUnread ? 'rgba(24, 252, 92, 0.04)' : 'transparent'}
-                          >
-                            <div style={{
-                              width: 28,
-                              height: 28,
-                              borderRadius: 7,
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              flexShrink: 0,
-                              marginTop: 1,
-                              background:
-                                n.type === 'action' ? 'rgba(251, 191, 36, 0.12)' :
-                                n.type === 'success' ? 'rgba(24, 252, 92, 0.12)' :
-                                n.type === 'alert' ? 'rgba(239, 68, 68, 0.12)' :
-                                'rgba(96, 165, 250, 0.12)',
-                              color:
-                                n.type === 'action' ? RF_GOLD_YELLOW :
-                                n.type === 'success' ? RF_MINT_ACCENT :
-                                n.type === 'alert' ? '#FCA5A5' :
-                                '#60A5FA'
-                            }}>
-                              {n.type === 'action' ? <AlertCircle size={14} /> :
-                               n.type === 'success' ? <CheckCircle2 size={14} /> :
-                               n.type === 'alert' ? <AlertTriangle size={14} /> :
-                               <Shield size={14} />}
-                            </div>
-
-                            <div style={{ flex: 1, minWidth: 0 }}>
-                              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6, marginBottom: 2 }}>
-                                <span style={{ fontSize: 12.5, fontWeight: isUnread ? 700 : 600, color: '#FFFFFF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                  {n.title}
-                                </span>
-                                <span style={{
-                                  fontSize: 9.5,
-                                  fontWeight: 700,
-                                  padding: '1px 5px',
-                                  borderRadius: 4,
-                                  flexShrink: 0,
-                                  background: n.type === 'action' ? 'rgba(251, 191, 36, 0.15)' : 'rgba(255,255,255,0.08)',
-                                  color: n.type === 'action' ? RF_GOLD_YELLOW : 'rgba(255,255,255,0.5)'
-                                }}>
-                                  {n.time}
-                                </span>
-                              </div>
-                              <p style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.6)', margin: 0, lineHeight: 1.4 }}>
-                                {n.desc}
-                              </p>
-                            </div>
-
-                            {isUnread && (
-                              <div style={{
-                                width: 6,
-                                height: 6,
-                                borderRadius: '50%',
-                                background: RF_MINT_ACCENT,
-                                marginTop: 6,
-                                flexShrink: 0,
-                                boxShadow: '0 0 6px rgba(24, 252, 92, 0.8)'
-                              }} />
-                            )}
-                          </div>
-                        );
-                      })}
-                  </div>
-
-                  {/* Footer */}
-                  <div style={{
-                    padding: '9px 14px',
-                    borderTop: '1px solid rgba(255,255,255,0.06)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    background: 'rgba(0,0,0,0.2)'
-                  }}>
-                    <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.45)', display: 'flex', alignItems: 'center', gap: 5 }}>
-                      <span style={{ width: 6, height: 6, borderRadius: '50%', background: RF_MINT_ACCENT }} />
-                      Live Activity Pulse
-                    </span>
-                    <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.45)' }}>
-                      Refeir Admissions Suite
-                    </span>
-                  </div>
+                  )}
                 </div>
+
+                {/* Modern Segmented Filter Tabs */}
+                <div style={{
+                  display: 'flex',
+                  gap: 6,
+                  padding: '8px 14px',
+                  borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+                  background: 'rgba(0, 0, 0, 0.2)'
+                }}>
+                  <button
+                    onClick={() => setNotifFilter('all')}
+                    style={{
+                      background: notifFilter === 'all' ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+                      border: notifFilter === 'all' ? '1px solid rgba(255, 255, 255, 0.14)' : '1px solid transparent',
+                      color: notifFilter === 'all' ? '#FFFFFF' : 'rgba(255, 255, 255, 0.5)',
+                      padding: '4px 10px',
+                      borderRadius: 8,
+                      fontSize: 11.5,
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease'
+                    }}
+                  >
+                    All ({notificationsList.length})
+                  </button>
+                  <button
+                    onClick={() => setNotifFilter('action')}
+                    style={{
+                      background: notifFilter === 'action' ? 'rgba(251, 191, 36, 0.15)' : 'transparent',
+                      border: notifFilter === 'action' ? '1px solid rgba(251, 191, 36, 0.3)' : '1px solid transparent',
+                      color: notifFilter === 'action' ? RF_GOLD_YELLOW : 'rgba(255, 255, 255, 0.5)',
+                      padding: '4px 10px',
+                      borderRadius: 8,
+                      fontSize: 11.5,
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease'
+                    }}
+                  >
+                    Action Needed ({notificationsList.filter(n => n.type === 'action').length})
+                  </button>
+                </div>
+
+                {/* Notifications List (with .rp-sleek-scroll to eliminate Windows OS thick scrollbars) */}
+                <div className="rp-sleek-scroll" style={{ maxHeight: 360, overflowY: 'auto', padding: '8px 10px' }}>
+                  {notificationsList
+                    .filter(n => notifFilter === 'all' || n.type === 'action')
+                    .map(n => {
+                      const isUnread = n.unread;
+                      return (
+                        <div
+                          key={n.id}
+                          onClick={() => handleNotificationClick(n)}
+                          style={{
+                            padding: '11px 13px',
+                            borderRadius: 12,
+                            background: isUnread ? 'rgba(24, 252, 92, 0.03)' : 'transparent',
+                            border: isUnread ? '1px solid rgba(24, 252, 92, 0.14)' : '1px solid transparent',
+                            marginBottom: 4,
+                            cursor: 'pointer',
+                            transition: 'all 0.15s ease',
+                            display: 'flex',
+                            gap: 12,
+                            alignItems: 'flex-start'
+                          }}
+                          onMouseEnter={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.04)'}
+                          onMouseLeave={e => e.currentTarget.style.background = isUnread ? 'rgba(24, 252, 92, 0.03)' : 'transparent'}
+                        >
+                          <div style={{
+                            width: 32,
+                            height: 32,
+                            borderRadius: 9,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            flexShrink: 0,
+                            marginTop: 1,
+                            background:
+                              n.type === 'action' ? 'rgba(251, 191, 36, 0.12)' :
+                              n.type === 'success' ? 'rgba(24, 252, 92, 0.12)' :
+                              n.type === 'alert' ? 'rgba(239, 68, 68, 0.12)' :
+                              'rgba(56, 189, 248, 0.12)',
+                            color:
+                              n.type === 'action' ? RF_GOLD_YELLOW :
+                              n.type === 'success' ? RF_MINT_ACCENT :
+                              n.type === 'alert' ? '#FCA5A5' :
+                              '#38BDF8'
+                          }}>
+                            {n.type === 'action' ? <AlertCircle size={15} /> :
+                             n.type === 'success' ? <CheckCircle2 size={15} /> :
+                             n.type === 'alert' ? <AlertTriangle size={15} /> :
+                             <Shield size={15} />}
+                          </div>
+
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6, marginBottom: 2 }}>
+                              <span style={{
+                                fontSize: 9.5,
+                                fontWeight: 700,
+                                padding: '1px 6px',
+                                borderRadius: 4,
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.04em',
+                                background:
+                                  n.type === 'action' ? 'rgba(251, 191, 36, 0.14)' :
+                                  n.type === 'success' ? 'rgba(24, 252, 92, 0.12)' :
+                                  n.type === 'alert' ? 'rgba(239, 68, 68, 0.12)' :
+                                  'rgba(56, 189, 248, 0.12)',
+                                color:
+                                  n.type === 'action' ? RF_GOLD_YELLOW :
+                                  n.type === 'success' ? RF_MINT_ACCENT :
+                                  n.type === 'alert' ? '#FCA5A5' :
+                                  '#38BDF8'
+                              }}>
+                                {n.time}
+                              </span>
+                              {isUnread && (
+                                <span style={{
+                                  width: 6,
+                                  height: 6,
+                                  borderRadius: '50%',
+                                  background: RF_MINT_ACCENT,
+                                  boxShadow: '0 0 6px rgba(24, 252, 92, 0.8)'
+                                }} />
+                              )}
+                            </div>
+                            <h4 style={{
+                              fontSize: 12.5,
+                              fontWeight: isUnread ? 700 : 600,
+                              color: '#FFFFFF',
+                              margin: '2px 0 0',
+                              lineHeight: 1.35,
+                              whiteSpace: 'normal',
+                              wordBreak: 'break-word'
+                            }}>
+                              {n.title}
+                            </h4>
+                            <p style={{
+                              fontSize: 11.5,
+                              color: 'rgba(255, 255, 255, 0.62)',
+                              margin: '3px 0 0',
+                              lineHeight: 1.4
+                            }}>
+                              {n.desc}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                </div>
+
+                {/* Footer */}
+                <div style={{
+                  padding: '10px 16px',
+                  borderTop: '1px solid rgba(255, 255, 255, 0.06)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  background: 'rgba(0, 0, 0, 0.22)'
+                }}>
+                  <span style={{ fontSize: 10.5, color: 'rgba(255, 255, 255, 0.45)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: RF_MINT_ACCENT, boxShadow: '0 0 6px rgba(24,252,92,0.6)' }} />
+                    Live Activity Pulse
+                  </span>
+                  <span style={{ fontSize: 10.5, color: 'rgba(255, 255, 255, 0.45)' }}>
+                    Refeir Admissions Suite
+                  </span>
+                </div>
+              </div>
             )}
           </div>
         </div>
@@ -2297,9 +2311,9 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             minHeight: '100dvh',
             maxHeight: '100dvh',
             zIndex: 999999,
-            background: 'rgba(3, 12, 7, 0.98)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
+            background: 'rgba(4, 15, 9, 0.98)',
+            backdropFilter: 'blur(28px)',
+            WebkitBackdropFilter: 'blur(28px)',
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
@@ -2311,91 +2325,100 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           <div
             onClick={e => e.stopPropagation()}
             style={{
-              padding: '14px 18px',
-              borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+              padding: '16px 18px 14px',
+              borderBottom: '1px solid rgba(255, 255, 255, 0.07)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              background: 'rgba(15, 46, 30, 0.95)',
+              background: 'rgba(8, 25, 16, 0.95)',
               flexShrink: 0,
               touchAction: 'none'
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            {/* Left: Icon + Title + Status Subtitle */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0 }}>
               <div style={{
-                background: 'rgba(24, 252, 92, 0.15)',
-                border: '1px solid rgba(24, 252, 92, 0.35)',
-                width: 32,
-                height: 32,
-                borderRadius: 8,
+                background: 'rgba(24, 252, 92, 0.12)',
+                border: '1px solid rgba(24, 252, 92, 0.28)',
+                width: 36,
+                height: 36,
+                borderRadius: 10,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: RF_MINT_ACCENT
+                color: RF_MINT_ACCENT,
+                flexShrink: 0
               }}>
-                <Bell size={16} />
+                <Bell size={18} />
               </div>
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span style={{ fontSize: 14.5, fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.01em' }}>
-                    Notification Center
-                  </span>
+              <div style={{ minWidth: 0 }}>
+                <h2 style={{
+                  fontSize: 16,
+                  fontWeight: 700,
+                  color: '#FFFFFF',
+                  letterSpacing: '-0.02em',
+                  margin: 0,
+                  lineHeight: 1.2
+                }}>
+                  Notifications
+                </h2>
+                <div style={{
+                  fontSize: 11.5,
+                  color: unreadNotifCount > 0 ? RF_MINT_ACCENT : 'rgba(255, 255, 255, 0.5)',
+                  marginTop: 2,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 5
+                }}>
                   {unreadNotifCount > 0 && (
-                    <span style={{
-                      fontSize: 10,
-                      fontWeight: 700,
-                      padding: '2px 8px',
-                      borderRadius: 10,
-                      background: 'rgba(24, 252, 92, 0.18)',
-                      color: RF_MINT_ACCENT,
-                      border: '1px solid rgba(24, 252, 92, 0.35)'
-                    }}>
-                      {unreadNotifCount} unread
-                    </span>
+                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: RF_MINT_ACCENT }} />
                   )}
-                </div>
-                <div style={{ fontSize: 10.5, color: 'rgba(255, 255, 255, 0.5)' }}>
-                  Platform Activity &amp; Live Alerts
+                  <span>
+                    {unreadNotifCount > 0 ? `${unreadNotifCount} unread alert${unreadNotifCount > 1 ? 's' : ''}` : 'All caught up'}
+                  </span>
                 </div>
               </div>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            {/* Right: Exactly 2 balanced controls - "Mark read" (if unread) + Close Button */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
               {unreadNotifCount > 0 && (
                 <button
                   onClick={handleMarkAllNotificationsRead}
                   style={{
-                    background: 'rgba(24, 252, 92, 0.12)',
-                    border: '1px solid rgba(24, 252, 92, 0.3)',
+                    background: 'rgba(24, 252, 92, 0.1)',
+                    border: '1px solid rgba(24, 252, 92, 0.25)',
                     color: RF_MINT_ACCENT,
-                    fontSize: 11.5,
-                    fontWeight: 700,
+                    fontSize: 12,
+                    fontWeight: 600,
                     cursor: 'pointer',
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: 4,
-                    padding: '6px 10px',
-                    borderRadius: 8
+                    gap: 5,
+                    padding: '6px 12px',
+                    borderRadius: 100,
+                    transition: 'all 0.15s ease'
                   }}
                 >
                   <CheckCheck size={13} />
-                  Mark read
+                  <span>Mark read</span>
                 </button>
               )}
               <button
                 onClick={() => setNotificationOpen(false)}
                 aria-label="Close notification center"
                 style={{
-                  width: 34,
-                  height: 34,
+                  width: 36,
+                  height: 36,
                   borderRadius: '50%',
-                  background: 'rgba(255, 255, 255, 0.08)',
-                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  background: 'rgba(255, 255, 255, 0.06)',
+                  border: '1px solid rgba(255, 255, 255, 0.12)',
                   color: '#FFFFFF',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease'
                 }}
               >
                 <X size={17} />
@@ -2409,9 +2432,9 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             style={{
               display: 'flex',
               gap: 8,
-              padding: '10px 18px',
-              borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
-              background: 'rgba(0, 0, 0, 0.25)',
+              padding: '12px 18px',
+              borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+              background: 'rgba(0, 0, 0, 0.2)',
               flexShrink: 0,
               touchAction: 'none'
             }}
@@ -2419,9 +2442,9 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             <button
               onClick={() => setNotifFilter('all')}
               style={{
-                background: notifFilter === 'all' ? 'rgba(24, 252, 92, 0.15)' : 'rgba(255,255,255,0.05)',
-                border: notifFilter === 'all' ? '1px solid rgba(24, 252, 92, 0.35)' : '1px solid rgba(255,255,255,0.1)',
-                color: notifFilter === 'all' ? RF_MINT_ACCENT : 'rgba(255,255,255,0.65)',
+                background: notifFilter === 'all' ? 'rgba(255, 255, 255, 0.12)' : 'rgba(255, 255, 255, 0.03)',
+                border: notifFilter === 'all' ? '1px solid rgba(255, 255, 255, 0.18)' : '1px solid rgba(255, 255, 255, 0.07)',
+                color: notifFilter === 'all' ? '#FFFFFF' : 'rgba(255, 255, 255, 0.6)',
                 padding: '6px 14px',
                 borderRadius: 100,
                 fontSize: 12,
@@ -2435,9 +2458,9 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             <button
               onClick={() => setNotifFilter('action')}
               style={{
-                background: notifFilter === 'action' ? 'rgba(251, 191, 36, 0.18)' : 'rgba(255,255,255,0.05)',
-                border: notifFilter === 'action' ? '1px solid rgba(251, 191, 36, 0.35)' : '1px solid rgba(255,255,255,0.1)',
-                color: notifFilter === 'action' ? RF_GOLD_YELLOW : 'rgba(255,255,255,0.65)',
+                background: notifFilter === 'action' ? 'rgba(251, 191, 36, 0.15)' : 'rgba(255, 255, 255, 0.03)',
+                border: notifFilter === 'action' ? '1px solid rgba(251, 191, 36, 0.3)' : '1px solid rgba(255, 255, 255, 0.07)',
+                color: notifFilter === 'action' ? RF_GOLD_YELLOW : 'rgba(255, 255, 255, 0.6)',
                 padding: '6px 14px',
                 borderRadius: 100,
                 fontSize: 12,
@@ -2453,6 +2476,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           {/* Scrollable Notifications List */}
           <div
             onClick={e => e.stopPropagation()}
+            className="rp-sleek-scroll"
             style={{
               flex: 1,
               minHeight: 0,
@@ -2460,10 +2484,10 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               WebkitOverflowScrolling: 'touch',
               overscrollBehavior: 'contain',
               touchAction: 'pan-y',
-              padding: '14px 18px 24px',
+              padding: '16px 18px 24px',
               display: 'flex',
               flexDirection: 'column',
-              gap: 10
+              gap: 12
             }}
           >
             {notificationsList
@@ -2475,82 +2499,111 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                     key={n.id}
                     onClick={() => handleNotificationClick(n)}
                     style={{
-                      padding: '13px 15px',
-                      borderRadius: 12,
-                      background: isUnread ? 'rgba(24, 252, 92, 0.08)' : 'rgba(255, 255, 255, 0.03)',
-                      border: isUnread ? '1px solid rgba(24, 252, 92, 0.28)' : '1px solid rgba(255, 255, 255, 0.07)',
+                      padding: '15px 16px',
+                      borderRadius: 16,
+                      background: isUnread ? 'rgba(24, 252, 92, 0.03)' : 'rgba(255, 255, 255, 0.02)',
+                      border: isUnread ? '1px solid rgba(24, 252, 92, 0.18)' : '1px solid rgba(255, 255, 255, 0.06)',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'flex-start',
-                      gap: 12,
+                      gap: 13,
                       transition: 'all 0.15s ease'
                     }}
                   >
                     <div style={{
-                      width: 32,
-                      height: 32,
-                      borderRadius: 8,
-                      background: n.type === 'action' ? 'rgba(251, 191, 36, 0.15)' :
-                                  n.type === 'alert' ? 'rgba(239, 68, 68, 0.15)' :
-                                  n.type === 'success' ? 'rgba(24, 252, 92, 0.15)' : 'rgba(56, 189, 248, 0.15)',
+                      width: 36,
+                      height: 36,
+                      borderRadius: 10,
+                      background:
+                        n.type === 'action' ? 'rgba(251, 191, 36, 0.12)' :
+                        n.type === 'alert' ? 'rgba(239, 68, 68, 0.12)' :
+                        n.type === 'success' ? 'rgba(24, 252, 92, 0.12)' : 'rgba(56, 189, 248, 0.12)',
                       border: `1px solid ${
-                        n.type === 'action' ? 'rgba(251, 191, 36, 0.3)' :
-                        n.type === 'alert' ? 'rgba(239, 68, 68, 0.3)' :
-                        n.type === 'success' ? 'rgba(24, 252, 92, 0.3)' : 'rgba(56, 189, 248, 0.3)'
+                        n.type === 'action' ? 'rgba(251, 191, 36, 0.25)' :
+                        n.type === 'alert' ? 'rgba(239, 68, 68, 0.25)' :
+                        n.type === 'success' ? 'rgba(24, 252, 92, 0.25)' : 'rgba(56, 189, 248, 0.25)'
                       }`,
-                      color: n.type === 'action' ? RF_GOLD_YELLOW :
-                             n.type === 'alert' ? '#F87171' :
-                             n.type === 'success' ? RF_MINT_ACCENT : '#38BDF8',
+                      color:
+                        n.type === 'action' ? RF_GOLD_YELLOW :
+                        n.type === 'alert' ? '#FCA5A5' :
+                        n.type === 'success' ? RF_MINT_ACCENT : '#38BDF8',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       flexShrink: 0,
-                      marginTop: 2
+                      marginTop: 1
                     }}>
-                      {n.type === 'action' && <AlertCircle size={16} />}
-                      {n.type === 'alert' && <AlertTriangle size={16} />}
-                      {n.type === 'success' && <CheckCircle2 size={16} />}
-                      {n.type === 'info' && <Info size={16} />}
+                      {n.type === 'action' && <AlertCircle size={17} />}
+                      {n.type === 'alert' && <AlertTriangle size={17} />}
+                      {n.type === 'success' && <CheckCircle2 size={17} />}
+                      {n.type === 'info' && <Info size={17} />}
                     </div>
 
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6, marginBottom: 3 }}>
-                        <h4 style={{
-                          fontSize: 13.5,
-                          fontWeight: isUnread ? 700 : 600,
-                          color: isUnread ? '#FFFFFF' : 'rgba(255, 255, 255, 0.85)',
-                          margin: 0,
-                          lineHeight: 1.3
-                        }}>
-                          {n.title}
-                        </h4>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6, marginBottom: 4 }}>
                         <span style={{
                           fontSize: 10,
-                          color: 'rgba(255, 255, 255, 0.4)',
-                          whiteSpace: 'nowrap',
-                          padding: '2px 6px',
+                          fontWeight: 700,
+                          padding: '2px 7px',
                           borderRadius: 4,
-                          background: 'rgba(255, 255, 255, 0.05)'
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.04em',
+                          background:
+                            n.type === 'action' ? 'rgba(251, 191, 36, 0.14)' :
+                            n.type === 'alert' ? 'rgba(239, 68, 68, 0.14)' :
+                            n.type === 'success' ? 'rgba(24, 252, 92, 0.12)' :
+                            'rgba(56, 189, 248, 0.12)',
+                          color:
+                            n.type === 'action' ? RF_GOLD_YELLOW :
+                            n.type === 'alert' ? '#FCA5A5' :
+                            n.type === 'success' ? RF_MINT_ACCENT :
+                            '#38BDF8'
                         }}>
                           {n.time}
                         </span>
+                        {isUnread && (
+                          <span style={{
+                            width: 7,
+                            height: 7,
+                            borderRadius: '50%',
+                            background: RF_MINT_ACCENT,
+                            boxShadow: '0 0 8px rgba(24, 252, 92, 0.8)'
+                          }} />
+                        )}
                       </div>
-                      <p style={{ fontSize: 12, color: 'rgba(255, 255, 255, 0.65)', margin: 0, lineHeight: 1.4 }}>
+
+                      <h4 style={{
+                        fontSize: 14,
+                        fontWeight: isUnread ? 700 : 600,
+                        color: isUnread ? '#FFFFFF' : 'rgba(255, 255, 255, 0.9)',
+                        margin: 0,
+                        lineHeight: 1.35
+                      }}>
+                        {n.title}
+                      </h4>
+
+                      <p style={{
+                        fontSize: 12.5,
+                        color: 'rgba(255, 255, 255, 0.65)',
+                        margin: '4px 0 0',
+                        lineHeight: 1.45
+                      }}>
                         {n.desc}
                       </p>
-                    </div>
 
-                    {isUnread && (
                       <div style={{
-                        width: 8,
-                        height: 8,
-                        borderRadius: '50%',
-                        background: RF_MINT_ACCENT,
-                        marginTop: 6,
-                        flexShrink: 0,
-                        boxShadow: '0 0 8px rgba(24, 252, 92, 0.9)'
-                      }} />
-                    )}
+                        fontSize: 11,
+                        color: RF_MINT_ACCENT,
+                        marginTop: 7,
+                        fontWeight: 600,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 3,
+                        opacity: 0.85
+                      }}>
+                        Tap to open section →
+                      </div>
+                    </div>
                   </div>
                 );
               })}
@@ -2560,18 +2613,18 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           <div
             onClick={e => e.stopPropagation()}
             style={{
-              padding: '13px 18px calc(14px + env(safe-area-inset-bottom, 16px))',
-              borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+              padding: '14px 18px calc(14px + env(safe-area-inset-bottom, 16px))',
+              borderTop: '1px solid rgba(255, 255, 255, 0.07)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              background: 'rgba(5, 20, 12, 0.95)',
+              background: 'rgba(4, 16, 10, 0.98)',
               flexShrink: 0,
               touchAction: 'none'
             }}
           >
             <span style={{ fontSize: 11, color: 'rgba(255, 255, 255, 0.45)', display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: RF_MINT_ACCENT }} />
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: RF_MINT_ACCENT, boxShadow: '0 0 6px rgba(24,252,92,0.6)' }} />
               Live Activity Pulse
             </span>
             <span style={{ fontSize: 11, color: 'rgba(255, 255, 255, 0.45)' }}>
