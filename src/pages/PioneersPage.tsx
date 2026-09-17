@@ -10,7 +10,7 @@ import {
   Code2, Palette, BarChart3, FlaskConical, Menu, X, Search,
   ExternalLink, CheckCircle2, AlertCircle, Clock,
   Layers, Compass, MapPin, ChevronLeft, ChevronRight, Play, Pause,
-  Volume2, VolumeX, Maximize2
+  Volume2, VolumeX, Maximize2, Copy
 } from 'lucide-react';
 
 // ─── Official Refeir Brand Colors (Deep Green & Emerald Palette) ──────────────
@@ -3070,6 +3070,16 @@ const ApplicationSection: React.FC = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  const [copiedId, setCopiedId] = useState(false);
+
+  const handleCopyId = () => {
+    if (!appId) return;
+    navigator.clipboard.writeText(appId).then(() => {
+      setCopiedId(true);
+      setTimeout(() => setCopiedId(false), 2500);
+    });
+  };
+
   const updateField = (key: keyof FormData, value: any) => {
     setForm(prev => ({ ...prev, [key]: value }));
     if (errors[key]) {
@@ -3218,42 +3228,216 @@ const ApplicationSection: React.FC = () => {
   if (status === 'success') {
     return (
       <section id="apply" style={{
-        background: RF_DEEP_GREEN, padding: '100px 24px', minHeight: '65vh',
-        display: 'flex', alignItems: 'center'
+        background: `linear-gradient(145deg, ${RF_DEEP_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
+        padding: isMobile ? '44px 14px' : '88px 24px',
+        minHeight: '60vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
       }}>
-        <div style={{ maxWidth: 620, margin: '0 auto', textAlign: 'center' }}>
-          <div style={{ fontSize: 64, marginBottom: 24 }}>🚀</div>
+        <div style={{ maxWidth: 560, width: '100%', margin: '0 auto', textAlign: 'center' }}>
+          {/* Animated Success Badge */}
+          <div style={{
+            width: isMobile ? 54 : 64,
+            height: isMobile ? 54 : 64,
+            borderRadius: '50%',
+            background: 'rgba(24, 252, 92, 0.12)',
+            border: `1.5px solid ${RF_MINT_ACCENT}55`,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto 16px',
+            color: RF_MINT_ACCENT,
+            boxShadow: '0 0 24px rgba(24, 252, 92, 0.25)'
+          }}>
+            <Check size={isMobile ? 26 : 32} strokeWidth={3} />
+          </div>
+
           <h2 style={{
-            fontSize: 'clamp(26px, 4vw, 42px)', fontWeight: 900, color: '#FFFFFF',
-            lineHeight: 1.1, marginBottom: 16, fontFamily: 'Plus Jakarta Sans, sans-serif'
+            fontSize: isMobile ? 'clamp(22px, 5.5vw, 28px)' : 'clamp(28px, 3.5vw, 38px)',
+            fontWeight: 900,
+            color: '#FFFFFF',
+            lineHeight: 1.15,
+            letterSpacing: '-0.02em',
+            marginBottom: 10,
+            fontFamily: 'Plus Jakarta Sans, sans-serif'
           }}>
             APPLICATION RECEIVED
           </h2>
-          <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.8)', lineHeight: 1.82, marginBottom: 48 }}>
-            Your application to Refeir Pioneers has been received. Our team will review your application and contact you using the information provided.
+
+          <p style={{
+            fontSize: isMobile ? 13.5 : 15,
+            color: 'rgba(255,255,255,0.72)',
+            lineHeight: 1.6,
+            maxWidth: 480,
+            margin: '0 auto 24px'
+          }}>
+            Your application to Refeir Pioneers has been received. Our team will review your dossier and notify you shortly.
           </p>
 
+          {/* Clean Glassmorphic ID Card */}
           <div style={{
-            background: 'rgba(255,255,255,0.06)', border: `1px solid rgba(102, 187, 42, 0.35)`,
-            borderRadius: 20, padding: '36px 40px', marginBottom: 40
+            background: 'rgba(255,255,255,0.04)',
+            border: '1px solid rgba(102, 187, 42, 0.3)',
+            borderRadius: isMobile ? 16 : 20,
+            padding: isMobile ? '20px 14px' : '28px 32px',
+            marginBottom: isMobile ? 20 : 28,
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)'
           }}>
-            <p style={{ fontSize: 11, fontWeight: 800, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.18em', marginBottom: 10 }}>
-              APPLICATION ID
+            <p style={{
+              fontSize: 10.5,
+              fontWeight: 800,
+              color: 'rgba(255,255,255,0.5)',
+              letterSpacing: '0.14em',
+              marginBottom: 8,
+              textTransform: 'uppercase'
+            }}>
+              Your Application ID
             </p>
-            <p style={{ fontSize: 26, fontWeight: 900, color: RF_MINT_ACCENT, fontFamily: 'monospace', letterSpacing: '0.1em' }}>
-              {appId}
-            </p>
-            <div style={{ height: 1, background: 'rgba(255,255,255,0.1)', margin: '24px 0' }} />
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
-              <div style={{ width: 10, height: 10, borderRadius: '50%', background: RF_GOLD_YELLOW, animation: 'rp-pulse 2s infinite' }} />
-              <p style={{ fontSize: 12, fontWeight: 800, color: RF_GOLD_YELLOW, letterSpacing: '0.18em' }}>
+
+            {/* Application ID row with copy button */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 8,
+              flexWrap: 'wrap',
+              marginBottom: 14
+            }}>
+              <span style={{
+                fontSize: isMobile ? 'clamp(18px, 5vw, 24px)' : 26,
+                fontWeight: 900,
+                color: RF_MINT_ACCENT,
+                fontFamily: 'monospace, monospace',
+                letterSpacing: isMobile ? '0.04em' : '0.08em',
+                whiteSpace: 'nowrap'
+              }}>
+                {appId}
+              </span>
+
+              <button
+                type="button"
+                onClick={handleCopyId}
+                title="Copy Application ID"
+                style={{
+                  height: 32,
+                  padding: '0 10px',
+                  borderRadius: 8,
+                  background: copiedId ? 'rgba(24, 252, 92, 0.2)' : 'rgba(255,255,255,0.08)',
+                  border: copiedId ? `1px solid ${RF_MINT_ACCENT}` : '1px solid rgba(255,255,255,0.15)',
+                  color: copiedId ? RF_MINT_ACCENT : '#FFFFFF',
+                  fontSize: 11.5,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 5,
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                {copiedId ? <Check size={12} strokeWidth={3} /> : <Copy size={12} />}
+                <span>{copiedId ? 'Copied' : 'Copy'}</span>
+              </button>
+            </div>
+
+            {/* Status Pill Badge */}
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 7,
+              background: 'rgba(246, 178, 26, 0.12)',
+              border: '1px solid rgba(246, 178, 26, 0.28)',
+              padding: '4px 12px',
+              borderRadius: 100
+            }}>
+              <div style={{
+                width: 7,
+                height: 7,
+                borderRadius: '50%',
+                background: RF_GOLD_YELLOW,
+                animation: 'rp-pulse 2s infinite',
+                flexShrink: 0
+              }} />
+              <span style={{
+                fontSize: isMobile ? 10.5 : 11.5,
+                fontWeight: 800,
+                color: RF_GOLD_YELLOW,
+                letterSpacing: '0.06em',
+                whiteSpace: 'nowrap'
+              }}>
                 PENDING ADMISSIONS REVIEW
-              </p>
+              </span>
             </div>
           </div>
 
-          <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', lineHeight: 1.75 }}>
-            Please save your Application ID. We will contact you once your application has been reviewed. This process ensures a curated, high-impact community of contributors.
+          {/* Action Button Row */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: isMobile ? 8 : 12,
+            marginBottom: isMobile ? 18 : 24
+          }}>
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new CustomEvent('refeir-open-status'))}
+              style={{
+                height: 40,
+                padding: isMobile ? '0 16px' : '0 22px',
+                borderRadius: 10,
+                background: RF_LEAF_GREEN,
+                color: RF_DEEP_GREEN,
+                border: 'none',
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                boxShadow: `0 4px 14px ${RF_LEAF_GREEN}44`,
+                transition: 'all 0.15s ease'
+              }}
+            >
+              <Search size={14} />
+              <span>Track Status</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setStatus('idle');
+                setStep(1);
+                setForm(BLANK_FORM);
+              }}
+              style={{
+                height: 40,
+                padding: isMobile ? '0 16px' : '0 20px',
+                borderRadius: 10,
+                background: 'rgba(255,255,255,0.06)',
+                color: '#FFFFFF',
+                border: '1px solid rgba(255,255,255,0.12)',
+                fontSize: 13,
+                fontWeight: 600,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 5,
+                transition: 'all 0.15s ease'
+              }}
+            >
+              <span>Done</span>
+            </button>
+          </div>
+
+          <p style={{
+            fontSize: isMobile ? 12 : 13,
+            color: 'rgba(255,255,255,0.48)',
+            lineHeight: 1.6,
+            maxWidth: 460,
+            margin: '0 auto'
+          }}>
+            Please keep your Application ID safe. You can use it anytime to track your admissions status.
           </p>
         </div>
       </section>
