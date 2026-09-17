@@ -3470,7 +3470,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                     Accept ({analytics.acceptedApps})
                   </span>
                 </div>
-                <div style={{ borderLeft: '1px solid rgba(255,255,255,0.1)', borderRight: '1px solid rgba(255,255,255,0.1)', padding: '0 4px', minWidth: 0, textAlign: 'left' }}>
+                <div style={{ borderLeft: '1px solid rgba(255,255,255,0.1)', borderRight: '1px solid rgba(255,255,255,0.1)', padding: '0 12px', minWidth: 0, textAlign: 'left' }}>
                   <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 800, color: RF_GOLD_YELLOW }}>{analytics.pendingRate}%</div>
                   <span style={{ fontSize: isMobile ? 10 : 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     Pending ({analytics.pendingApps})
