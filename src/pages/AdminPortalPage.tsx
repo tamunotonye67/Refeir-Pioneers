@@ -2832,11 +2832,11 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           {/* Header with Title, "+ Issue Certificate" CTA & Refresh */}
           <div style={{
             display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-            marginBottom: 28, flexWrap: 'wrap', gap: 16
+            marginBottom: isMobile ? 20 : 28, flexWrap: 'wrap', gap: 16
           }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '0 0 6px', flexWrap: 'wrap' }}>
-                <h2 style={{ fontSize: 24, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
+                <h2 style={{ fontSize: isMobile ? 20 : 24, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
                   Pioneer Certificates &amp; Level Accreditations
                 </h2>
                 <span style={{
@@ -2848,31 +2848,32 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                   <Award size={11} /> {certificatesList.length} Accreditations Minted
                 </span>
               </div>
-              <p style={{ fontSize: 13.5, color: 'rgba(255,255,255,0.65)', margin: 0, maxWidth: 780 }}>
+              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', margin: 0, maxWidth: 780, lineHeight: 1.5 }}>
                 Official sovereign credential registry. Issue, monitor, print, and inspect cryptographic Certificates of Level Completion awarded to contributors who successfully complete verified proof-of-work quotas.
               </p>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, width: isMobile ? '100%' : 'auto' }}>
               <button
                 onClick={() => handleOpenIssueCertModal()}
                 style={{
                   background: RF_LEAF_GREEN, color: RF_DEEP_GREEN, border: 'none',
-                  padding: '10px 20px', borderRadius: 100, fontSize: 13, fontWeight: 700,
+                  padding: isMobile ? '10px 16px' : '10px 20px', borderRadius: 100, fontSize: 13, fontWeight: 700,
                   cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
-                  boxShadow: `0 4px 14px ${RF_LEAF_GREEN}44`, transition: 'all 0.2s'
+                  boxShadow: `0 4px 14px ${RF_LEAF_GREEN}44`, transition: 'all 0.2s',
+                  flex: isMobile ? 1 : 'initial', justifyContent: 'center'
                 }}
                 onMouseEnter={e => (e.currentTarget.style.background = RF_MINT_ACCENT)}
                 onMouseLeave={e => (e.currentTarget.style.background = RF_LEAF_GREEN)}
               >
-                <Award size={15} /> Issue New Certificate
+                <Award size={15} /> Issue Certificate
               </button>
 
               <button
                 onClick={refreshCertificates}
                 style={{
                   background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.18)',
-                  color: '#FFFFFF', padding: '10px 18px', borderRadius: 100, fontSize: 13,
+                  color: '#FFFFFF', padding: isMobile ? '10px 14px' : '10px 18px', borderRadius: 100, fontSize: 13,
                   fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6
                 }}
               >
@@ -2883,94 +2884,96 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
           {/* Certificate KPI Metrics */}
           <div style={{
-            display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: 16, marginBottom: 32
+            display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: isMobile ? 10 : 16, marginBottom: isMobile ? 20 : 32
           }}>
-            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Total Certificates</span>
-              <div style={{ fontSize: 32, fontWeight: 700, color: '#FFFFFF', marginTop: 4 }}>{certificateStats.total}</div>
-              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>All minted credentials</span>
+            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: isMobile ? '14px 16px' : '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Total Certificates</span>
+              <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: '#FFFFFF', marginTop: 4 }}>{certificateStats.total}</div>
+              <span style={{ fontSize: isMobile ? 11 : 12, color: 'rgba(255,255,255,0.5)' }}>All minted credentials</span>
             </div>
 
-            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Level 1 Passes</span>
-              <div style={{ fontSize: 32, fontWeight: 700, color: RF_MINT_ACCENT, marginTop: 4 }}>{certificateStats.level1}</div>
-              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>Orientation &amp; onboarding</span>
+            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: isMobile ? '14px 16px' : '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Level 1 Passes</span>
+              <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: RF_MINT_ACCENT, marginTop: 4 }}>{certificateStats.level1}</div>
+              <span style={{ fontSize: isMobile ? 11 : 12, color: 'rgba(255,255,255,0.5)' }}>Orientation &amp; onboarding</span>
             </div>
 
-            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Advanced Tier Awards</span>
-              <div style={{ fontSize: 32, fontWeight: 700, color: RF_GOLD_YELLOW, marginTop: 4 }}>{certificateStats.advanced}</div>
-              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>Level 2 through Level 5</span>
+            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: isMobile ? '14px 16px' : '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Advanced Tier Awards</span>
+              <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: RF_GOLD_YELLOW, marginTop: 4 }}>{certificateStats.advanced}</div>
+              <span style={{ fontSize: isMobile ? 11 : 12, color: 'rgba(255,255,255,0.5)' }}>Level 2 through Level 5</span>
             </div>
 
-            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Active Verifiable</span>
-              <div style={{ fontSize: 32, fontWeight: 700, color: '#38BDF8', marginTop: 4 }}>
+            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: isMobile ? '14px 16px' : '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Active Verifiable</span>
+              <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: '#38BDF8', marginTop: 4 }}>
                 {certificateStats.total - certificateStats.revoked}
               </div>
-              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>Tamper-evident status</span>
+              <span style={{ fontSize: isMobile ? 11 : 12, color: 'rgba(255,255,255,0.5)' }}>Tamper-evident status</span>
             </div>
           </div>
 
           {/* Certificate Filter & Search Bar */}
           <div style={{
-            background: 'rgba(255,255,255,0.02)', borderRadius: 18, padding: '18px 22px',
+            background: 'rgba(255,255,255,0.02)', borderRadius: 18, padding: isMobile ? '14px 16px' : '18px 22px',
             border: '1px solid rgba(255,255,255,0.08)', marginBottom: 24,
-            display: 'flex', flexWrap: 'wrap', gap: 14, alignItems: 'center', justifyContent: 'space-between'
+            display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center', justifyContent: 'space-between'
           }}>
             {/* Search */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: '1 1 280px', minWidth: 240 }}>
-              <Search size={16} color="rgba(255,255,255,0.4)" />
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 10, flex: isMobile ? '1 1 100%' : '1 1 280px',
+              background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.12)',
+              borderRadius: 10, padding: '8px 14px'
+            }}>
+              <Search size={16} color="rgba(255,255,255,0.4)" style={{ flexShrink: 0 }} />
               <input
                 type="text"
-                placeholder="Search by recipient name, email, Pioneer ID, serial number..."
+                placeholder="Search by recipient, email, Pioneer ID, serial..."
                 value={certSearchTerm}
                 onChange={e => setCertSearchTerm(e.target.value)}
                 style={{
-                  background: 'none', border: 'none', color: '#FFFFFF', fontSize: 14,
+                  background: 'none', border: 'none', color: '#FFFFFF', fontSize: 13,
                   width: '100%', outline: 'none'
                 }}
               />
               {certSearchTerm && (
                 <button
                   onClick={() => setCertSearchTerm('')}
-                  style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer' }}
+                  style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', fontSize: 11 }}
                 >
-                  ✕
+                  Clear
                 </button>
               )}
             </div>
 
-            {/* Level Filter */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>Tier Level:</span>
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center', width: isMobile ? '100%' : 'auto' }}>
+              {/* Level Filter */}
               <select
                 value={certLevelFilter}
                 onChange={e => setCertLevelFilter(e.target.value)}
                 style={{
-                  background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.15)',
-                  color: '#FFFFFF', padding: '6px 12px', borderRadius: 8, fontSize: 12.5, outline: 'none'
+                  background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.15)',
+                  color: '#FFFFFF', padding: '8px 12px', borderRadius: 8, fontSize: 12.5, outline: 'none',
+                  flex: isMobile ? '1 1 calc(50% - 6px)' : 'initial'
                 }}
               >
-                <option value="ALL">All Levels</option>
+                <option value="ALL">All Tier Levels</option>
                 <option value="LEVEL_1">Level 1: Pioneer Associate</option>
                 <option value="LEVEL_2">Level 2: Refeir Pioneer (15+ jobs)</option>
                 <option value="LEVEL_3">Level 3: Refeir Builder (40+ jobs)</option>
                 <option value="LEVEL_4">Level 4: Refeir Lead (75+ jobs)</option>
                 <option value="LEVEL_5">Level 5: Refeir Core Team (125+ jobs)</option>
               </select>
-            </div>
 
-            {/* Status Filter */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>Status:</span>
+              {/* Status Filter */}
               <select
                 value={certStatusFilter}
                 onChange={e => setCertStatusFilter(e.target.value as any)}
                 style={{
-                  background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.15)',
-                  color: '#FFFFFF', padding: '6px 12px', borderRadius: 8, fontSize: 12.5, outline: 'none'
+                  background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.15)',
+                  color: '#FFFFFF', padding: '8px 12px', borderRadius: 8, fontSize: 12.5, outline: 'none',
+                  flex: isMobile ? '1 1 calc(50% - 6px)' : 'initial'
                 }}
               >
                 <option value="ALL">All Statuses</option>
@@ -2986,158 +2989,179 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             overflow: 'hidden'
           }}>
             <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-              <table style={{ width: '100%', minWidth: 720, borderCollapse: 'collapse', textAlign: 'left' }}>
+              <table style={{ width: '100%', minWidth: 980, borderCollapse: 'collapse', textAlign: 'left', fontSize: 13 }}>
               <thead>
                 <tr style={{ background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                  <th style={{ padding: '16px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Certificate Serial &amp; Hash</th>
-                  <th style={{ padding: '16px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Recipient Pioneer</th>
-                  <th style={{ padding: '16px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Certified Level</th>
-                  <th style={{ padding: '16px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Squad</th>
-                  <th style={{ padding: '16px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Verified Tasks</th>
-                  <th style={{ padding: '16px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Issued At</th>
-                  <th style={{ padding: '16px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Status</th>
-                  <th style={{ padding: '16px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: 'right' }}>Actions</th>
+                  <th style={{ padding: '14px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Certificate Serial &amp; Hash</th>
+                  <th style={{ padding: '14px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Recipient Pioneer</th>
+                  <th style={{ padding: '14px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Certified Level</th>
+                  <th style={{ padding: '14px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Squad</th>
+                  <th style={{ padding: '14px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Verified Tasks</th>
+                  <th style={{ padding: '14px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Issued At</th>
+                  <th style={{ padding: '14px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Status</th>
+                  <th style={{ padding: '14px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: 'right' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredCertificates.length === 0 ? (
                   <tr>
                     <td colSpan={8} style={{ padding: '48px 24px', textAlign: 'center', color: 'rgba(255,255,255,0.5)' }}>
-                      No certificates found matching your search. Click "+ Issue New Certificate" to mint one.
+                      No certificates found matching your search. Click "+ Issue Certificate" to mint one.
                     </td>
                   </tr>
                 ) : (
-                  filteredCertificates.map(cert => (
-                    <tr
-                      key={cert.id}
-                      style={{
-                        borderBottom: '1px solid rgba(255,255,255,0.05)',
-                        transition: 'background 0.15s'
-                      }}
-                      onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.02)')}
-                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                    >
-                      {/* Certificate Serial */}
-                      <td style={{ padding: '16px 20px' }}>
-                        <div style={{ fontFamily: 'monospace', fontSize: 12.5, fontWeight: 700, color: RF_GOLD_YELLOW }}>
-                          {cert.id}
-                        </div>
-                        <div style={{ fontSize: 10.5, fontFamily: 'monospace', color: 'rgba(255,255,255,0.4)', marginTop: 3 }}>
-                          {cert.verification_hash.slice(0, 16)}...
-                        </div>
-                      </td>
+                  filteredCertificates.map(cert => {
+                    const squadInfo = Object.values(SQUAD_INFO).find(
+                      s => s.name.toUpperCase().includes(cert.division.toUpperCase()) || cert.division.toUpperCase().includes(s.tag)
+                    ) || SQUAD_INFO.GENERAL;
 
-                      {/* Recipient Pioneer */}
-                      <td style={{ padding: '16px 20px' }}>
-                        <div style={{ fontSize: 13.5, fontWeight: 700, color: '#FFFFFF' }}>
-                          {cert.recipient_name}
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 3 }}>
-                          <span style={{
-                            fontFamily: 'monospace', fontSize: 11, color: RF_MINT_ACCENT,
-                            background: 'rgba(24, 252, 92, 0.08)', padding: '1px 6px', borderRadius: 4
+                    return (
+                      <tr
+                        key={cert.id}
+                        style={{
+                          borderBottom: '1px solid rgba(255,255,255,0.05)',
+                          transition: 'background 0.15s'
+                        }}
+                        onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.02)')}
+                        onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                      >
+                        {/* Certificate Serial */}
+                        <td style={{ padding: '16px 20px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
+                          <div style={{ fontFamily: 'monospace', fontSize: 13, fontWeight: 700, color: RF_GOLD_YELLOW, letterSpacing: '0.02em' }}>
+                            {cert.id}
+                          </div>
+                          <div style={{ fontSize: 10.5, fontFamily: 'monospace', color: 'rgba(255,255,255,0.4)', marginTop: 3 }}>
+                            {cert.verification_hash.slice(0, 16)}...
+                          </div>
+                        </td>
+
+                        {/* Recipient Pioneer */}
+                        <td style={{ padding: '16px 20px', verticalAlign: 'middle', maxWidth: 240 }}>
+                          <div style={{ fontSize: 13.5, fontWeight: 700, color: '#FFFFFF', lineHeight: 1.3 }}>
+                            {cert.recipient_name}
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
+                            <span style={{
+                              fontFamily: 'monospace', fontSize: 11, fontWeight: 700, color: RF_MINT_ACCENT,
+                              background: 'rgba(24, 252, 92, 0.1)', border: `1px solid ${RF_LEAF_GREEN}44`,
+                              padding: '1px 6px', borderRadius: 4, whiteSpace: 'nowrap', flexShrink: 0
+                            }}>
+                              {cert.pioneer_id}
+                            </span>
+                            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {cert.recipient_email}
+                            </span>
+                          </div>
+                        </td>
+
+                        {/* Certified Level */}
+                        <td style={{ padding: '16px 20px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
+                          <div style={{
+                            display: 'inline-flex', alignItems: 'center', gap: 6,
+                            background: 'rgba(255, 209, 102, 0.12)', color: RF_GOLD_YELLOW,
+                            border: `1px solid ${RF_GOLD_YELLOW}44`, padding: '4px 10px',
+                            borderRadius: 8, fontSize: 12, fontWeight: 700
                           }}>
-                            {cert.pioneer_id}
-                          </span>
-                          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)' }}>
-                            {cert.recipient_email}
-                          </span>
-                        </div>
-                      </td>
+                            <Award size={13} style={{ flexShrink: 0 }} />
+                            <span>{cert.level_title}</span>
+                          </div>
+                        </td>
 
-                      {/* Certified Level */}
-                      <td style={{ padding: '16px 20px' }}>
-                        <span style={{
-                          fontSize: 11.5, fontWeight: 700,
-                          background: 'rgba(255, 209, 102, 0.12)', color: RF_GOLD_YELLOW,
-                          border: `1px solid ${RF_GOLD_YELLOW}55`, padding: '4px 10px',
-                          borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 4
-                        }}>
-                          <Award size={12} /> {cert.level_title}
-                        </span>
-                      </td>
-
-                      {/* Squad Division */}
-                      <td style={{ padding: '16px 20px' }}>
-                        <span style={{
-                          fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.85)',
-                          background: 'rgba(255,255,255,0.05)', padding: '3px 8px', borderRadius: 6
-                        }}>
-                          {cert.division}
-                        </span>
-                      </td>
-
-                      {/* Verified Deliverables */}
-                      <td style={{ padding: '16px 20px' }}>
-                        <div style={{ fontSize: 13, fontWeight: 600, color: '#FFFFFF' }}>
-                          {cert.verified_jobs_count > 0 ? `${cert.verified_jobs_count} jobs` : 'Orientation'}
-                        </div>
-                        <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)' }}>
-                          approved deliverables
-                        </span>
-                      </td>
-
-                      {/* Issued Date & Authority */}
-                      <td style={{ padding: '16px 20px' }}>
-                        <div style={{ fontSize: 12.5, color: '#FFFFFF' }}>
-                          {new Date(cert.issued_at).toLocaleDateString()}
-                        </div>
-                        <div style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.45)', marginTop: 2, maxWidth: 140, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={cert.issued_by}>
-                          {cert.issued_by}
-                        </div>
-                      </td>
-
-                      {/* Status */}
-                      <td style={{ padding: '16px 20px' }}>
-                        {cert.status === 'ISSUED' ? (
+                        {/* Squad Division */}
+                        <td style={{ padding: '16px 20px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
                           <span style={{
-                            padding: '3px 9px', borderRadius: 100, fontSize: 11, fontWeight: 700,
-                            background: 'rgba(24, 252, 92, 0.15)', color: RF_MINT_ACCENT,
-                            border: `1px solid ${RF_LEAF_GREEN}`
+                            fontSize: 11, fontWeight: 700, color: squadInfo.color,
+                            background: `${squadInfo.color}18`, border: `1px solid ${squadInfo.color}44`,
+                            padding: '3px 8px', borderRadius: 6, letterSpacing: '0.03em'
                           }}>
-                            ACTIVE
+                            {cert.division}
                           </span>
-                        ) : (
-                          <span style={{
-                            padding: '3px 9px', borderRadius: 100, fontSize: 11, fontWeight: 700,
-                            background: 'rgba(239, 68, 68, 0.15)', color: '#FCA5A5',
-                            border: '1px solid #EF4444'
-                          }}>
-                            REVOKED
-                          </span>
-                        )}
-                      </td>
+                        </td>
 
-                      {/* Actions */}
-                      <td style={{ padding: '16px 20px', textAlign: 'right' }}>
-                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                          <button
-                            onClick={() => handleViewCertificate(cert)}
-                            style={{
-                              background: 'rgba(255, 209, 102, 0.12)', border: `1px solid ${RF_GOLD_YELLOW}55`,
-                              color: RF_GOLD_YELLOW, padding: '5px 12px', borderRadius: 100, fontSize: 11.5,
-                              fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4
-                            }}
-                          >
-                            <Eye size={12} /> Inspect
-                          </button>
+                        {/* Verified Deliverables */}
+                        <td style={{ padding: '16px 20px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
+                          <div style={{ fontSize: 13, fontWeight: 600, color: '#FFFFFF' }}>
+                            {cert.verified_jobs_count > 0 ? `${cert.verified_jobs_count} verified jobs` : 'Orientation Pass'}
+                          </div>
+                          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', marginTop: 2 }}>
+                            Approved deliverable quota
+                          </div>
+                        </td>
 
-                          {cert.status === 'ISSUED' && (
-                            <button
-                              onClick={() => handleRevokeCertificate(cert.id)}
-                              style={{
-                                background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)',
-                                color: '#FCA5A5', padding: '5px 10px', borderRadius: 100, fontSize: 11,
-                                cursor: 'pointer'
-                              }}
-                            >
-                              Revoke
-                            </button>
+                        {/* Issued Date & Authority */}
+                        <td style={{ padding: '16px 20px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
+                          <div style={{ fontSize: 12.5, fontWeight: 500, color: '#FFFFFF' }}>
+                            {new Date(cert.issued_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                          </div>
+                          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', marginTop: 2, maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={cert.issued_by}>
+                            {cert.issued_by}
+                          </div>
+                        </td>
+
+                        {/* Status */}
+                        <td style={{ padding: '16px 20px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
+                          {cert.status === 'ISSUED' ? (
+                            <span style={{
+                              padding: '4px 9px', borderRadius: 8, fontSize: 11.5, fontWeight: 700,
+                              background: 'rgba(24, 252, 92, 0.12)', color: RF_MINT_ACCENT,
+                              border: `1px solid ${RF_LEAF_GREEN}55`,
+                              display: 'inline-flex', alignItems: 'center', gap: 5
+                            }}>
+                              <span style={{ width: 6, height: 6, borderRadius: '50%', background: RF_MINT_ACCENT, display: 'inline-block' }} />
+                              ACTIVE
+                            </span>
+                          ) : (
+                            <span style={{
+                              padding: '4px 9px', borderRadius: 8, fontSize: 11.5, fontWeight: 700,
+                              background: 'rgba(239, 68, 68, 0.12)', color: '#FCA5A5',
+                              border: '1px solid rgba(239, 68, 68, 0.35)',
+                              display: 'inline-flex', alignItems: 'center', gap: 5
+                            }}>
+                              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#EF4444', display: 'inline-block' }} />
+                              REVOKED
+                            </span>
                           )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))
+                        </td>
+
+                        {/* Actions */}
+                        <td style={{ padding: '16px 20px', verticalAlign: 'middle', textAlign: 'right' }}>
+                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, justifyContent: 'flex-end' }}>
+                            <button
+                              onClick={() => handleViewCertificate(cert)}
+                              style={{
+                                background: 'rgba(255, 209, 102, 0.12)', border: `1px solid ${RF_GOLD_YELLOW}55`,
+                                color: RF_GOLD_YELLOW, height: 32, padding: '0 12px', borderRadius: 8, fontSize: 12,
+                                fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 5,
+                                transition: 'all 0.15s', whiteSpace: 'nowrap'
+                              }}
+                              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255, 209, 102, 0.22)')}
+                              onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255, 209, 102, 0.12)')}
+                              title="Inspect & Print Credential"
+                            >
+                              <Eye size={13} style={{ flexShrink: 0 }} /> Inspect
+                            </button>
+
+                            {cert.status === 'ISSUED' && (
+                              <button
+                                onClick={() => handleRevokeCertificate(cert.id)}
+                                style={{
+                                  background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.25)',
+                                  color: '#FCA5A5', height: 32, padding: '0 10px', borderRadius: 8, fontSize: 12,
+                                  fontWeight: 500, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4,
+                                  transition: 'all 0.15s', whiteSpace: 'nowrap'
+                                }}
+                                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(239, 68, 68, 0.22)')}
+                                onMouseLeave={e => (e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)')}
+                                title="Revoke Accreditation"
+                              >
+                                <Ban size={12} style={{ flexShrink: 0 }} /> Revoke
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
                 )}
               </tbody>
             </table>
