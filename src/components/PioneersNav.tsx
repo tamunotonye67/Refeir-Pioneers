@@ -558,51 +558,39 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
             )}
           </button>
 
-          {/* Theme Switcher Toggle (Mobile Header) */}
-          <button
-            onClick={toggleTheme}
-            className="rp-mobile-theme-toggle"
-            title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-            aria-label={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-          >
-            {theme === 'dark' ? (
-              <Sun size={14} strokeWidth={2} color="#FED072" />
-            ) : (
-              <Moon size={14} strokeWidth={2} color="#0A1C12" />
-            )}
-          </button>
-
-          {/* "Become a Pioneer" Button (Desktop/Tablet CTA) */}
-          <button
-            onClick={() => handleLinkClick('apply', true)}
-            className="rp-nav-cta-desk"
-            style={{
-              background: RF_LEAF_GREEN,
-              color: RF_DEEP_GREEN,
-              border: 'none',
-              padding: '7px 18px',
-              borderRadius: 100,
-              fontSize: 12.5,
-              fontWeight: 600,
-              cursor: 'pointer',
-              letterSpacing: '0.01em',
-              transition: 'all 0.2s',
-              boxShadow: `0 2px 10px ${RF_LEAF_GREEN}33`,
-              whiteSpace: 'nowrap'
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.transform = 'translateY(-1px)';
-              e.currentTarget.style.background = RF_MINT_ACCENT;
-              e.currentTarget.style.boxShadow = `0 4px 16px ${RF_MINT_ACCENT}44`;
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.transform = '';
-              e.currentTarget.style.background = RF_LEAF_GREEN;
-              e.currentTarget.style.boxShadow = `0 2px 10px ${RF_LEAF_GREEN}33`;
-            }}
-          >
-            Become a Pioneer
-          </button>
+          {/* "Become a Pioneer" Button (Desktop CTA) */}
+          {!isMobile && (
+            <button
+              onClick={() => handleLinkClick('apply', true)}
+              className="rp-nav-cta-desk"
+              style={{
+                background: RF_LEAF_GREEN,
+                color: RF_DEEP_GREEN,
+                border: 'none',
+                padding: '7px 18px',
+                borderRadius: 100,
+                fontSize: 12.5,
+                fontWeight: 600,
+                cursor: 'pointer',
+                letterSpacing: '0.01em',
+                transition: 'all 0.2s',
+                boxShadow: `0 2px 10px ${RF_LEAF_GREEN}33`,
+                whiteSpace: 'nowrap'
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.transform = 'translateY(-1px)';
+                e.currentTarget.style.background = RF_MINT_ACCENT;
+                e.currentTarget.style.boxShadow = `0 4px 16px ${RF_MINT_ACCENT}44`;
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.transform = '';
+                e.currentTarget.style.background = RF_LEAF_GREEN;
+                e.currentTarget.style.boxShadow = `0 2px 10px ${RF_LEAF_GREEN}33`;
+              }}
+            >
+              Become a Pioneer
+            </button>
+          )}
 
           {/* Contributor Profile Chip or Sign In Trigger */}
           {contributor ? (
@@ -987,21 +975,6 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
                         <span>Rewards &amp; Ladder</span>
                       </button>
 
-                      <button
-                        className="rp-docker-btn"
-                        onClick={toggleTheme}
-                      >
-                        <span style={{ width: 20, height: 20, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: theme === 'dark' ? '#FED072' : '#0F2E1E' }}>
-                          {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
-                        </span>
-                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                          <span>Theme</span>
-                          <span style={{ fontSize: 11, opacity: 0.7, textTransform: 'capitalize' }}>
-                            {theme === 'dark' ? 'Dark Mode' : 'Light Mode'}
-                          </span>
-                        </span>
-                      </button>
-
                       <div style={{ height: 1, background: theme === 'light' ? 'rgba(15, 46, 30, 0.08)' : 'rgba(255, 255, 255, 0.06)', margin: '4px 0' }} />
                       <button
                         className="rp-docker-btn"
@@ -1246,48 +1219,6 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
               );
             })}
           </div>
-
-          {/* Mobile Drawer Dedicated Theme Switcher */}
-          <div style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            padding: '12px 14px', borderRadius: 12,
-            background: theme === 'light' ? 'rgba(15, 46, 30, 0.04)' : 'rgba(255, 255, 255, 0.05)',
-            border: `1px solid ${theme === 'light' ? 'rgba(15, 46, 30, 0.1)' : 'rgba(255, 255, 255, 0.1)'}`,
-            marginTop: 14, marginBottom: 14
-          }}>
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: 9,
-              fontSize: 13.5, fontWeight: 600,
-              color: theme === 'light' ? '#0A1C12' : '#FFFFFF'
-            }}>
-              {theme === 'dark' ? <Moon size={16} color="#18FC5C" /> : <Sun size={16} color="#F6B21A" />}
-              <span>Theme Appearance</span>
-            </div>
-            <button
-              onClick={toggleTheme}
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: 6,
-                padding: '6px 12px', borderRadius: 100,
-                background: theme === 'light' ? '#0F2E1E' : 'rgba(255, 255, 255, 0.14)',
-                color: '#FFFFFF',
-                fontSize: 12, fontWeight: 600, border: 'none', cursor: 'pointer'
-              }}
-            >
-              {theme === 'dark' ? <Sun size={13} color="#FED072" /> : <Moon size={13} color="#FED072" />}
-              <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
-            </button>
-          </div>
-
-          <button
-            onClick={() => handleLinkClick('apply', true)}
-            style={{
-              marginTop: 6, width: '100%', background: RF_LEAF_GREEN, color: '#061A0F',
-              border: 'none', padding: '12px', borderRadius: 100, fontSize: 13.5,
-              fontWeight: 700, cursor: 'pointer', letterSpacing: '0.01em'
-            }}
-          >
-            Become a Pioneer
-          </button>
         </div>
       )}
     </nav>

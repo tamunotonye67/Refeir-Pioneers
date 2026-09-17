@@ -3619,31 +3619,9 @@ img, svg {
   color: #0A1C12;
 }
 
-/* Mobile top navbar theme toggle button */
+/* Mobile top navbar theme toggle button (Disabled on mobile view) */
 .rp-mobile-theme-toggle {
-  display: none;
-}
-
-@media (max-width: 768px) {
-  .rp-mobile-theme-toggle {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    background: rgba(255, 255, 255, 0.06);
-    color: #FFFFFF;
-    cursor: pointer;
-    flex-shrink: 0;
-  }
-
-  [data-theme="light"] .rp-mobile-theme-toggle {
-    border: 1px solid rgba(15, 46, 30, 0.14);
-    background: rgba(15, 46, 30, 0.05);
-    color: #0A1C12;
-  }
+  display: none !important;
 }
 
 /* ─── Sticky Card Body Details in Light Mode ─── */
