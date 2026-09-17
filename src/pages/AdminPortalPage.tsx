@@ -7,7 +7,7 @@ import {
   UserPlus, Trash2, Key, EyeOff, Copy, Ban, UserX, Calendar,
   Building2, Globe, Phone, Send, AtSign, Share2, Briefcase,
   AlertTriangle, Brain, Gift, Zap, Megaphone, PlusCircle, Radio, DollarSign,
-  Bell, X, CheckCheck, Menu
+  Bell, X, CheckCheck, Menu, BarChart3, Activity, TrendingUp, Target, PieChart
 } from 'lucide-react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import {
@@ -852,6 +852,130 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
   const [newTaskDeadline, setNewTaskDeadline] = useState('Today 11:59 PM WAT');
   const [newTaskMaxClaims, setNewTaskMaxClaims] = useState(10);
 
+  // Comprehensive Analytics Calculations across all admin modules
+  const analytics = useMemo(() => {
+    // 1. Applications Funnel Analytics
+    const totalApps = applications.length;
+    const acceptedApps = applications.filter(a => a.status === 'ACCEPTED').length;
+    const pendingApps = applications.filter(a => a.status === 'PENDING').length;
+    const reviewingApps = applications.filter(a => a.status === 'REVIEWING').length;
+    const waitlistedApps = applications.filter(a => a.status === 'WAITLISTED').length;
+    const rejectedApps = applications.filter(a => a.status === 'REJECTED').length;
+    const foundingApps = applications.filter(a => a.is_founding_100).length;
+    const acceptanceRate = totalApps > 0 ? ((acceptedApps / totalApps) * 100).toFixed(1) : '0.0';
+    const pendingRate = totalApps > 0 ? ((pendingApps / totalApps) * 100).toFixed(1) : '0.0';
+    const foundingCapPct = Math.min(100, Math.round((foundingApps / 100) * 100));
+
+    // Division breakdown of applications
+    const appsByDivision: Record<string, number> = {};
+    applications.forEach(a => {
+      const div = a.primary_division || 'GENERAL';
+      appsByDivision[div] = (appsByDivision[div] || 0) + 1;
+    });
+
+    // 2. Task Proofs Delivery Velocity
+    const totalProofs = taskSubmissions.length;
+    const verifiedProofs = taskSubmissions.filter(t => t.status === 'VERIFIED').length;
+    const pendingProofs = taskSubmissions.filter(t => t.status === 'PENDING').length;
+    const revisionProofs = taskSubmissions.filter(t => t.status === 'NEEDS_REVISION').length;
+    const verificationRate = totalProofs > 0 ? ((verifiedProofs / totalProofs) * 100).toFixed(1) : '0.0';
+    const revisionRate = totalProofs > 0 ? ((revisionProofs / totalProofs) * 100).toFixed(1) : '0.0';
+
+    // Proofs by division
+    const proofsByDivision: Record<string, number> = {};
+    taskSubmissions.forEach(t => {
+      const div = t.division || 'GENERAL';
+      proofsByDivision[div] = (proofsByDivision[div] || 0) + 1;
+    });
+
+    // 3. Pioneer Members & Tiers
+    const totalMembers = membersList.length;
+    const activeMembers = membersList.filter(m => !m.is_suspended).length;
+    const suspendedMembers = membersList.filter(m => m.is_suspended).length;
+    const completedMembers = membersList.filter(m => m.is_profile_completed).length;
+    const activeRate = totalMembers > 0 ? ((activeMembers / totalMembers) * 100).toFixed(1) : '0.0';
+    const profileCompRate = totalMembers > 0 ? ((completedMembers / totalMembers) * 100).toFixed(1) : '0.0';
+
+    const levelCounts: Record<string, number> = {
+      LEVEL_1: 0,
+      LEVEL_2: 0,
+      LEVEL_3: 0,
+      LEVEL_4: 0,
+      LEVEL_5: 0
+    };
+    membersList.forEach(m => {
+      if (levelCounts[m.contributor_level] !== undefined) {
+        levelCounts[m.contributor_level]++;
+      }
+    });
+
+    // 4. Certificates Minting
+    const totalCerts = certificatesList.length;
+    const activeCerts = certificatesList.filter(c => c.status === 'ISSUED').length;
+    const revokedCerts = certificatesList.filter(c => c.status === 'REVOKED').length;
+    const level1Certs = certificatesList.filter(c => c.level === 'LEVEL_1').length;
+    const advancedCerts = totalCerts - level1Certs;
+    const activeCertRate = totalCerts > 0 ? ((activeCerts / totalCerts) * 100).toFixed(1) : '0.0';
+
+    // 5. Squad Tasks & Bounty Valuation
+    const activeTasks = tasksList.filter(t => t.status === 'ACTIVE');
+    let totalCashBountyVal = 0;
+    let airtimeBounties = 0;
+    let dataBounties = 0;
+    activeTasks.forEach(t => {
+      if (t.bounty_type === 'CASH') {
+        const valMatch = (t.bounty_reward || '').match(/[0-9,]+/);
+        if (valMatch) {
+          totalCashBountyVal += parseInt(valMatch[0].replace(/,/g, ''), 10) || 0;
+        } else {
+          totalCashBountyVal += 10000;
+        }
+      } else if (t.bounty_type === 'AIRTIME') {
+        airtimeBounties++;
+      } else if (t.bounty_type === 'DATA') {
+        dataBounties++;
+      }
+    });
+
+    return {
+      totalApps,
+      acceptedApps,
+      pendingApps,
+      reviewingApps,
+      waitlistedApps,
+      rejectedApps,
+      foundingApps,
+      acceptanceRate,
+      pendingRate,
+      foundingCapPct,
+      appsByDivision,
+      totalProofs,
+      verifiedProofs,
+      pendingProofs,
+      revisionProofs,
+      verificationRate,
+      revisionRate,
+      proofsByDivision,
+      totalMembers,
+      activeMembers,
+      suspendedMembers,
+      completedMembers,
+      activeRate,
+      profileCompRate,
+      levelCounts,
+      totalCerts,
+      activeCerts,
+      revokedCerts,
+      level1Certs,
+      advancedCerts,
+      activeCertRate,
+      activeTasksCount: activeTasks.length,
+      totalCashBountyVal,
+      airtimeBounties,
+      dataBounties
+    };
+  }, [applications, taskSubmissions, membersList, certificatesList, tasksList]);
+
   const formatDOB = (dob?: string) => {
     if (!dob) return null;
     try {
@@ -1017,6 +1141,17 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, [notificationOpen]);
+
+  // Prevent body scroll jitter/shaking on mobile when full-screen drawer or notification sheet is open
+  useEffect(() => {
+    if ((adminMobileNavOpen && isMobile) || (notificationOpen && isMobile)) {
+      const origOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = origOverflow;
+      };
+    }
+  }, [adminMobileNavOpen, notificationOpen, isMobile]);
 
   const notificationsList = useMemo(() => {
     const list: Array<{
@@ -1568,25 +1703,17 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               <Shield size={isMobile ? 15 : 17} />
             </div>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <span style={{ fontSize: isMobile ? 13 : 14.5, fontWeight: 700, color: '#FFFFFF', letterSpacing: '-0.01em' }}>
-                  Refeir Admissions Suite
-                </span>
-                <span style={{
-                  fontSize: 9.5,
-                  fontWeight: 700,
-                  color: 'rgba(255,255,255,0.6)',
-                  background: 'rgba(255,255,255,0.06)',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  padding: '1px 6px',
-                  borderRadius: 4,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.04em'
-                }}>
-                  Cohort 001
-                </span>
-              </div>
-              <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.45)', display: isMobile ? 'none' : 'block', marginTop: 1 }}>
+              <h1 style={{
+                fontSize: isMobile ? 16.5 : 19,
+                fontWeight: 800,
+                color: '#FFFFFF',
+                letterSpacing: '-0.02em',
+                margin: 0,
+                lineHeight: 1.2
+              }}>
+                Refeir Admissions Suite
+              </h1>
+              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', display: isMobile ? 'none' : 'block', marginTop: 2 }}>
                 Live admissions, verification &amp; pioneer governance console
               </span>
             </div>
@@ -1758,302 +1885,608 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               {!isMobile && <span>Exit</span>}
             </button>
 
-            {/* Notification Center Popover Dropdown */}
+            {/* Notification Center Popover (Desktop) / Bottom Sheet (Mobile) */}
             {notificationOpen && (
-              <div style={{
-                position: 'absolute',
-                top: 'calc(100% + 8px)',
-                right: 0,
-                width: isMobile ? 'calc(100vw - 28px)' : 390,
-                maxWidth: 400,
-                background: 'rgba(8, 26, 17, 0.98)',
-                border: '1px solid rgba(102, 187, 42, 0.28)',
-                borderRadius: 14,
-                boxShadow: '0 20px 50px rgba(0,0,0,0.7), 0 0 1px rgba(24, 252, 92, 0.4)',
-                backdropFilter: 'blur(24px)',
-                WebkitBackdropFilter: 'blur(24px)',
-                zIndex: 1000,
-                overflow: 'hidden'
-              }}>
-                {/* Header */}
-                <div style={{
-                  padding: '12px 16px',
-                  borderBottom: '1px solid rgba(255,255,255,0.08)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  background: 'rgba(255,255,255,0.02)'
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <Bell size={15} color={RF_MINT_ACCENT} />
-                    <span style={{ fontSize: 13, fontWeight: 700, color: '#FFFFFF' }}>
-                      Notification Center
-                    </span>
-                    {unreadNotifCount > 0 && (
-                      <span style={{
-                        fontSize: 10,
-                        fontWeight: 700,
-                        padding: '1px 7px',
-                        borderRadius: 10,
-                        background: 'rgba(24, 252, 92, 0.15)',
-                        color: RF_MINT_ACCENT,
-                        border: '1px solid rgba(24, 252, 92, 0.3)'
-                      }}>
-                        {unreadNotifCount} new
-                      </span>
-                    )}
-                  </div>
-
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    {unreadNotifCount > 0 && (
-                      <button
-                        onClick={handleMarkAllNotificationsRead}
-                        style={{
-                          background: 'transparent',
-                          border: 'none',
-                          color: RF_MINT_ACCENT,
-                          fontSize: 11,
-                          fontWeight: 600,
-                          cursor: 'pointer',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: 4,
-                          padding: '2px 6px',
-                          borderRadius: 4
-                        }}
-                      >
-                        <CheckCheck size={13} />
-                        Mark read
-                      </button>
-                    )}
-                    <button
-                      onClick={() => setNotificationOpen(false)}
-                      style={{
-                        background: 'rgba(255,255,255,0.06)',
-                        border: 'none',
-                        color: 'rgba(255,255,255,0.6)',
-                        width: 24,
-                        height: 24,
-                        borderRadius: 6,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      <X size={13} />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Filter chips */}
-                <div style={{
-                  display: 'flex',
-                  gap: 6,
-                  padding: '8px 14px',
-                  borderBottom: '1px solid rgba(255,255,255,0.05)',
-                  background: 'rgba(0,0,0,0.15)'
-                }}>
-                  <button
-                    onClick={() => setNotifFilter('all')}
+              isMobile ? (
+                <div
+                  onClick={() => setNotificationOpen(false)}
+                  style={{
+                    position: 'fixed',
+                    inset: 0,
+                    zIndex: 100000,
+                    background: 'rgba(3, 10, 6, 0.85)',
+                    backdropFilter: 'blur(16px)',
+                    WebkitBackdropFilter: 'blur(16px)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'flex-end'
+                  }}
+                >
+                  <div
+                    onClick={e => e.stopPropagation()}
                     style={{
-                      background: notifFilter === 'all' ? 'rgba(24, 252, 92, 0.15)' : 'transparent',
-                      border: notifFilter === 'all' ? '1px solid rgba(24, 252, 92, 0.3)' : '1px solid transparent',
-                      color: notifFilter === 'all' ? RF_MINT_ACCENT : 'rgba(255,255,255,0.5)',
-                      padding: '3px 9px',
-                      borderRadius: 6,
-                      fontSize: 11,
-                      fontWeight: 600,
-                      cursor: 'pointer'
+                      background: 'linear-gradient(180deg, #0C2918 0%, #06160C 100%)',
+                      borderTop: '1px solid rgba(24, 252, 92, 0.35)',
+                      borderRadius: '24px 24px 0 0',
+                      boxShadow: '0 -15px 40px rgba(0,0,0,0.85)',
+                      width: '100%',
+                      maxHeight: '84dvh',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      overflow: 'hidden'
                     }}
                   >
-                    All ({notificationsList.length})
-                  </button>
-                  <button
-                    onClick={() => setNotifFilter('action')}
-                    style={{
-                      background: notifFilter === 'action' ? 'rgba(251, 191, 36, 0.15)' : 'transparent',
-                      border: notifFilter === 'action' ? '1px solid rgba(251, 191, 36, 0.3)' : '1px solid transparent',
-                      color: notifFilter === 'action' ? RF_GOLD_YELLOW : 'rgba(255,255,255,0.5)',
-                      padding: '3px 9px',
-                      borderRadius: 6,
-                      fontSize: 11,
-                      fontWeight: 600,
-                      cursor: 'pointer'
-                    }}
-                  >
-                    Action Needed ({notificationsList.filter(n => n.type === 'action').length})
-                  </button>
-                </div>
+                    {/* Pull Handle Bar */}
+                    <div style={{ display: 'flex', justifyContent: 'center', padding: '10px 0 4px' }}>
+                      <div style={{ width: 38, height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.2)' }} />
+                    </div>
 
-                {/* Notifications List */}
-                <div style={{ maxHeight: 320, overflowY: 'auto', padding: '6px' }}>
-                  {notificationsList
-                    .filter(n => notifFilter === 'all' || n.type === 'action')
-                    .map(n => {
-                      const isUnread = n.unread;
-                      return (
-                        <div
-                          key={n.id}
-                          onClick={() => handleNotificationClick(n)}
+                    {/* Header */}
+                    <div style={{
+                      padding: '12px 18px',
+                      borderBottom: '1px solid rgba(255,255,255,0.08)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between'
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <Bell size={16} color={RF_MINT_ACCENT} />
+                        <span style={{ fontSize: 14, fontWeight: 700, color: '#FFFFFF' }}>
+                          Notification Center
+                        </span>
+                        {unreadNotifCount > 0 && (
+                          <span style={{
+                            fontSize: 10,
+                            fontWeight: 700,
+                            padding: '2px 8px',
+                            borderRadius: 10,
+                            background: 'rgba(24, 252, 92, 0.15)',
+                            color: RF_MINT_ACCENT,
+                            border: '1px solid rgba(24, 252, 92, 0.3)'
+                          }}>
+                            {unreadNotifCount} unread
+                          </span>
+                        )}
+                      </div>
+
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        {unreadNotifCount > 0 && (
+                          <button
+                            onClick={handleMarkAllNotificationsRead}
+                            style={{
+                              background: 'transparent',
+                              border: 'none',
+                              color: RF_MINT_ACCENT,
+                              fontSize: 12,
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 4,
+                              padding: '4px 8px',
+                              borderRadius: 4
+                            }}
+                          >
+                            <CheckCheck size={14} />
+                            Mark read
+                          </button>
+                        )}
+                        <button
+                          onClick={() => setNotificationOpen(false)}
                           style={{
-                            padding: '10px 12px',
-                            borderRadius: 8,
-                            background: isUnread ? 'rgba(24, 252, 92, 0.04)' : 'transparent',
-                            border: isUnread ? '1px solid rgba(24, 252, 92, 0.15)' : '1px solid transparent',
-                            marginBottom: 4,
-                            cursor: 'pointer',
-                            transition: 'all 0.15s ease',
-                            display: 'flex',
-                            gap: 10,
-                            alignItems: 'flex-start'
-                          }}
-                          onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
-                          onMouseLeave={e => e.currentTarget.style.background = isUnread ? 'rgba(24, 252, 92, 0.04)' : 'transparent'}
-                        >
-                          {/* Left icon */}
-                          <div style={{
+                            background: 'rgba(255,255,255,0.08)',
+                            border: 'none',
+                            color: '#FFFFFF',
                             width: 28,
                             height: 28,
-                            borderRadius: 7,
+                            borderRadius: '50%',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            flexShrink: 0,
-                            marginTop: 1,
-                            background:
-                              n.type === 'action' ? 'rgba(251, 191, 36, 0.12)' :
-                              n.type === 'success' ? 'rgba(24, 252, 92, 0.12)' :
-                              n.type === 'alert' ? 'rgba(239, 68, 68, 0.12)' :
-                              'rgba(96, 165, 250, 0.12)',
-                            color:
-                              n.type === 'action' ? RF_GOLD_YELLOW :
-                              n.type === 'success' ? RF_MINT_ACCENT :
-                              n.type === 'alert' ? '#FCA5A5' :
-                              '#60A5FA'
-                          }}>
-                            {n.type === 'action' ? <AlertCircle size={14} /> :
-                             n.type === 'success' ? <CheckCircle2 size={14} /> :
-                             n.type === 'alert' ? <AlertTriangle size={14} /> :
-                             <Shield size={14} />}
-                          </div>
+                            cursor: 'pointer'
+                          }}
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
+                    </div>
 
-                          {/* Body */}
-                          <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6, marginBottom: 2 }}>
-                              <span style={{ fontSize: 12.5, fontWeight: isUnread ? 700 : 600, color: '#FFFFFF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                {n.title}
-                              </span>
-                              <span style={{
-                                fontSize: 9.5,
-                                fontWeight: 700,
-                                padding: '1px 5px',
-                                borderRadius: 4,
+                    {/* Filter chips */}
+                    <div style={{
+                      display: 'flex',
+                      gap: 8,
+                      padding: '10px 18px',
+                      borderBottom: '1px solid rgba(255,255,255,0.05)',
+                      background: 'rgba(0,0,0,0.2)'
+                    }}>
+                      <button
+                        onClick={() => setNotifFilter('all')}
+                        style={{
+                          background: notifFilter === 'all' ? 'rgba(24, 252, 92, 0.15)' : 'rgba(255,255,255,0.05)',
+                          border: notifFilter === 'all' ? '1px solid rgba(24, 252, 92, 0.35)' : '1px solid rgba(255,255,255,0.1)',
+                          color: notifFilter === 'all' ? RF_MINT_ACCENT : 'rgba(255,255,255,0.6)',
+                          padding: '5px 12px',
+                          borderRadius: 100,
+                          fontSize: 11.5,
+                          fontWeight: 600,
+                          cursor: 'pointer'
+                        }}
+                      >
+                        All ({notificationsList.length})
+                      </button>
+                      <button
+                        onClick={() => setNotifFilter('action')}
+                        style={{
+                          background: notifFilter === 'action' ? 'rgba(251, 191, 36, 0.15)' : 'rgba(255,255,255,0.05)',
+                          border: notifFilter === 'action' ? '1px solid rgba(251, 191, 36, 0.35)' : '1px solid rgba(255,255,255,0.1)',
+                          color: notifFilter === 'action' ? RF_GOLD_YELLOW : 'rgba(255,255,255,0.6)',
+                          padding: '5px 12px',
+                          borderRadius: 100,
+                          fontSize: 11.5,
+                          fontWeight: 600,
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Action Needed ({notificationsList.filter(n => n.type === 'action').length})
+                      </button>
+                    </div>
+
+                    {/* Notifications List */}
+                    <div style={{ flex: 1, overflowY: 'auto', padding: '8px 14px 18px', WebkitOverflowScrolling: 'touch' }}>
+                      {notificationsList
+                        .filter(n => notifFilter === 'all' || n.type === 'action')
+                        .map(n => {
+                          const isUnread = n.unread;
+                          return (
+                            <div
+                              key={n.id}
+                              onClick={() => {
+                                handleNotificationClick(n);
+                                setNotificationOpen(false);
+                              }}
+                              style={{
+                                padding: '12px 14px',
+                                borderRadius: 12,
+                                background: isUnread ? 'rgba(24, 252, 92, 0.05)' : 'rgba(255,255,255,0.02)',
+                                border: isUnread ? '1px solid rgba(24, 252, 92, 0.2)' : '1px solid rgba(255,255,255,0.05)',
+                                marginBottom: 6,
+                                cursor: 'pointer',
+                                display: 'flex',
+                                gap: 12,
+                                alignItems: 'flex-start'
+                              }}
+                            >
+                              <div style={{
+                                width: 32,
+                                height: 32,
+                                borderRadius: 8,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
                                 flexShrink: 0,
-                                background: n.type === 'action' ? 'rgba(251, 191, 36, 0.15)' : 'rgba(255,255,255,0.08)',
-                                color: n.type === 'action' ? RF_GOLD_YELLOW : 'rgba(255,255,255,0.5)'
+                                marginTop: 1,
+                                background:
+                                  n.type === 'action' ? 'rgba(251, 191, 36, 0.12)' :
+                                  n.type === 'success' ? 'rgba(24, 252, 92, 0.12)' :
+                                  n.type === 'alert' ? 'rgba(239, 68, 68, 0.12)' :
+                                  'rgba(96, 165, 250, 0.12)',
+                                color:
+                                  n.type === 'action' ? RF_GOLD_YELLOW :
+                                  n.type === 'success' ? RF_MINT_ACCENT :
+                                  n.type === 'alert' ? '#FCA5A5' :
+                                  '#60A5FA'
                               }}>
-                                {n.time}
-                              </span>
+                                {n.type === 'action' ? <AlertCircle size={15} /> :
+                                 n.type === 'success' ? <CheckCircle2 size={15} /> :
+                                 n.type === 'alert' ? <AlertTriangle size={15} /> :
+                                 <Shield size={15} />}
+                              </div>
+
+                              <div style={{ flex: 1, minWidth: 0 }}>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6, marginBottom: 2 }}>
+                                  <span style={{ fontSize: 13, fontWeight: isUnread ? 700 : 600, color: '#FFFFFF' }}>
+                                    {n.title}
+                                  </span>
+                                  <span style={{
+                                    fontSize: 10,
+                                    fontWeight: 700,
+                                    padding: '1px 6px',
+                                    borderRadius: 4,
+                                    flexShrink: 0,
+                                    background: n.type === 'action' ? 'rgba(251, 191, 36, 0.15)' : 'rgba(255,255,255,0.08)',
+                                    color: n.type === 'action' ? RF_GOLD_YELLOW : 'rgba(255,255,255,0.5)'
+                                  }}>
+                                    {n.time}
+                                  </span>
+                                </div>
+                                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.65)', margin: 0, lineHeight: 1.4 }}>
+                                  {n.desc}
+                                </p>
+                              </div>
+
+                              {isUnread && (
+                                <div style={{
+                                  width: 7,
+                                  height: 7,
+                                  borderRadius: '50%',
+                                  background: RF_MINT_ACCENT,
+                                  marginTop: 7,
+                                  flexShrink: 0,
+                                  boxShadow: '0 0 6px rgba(24, 252, 92, 0.8)'
+                                }} />
+                              )}
                             </div>
-                            <p style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.6)', margin: 0, lineHeight: 1.4 }}>
-                              {n.desc}
-                            </p>
-                          </div>
-
-                          {/* Unread indicator */}
-                          {isUnread && (
-                            <div style={{
-                              width: 6,
-                              height: 6,
-                              borderRadius: '50%',
-                              background: RF_MINT_ACCENT,
-                              marginTop: 6,
-                              flexShrink: 0,
-                              boxShadow: '0 0 6px rgba(24, 252, 92, 0.8)'
-                            }} />
-                          )}
-                        </div>
-                      );
-                    })}
+                          );
+                        })}
+                    </div>
+                  </div>
                 </div>
-
-                {/* Footer */}
+              ) : (
+                /* Desktop Popover Dropdown */
                 <div style={{
-                  padding: '9px 14px',
-                  borderTop: '1px solid rgba(255,255,255,0.06)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  background: 'rgba(0,0,0,0.2)'
+                  position: 'absolute',
+                  top: 'calc(100% + 8px)',
+                  right: 0,
+                  width: 390,
+                  maxWidth: 400,
+                  background: 'rgba(8, 26, 17, 0.98)',
+                  border: '1px solid rgba(102, 187, 42, 0.28)',
+                  borderRadius: 14,
+                  boxShadow: '0 20px 50px rgba(0,0,0,0.7), 0 0 1px rgba(24, 252, 92, 0.4)',
+                  backdropFilter: 'blur(24px)',
+                  WebkitBackdropFilter: 'blur(24px)',
+                  zIndex: 1000,
+                  overflow: 'hidden'
                 }}>
-                  <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.45)', display: 'flex', alignItems: 'center', gap: 5 }}>
-                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: RF_MINT_ACCENT }} />
-                    Live Activity Pulse
-                  </span>
-                  <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.45)' }}>
-                    Refeir Admissions Suite
-                  </span>
+                  {/* Header */}
+                  <div style={{
+                    padding: '12px 16px',
+                    borderBottom: '1px solid rgba(255,255,255,0.08)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    background: 'rgba(255,255,255,0.02)'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <Bell size={15} color={RF_MINT_ACCENT} />
+                      <span style={{ fontSize: 13, fontWeight: 700, color: '#FFFFFF' }}>
+                        Notification Center
+                      </span>
+                      {unreadNotifCount > 0 && (
+                        <span style={{
+                          fontSize: 10,
+                          fontWeight: 700,
+                          padding: '1px 7px',
+                          borderRadius: 10,
+                          background: 'rgba(24, 252, 92, 0.15)',
+                          color: RF_MINT_ACCENT,
+                          border: '1px solid rgba(24, 252, 92, 0.3)'
+                        }}>
+                          {unreadNotifCount} new
+                        </span>
+                      )}
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      {unreadNotifCount > 0 && (
+                        <button
+                          onClick={handleMarkAllNotificationsRead}
+                          style={{
+                            background: 'transparent',
+                            border: 'none',
+                            color: RF_MINT_ACCENT,
+                            fontSize: 11,
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 4,
+                            padding: '2px 6px',
+                            borderRadius: 4
+                          }}
+                        >
+                          <CheckCheck size={13} />
+                          Mark read
+                        </button>
+                      )}
+                      <button
+                        onClick={() => setNotificationOpen(false)}
+                        style={{
+                          background: 'rgba(255,255,255,0.06)',
+                          border: 'none',
+                          color: 'rgba(255,255,255,0.6)',
+                          width: 24,
+                          height: 24,
+                          borderRadius: 6,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <X size={13} />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Filter chips */}
+                  <div style={{
+                    display: 'flex',
+                    gap: 6,
+                    padding: '8px 14px',
+                    borderBottom: '1px solid rgba(255,255,255,0.05)',
+                    background: 'rgba(0,0,0,0.15)'
+                  }}>
+                    <button
+                      onClick={() => setNotifFilter('all')}
+                      style={{
+                        background: notifFilter === 'all' ? 'rgba(24, 252, 92, 0.15)' : 'transparent',
+                        border: notifFilter === 'all' ? '1px solid rgba(24, 252, 92, 0.3)' : '1px solid transparent',
+                        color: notifFilter === 'all' ? RF_MINT_ACCENT : 'rgba(255,255,255,0.5)',
+                        padding: '3px 9px',
+                        borderRadius: 6,
+                        fontSize: 11,
+                        fontWeight: 600,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      All ({notificationsList.length})
+                    </button>
+                    <button
+                      onClick={() => setNotifFilter('action')}
+                      style={{
+                        background: notifFilter === 'action' ? 'rgba(251, 191, 36, 0.15)' : 'transparent',
+                        border: notifFilter === 'action' ? '1px solid rgba(251, 191, 36, 0.3)' : '1px solid transparent',
+                        color: notifFilter === 'action' ? RF_GOLD_YELLOW : 'rgba(255,255,255,0.5)',
+                        padding: '3px 9px',
+                        borderRadius: 6,
+                        fontSize: 11,
+                        fontWeight: 600,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Action Needed ({notificationsList.filter(n => n.type === 'action').length})
+                    </button>
+                  </div>
+
+                  {/* Notifications List */}
+                  <div style={{ maxHeight: 320, overflowY: 'auto', padding: '6px' }}>
+                    {notificationsList
+                      .filter(n => notifFilter === 'all' || n.type === 'action')
+                      .map(n => {
+                        const isUnread = n.unread;
+                        return (
+                          <div
+                            key={n.id}
+                            onClick={() => handleNotificationClick(n)}
+                            style={{
+                              padding: '10px 12px',
+                              borderRadius: 8,
+                              background: isUnread ? 'rgba(24, 252, 92, 0.04)' : 'transparent',
+                              border: isUnread ? '1px solid rgba(24, 252, 92, 0.15)' : '1px solid transparent',
+                              marginBottom: 4,
+                              cursor: 'pointer',
+                              transition: 'all 0.15s ease',
+                              display: 'flex',
+                              gap: 10,
+                              alignItems: 'flex-start'
+                            }}
+                            onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
+                            onMouseLeave={e => e.currentTarget.style.background = isUnread ? 'rgba(24, 252, 92, 0.04)' : 'transparent'}
+                          >
+                            <div style={{
+                              width: 28,
+                              height: 28,
+                              borderRadius: 7,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              flexShrink: 0,
+                              marginTop: 1,
+                              background:
+                                n.type === 'action' ? 'rgba(251, 191, 36, 0.12)' :
+                                n.type === 'success' ? 'rgba(24, 252, 92, 0.12)' :
+                                n.type === 'alert' ? 'rgba(239, 68, 68, 0.12)' :
+                                'rgba(96, 165, 250, 0.12)',
+                              color:
+                                n.type === 'action' ? RF_GOLD_YELLOW :
+                                n.type === 'success' ? RF_MINT_ACCENT :
+                                n.type === 'alert' ? '#FCA5A5' :
+                                '#60A5FA'
+                            }}>
+                              {n.type === 'action' ? <AlertCircle size={14} /> :
+                               n.type === 'success' ? <CheckCircle2 size={14} /> :
+                               n.type === 'alert' ? <AlertTriangle size={14} /> :
+                               <Shield size={14} />}
+                            </div>
+
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6, marginBottom: 2 }}>
+                                <span style={{ fontSize: 12.5, fontWeight: isUnread ? 700 : 600, color: '#FFFFFF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                  {n.title}
+                                </span>
+                                <span style={{
+                                  fontSize: 9.5,
+                                  fontWeight: 700,
+                                  padding: '1px 5px',
+                                  borderRadius: 4,
+                                  flexShrink: 0,
+                                  background: n.type === 'action' ? 'rgba(251, 191, 36, 0.15)' : 'rgba(255,255,255,0.08)',
+                                  color: n.type === 'action' ? RF_GOLD_YELLOW : 'rgba(255,255,255,0.5)'
+                                }}>
+                                  {n.time}
+                                </span>
+                              </div>
+                              <p style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.6)', margin: 0, lineHeight: 1.4 }}>
+                                {n.desc}
+                              </p>
+                            </div>
+
+                            {isUnread && (
+                              <div style={{
+                                width: 6,
+                                height: 6,
+                                borderRadius: '50%',
+                                background: RF_MINT_ACCENT,
+                                marginTop: 6,
+                                flexShrink: 0,
+                                boxShadow: '0 0 6px rgba(24, 252, 92, 0.8)'
+                              }} />
+                            )}
+                          </div>
+                        );
+                      })}
+                  </div>
+
+                  {/* Footer */}
+                  <div style={{
+                    padding: '9px 14px',
+                    borderTop: '1px solid rgba(255,255,255,0.06)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    background: 'rgba(0,0,0,0.2)'
+                  }}>
+                    <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.45)', display: 'flex', alignItems: 'center', gap: 5 }}>
+                      <span style={{ width: 6, height: 6, borderRadius: '50%', background: RF_MINT_ACCENT }} />
+                      Live Activity Pulse
+                    </span>
+                    <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.45)' }}>
+                      Refeir Admissions Suite
+                    </span>
+                  </div>
                 </div>
-              </div>
+              )
             )}
           </div>
         </div>
       </header>
 
-      {/* Mobile Admin Navigation Drawer Overlay */}
+      {/* Full-Viewport Mobile Admin Navigation Drawer */}
       {adminMobileNavOpen && isMobile && (
         <div
           onClick={() => setAdminMobileNavOpen(false)}
           style={{
-            position: 'fixed', inset: 0, top: 58, zIndex: 999,
-            background: 'rgba(3, 10, 6, 0.75)', backdropFilter: 'blur(8px)',
-            WebkitBackdropFilter: 'blur(8px)'
+            position: 'fixed',
+            inset: 0,
+            width: '100vw',
+            height: '100dvh',
+            zIndex: 99999,
+            background: 'rgba(3, 12, 7, 0.98)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            display: 'flex',
+            flexDirection: 'column'
           }}
         >
+          {/* Drawer Top Navigation Bar */}
           <div
             onClick={e => e.stopPropagation()}
             style={{
-              background: `linear-gradient(180deg, ${RF_DARK_GREEN} 0%, #05140B 100%)`,
-              borderBottom: '1px solid rgba(24, 252, 92, 0.2)',
-              boxShadow: '0 20px 40px rgba(0,0,0,0.8)',
-              padding: '16px 16px 20px',
-              display: 'flex', flexDirection: 'column', gap: 12,
-              maxHeight: 'calc(100vh - 65px)', overflowY: 'auto'
+              padding: '14px 18px',
+              borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              background: 'rgba(15, 46, 30, 0.95)',
+              flexShrink: 0
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{
+                background: 'rgba(24, 252, 92, 0.15)',
+                border: '1px solid rgba(24, 252, 92, 0.35)',
+                width: 32,
+                height: 32,
+                borderRadius: 8,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: RF_MINT_ACCENT
+              }}>
+                <Shield size={16} />
+              </div>
+              <div>
+                <div style={{ fontSize: 14.5, fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.01em' }}>
+                  Refeir Admissions Suite
+                </div>
+                <div style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)' }}>
+                  Navigation &amp; Governance Center
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setAdminMobileNavOpen(false)}
+              aria-label="Close navigation"
+              style={{
+                width: 34,
+                height: 34,
+                borderRadius: '50%',
+                background: 'rgba(255, 255, 255, 0.08)',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                color: '#FFFFFF',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer'
+              }}
+            >
+              <X size={17} />
+            </button>
+          </div>
+
+          {/* Drawer Scrollable Content */}
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              flex: 1,
+              overflowY: 'auto',
+              WebkitOverflowScrolling: 'touch',
+              padding: '16px 18px 24px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 14
             }}
           >
             {/* Staff identity card */}
             {loggedInStaff && (
               <div style={{
-                background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
-                borderRadius: 10, padding: '10px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between'
+                background: 'rgba(255,255,255,0.03)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                borderRadius: 14,
+                padding: '12px 14px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between'
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   <div style={{
-                    width: 28, height: 28, borderRadius: '50%', background: 'rgba(24, 252, 92, 0.15)',
+                    width: 34, height: 34, borderRadius: '50%', background: 'rgba(24, 252, 92, 0.15)',
+                    border: '1px solid rgba(24, 252, 92, 0.3)',
                     color: RF_MINT_ACCENT, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 11, fontWeight: 800
+                    fontSize: 12, fontWeight: 800
                   }}>
                     {loggedInStaff.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
                   </div>
                   <div>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: '#FFFFFF' }}>{loggedInStaff.name}</div>
-                    <div style={{ fontSize: 10.5, color: RF_MINT_ACCENT, fontWeight: 600 }}>{loggedInStaff.role.replace('_', ' ')}</div>
+                    <div style={{ fontSize: 13.5, fontWeight: 700, color: '#FFFFFF' }}>{loggedInStaff.name}</div>
+                    <div style={{ fontSize: 11, color: RF_MINT_ACCENT, fontWeight: 600 }}>{loggedInStaff.role.replace('_', ' ')}</div>
                   </div>
                 </div>
                 <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', fontFamily: 'monospace' }}>STAFF ID: {loggedInStaff.id}</span>
               </div>
             )}
 
-            {/* Nav modules list */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {/* Nav modules list with distinct icons */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {[
-                { id: 'applications', label: 'Applications & Admissions', icon: UserCheck, count: stats.total, desc: 'Review candidate applications & Founding 100' },
-                { id: 'proofs', label: 'Task Proofs of Work', icon: FileCheck, count: taskStats.total, desc: 'Verify mission deliverables & points' },
-                { id: 'members', label: 'Pioneer Profiles', icon: Award, count: membersList.length, desc: 'Manage member records & accounts', onClick: refreshMembers },
-                { id: 'workers', label: 'Review Team & Staff', icon: Users, count: staffList.length, desc: 'Manage evaluation staff & workers' },
-                { id: 'certificates', label: 'Pioneer Certifications', icon: Award, count: certificatesList.length, desc: 'Issue & inspect level completion credentials', onClick: refreshCertificates },
-                { id: 'tasks', label: 'Squad Missions & Bounties', icon: Megaphone, count: tasksList.filter(t => t.status === 'ACTIVE').length, desc: 'Announce daily directives & WhatsApp tasks', onClick: refreshTasks },
+                { id: 'applications', label: 'Applications & Admissions', icon: UserCheck, count: stats.total, desc: 'Review candidate dossiers & Founding 100 quota' },
+                { id: 'proofs', label: 'Task Proofs of Work', icon: FileCheck, count: taskStats.total, desc: 'Verify mission deliverables & points verification' },
+                { id: 'members', label: 'Pioneer Profiles', icon: Users, count: membersList.length, desc: 'Contributor directory, DOB records & accounts', onClick: refreshMembers },
+                { id: 'workers', label: 'Review Team & Staff', icon: Briefcase, count: staffList.length, desc: 'Manage reviewer credentials & passcodes' },
+                { id: 'certificates', label: 'Pioneer Certifications', icon: Award, count: certificatesList.length, desc: 'Issue & inspect sovereign completion credentials', onClick: refreshCertificates },
+                { id: 'tasks', label: 'Squad Missions & Bounties', icon: Megaphone, count: tasksList.filter(t => t.status === 'ACTIVE').length, desc: 'Broadcast daily missions with airtime & cash', onClick: refreshTasks },
               ].map(item => {
                 const isActive = adminTab === item.id;
                 const Icon = item.icon;
@@ -2067,34 +2500,36 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                     }}
                     style={{
                       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                      padding: '10px 14px', borderRadius: 10,
+                      padding: '12px 14px', borderRadius: 12,
                       background: isActive ? 'rgba(24, 252, 92, 0.12)' : 'rgba(255,255,255,0.03)',
-                      border: isActive ? '1px solid rgba(24, 252, 92, 0.3)' : '1px solid rgba(255,255,255,0.06)',
-                      cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s ease'
+                      border: isActive ? '1px solid rgba(24, 252, 92, 0.35)' : '1px solid rgba(255,255,255,0.06)',
+                      cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s ease',
+                      boxShadow: isActive ? '0 4px 14px rgba(24, 252, 92, 0.15)' : 'none'
                     }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                       <div style={{
-                        width: 32, height: 32, borderRadius: 8,
-                        background: isActive ? 'rgba(24, 252, 92, 0.18)' : 'rgba(255,255,255,0.05)',
+                        width: 36, height: 36, borderRadius: 10,
+                        background: isActive ? 'rgba(24, 252, 92, 0.22)' : 'rgba(255,255,255,0.05)',
+                        border: `1px solid ${isActive ? RF_MINT_ACCENT : 'rgba(255,255,255,0.1)'}`,
                         color: isActive ? RF_MINT_ACCENT : 'rgba(255,255,255,0.6)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center'
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
                       }}>
-                        <Icon size={16} />
+                        <Icon size={17} />
                       </div>
                       <div>
-                        <div style={{ fontSize: 13, fontWeight: isActive ? 700 : 600, color: isActive ? '#FFFFFF' : 'rgba(255,255,255,0.85)' }}>
+                        <div style={{ fontSize: 13.5, fontWeight: isActive ? 700 : 600, color: isActive ? '#FFFFFF' : 'rgba(255,255,255,0.85)' }}>
                           {item.label}
                         </div>
-                        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)' }}>
+                        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', marginTop: 2 }}>
                           {item.desc}
                         </div>
                       </div>
                     </div>
                     <span style={{
-                      fontSize: 11, fontWeight: 700, padding: '2px 7px', borderRadius: 6,
+                      fontSize: 11, fontWeight: 700, padding: '3px 8px', borderRadius: 100,
                       background: isActive ? 'rgba(24, 252, 92, 0.2)' : 'rgba(255,255,255,0.07)',
-                      color: isActive ? RF_MINT_ACCENT : 'rgba(255,255,255,0.5)'
+                      color: isActive ? RF_MINT_ACCENT : 'rgba(255,255,255,0.55)', flexShrink: 0
                     }}>
                       {item.count}
                     </span>
@@ -2106,37 +2541,37 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             {/* Quick action bar */}
             <div style={{
               display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8,
-              paddingTop: 10, borderTop: '1px solid rgba(255,255,255,0.07)'
+              paddingTop: 12, borderTop: '1px solid rgba(255,255,255,0.07)', marginTop: 'auto'
             }}>
               <button
                 onClick={() => { fetchApplications(); setAdminMobileNavOpen(false); }}
                 style={{
-                  background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
-                  color: '#FFFFFF', padding: '8px 6px', borderRadius: 8, fontSize: 11.5, fontWeight: 600,
-                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5
+                  background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)',
+                  color: '#FFFFFF', padding: '10px 8px', borderRadius: 10, fontSize: 12, fontWeight: 600,
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6
                 }}
               >
-                <RefreshCw size={12} /> Refresh
+                <RefreshCw size={13} /> Refresh
               </button>
               <button
                 onClick={() => { handleExportCSV(); setAdminMobileNavOpen(false); }}
                 style={{
-                  background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
-                  color: '#FFFFFF', padding: '8px 6px', borderRadius: 8, fontSize: 11.5, fontWeight: 600,
-                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5
+                  background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)',
+                  color: '#FFFFFF', padding: '10px 8px', borderRadius: 10, fontSize: 12, fontWeight: 600,
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6
                 }}
               >
-                <Download size={12} /> Export
+                <Download size={13} /> Export
               </button>
               <button
                 onClick={() => { handleLogout(); setAdminMobileNavOpen(false); }}
                 style={{
-                  background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.25)',
-                  color: '#FCA5A5', padding: '8px 6px', borderRadius: 8, fontSize: 11.5, fontWeight: 600,
-                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5
+                  background: 'rgba(239, 68, 68, 0.12)', border: '1px solid rgba(239, 68, 68, 0.3)',
+                  color: '#FCA5A5', padding: '10px 8px', borderRadius: 10, fontSize: 12, fontWeight: 600,
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6
                 }}
               >
-                <LogOut size={12} /> Exit
+                <LogOut size={13} /> Exit
               </button>
             </div>
           </div>
@@ -2144,73 +2579,124 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
       )}
 
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: isMobile ? '16px 14px 60px' : '26px 24px 80px' }}>
-        {/* Modern Minimalist Navigation Tabs */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 6,
-          marginBottom: isMobile ? 18 : 26,
-          padding: '4px',
-          background: 'rgba(255, 255, 255, 0.03)',
-          border: '1px solid rgba(255, 255, 255, 0.07)',
-          borderRadius: 12,
-          overflowX: 'auto',
-          WebkitOverflowScrolling: 'touch',
-          scrollbarWidth: 'none',
-          msOverflowStyle: 'none'
-        }}>
-          {[
-            { id: 'applications', label: 'Applications', icon: UserCheck, count: stats.total },
-            { id: 'proofs', label: 'Task Proofs', icon: FileCheck, count: taskStats.total },
-            { id: 'members', label: 'Pioneer Profiles', icon: Award, count: membersList.length, onClick: refreshMembers },
-            { id: 'workers', label: 'Review Team', icon: Users, count: staffList.length },
-            { id: 'certificates', label: 'Certifications', icon: Award, count: certificatesList.length, onClick: refreshCertificates },
-            { id: 'tasks', label: 'Squad Missions', icon: Megaphone, count: tasksList.filter(t => t.status === 'ACTIVE').length, onClick: refreshTasks },
-          ].map(tab => {
-            const isActive = adminTab === tab.id;
-            const Icon = tab.icon;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => {
-                  setAdminTab(tab.id as any);
-                  if (tab.onClick) tab.onClick();
-                }}
-                style={{
-                  flexShrink: 0,
-                  whiteSpace: 'nowrap',
-                  height: 36,
-                  padding: isMobile ? '0 12px' : '0 16px',
-                  borderRadius: 8,
-                  fontSize: isMobile ? 12 : 12.5,
-                  fontWeight: isActive ? 700 : 500,
-                  color: isActive ? RF_MINT_ACCENT : 'rgba(255, 255, 255, 0.65)',
-                  background: isActive ? 'rgba(24, 252, 92, 0.12)' : 'transparent',
-                  border: isActive ? '1px solid rgba(24, 252, 92, 0.28)' : '1px solid transparent',
-                  boxShadow: isActive ? '0 2px 8px rgba(0,0,0,0.2)' : 'none',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 7,
-                  transition: 'all 0.16s ease'
-                }}
-              >
-                <Icon size={14} style={{ opacity: isActive ? 1 : 0.7 }} />
-                <span>{tab.label}</span>
-                <span style={{
-                  background: isActive ? 'rgba(24, 252, 92, 0.2)' : 'rgba(255, 255, 255, 0.08)',
-                  color: isActive ? RF_MINT_ACCENT : 'rgba(255, 255, 255, 0.55)',
-                  padding: '1px 6px',
-                  borderRadius: 6,
-                  fontSize: 10.5,
-                  fontWeight: 700
-                }}>
-                  {tab.count}
+        {/* Mobile Active Section Breadcrumb & Switcher Trigger */}
+        {isMobile && (
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            marginBottom: 20, padding: '10px 14px',
+            background: 'rgba(255, 255, 255, 0.03)',
+            border: '1px solid rgba(255, 255, 255, 0.07)',
+            borderRadius: 12
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{
+                width: 28, height: 28, borderRadius: 8,
+                background: 'rgba(24, 252, 92, 0.15)', color: RF_MINT_ACCENT,
+                display: 'flex', alignItems: 'center', justifyContent: 'center'
+              }}>
+                {adminTab === 'applications' && <UserCheck size={15} />}
+                {adminTab === 'proofs' && <FileCheck size={15} />}
+                {adminTab === 'members' && <Users size={15} />}
+                {adminTab === 'workers' && <Briefcase size={15} />}
+                {adminTab === 'certificates' && <Award size={15} />}
+                {adminTab === 'tasks' && <Megaphone size={15} />}
+              </div>
+              <div>
+                <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block' }}>
+                  Current Section
                 </span>
-              </button>
-            );
-          })}
-        </div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#FFFFFF' }}>
+                  {adminTab === 'applications' && 'Candidate Applications'}
+                  {adminTab === 'proofs' && 'Task Proofs of Work'}
+                  {adminTab === 'members' && 'Pioneer Profiles Registry'}
+                  {adminTab === 'workers' && 'Review Staff Team'}
+                  {adminTab === 'certificates' && 'Pioneer Certifications'}
+                  {adminTab === 'tasks' && 'Squad Missions & Bounties'}
+                </div>
+              </div>
+            </div>
+            <button
+              onClick={() => setAdminMobileNavOpen(true)}
+              style={{
+                background: 'rgba(24, 252, 92, 0.12)', border: '1px solid rgba(24, 252, 92, 0.28)',
+                color: RF_MINT_ACCENT, padding: '6px 12px', borderRadius: 100, fontSize: 11.5,
+                fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 5
+              }}
+            >
+              <Menu size={12} /> Switch
+            </button>
+          </div>
+        )}
+
+        {/* Desktop Navigation Tabs (Hidden on mobile) */}
+        {!isMobile && (
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+            marginBottom: 26,
+            padding: '4px',
+            background: 'rgba(255, 255, 255, 0.03)',
+            border: '1px solid rgba(255, 255, 255, 0.07)',
+            borderRadius: 12,
+            overflowX: 'auto',
+            WebkitOverflowScrolling: 'touch',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none'
+          }}>
+            {[
+              { id: 'applications', label: 'Applications', icon: UserCheck, count: stats.total },
+              { id: 'proofs', label: 'Task Proofs', icon: FileCheck, count: taskStats.total },
+              { id: 'members', label: 'Pioneer Profiles', icon: Users, count: membersList.length, onClick: refreshMembers },
+              { id: 'workers', label: 'Review Team', icon: Briefcase, count: staffList.length },
+              { id: 'certificates', label: 'Certifications', icon: Award, count: certificatesList.length, onClick: refreshCertificates },
+              { id: 'tasks', label: 'Squad Missions', icon: Megaphone, count: tasksList.filter(t => t.status === 'ACTIVE').length, onClick: refreshTasks },
+            ].map(tab => {
+              const isActive = adminTab === tab.id;
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => {
+                    setAdminTab(tab.id as any);
+                    if (tab.onClick) tab.onClick();
+                  }}
+                  style={{
+                    flexShrink: 0,
+                    whiteSpace: 'nowrap',
+                    height: 36,
+                    padding: '0 16px',
+                    borderRadius: 8,
+                    fontSize: 12.5,
+                    fontWeight: isActive ? 700 : 500,
+                    color: isActive ? RF_MINT_ACCENT : 'rgba(255, 255, 255, 0.65)',
+                    background: isActive ? 'rgba(24, 252, 92, 0.12)' : 'transparent',
+                    border: isActive ? '1px solid rgba(24, 252, 92, 0.28)' : '1px solid transparent',
+                    boxShadow: isActive ? '0 2px 8px rgba(0,0,0,0.2)' : 'none',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 7,
+                    transition: 'all 0.16s ease'
+                  }}
+                >
+                  <Icon size={14} style={{ opacity: isActive ? 1 : 0.7 }} />
+                  <span>{tab.label}</span>
+                  <span style={{
+                    background: isActive ? 'rgba(24, 252, 92, 0.2)' : 'rgba(255, 255, 255, 0.08)',
+                    color: isActive ? RF_MINT_ACCENT : 'rgba(255, 255, 255, 0.55)',
+                    padding: '1px 6px',
+                    borderRadius: 6,
+                    fontSize: 10.5,
+                    fontWeight: 700
+                  }}>
+                    {tab.count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        )}
 
         {adminTab === 'applications' && (
           <div>
@@ -2298,6 +2784,133 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             </div>
             <div style={{ width: '100%', height: 4, borderRadius: 100, background: 'rgba(255,255,255,0.1)', marginTop: 8 }}>
               <div style={{ width: `${Math.min(100, stats.founding)}%`, height: '100%', borderRadius: 100, background: RF_MINT_ACCENT }} />
+            </div>
+          </div>
+        </div>
+
+        {/* Admissions Funnel & Capacity Analytics */}
+        <div style={{
+          background: 'rgba(255, 255, 255, 0.025)',
+          border: '1px solid rgba(24, 252, 92, 0.16)',
+          borderRadius: isMobile ? 14 : 18,
+          padding: isMobile ? '16px' : '20px 24px',
+          marginBottom: isMobile ? 18 : 28
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{
+                width: 28, height: 28, borderRadius: 8,
+                background: 'rgba(24, 252, 92, 0.12)', color: RF_MINT_ACCENT,
+                display: 'flex', alignItems: 'center', justifyContent: 'center'
+              }}>
+                <Activity size={15} />
+              </div>
+              <span style={{ fontSize: isMobile ? 13.5 : 15, fontWeight: 700, color: '#FFFFFF' }}>
+                Admissions Funnel &amp; Capacity Telemetry
+              </span>
+            </div>
+            <span style={{
+              fontSize: 11, color: RF_MINT_ACCENT, background: 'rgba(24, 252, 92, 0.1)',
+              padding: '3px 10px', borderRadius: 100, fontWeight: 600, border: '1px solid rgba(24, 252, 92, 0.2)'
+            }}>
+              Founding 100 Quota: {analytics.foundingCapPct}% Fulfilled
+            </span>
+          </div>
+
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+            gap: isMobile ? 14 : 20
+          }}>
+            {/* Founding 100 Quota Bar */}
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.02)',
+              borderRadius: 12,
+              padding: '14px 16px',
+              border: '1px solid rgba(255, 255, 255, 0.06)'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Founding Quota Cap</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: RF_MINT_ACCENT }}>{analytics.foundingApps} / 100</span>
+              </div>
+              <div style={{ width: '100%', height: 8, borderRadius: 100, background: 'rgba(255,255,255,0.08)', overflow: 'hidden' }}>
+                <div style={{
+                  width: `${analytics.foundingCapPct}%`,
+                  height: '100%',
+                  borderRadius: 100,
+                  background: `linear-gradient(90deg, ${RF_LEAF_GREEN}, ${RF_MINT_ACCENT})`,
+                  boxShadow: `0 0 10px ${RF_MINT_ACCENT}55`
+                }} />
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, fontSize: 11, color: 'rgba(255,255,255,0.45)' }}>
+                <span>{100 - analytics.foundingApps > 0 ? `${100 - analytics.foundingApps} slots remaining` : 'Full capacity reached'}</span>
+                <span>Max 100 seats</span>
+              </div>
+            </div>
+
+            {/* Funnel Conversion Rates */}
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.02)',
+              borderRadius: 12,
+              padding: '14px 16px',
+              border: '1px solid rgba(255, 255, 255, 0.06)'
+            }}>
+              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 10 }}>
+                Conversion Velocity
+              </span>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
+                <div>
+                  <div style={{ fontSize: 18, fontWeight: 800, color: RF_MINT_ACCENT }}>{analytics.acceptanceRate}%</div>
+                  <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)' }}>Acceptance Rate ({analytics.acceptedApps})</span>
+                </div>
+                <div style={{ height: 26, width: 1, background: 'rgba(255,255,255,0.1)' }} />
+                <div>
+                  <div style={{ fontSize: 18, fontWeight: 800, color: RF_GOLD_YELLOW }}>{analytics.pendingRate}%</div>
+                  <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)' }}>Pending Backlog ({analytics.pendingApps})</span>
+                </div>
+                <div style={{ height: 26, width: 1, background: 'rgba(255,255,255,0.1)' }} />
+                <div>
+                  <div style={{ fontSize: 18, fontWeight: 800, color: '#38BDF8' }}>{analytics.waitlistedApps}</div>
+                  <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)' }}>Waitlisted</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Division Talent Pipeline */}
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.02)',
+              borderRadius: 12,
+              padding: '14px 16px',
+              border: '1px solid rgba(255, 255, 255, 0.06)'
+            }}>
+              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 8 }}>
+                Squad Division Pipeline
+              </span>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                {Object.keys(analytics.appsByDivision).length === 0 ? (
+                  <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.4)' }}>No division data yet</span>
+                ) : (
+                  Object.entries(analytics.appsByDivision).map(([div, count]) => (
+                    <span
+                      key={div}
+                      style={{
+                        background: 'rgba(255,255,255,0.05)',
+                        border: '1px solid rgba(255,255,255,0.09)',
+                        padding: '3px 8px',
+                        borderRadius: 6,
+                        fontSize: 11,
+                        color: '#FFFFFF',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 5
+                      }}
+                    >
+                      <span style={{ color: 'rgba(255,255,255,0.6)' }}>{div.replace('_', ' ')}</span>
+                      <strong style={{ color: RF_MINT_ACCENT }}>{count}</strong>
+                    </span>
+                  ))
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -2611,6 +3224,136 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           </div>
         </div>
 
+        {/* Deliverable Verification & Throughput Analytics */}
+        <div style={{
+          background: 'rgba(255, 255, 255, 0.025)',
+          border: '1px solid rgba(24, 252, 92, 0.16)',
+          borderRadius: isMobile ? 14 : 18,
+          padding: isMobile ? '16px' : '20px 24px',
+          marginBottom: isMobile ? 18 : 28
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{
+                width: 28, height: 28, borderRadius: 8,
+                background: 'rgba(24, 252, 92, 0.12)', color: RF_MINT_ACCENT,
+                display: 'flex', alignItems: 'center', justifyContent: 'center'
+              }}>
+                <TrendingUp size={15} />
+              </div>
+              <span style={{ fontSize: isMobile ? 13.5 : 15, fontWeight: 700, color: '#FFFFFF' }}>
+                Deliverable Verification &amp; Throughput Analytics
+              </span>
+            </div>
+            <span style={{
+              fontSize: 11, color: RF_MINT_ACCENT, background: 'rgba(24, 252, 92, 0.1)',
+              padding: '3px 10px', borderRadius: 100, fontWeight: 600, border: '1px solid rgba(24, 252, 92, 0.2)'
+            }}>
+              Throughput Rate: {analytics.verificationRate}% Verified
+            </span>
+          </div>
+
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+            gap: isMobile ? 14 : 20
+          }}>
+            {/* Verification Velocity Bar */}
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.02)',
+              borderRadius: 12,
+              padding: '14px 16px',
+              border: '1px solid rgba(255, 255, 255, 0.06)'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Verification Ratio</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: RF_MINT_ACCENT }}>{analytics.verificationRate}%</span>
+              </div>
+              <div style={{ width: '100%', height: 8, borderRadius: 100, background: 'rgba(255,255,255,0.08)', overflow: 'hidden', display: 'flex' }}>
+                <div style={{
+                  width: `${analytics.verificationRate}%`,
+                  height: '100%',
+                  background: RF_MINT_ACCENT
+                }} />
+                <div style={{
+                  width: `${analytics.revisionRate}%`,
+                  height: '100%',
+                  background: '#FFB27D'
+                }} />
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, fontSize: 11, color: 'rgba(255,255,255,0.45)' }}>
+                <span>{analytics.verifiedProofs} Verified</span>
+                <span>{analytics.revisionProofs} Revisions ({analytics.revisionRate}%)</span>
+              </div>
+            </div>
+
+            {/* Audit Status Ratios */}
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.02)',
+              borderRadius: 12,
+              padding: '14px 16px',
+              border: '1px solid rgba(255, 255, 255, 0.06)'
+            }}>
+              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 10 }}>
+                Audit Pipeline State
+              </span>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
+                <div>
+                  <div style={{ fontSize: 18, fontWeight: 800, color: RF_GOLD_YELLOW }}>{analytics.pendingProofs}</div>
+                  <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)' }}>Pending Audit</span>
+                </div>
+                <div style={{ height: 26, width: 1, background: 'rgba(255,255,255,0.1)' }} />
+                <div>
+                  <div style={{ fontSize: 18, fontWeight: 800, color: RF_MINT_ACCENT }}>{analytics.verifiedProofs}</div>
+                  <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)' }}>Promoted Pass</span>
+                </div>
+                <div style={{ height: 26, width: 1, background: 'rgba(255,255,255,0.1)' }} />
+                <div>
+                  <div style={{ fontSize: 18, fontWeight: 800, color: '#FFB27D' }}>{analytics.revisionProofs}</div>
+                  <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)' }}>Revision Loop</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Division Submissions */}
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.02)',
+              borderRadius: 12,
+              padding: '14px 16px',
+              border: '1px solid rgba(255, 255, 255, 0.06)'
+            }}>
+              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 8 }}>
+                Squad Deliverables Output
+              </span>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                {Object.keys(analytics.proofsByDivision).length === 0 ? (
+                  <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.4)' }}>No squad submissions yet</span>
+                ) : (
+                  Object.entries(analytics.proofsByDivision).map(([div, count]) => (
+                    <span
+                      key={div}
+                      style={{
+                        background: 'rgba(255,255,255,0.05)',
+                        border: '1px solid rgba(255,255,255,0.09)',
+                        padding: '3px 8px',
+                        borderRadius: 6,
+                        fontSize: 11,
+                        color: '#FFFFFF',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 5
+                      }}
+                    >
+                      <span style={{ color: 'rgba(255,255,255,0.6)' }}>{div.replace('_', ' ')}</span>
+                      <strong style={{ color: RF_MINT_ACCENT }}>{count}</strong>
+                    </span>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Proofs Filter Bar */}
         <div style={{
           background: 'rgba(255,255,255,0.02)', borderRadius: isMobile ? 14 : 18, padding: isMobile ? '14px 16px' : '18px 22px',
@@ -2870,6 +3613,130 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Completed Profiles</span>
               <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: RF_GOLD_YELLOW, marginTop: 4 }}>{memberStats.completed}</div>
               <span style={{ fontSize: isMobile ? 11 : 12, color: 'rgba(255,255,255,0.5)' }}>With permanent DOB &amp; details</span>
+            </div>
+          </div>
+
+          {/* Community Health & Tier Ladder Distribution */}
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.025)',
+            border: '1px solid rgba(24, 252, 92, 0.16)',
+            borderRadius: isMobile ? 14 : 18,
+            padding: isMobile ? '16px' : '20px 24px',
+            marginBottom: isMobile ? 18 : 28
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{
+                  width: 28, height: 28, borderRadius: 8,
+                  background: 'rgba(24, 252, 92, 0.12)', color: RF_MINT_ACCENT,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center'
+                }}>
+                  <Users size={15} />
+                </div>
+                <span style={{ fontSize: isMobile ? 13.5 : 15, fontWeight: 700, color: '#FFFFFF' }}>
+                  Community Health &amp; Contributor Tier Ladder
+                </span>
+              </div>
+              <span style={{
+                fontSize: 11, color: RF_MINT_ACCENT, background: 'rgba(24, 252, 92, 0.1)',
+                padding: '3px 10px', borderRadius: 100, fontWeight: 600, border: '1px solid rgba(24, 252, 92, 0.2)'
+              }}>
+                Network Vitality: {analytics.activeRate}% Active
+              </span>
+            </div>
+
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+              gap: isMobile ? 14 : 20
+            }}>
+              {/* Profile Completion Ratio */}
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.02)',
+                borderRadius: 12,
+                padding: '14px 16px',
+                border: '1px solid rgba(255, 255, 255, 0.06)'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Permanent DOB &amp; Settlement</span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: RF_GOLD_YELLOW }}>{analytics.profileCompRate}%</span>
+                </div>
+                <div style={{ width: '100%', height: 8, borderRadius: 100, background: 'rgba(255,255,255,0.08)', overflow: 'hidden' }}>
+                  <div style={{
+                    width: `${analytics.profileCompRate}%`,
+                    height: '100%',
+                    borderRadius: 100,
+                    background: `linear-gradient(90deg, ${RF_GOLD_YELLOW}, ${RF_MINT_ACCENT})`
+                  }} />
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, fontSize: 11, color: 'rgba(255,255,255,0.45)' }}>
+                  <span>{analytics.completedMembers} of {analytics.totalMembers} Completed</span>
+                  <span>KYC Verified</span>
+                </div>
+              </div>
+
+              {/* Account Standing Ratios */}
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.02)',
+                borderRadius: 12,
+                padding: '14px 16px',
+                border: '1px solid rgba(255, 255, 255, 0.06)'
+              }}>
+                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 10 }}>
+                  Account Health Standing
+                </span>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
+                  <div>
+                    <div style={{ fontSize: 18, fontWeight: 800, color: RF_MINT_ACCENT }}>{analytics.activeMembers}</div>
+                    <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)' }}>Active Standing</span>
+                  </div>
+                  <div style={{ height: 26, width: 1, background: 'rgba(255,255,255,0.1)' }} />
+                  <div>
+                    <div style={{ fontSize: 18, fontWeight: 800, color: analytics.suspendedMembers > 0 ? '#EF4444' : 'rgba(255,255,255,0.4)' }}>
+                      {analytics.suspendedMembers}
+                    </div>
+                    <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)' }}>Suspended</span>
+                  </div>
+                  <div style={{ height: 26, width: 1, background: 'rgba(255,255,255,0.1)' }} />
+                  <div>
+                    <div style={{ fontSize: 18, fontWeight: 800, color: '#38BDF8' }}>{analytics.totalMembers}</div>
+                    <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)' }}>Total Network</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Contributor Tier Ladder */}
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.02)',
+                borderRadius: 12,
+                padding: '14px 16px',
+                border: '1px solid rgba(255, 255, 255, 0.06)'
+              }}>
+                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 8 }}>
+                  Contributor Rank Ladder
+                </span>
+                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                  {(['LEVEL_1', 'LEVEL_2', 'LEVEL_3', 'LEVEL_4', 'LEVEL_5'] as const).map(lvl => (
+                    <span
+                      key={lvl}
+                      style={{
+                        background: 'rgba(255,255,255,0.05)',
+                        border: '1px solid rgba(255,255,255,0.09)',
+                        padding: '3px 8px',
+                        borderRadius: 6,
+                        fontSize: 11,
+                        color: '#FFFFFF',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 5
+                      }}
+                    >
+                      <span style={{ color: 'rgba(255,255,255,0.6)' }}>{lvl.replace('LEVEL_', 'L')}</span>
+                      <strong style={{ color: RF_MINT_ACCENT }}>{analytics.levelCounts[lvl] || 0}</strong>
+                    </span>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
 
@@ -3660,6 +4527,118 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             </div>
           </div>
 
+          {/* Sovereign Credential Minting & Integrity Telemetry */}
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.025)',
+            border: '1px solid rgba(24, 252, 92, 0.16)',
+            borderRadius: isMobile ? 14 : 18,
+            padding: isMobile ? '16px' : '20px 24px',
+            marginBottom: isMobile ? 18 : 28
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{
+                  width: 28, height: 28, borderRadius: 8,
+                  background: 'rgba(24, 252, 92, 0.12)', color: RF_MINT_ACCENT,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center'
+                }}>
+                  <Award size={15} />
+                </div>
+                <span style={{ fontSize: isMobile ? 13.5 : 15, fontWeight: 700, color: '#FFFFFF' }}>
+                  Sovereign Credential Minting &amp; Integrity Telemetry
+                </span>
+              </div>
+              <span style={{
+                fontSize: 11, color: RF_MINT_ACCENT, background: 'rgba(24, 252, 92, 0.1)',
+                padding: '3px 10px', borderRadius: 100, fontWeight: 600, border: '1px solid rgba(24, 252, 92, 0.2)'
+              }}>
+                Integrity Rate: {analytics.activeCertRate}% Valid
+              </span>
+            </div>
+
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+              gap: isMobile ? 14 : 20
+            }}>
+              {/* Level 1 vs Advanced Tier Minting */}
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.02)',
+                borderRadius: 12,
+                padding: '14px 16px',
+                border: '1px solid rgba(255, 255, 255, 0.06)'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Level 1 Ratio</span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: RF_MINT_ACCENT }}>
+                    {analytics.totalCerts > 0 ? Math.round((analytics.level1Certs / analytics.totalCerts) * 100) : 0}%
+                  </span>
+                </div>
+                <div style={{ width: '100%', height: 8, borderRadius: 100, background: 'rgba(255,255,255,0.08)', overflow: 'hidden' }}>
+                  <div style={{
+                    width: `${analytics.totalCerts > 0 ? Math.round((analytics.level1Certs / analytics.totalCerts) * 100) : 0}%`,
+                    height: '100%',
+                    borderRadius: 100,
+                    background: `linear-gradient(90deg, ${RF_LEAF_GREEN}, ${RF_MINT_ACCENT})`
+                  }} />
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, fontSize: 11, color: 'rgba(255,255,255,0.45)' }}>
+                  <span>{analytics.level1Certs} Level 1</span>
+                  <span>{analytics.advancedCerts} Advanced Tiers</span>
+                </div>
+              </div>
+
+              {/* Cryptographic Validity Status */}
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.02)',
+                borderRadius: 12,
+                padding: '14px 16px',
+                border: '1px solid rgba(255, 255, 255, 0.06)'
+              }}>
+                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 10 }}>
+                  Cryptographic Authenticity
+                </span>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
+                  <div>
+                    <div style={{ fontSize: 18, fontWeight: 800, color: RF_MINT_ACCENT }}>{analytics.activeCerts}</div>
+                    <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)' }}>Active Sovereign</span>
+                  </div>
+                  <div style={{ height: 26, width: 1, background: 'rgba(255,255,255,0.1)' }} />
+                  <div>
+                    <div style={{ fontSize: 18, fontWeight: 800, color: analytics.revokedCerts > 0 ? '#EF4444' : 'rgba(255,255,255,0.4)' }}>
+                      {analytics.revokedCerts}
+                    </div>
+                    <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)' }}>Revoked</span>
+                  </div>
+                  <div style={{ height: 26, width: 1, background: 'rgba(255,255,255,0.1)' }} />
+                  <div>
+                    <div style={{ fontSize: 18, fontWeight: 800, color: '#38BDF8' }}>{analytics.totalCerts}</div>
+                    <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)' }}>Total Minted</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Security Audit Badge */}
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.02)',
+                borderRadius: 12,
+                padding: '14px 16px',
+                border: '1px solid rgba(255, 255, 255, 0.06)',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                  <Shield size={16} color={RF_MINT_ACCENT} />
+                  <span style={{ fontSize: 12, fontWeight: 700, color: '#FFFFFF' }}>SHA-256 Verifiable Proof</span>
+                </div>
+                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', margin: 0, lineHeight: 1.4 }}>
+                  Every minted certificate carries an immutable public verification URL and cryptographic checksum.
+                </p>
+              </div>
+            </div>
+          </div>
+
           {/* Certificate Filter & Search Bar */}
           <div style={{
             background: 'rgba(255,255,255,0.02)', borderRadius: 18, padding: isMobile ? '14px 16px' : '18px 22px',
@@ -4013,6 +4992,107 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Total Announcements</span>
               <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: '#38BDF8', marginTop: 4 }}>{squadTaskStats.total}</div>
               <span style={{ fontSize: isMobile ? 11 : 12, color: 'rgba(255,255,255,0.5)' }}>Lifetime missions cataloged</span>
+            </div>
+          </div>
+
+          {/* Bounty Pool Valuation & Mission Economics */}
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.025)',
+            border: '1px solid rgba(24, 252, 92, 0.16)',
+            borderRadius: isMobile ? 14 : 18,
+            padding: isMobile ? '16px' : '20px 24px',
+            marginBottom: isMobile ? 18 : 28
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{
+                  width: 28, height: 28, borderRadius: 8,
+                  background: 'rgba(24, 252, 92, 0.12)', color: RF_MINT_ACCENT,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center'
+                }}>
+                  <Zap size={15} />
+                </div>
+                <span style={{ fontSize: isMobile ? 13.5 : 15, fontWeight: 700, color: '#FFFFFF' }}>
+                  Bounty Pool Valuation &amp; Mission Economics
+                </span>
+              </div>
+              <span style={{
+                fontSize: 11, color: RF_MINT_ACCENT, background: 'rgba(24, 252, 92, 0.1)',
+                padding: '3px 10px', borderRadius: 100, fontWeight: 600, border: '1px solid rgba(24, 252, 92, 0.2)'
+              }}>
+                Active Pool: ₦{analytics.totalCashBountyVal.toLocaleString()} Cash Value
+              </span>
+            </div>
+
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+              gap: isMobile ? 14 : 20
+            }}>
+              {/* Monetary Bounty Valuation */}
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.02)',
+                borderRadius: 12,
+                padding: '14px 16px',
+                border: '1px solid rgba(255, 255, 255, 0.06)'
+              }}>
+                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 6 }}>
+                  Cash Bounty Reserve
+                </span>
+                <div style={{ fontSize: 22, fontWeight: 800, color: RF_MINT_ACCENT }}>
+                  ₦{analytics.totalCashBountyVal.toLocaleString()}
+                </div>
+                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', marginTop: 4, display: 'block' }}>
+                  Allocated across active cash prize challenges
+                </span>
+              </div>
+
+              {/* Utility Bounties */}
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.02)',
+                borderRadius: 12,
+                padding: '14px 16px',
+                border: '1px solid rgba(255, 255, 255, 0.06)'
+              }}>
+                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 10 }}>
+                  Network Utility Bounties
+                </span>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
+                  <div>
+                    <div style={{ fontSize: 18, fontWeight: 800, color: RF_GOLD_YELLOW }}>{analytics.airtimeBounties}</div>
+                    <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)' }}>Airtime Top-ups</span>
+                  </div>
+                  <div style={{ height: 26, width: 1, background: 'rgba(255,255,255,0.1)' }} />
+                  <div>
+                    <div style={{ fontSize: 18, fontWeight: 800, color: '#38BDF8' }}>{analytics.dataBounties}</div>
+                    <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)' }}>Data Subscriptions</span>
+                  </div>
+                  <div style={{ height: 26, width: 1, background: 'rgba(255,255,255,0.1)' }} />
+                  <div>
+                    <div style={{ fontSize: 18, fontWeight: 800, color: '#FFFFFF' }}>{analytics.activeTasksCount}</div>
+                    <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)' }}>Total Active</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Broadcast & Reach */}
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.02)',
+                borderRadius: 12,
+                padding: '14px 16px',
+                border: '1px solid rgba(255, 255, 255, 0.06)',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                  <Share2 size={16} color={RF_MINT_ACCENT} />
+                  <span style={{ fontSize: 12, fontWeight: 700, color: '#FFFFFF' }}>Squad WhatsApp Broadcast</span>
+                </div>
+                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', margin: 0, lineHeight: 1.4 }}>
+                  1-click sharing formats missions with guidelines and submission format for community WhatsApp channels.
+                </p>
+              </div>
             </div>
           </div>
 
