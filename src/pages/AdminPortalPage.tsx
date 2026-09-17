@@ -7627,334 +7627,719 @@ ${newTaskBountyType !== 'NONE' ? `🎁 *Bounty Reward:* ${newTaskBountyReward ||
 
       {/* ─── ANALYTICS DASHBOARD TAB ─────────────────────────────────────── */}
       {adminTab === 'analytics' && (() => {
-        // ── Helper: tiny SVG sparkline / bar renderer ──
-        const Sparkline = ({ values, color, height = 48 }: { values: number[]; color: string; height?: number }) => {
-          if (!values.length) return null;
-          const max = Math.max(...values, 1);
-          const w = 240;
-          const pts = values.map((v, i) => `${(i / (values.length - 1)) * w},${height - (v / max) * (height - 4)}`).join(' ');
-          return (
-            <svg width="100%" viewBox={`0 0 ${w} ${height}`} preserveAspectRatio="none" style={{ display: 'block' }}>
-              <defs>
-                <linearGradient id={`sg-${color.replace('#','')}`} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={color} stopOpacity="0.35" />
-                  <stop offset="100%" stopColor={color} stopOpacity="0.02" />
-                </linearGradient>
-              </defs>
-              <polygon points={`0,${height} ${pts} ${w},${height}`} fill={`url(#sg-${color.replace('#','')})`} />
-              <polyline points={pts} fill="none" stroke={color} strokeWidth="2.2" strokeLinejoin="round" strokeLinecap="round" />
-            </svg>
-          );
-        };
+        // ── Minimalist SVG Curve Line Chart ──────────────────────────
+        const LineChart = ({
+          data,
+          color,
+          height = 135,
+          id
+        }: {
+          data: { label: string; value: number }[];
+          color: string;
+          height?: number;
+          id: string;
+        }) => {
+          const w = 500;
+          const padX = 28;
+          const padY = 22;
+          const innerW = w - padX * 2;
+          const innerH = height - padY * 2;
+          const vals = data.map(d => d.value);
+          const maxVal = Math.max(...vals, 1);
+          const minVal = 0;
+          const range = maxVal - minVal || 1;
 
-        const BarChart = ({ data, color }: { data: { label: string; value: number }[]; color: string }) => {
-          const max = Math.max(...data.map(d => d.value), 1);
+          const pts = data.map((d, i) => {
+            const x = padX + (data.length > 1 ? (i / (data.length - 1)) * innerW : innerW / 2);
+            const y = padY + innerH - ((d.value - minVal) / range) * innerH;
+            return { x, y, value: d.value, label: d.label };
+          });
+
+          let lineD = '';
+          if (pts.length > 0) {
+            lineD = `M ${pts[0].x} ${pts[0].y}`;
+            for (let i = 0; i < pts.length - 1; i++) {
+              const p0 = pts[i];
+              const p1 = pts[i + 1];
+              const cpX = (p0.x + p1.x) / 2;
+              lineD += ` C ${cpX} ${p0.y}, ${cpX} ${p1.y}, ${p1.x} ${p1.y}`;
+            }
+          }
+
+          const baseY = height - padY + 6;
+          const areaD = pts.length > 0
+            ? `${lineD} L ${pts[pts.length - 1].x} ${baseY} L ${pts[0].x} ${baseY} Z`
+            : '';
+
+          const gradId = `anlGrad_${id}`;
+
           return (
-            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, height: 80, width: '100%' }}>
-              {data.map((d, i) => (
-                <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                  <div style={{
-                    width: '100%', borderRadius: 4,
-                    height: max > 0 ? `${Math.max(4, (d.value / max) * 64)}px` : '4px',
-                    background: `linear-gradient(180deg, ${color} 0%, ${color}88 100%)`,
-                    transition: 'height 0.4s ease'
-                  }} />
-                  <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.45)', whiteSpace: 'nowrap', overflow: 'hidden', maxWidth: '100%', textOverflow: 'ellipsis', textAlign: 'center' }}>
-                    {d.label}
-                  </span>
-                </div>
-              ))}
+            <div style={{ width: '100%', overflow: 'hidden' }}>
+              <svg
+                width="100%"
+                viewBox={`0 0 ${w} ${height + 22}`}
+                style={{ display: 'block', overflow: 'visible' }}
+              >
+                <defs>
+                  <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={color} stopOpacity="0.22" />
+                    <stop offset="100%" stopColor={color} stopOpacity="0.0" />
+                  </linearGradient>
+                </defs>
+
+                {/* Subtle horizontal guidelines */}
+                {[0.25, 0.5, 0.75].map((ratio, idx) => (
+                  <line
+                    key={idx}
+                    x1={padX}
+                    y1={padY + innerH * ratio}
+                    x2={w - padX}
+                    y2={padY + innerH * ratio}
+                    stroke="rgba(255, 255, 255, 0.05)"
+                    strokeDasharray="3 3"
+                  />
+                ))}
+
+                {/* Baseline */}
+                <line
+                  x1={padX}
+                  y1={baseY}
+                  x2={w - padX}
+                  y2={baseY}
+                  stroke="rgba(255, 255, 255, 0.08)"
+                />
+
+                {/* Soft glow area */}
+                {areaD && <path d={areaD} fill={`url(#${gradId})`} />}
+
+                {/* Smooth curve line */}
+                {lineD && (
+                  <path
+                    d={lineD}
+                    fill="none"
+                    stroke={color}
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                )}
+
+                {/* Datapoints & labels */}
+                {pts.map((pt, i) => (
+                  <g key={i}>
+                    <circle
+                      cx={pt.x}
+                      cy={pt.y}
+                      r="4"
+                      fill="#07180F"
+                      stroke={color}
+                      strokeWidth="2"
+                    />
+                    <text
+                      x={pt.x}
+                      y={pt.y - 8}
+                      fill="#FFFFFF"
+                      fontSize="10"
+                      fontWeight="700"
+                      textAnchor="middle"
+                      fontFamily="Plus Jakarta Sans, sans-serif"
+                    >
+                      {pt.value}
+                    </text>
+                    <text
+                      x={pt.x}
+                      y={baseY + 15}
+                      fill="rgba(255, 255, 255, 0.4)"
+                      fontSize="10"
+                      fontWeight="500"
+                      textAnchor="middle"
+                      fontFamily="Plus Jakarta Sans, sans-serif"
+                    >
+                      {pt.label}
+                    </text>
+                  </g>
+                ))}
+              </svg>
             </div>
           );
         };
 
-        const DonutRing = ({ pct, color, size = 72 }: { pct: number; color: string; size?: number }) => {
-          const r = size / 2 - 8;
-          const circ = 2 * Math.PI * r;
-          const dash = (pct / 100) * circ;
-          return (
-            <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-              <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="8" />
-              <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color} strokeWidth="8"
-                strokeDasharray={`${dash} ${circ - dash}`} strokeDashoffset={circ / 4}
-                strokeLinecap="round" style={{ transition: 'stroke-dasharray 0.6s ease' }}
-              />
-              <text x="50%" y="50%" dominantBaseline="middle" textAnchor="middle"
-                fill="#FFFFFF" fontSize="13" fontWeight="700" fontFamily="Plus Jakarta Sans, sans-serif">
-                {pct}%
-              </text>
-            </svg>
-          );
-        };
+        // ── Minimalist Progress Bar Track ────────────────────────────
+        const ProgressTrack = ({
+          pct,
+          color = RF_MINT_ACCENT
+        }: {
+          pct: number;
+          color?: string;
+        }) => (
+          <div style={{
+            width: '100%',
+            height: 5,
+            borderRadius: 100,
+            background: 'rgba(255, 255, 255, 0.07)',
+            overflow: 'hidden',
+            marginTop: 6
+          }}>
+            <div style={{
+              width: `${Math.min(100, Math.max(0, pct))}%`,
+              height: '100%',
+              borderRadius: 100,
+              background: color,
+              transition: 'width 0.5s ease'
+            }} />
+          </div>
+        );
 
-        // Build some simulated time-series from real data (grouped by day buckets)
+        // ── 7-Day Activity Aggregation ───────────────────────────────
         const nowMs = Date.now();
-        const DAY = 86400000;
-        const days7 = Array.from({ length: 7 }, (_, i) => ({
-          label: new Date(nowMs - (6 - i) * DAY).toLocaleDateString('en', { weekday: 'short' }),
-          apps: applications.filter(a => {
-            const d = new Date(a.created_at).getTime();
-            return d >= nowMs - (7 - i) * DAY && d < nowMs - (6 - i) * DAY;
-          }).length,
-          proofs: taskSubmissions.filter(t => {
-            const d = new Date(t.created_at).getTime();
-            return d >= nowMs - (7 - i) * DAY && d < nowMs - (6 - i) * DAY;
-          }).length,
-        }));
-        const appsTrend = days7.map(d => d.apps);
-        const proofsTrend = days7.map(d => d.proofs);
+        const DAY_MS = 86_400_000;
+        const days7 = Array.from({ length: 7 }, (_, idx) => {
+          const dayStart = nowMs - (6 - idx) * DAY_MS;
+          const dayEnd = dayStart + DAY_MS;
+          const label = new Date(dayStart).toLocaleDateString('en-US', { weekday: 'short' });
+          const appCount = applications.filter(a => {
+            const t = new Date(a.created_at).getTime();
+            return t >= dayStart && t < dayEnd;
+          }).length;
+          const proofCount = taskSubmissions.filter(s => {
+            const t = new Date(s.created_at).getTime();
+            return t >= dayStart && t < dayEnd;
+          }).length;
+          return { label, appCount, proofCount };
+        });
 
-        // Division breakdown for bar charts
-        const divColors: Record<string, string> = {
-          TECHNOLOGY: '#60A5FA', BUSINESS: '#F59E0B', GROWTH: '#34D399',
-          CREATIVE: '#F472B6', OPERATIONS: '#A78BFA', GENERAL: '#94A3B8'
-        };
-        const appDivData = Object.entries(analytics.appsByDivision).map(([k, v]) => ({ label: k.slice(0, 3), value: v as number }));
-        const proofDivData = Object.entries(analytics.proofsByDivision).map(([k, v]) => ({ label: k.slice(0, 3), value: v as number }));
-        const levelData = [
-          { label: 'L1', value: analytics.levelCounts.LEVEL_1 },
-          { label: 'L2', value: analytics.levelCounts.LEVEL_2 },
-          { label: 'L3', value: analytics.levelCounts.LEVEL_3 },
-          { label: 'L4', value: analytics.levelCounts.LEVEL_4 },
-          { label: 'L5', value: analytics.levelCounts.LEVEL_5 },
-        ];
-
+        // ── Card Style Tokens Matching All Other Admin Tabs ──────────
         const cardStyle: React.CSSProperties = {
-          background: 'rgba(11, 36, 22, 0.85)', border: '1px solid rgba(102, 187, 42, 0.2)',
-          borderRadius: 18, padding: isMobile ? '18px 16px' : 24, backdropFilter: 'blur(12px)'
+          background: 'rgba(255, 255, 255, 0.03)',
+          borderRadius: isMobile ? 14 : 16,
+          padding: isMobile ? '16px 14px' : '20px 22px',
+          border: '1px solid rgba(255, 255, 255, 0.08)'
         };
-        const labelStyle: React.CSSProperties = {
-          fontSize: 10.5, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase',
-          letterSpacing: '0.08em', fontWeight: 600, marginBottom: 4
+
+        const cardHeaderStyle: React.CSSProperties = {
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginBottom: 16,
+          flexWrap: 'wrap',
+          gap: 8
         };
-        const bigNumStyle: React.CSSProperties = { fontSize: 32, fontWeight: 800, color: '#FFFFFF', lineHeight: 1.1, letterSpacing: '-0.03em' };
-        const subStyle: React.CSSProperties = { fontSize: 11.5, color: 'rgba(255,255,255,0.5)', marginTop: 2 };
 
         return (
-          <div style={{ paddingBottom: 48 }}>
-            {/* Header */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 28 }}>
-              <div style={{
-                width: 44, height: 44, borderRadius: 12, background: 'rgba(24, 252, 92, 0.12)',
-                border: '1px solid rgba(24, 252, 92, 0.3)', color: RF_MINT_ACCENT,
-                display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
-              }}>
-                <BarChart3 size={22} />
-              </div>
+          <div style={{ paddingBottom: 40 }}>
+            {/* ── Section Header ───────────────────────────────────── */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: isMobile ? 20 : 28,
+              flexWrap: 'wrap',
+              gap: 14
+            }}>
               <div>
-                <h2 style={{ fontSize: isMobile ? 19 : 22, fontWeight: 800, color: '#FFFFFF', margin: 0, letterSpacing: '-0.02em' }}>
-                  Analytics Dashboard
-                </h2>
-                <p style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.5)', margin: 0, marginTop: 2 }}>
-                  Platform-wide telemetry, cohort growth trends & live funnel metrics
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '0 0 6px', flexWrap: 'wrap' }}>
+                  <h2 style={{ fontSize: isMobile ? 20 : 24, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
+                    Platform Analytics &amp; Intelligence
+                  </h2>
+                  <span style={{
+                    fontSize: 10.5, fontWeight: 700, background: 'rgba(24, 252, 92, 0.12)',
+                    color: RF_MINT_ACCENT, border: `1px solid ${RF_MINT_ACCENT}55`,
+                    padding: '3px 10px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 4,
+                    textTransform: 'uppercase'
+                  }}>
+                    <Activity size={11} /> Real-Time Telemetry
+                  </span>
+                </div>
+                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', margin: 0, maxWidth: 820, lineHeight: 1.5 }}>
+                  Operational metrics covering admissions conversion rates, deliverable verification velocity, contributor tier distribution, and bounty pool economics.
                 </p>
               </div>
-            </div>
 
-            {/* ── Row 1: Top-level KPI snapshot ── */}
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)', gap: 12, marginBottom: 20 }}>
-              {[
-                { label: 'Total Applicants', value: analytics.totalApps, sub: `${analytics.acceptedApps} accepted`, color: RF_MINT_ACCENT },
-                { label: 'Acceptance Rate', value: `${analytics.acceptanceRate}%`, sub: `${analytics.pendingApps} still pending`, color: '#60A5FA' },
-                { label: 'Pioneer Members', value: analytics.totalMembers, sub: `${analytics.activeRate}% active`, color: '#F59E0B' },
-                { label: 'Certs Issued', value: analytics.totalCerts, sub: `${analytics.activeCertRate}% active`, color: '#F472B6' },
-              ].map(({ label, value, sub, color }) => (
-                <div key={label} style={{ ...cardStyle }}>
-                  <div style={labelStyle}>{label}</div>
-                  <div style={{ ...bigNumStyle, color, fontSize: 28 }}>{value}</div>
-                  <div style={subStyle}>{sub}</div>
-                </div>
-              ))}
-            </div>
-
-            {/* ── Row 2: 7-day Trend Charts ── */}
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 14, marginBottom: 20 }}>
-              {/* Applications over 7 days */}
-              <div style={cardStyle}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-                  <div>
-                    <div style={labelStyle}>Applications — Last 7 Days</div>
-                    <div style={{ ...bigNumStyle, fontSize: 24, color: RF_MINT_ACCENT }}>{analytics.totalApps}</div>
-                  </div>
-                  <div style={{ display: 'flex', gap: 14 }}>
-                    {[
-                      { label: 'Accepted', val: analytics.acceptedApps, color: RF_MINT_ACCENT },
-                      { label: 'Pending', val: analytics.pendingApps, color: '#F59E0B' },
-                      { label: 'Rejected', val: analytics.rejectedApps, color: '#F87171' },
-                    ].map(({ label, val, color }) => (
-                      <div key={label} style={{ textAlign: 'center' }}>
-                        <div style={{ fontSize: 16, fontWeight: 800, color }}>{val}</div>
-                        <div style={{ fontSize: 9.5, color: 'rgba(255,255,255,0.4)' }}>{label}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <Sparkline values={appsTrend.length > 1 ? appsTrend : [0, analytics.totalApps]} color={RF_MINT_ACCENT} height={52} />
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6 }}>
-                  {days7.map((d, i) => (
-                    <span key={i} style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)' }}>{d.label}</span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Proofs over 7 days */}
-              <div style={cardStyle}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-                  <div>
-                    <div style={labelStyle}>Task Proofs — Last 7 Days</div>
-                    <div style={{ ...bigNumStyle, fontSize: 24, color: '#60A5FA' }}>{analytics.totalProofs}</div>
-                  </div>
-                  <div style={{ display: 'flex', gap: 14 }}>
-                    {[
-                      { label: 'Verified', val: analytics.verifiedProofs, color: '#34D399' },
-                      { label: 'Pending', val: analytics.pendingProofs, color: '#F59E0B' },
-                      { label: 'Revision', val: analytics.revisionProofs, color: '#F87171' },
-                    ].map(({ label, val, color }) => (
-                      <div key={label} style={{ textAlign: 'center' }}>
-                        <div style={{ fontSize: 16, fontWeight: 800, color }}>{val}</div>
-                        <div style={{ fontSize: 9.5, color: 'rgba(255,255,255,0.4)' }}>{label}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <Sparkline values={proofsTrend.length > 1 ? proofsTrend : [0, analytics.totalProofs]} color="#60A5FA" height={52} />
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6 }}>
-                  {days7.map((d, i) => (
-                    <span key={i} style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)' }}>{d.label}</span>
-                  ))}
-                </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, width: isMobile ? '100%' : 'auto' }}>
+                <button
+                  onClick={fetchApplications}
+                  disabled={loading}
+                  style={{
+                    background: 'rgba(255,255,255,0.06)',
+                    border: '1px solid rgba(255,255,255,0.18)',
+                    color: '#FFFFFF',
+                    padding: isMobile ? '10px 16px' : '10px 18px',
+                    borderRadius: 100,
+                    fontSize: 13,
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    flex: isMobile ? 1 : 'initial',
+                    justifyContent: 'center',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  <RefreshCw size={14} className={loading ? 'rp-spin' : ''} /> Refresh Data
+                </button>
               </div>
             </div>
 
-            {/* ── Row 3: Division breakdowns + donut rings ── */}
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: 14, marginBottom: 20 }}>
-              {/* Applications by division bar chart */}
+            {/* ── KPI Metrics Bar (Exact standard matching Applications/Missions) ── */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fit, minmax(200px, 1fr))',
+              gap: isMobile ? 10 : 16,
+              marginBottom: isMobile ? 20 : 32
+            }}>
               <div style={cardStyle}>
-                <div style={labelStyle}>Apps by Division</div>
-                {appDivData.length > 0
-                  ? <BarChart data={appDivData} color={RF_MINT_ACCENT} />
-                  : <div style={{ height: 80, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.3)', fontSize: 12 }}>No data yet</div>
-                }
-              </div>
-
-              {/* Pioneer level distribution */}
-              <div style={cardStyle}>
-                <div style={labelStyle}>Pioneer Tier Distribution</div>
-                <BarChart data={levelData} color="#F59E0B" />
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px 12px', marginTop: 10 }}>
-                  {levelData.map(d => (
-                    <span key={d.label} style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)' }}>
-                      <span style={{ color: '#F59E0B', fontWeight: 700 }}>{d.value}</span> {d.label}
-                    </span>
-                  ))}
+                <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                  Total Applicants
+                </span>
+                <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: '#FFFFFF', marginTop: 4 }}>
+                  {analytics.totalApps}
                 </div>
+                <span style={{ fontSize: isMobile ? 11 : 12, color: RF_MINT_ACCENT }}>
+                  {analytics.acceptanceRate}% acceptance rate
+                </span>
               </div>
 
-              {/* Proofs by division */}
               <div style={cardStyle}>
-                <div style={labelStyle}>Proofs by Division</div>
-                {proofDivData.length > 0
-                  ? <BarChart data={proofDivData} color="#60A5FA" />
-                  : <div style={{ height: 80, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.3)', fontSize: 12 }}>No data yet</div>
-                }
+                <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                  Deliverable Proofs
+                </span>
+                <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: RF_MINT_ACCENT, marginTop: 4 }}>
+                  {analytics.totalProofs}
+                </div>
+                <span style={{ fontSize: isMobile ? 11 : 12, color: 'rgba(255,255,255,0.5)' }}>
+                  {analytics.verificationRate}% verified rate
+                </span>
+              </div>
+
+              <div style={cardStyle}>
+                <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                  Pioneer Community
+                </span>
+                <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: '#FFFFFF', marginTop: 4 }}>
+                  {analytics.totalMembers}
+                </div>
+                <span style={{ fontSize: isMobile ? 11 : 12, color: RF_GOLD_YELLOW }}>
+                  {analytics.activeMembers} active ({analytics.activeRate}%)
+                </span>
+              </div>
+
+              <div style={cardStyle}>
+                <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                  Active Bounty Pool
+                </span>
+                <div style={{ fontSize: isMobile ? 20 : 28, fontWeight: 700, color: RF_GOLD_YELLOW, marginTop: 4 }}>
+                  ₦{analytics.totalCashBountyVal.toLocaleString()}
+                </div>
+                <span style={{ fontSize: isMobile ? 11 : 12, color: 'rgba(255,255,255,0.5)' }}>
+                  Across {analytics.activeTasksCount} squad missions
+                </span>
               </div>
             </div>
 
-            {/* ── Row 4: Donut rings — funnel health ── */}
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)', gap: 14, marginBottom: 20 }}>
-              {[
-                { label: 'Acceptance Rate', pct: Math.round(parseFloat(analytics.acceptanceRate)), color: RF_MINT_ACCENT },
-                { label: 'Active Members', pct: Math.round(parseFloat(analytics.activeRate)), color: '#60A5FA' },
-                { label: 'Proof Verified', pct: Math.round(parseFloat(analytics.verificationRate)), color: '#34D399' },
-                { label: 'Cert Integrity', pct: Math.round(parseFloat(analytics.activeCertRate)), color: '#F59E0B' },
-              ].map(({ label, pct, color }) => (
-                <div key={label} style={{ ...cardStyle, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
-                  <DonutRing pct={pct} color={color} size={80} />
-                  <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.6)', textAlign: 'center', fontWeight: 600 }}>{label}</div>
-                </div>
-              ))}
-            </div>
-
-            {/* ── Row 5: Founding Cap + Bounty Pool ── */}
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 14, marginBottom: 20 }}>
-              {/* Founding 100 progress */}
+            {/* ── Visual Line Charts Row ────────────────────────────── */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+              gap: isMobile ? 14 : 20,
+              marginBottom: isMobile ? 20 : 28
+            }}>
+              {/* Applications Velocity Line Chart */}
               <div style={cardStyle}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-                  <div>
-                    <div style={labelStyle}>Founding 100 Cap</div>
-                    <div style={{ ...bigNumStyle, fontSize: 26, color: RF_GOLD_YELLOW }}>{analytics.foundingApps} <span style={{ fontSize: 14, fontWeight: 500, color: 'rgba(255,255,255,0.4)' }}>/ 100</span></div>
-                  </div>
-                  <Target size={28} style={{ color: RF_GOLD_YELLOW, opacity: 0.7 }} />
-                </div>
-                <div style={{ background: 'rgba(255,255,255,0.08)', borderRadius: 100, height: 8, overflow: 'hidden' }}>
-                  <div style={{
-                    width: `${analytics.foundingCapPct}%`, height: '100%', borderRadius: 100,
-                    background: `linear-gradient(90deg, ${RF_GOLD_YELLOW} 0%, ${RF_ORANGE} 100%)`,
-                    transition: 'width 0.6s ease'
-                  }} />
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8 }}>
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>0 seats</span>
-                  <span style={{ fontSize: 11, color: RF_GOLD_YELLOW, fontWeight: 700 }}>{analytics.foundingCapPct}% filled</span>
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>100 seats</span>
-                </div>
-              </div>
-
-              {/* Bounty pool breakdown */}
-              <div style={cardStyle}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-                  <div>
-                    <div style={labelStyle}>Active Bounty Pool</div>
-                    <div style={{ ...bigNumStyle, fontSize: 26, color: '#34D399' }}>
-                      ₦{analytics.totalCashBountyVal.toLocaleString()}
-                    </div>
-                    <div style={subStyle}>{analytics.activeTasksCount} active missions</div>
-                  </div>
-                  <DollarSign size={28} style={{ color: '#34D399', opacity: 0.7 }} />
-                </div>
-                <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
-                  {[
-                    { label: 'Cash', val: analytics.totalCashBountyVal > 0 ? `₦${analytics.totalCashBountyVal.toLocaleString()}` : '—', color: '#34D399' },
-                    { label: 'Airtime', val: `${analytics.airtimeBounties} tasks`, color: '#60A5FA' },
-                    { label: 'Data', val: `${analytics.dataBounties} tasks`, color: '#F59E0B' },
-                  ].map(({ label, val, color }) => (
-                    <div key={label} style={{
-                      flex: 1, background: 'rgba(255,255,255,0.04)', borderRadius: 10,
-                      border: '1px solid rgba(255,255,255,0.08)', padding: '10px 12px', textAlign: 'center'
+                <div style={cardHeaderStyle}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+                    <div style={{
+                      width: 28, height: 28, borderRadius: 8,
+                      background: 'rgba(24, 252, 92, 0.12)', color: RF_MINT_ACCENT,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center'
                     }}>
-                      <div style={{ fontSize: 13, fontWeight: 700, color }}>{val}</div>
-                      <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>{label}</div>
+                      <TrendingUp size={15} />
                     </div>
-                  ))}
+                    <div>
+                      <div style={{ fontSize: isMobile ? 13.5 : 14.5, fontWeight: 700, color: '#FFFFFF' }}>
+                        Candidate Admissions Trajectory
+                      </div>
+                      <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)' }}>
+                        Applications received over the last 7 days
+                      </div>
+                    </div>
+                  </div>
+                  <span style={{
+                    fontSize: 11, color: RF_MINT_ACCENT, background: 'rgba(24, 252, 92, 0.1)',
+                    padding: '3px 10px', borderRadius: 100, fontWeight: 600, border: '1px solid rgba(24, 252, 92, 0.2)'
+                  }}>
+                    {analytics.totalApps} Total
+                  </span>
+                </div>
+                <div style={{ padding: '8px 0 2px' }}>
+                  <LineChart
+                    data={days7.map(d => ({ label: d.label, value: d.appCount }))}
+                    color={RF_MINT_ACCENT}
+                    id="apps"
+                  />
+                </div>
+              </div>
+
+              {/* Task Proofs Throughput Line Chart */}
+              <div style={cardStyle}>
+                <div style={cardHeaderStyle}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+                    <div style={{
+                      width: 28, height: 28, borderRadius: 8,
+                      background: 'rgba(246, 178, 26, 0.12)', color: RF_GOLD_YELLOW,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center'
+                    }}>
+                      <Activity size={15} />
+                    </div>
+                    <div>
+                      <div style={{ fontSize: isMobile ? 13.5 : 14.5, fontWeight: 700, color: '#FFFFFF' }}>
+                        Proof-of-Work Deliverable Flow
+                      </div>
+                      <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)' }}>
+                        Mission submissions verified over the last 7 days
+                      </div>
+                    </div>
+                  </div>
+                  <span style={{
+                    fontSize: 11, color: RF_GOLD_YELLOW, background: 'rgba(246, 178, 26, 0.1)',
+                    padding: '3px 10px', borderRadius: 100, fontWeight: 600, border: '1px solid rgba(246, 178, 26, 0.2)'
+                  }}>
+                    {analytics.totalProofs} Submissions
+                  </span>
+                </div>
+                <div style={{ padding: '8px 0 2px' }}>
+                  <LineChart
+                    data={days7.map(d => ({ label: d.label, value: d.proofCount }))}
+                    color={RF_GOLD_YELLOW}
+                    id="proofs"
+                  />
                 </div>
               </div>
             </div>
 
-            {/* ── Row 6: Staff team overview ── */}
-            <div style={cardStyle}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                <div>
-                  <div style={labelStyle}>Review Team Composition</div>
-                  <div style={{ ...bigNumStyle, fontSize: 22, color: '#A78BFA' }}>{staffList.length} <span style={{ fontSize: 13, fontWeight: 500, color: 'rgba(255,255,255,0.4)' }}>staff members</span></div>
+            {/* ── Conversion Funnels & Throughput Breakdown ─────────── */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+              gap: isMobile ? 14 : 20,
+              marginBottom: isMobile ? 20 : 28
+            }}>
+              {/* Admissions Funnel */}
+              <div style={cardStyle}>
+                <div style={cardHeaderStyle}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+                    <div style={{
+                      width: 28, height: 28, borderRadius: 8,
+                      background: 'rgba(24, 252, 92, 0.12)', color: RF_MINT_ACCENT,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center'
+                    }}>
+                      <UserCheck size={15} />
+                    </div>
+                    <span style={{ fontSize: isMobile ? 13.5 : 14.5, fontWeight: 700, color: '#FFFFFF' }}>
+                      Admissions Pipeline Funnel
+                    </span>
+                  </div>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', fontWeight: 600 }}>
+                    {analytics.totalApps} Candidates
+                  </span>
                 </div>
-                <Briefcase size={22} style={{ color: '#A78BFA', opacity: 0.7 }} />
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                  {[
+                    { label: 'Accepted Pioneers', count: analytics.acceptedApps, color: RF_MINT_ACCENT },
+                    { label: 'Under Review', count: analytics.reviewingApps, color: 'rgba(255, 255, 255, 0.7)' },
+                    { label: 'Pending Decisions', count: analytics.pendingApps, color: RF_GOLD_YELLOW },
+                    { label: 'Waitlisted', count: analytics.waitlistedApps, color: 'rgba(255, 255, 255, 0.4)' },
+                    { label: 'Rejected', count: analytics.rejectedApps, color: 'rgba(239, 68, 68, 0.85)' }
+                  ].map(item => {
+                    const pct = analytics.totalApps > 0 ? Math.round((item.count / analytics.totalApps) * 100) : 0;
+                    return (
+                      <div key={item.label}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 12.5 }}>
+                          <span style={{ color: 'rgba(255,255,255,0.7)', fontWeight: 500 }}>{item.label}</span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.4)' }}>{pct}%</span>
+                            <span style={{ fontWeight: 700, color: '#FFFFFF', minWidth: 26, textAlign: 'right' }}>
+                              {item.count}
+                            </span>
+                          </div>
+                        </div>
+                        <ProgressTrack pct={pct} color={item.color} />
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)', gap: 10 }}>
-                {(['SUPER_ADMIN', 'ADMISSIONS_REVIEWER', 'TASK_VERIFIER', 'SQUAD_LEAD'] as const).map(role => {
-                  const count = staffList.filter(s => s.role === role).length;
+
+              {/* Deliverables & Credential Verification */}
+              <div style={cardStyle}>
+                <div style={cardHeaderStyle}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+                    <div style={{
+                      width: 28, height: 28, borderRadius: 8,
+                      background: 'rgba(24, 252, 92, 0.12)', color: RF_MINT_ACCENT,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center'
+                    }}>
+                      <FileCheck size={15} />
+                    </div>
+                    <span style={{ fontSize: isMobile ? 13.5 : 14.5, fontWeight: 700, color: '#FFFFFF' }}>
+                      Deliverable Verification &amp; Credentials
+                    </span>
+                  </div>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', fontWeight: 600 }}>
+                    {analytics.totalProofs} Proofs
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                  {[
+                    { label: 'Verified Proofs', count: analytics.verifiedProofs, total: analytics.totalProofs, color: RF_MINT_ACCENT },
+                    { label: 'Pending Review', count: analytics.pendingProofs, total: analytics.totalProofs, color: RF_GOLD_YELLOW },
+                    { label: 'Needs Revision', count: analytics.revisionProofs, total: analytics.totalProofs, color: RF_ORANGE },
+                    { label: 'Active Sovereign Credentials', count: analytics.activeCerts, total: analytics.totalCerts, color: RF_MINT_ACCENT },
+                    { label: 'Revoked Credentials', count: analytics.revokedCerts, total: analytics.totalCerts, color: 'rgba(239, 68, 68, 0.85)' }
+                  ].map(item => {
+                    const pct = item.total > 0 ? Math.round((item.count / item.total) * 100) : 0;
+                    return (
+                      <div key={item.label}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 12.5 }}>
+                          <span style={{ color: 'rgba(255,255,255,0.7)', fontWeight: 500 }}>{item.label}</span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.4)' }}>{pct}%</span>
+                            <span style={{ fontWeight: 700, color: '#FFFFFF', minWidth: 26, textAlign: 'right' }}>
+                              {item.count}
+                            </span>
+                          </div>
+                        </div>
+                        <ProgressTrack pct={pct} color={item.color} />
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* ── Community Progression & Bounty Economics ──────────── */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+              gap: isMobile ? 14 : 20,
+              marginBottom: isMobile ? 20 : 28
+            }}>
+              {/* Pioneer Tier Ladder */}
+              <div style={cardStyle}>
+                <div style={cardHeaderStyle}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+                    <div style={{
+                      width: 28, height: 28, borderRadius: 8,
+                      background: 'rgba(24, 252, 92, 0.12)', color: RF_MINT_ACCENT,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center'
+                    }}>
+                      <Users size={15} />
+                    </div>
+                    <span style={{ fontSize: isMobile ? 13.5 : 14.5, fontWeight: 700, color: '#FFFFFF' }}>
+                      Pioneer Contributor Tier Ladder
+                    </span>
+                  </div>
+                  <span style={{ fontSize: 11, color: RF_MINT_ACCENT, fontWeight: 600 }}>
+                    {analytics.totalMembers} Members
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  {[
+                    { label: 'Level 1 — Contributor', count: analytics.levelCounts.LEVEL_1 },
+                    { label: 'Level 2 — Pioneer', count: analytics.levelCounts.LEVEL_2 },
+                    { label: 'Level 3 — Builder', count: analytics.levelCounts.LEVEL_3 },
+                    { label: 'Level 4 — Lead', count: analytics.levelCounts.LEVEL_4 },
+                    { label: 'Level 5 — Core Team', count: analytics.levelCounts.LEVEL_5 }
+                  ].map(item => {
+                    const pct = analytics.totalMembers > 0 ? Math.round((item.count / analytics.totalMembers) * 100) : 0;
+                    return (
+                      <div key={item.label}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 12.5 }}>
+                          <span style={{ color: 'rgba(255,255,255,0.7)', fontWeight: 500 }}>{item.label}</span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.4)' }}>{pct}%</span>
+                            <span style={{ fontWeight: 700, color: '#FFFFFF', minWidth: 26, textAlign: 'right' }}>
+                              {item.count}
+                            </span>
+                          </div>
+                        </div>
+                        <ProgressTrack pct={pct} color={RF_MINT_ACCENT} />
+                      </div>
+                    );
+                  })}
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    paddingTop: 10,
+                    marginTop: 4,
+                    borderTop: '1px solid rgba(255,255,255,0.06)',
+                    fontSize: 11.5,
+                    color: 'rgba(255,255,255,0.45)'
+                  }}>
+                    <span>Active Contributors</span>
+                    <span style={{ color: RF_MINT_ACCENT, fontWeight: 600 }}>
+                      {analytics.activeMembers} of {analytics.totalMembers} active
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Founding 100 Quota & Mission Bounty Economics */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? 14 : 20 }}>
+                {/* Founding 100 Seats Quota */}
+                <div style={cardStyle}>
+                  <div style={cardHeaderStyle}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+                      <div style={{
+                        width: 28, height: 28, borderRadius: 8,
+                        background: 'rgba(246, 178, 26, 0.12)', color: RF_GOLD_YELLOW,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center'
+                      }}>
+                        <Award size={15} />
+                      </div>
+                      <span style={{ fontSize: isMobile ? 13.5 : 14.5, fontWeight: 700, color: '#FFFFFF' }}>
+                        Founding 100 Seat Capacity
+                      </span>
+                    </div>
+                    <span style={{
+                      fontSize: 11, color: RF_GOLD_YELLOW, background: 'rgba(246, 178, 26, 0.1)',
+                      padding: '2px 8px', borderRadius: 100, fontWeight: 600, border: '1px solid rgba(246, 178, 26, 0.2)'
+                    }}>
+                      {analytics.foundingCapPct}% Filled
+                    </span>
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 10 }}>
+                    <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>Seats Allocated</span>
+                    <span style={{ fontSize: isMobile ? 22 : 26, fontWeight: 700, color: RF_GOLD_YELLOW }}>
+                      {analytics.foundingApps} <span style={{ fontSize: 14, fontWeight: 400, color: 'rgba(255,255,255,0.35)' }}>/ 100</span>
+                    </span>
+                  </div>
+
+                  <div style={{
+                    width: '100%', height: 6, borderRadius: 100,
+                    background: 'rgba(255, 255, 255, 0.08)', overflow: 'hidden'
+                  }}>
+                    <div style={{
+                      width: `${analytics.foundingCapPct}%`, height: '100%', borderRadius: 100,
+                      background: `linear-gradient(90deg, ${RF_GOLD_YELLOW}, ${RF_ORANGE})`,
+                      transition: 'width 0.5s ease'
+                    }} />
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>
+                    <span>0 Reserved</span>
+                    <span>100 Maximum Cohort Limit</span>
+                  </div>
+                </div>
+
+                {/* Active Bounty Pool Breakdown */}
+                <div style={cardStyle}>
+                  <div style={cardHeaderStyle}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+                      <div style={{
+                        width: 28, height: 28, borderRadius: 8,
+                        background: 'rgba(24, 252, 92, 0.12)', color: RF_MINT_ACCENT,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center'
+                      }}>
+                        <DollarSign size={15} />
+                      </div>
+                      <span style={{ fontSize: isMobile ? 13.5 : 14.5, fontWeight: 700, color: '#FFFFFF' }}>
+                        Mission Bounty Valuation
+                      </span>
+                    </div>
+                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', fontWeight: 600 }}>
+                      {analytics.activeTasksCount} Active Tasks
+                    </span>
+                  </div>
+
+                  <div style={{ fontSize: isMobile ? 24 : 30, fontWeight: 700, color: '#FFFFFF', marginBottom: 2 }}>
+                    ₦{analytics.totalCashBountyVal.toLocaleString()}
+                  </div>
+                  <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>
+                    Total active escrow-ready reward pool
+                  </span>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginTop: 14 }}>
+                    {[
+                      { label: 'Cash', value: analytics.totalCashBountyVal > 0 ? `₦${(analytics.totalCashBountyVal / 1000).toFixed(0)}k` : '—', color: RF_MINT_ACCENT },
+                      { label: 'Airtime', value: `${analytics.airtimeBounties} tasks`, color: RF_GOLD_YELLOW },
+                      { label: 'Data', value: `${analytics.dataBounties} tasks`, color: 'rgba(255,255,255,0.7)' }
+                    ].map(b => (
+                      <div key={b.label} style={{
+                        background: 'rgba(255, 255, 255, 0.02)',
+                        border: '1px solid rgba(255, 255, 255, 0.06)',
+                        borderRadius: 10,
+                        padding: '10px 8px',
+                        textAlign: 'center'
+                      }}>
+                        <div style={{ fontSize: 13.5, fontWeight: 700, color: b.color }}>{b.value}</div>
+                        <div style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.4)', marginTop: 2, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                          {b.label}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* ── Review Team Composition Overview ──────────────────── */}
+            <div style={cardStyle}>
+              <div style={cardHeaderStyle}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+                  <div style={{
+                    width: 28, height: 28, borderRadius: 8,
+                    background: 'rgba(24, 252, 92, 0.12)', color: RF_MINT_ACCENT,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  }}>
+                    <Briefcase size={15} />
+                  </div>
+                  <span style={{ fontSize: isMobile ? 13.5 : 14.5, fontWeight: 700, color: '#FFFFFF' }}>
+                    Admissions Review Staff Registry
+                  </span>
+                </div>
+                <span style={{ fontSize: 11, color: RF_MINT_ACCENT, fontWeight: 600 }}>
+                  {staffList.length} Active Workers
+                </span>
+              </div>
+
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)',
+                gap: isMobile ? 10 : 14
+              }}>
+                {([
+                  { role: 'SUPER_ADMIN', label: 'Super Admin', color: RF_GOLD_YELLOW },
+                  { role: 'ADMISSIONS_REVIEWER', label: 'Admissions Reviewer', color: RF_MINT_ACCENT },
+                  { role: 'TASK_VERIFIER', label: 'Task Verifier', color: '#FFFFFF' },
+                  { role: 'SQUAD_LEAD', label: 'Squad Lead', color: '#FFFFFF' }
+                ] as const).map(({ role, label, color }) => {
+                  const total = staffList.filter(s => s.role === role).length;
                   const active = staffList.filter(s => s.role === role && s.status === 'ACTIVE').length;
-                  const colors: Record<string, string> = { SUPER_ADMIN: RF_GOLD_YELLOW, ADMISSIONS_REVIEWER: RF_MINT_ACCENT, TASK_VERIFIER: '#60A5FA', SQUAD_LEAD: '#F59E0B' };
                   return (
                     <div key={role} style={{
-                      background: 'rgba(255,255,255,0.04)', borderRadius: 12,
-                      border: '1px solid rgba(255,255,255,0.08)', padding: '12px 14px'
+                      background: 'rgba(255, 255, 255, 0.02)',
+                      borderRadius: 12,
+                      border: '1px solid rgba(255, 255, 255, 0.06)',
+                      padding: '14px 14px'
                     }}>
-                      <div style={{ fontSize: 20, fontWeight: 800, color: colors[role] }}>{count}</div>
-                      <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', marginTop: 2 }}>
-                        {role.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, c => c.toUpperCase())}
+                      <div style={{ fontSize: isMobile ? 22 : 26, fontWeight: 700, color }}>
+                        {total}
                       </div>
-                      <div style={{ fontSize: 10, color: active === count ? '#34D399' : '#F59E0B', marginTop: 4, fontWeight: 600 }}>
-                        {active}/{count} active
+                      <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', marginTop: 2 }}>
+                        {label}
+                      </div>
+                      <div style={{
+                        fontSize: 11,
+                        color: active === total && total > 0 ? RF_MINT_ACCENT : 'rgba(255,255,255,0.35)',
+                        marginTop: 6
+                      }}>
+                        {total > 0 ? `${active}/${total} active` : '0 assigned'}
                       </div>
                     </div>
                   );
