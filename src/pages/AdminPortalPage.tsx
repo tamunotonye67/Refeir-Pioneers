@@ -3464,19 +3464,19 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 maxWidth: '100%',
                 boxSizing: 'border-box'
               }}>
-                <div style={{ minWidth: 0, textAlign: 'center' }}>
+                <div style={{ minWidth: 0, textAlign: 'left' }}>
                   <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 800, color: RF_MINT_ACCENT }}>{analytics.acceptanceRate}%</div>
                   <span style={{ fontSize: isMobile ? 10 : 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     Accept ({analytics.acceptedApps})
                   </span>
                 </div>
-                <div style={{ borderLeft: '1px solid rgba(255,255,255,0.1)', borderRight: '1px solid rgba(255,255,255,0.1)', padding: '0 4px', minWidth: 0, textAlign: 'center' }}>
+                <div style={{ borderLeft: '1px solid rgba(255,255,255,0.1)', borderRight: '1px solid rgba(255,255,255,0.1)', padding: '0 4px', minWidth: 0, textAlign: 'left' }}>
                   <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 800, color: RF_GOLD_YELLOW }}>{analytics.pendingRate}%</div>
                   <span style={{ fontSize: isMobile ? 10 : 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     Pending ({analytics.pendingApps})
                   </span>
                 </div>
-                <div style={{ minWidth: 0, textAlign: 'center' }}>
+                <div style={{ minWidth: 0, textAlign: 'left' }}>
                   <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 800, color: '#38BDF8' }}>{analytics.waitlistedApps}</div>
                   <span style={{ fontSize: isMobile ? 10 : 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     Waitlisted
