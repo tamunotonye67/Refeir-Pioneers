@@ -851,6 +851,31 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
   const [newTaskDeadline, setNewTaskDeadline] = useState('Today 11:59 PM WAT');
   const [newTaskMaxClaims, setNewTaskMaxClaims] = useState(10);
 
+  const formatTaskDeadline = (deadline?: string) => {
+    if (!deadline) return null;
+    try {
+      const d = new Date(deadline);
+      if (!isNaN(d.getTime()) && (deadline.includes('T') || (deadline.includes('-') && deadline.length > 8))) {
+        const now = new Date();
+        const isSameYear = d.getFullYear() === now.getFullYear();
+        const datePart = d.toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          ...(isSameYear ? {} : { year: 'numeric' })
+        });
+        const timePart = d.toLocaleTimeString('en-US', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true
+        });
+        return `${datePart} • ${timePart}`;
+      }
+    } catch {
+      // fallback
+    }
+    return deadline;
+  };
+
   const refreshTasks = () => {
     setTasksList(getAllSquadTasks());
   };
@@ -3139,11 +3164,11 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           {/* Header with Title, "+ Announce Daily/Weekly Task" CTA & Refresh */}
           <div style={{
             display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-            marginBottom: 28, flexWrap: 'wrap', gap: 16
+            marginBottom: isMobile ? 20 : 28, flexWrap: 'wrap', gap: 16
           }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '0 0 6px', flexWrap: 'wrap' }}>
-                <h2 style={{ fontSize: 24, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
+                <h2 style={{ fontSize: isMobile ? 20 : 24, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
                   Daily Squad Tasks &amp; Bounties Management
                 </h2>
                 <span style={{
@@ -3155,31 +3180,32 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                   <Radio size={11} /> {squadTaskStats.active} Active Missions
                 </span>
               </div>
-              <p style={{ fontSize: 13.5, color: 'rgba(255,255,255,0.65)', margin: 0, maxWidth: 820 }}>
+              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', margin: 0, maxWidth: 820, lineHeight: 1.5 }}>
                 Announce daily and weekly tasks for each squad or the General community. Squad leads can distribute tasks directly to their official WhatsApp groups with pre-formatted broadcasts, incentivized by Airtime giveaways, Data subscriptions, Monetary cash bounties, and verified deliverable credits.
               </p>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, width: isMobile ? '100%' : 'auto' }}>
               <button
                 onClick={() => setNewTaskModalOpen(true)}
                 style={{
                   background: RF_LEAF_GREEN, color: RF_DEEP_GREEN, border: 'none',
-                  padding: '10px 20px', borderRadius: 100, fontSize: 13, fontWeight: 700,
+                  padding: isMobile ? '10px 16px' : '10px 20px', borderRadius: 100, fontSize: 13, fontWeight: 700,
                   cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
-                  boxShadow: `0 4px 14px ${RF_LEAF_GREEN}44`, transition: 'all 0.2s'
+                  boxShadow: `0 4px 14px ${RF_LEAF_GREEN}44`, transition: 'all 0.2s',
+                  flex: isMobile ? 1 : 'initial', justifyContent: 'center'
                 }}
                 onMouseEnter={e => (e.currentTarget.style.background = RF_MINT_ACCENT)}
                 onMouseLeave={e => (e.currentTarget.style.background = RF_LEAF_GREEN)}
               >
-                <Radio size={14} /> Squad Lead Broadcast Protocol
+                <Radio size={14} /> Announce Task
               </button>
 
               <button
                 onClick={refreshTasks}
                 style={{
                   background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.18)',
-                  color: '#FFFFFF', padding: '10px 18px', borderRadius: 100, fontSize: 13,
+                  color: '#FFFFFF', padding: isMobile ? '10px 14px' : '10px 18px', borderRadius: 100, fontSize: 13,
                   fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6
                 }}
               >
@@ -3190,48 +3216,48 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
           {/* KPI Metrics */}
           <div style={{
-            display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: 16, marginBottom: 32
+            display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: isMobile ? 10 : 16, marginBottom: isMobile ? 20 : 32
           }}>
-            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Active Squad Missions</span>
-              <div style={{ fontSize: 32, fontWeight: 700, color: '#FFFFFF', marginTop: 4 }}>{squadTaskStats.active}</div>
-              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>Across 6 squads &amp; general</span>
+            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: isMobile ? '14px 16px' : '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Active Squad Missions</span>
+              <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: '#FFFFFF', marginTop: 4 }}>{squadTaskStats.active}</div>
+              <span style={{ fontSize: isMobile ? 11 : 12, color: 'rgba(255,255,255,0.5)' }}>Across 6 squads &amp; general</span>
             </div>
 
-            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Incentivized Bounties</span>
-              <div style={{ fontSize: 32, fontWeight: 700, color: RF_MINT_ACCENT, marginTop: 4 }}>{squadTaskStats.bounties}</div>
-              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>
+            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: isMobile ? '14px 16px' : '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Incentivized Bounties</span>
+              <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: RF_MINT_ACCENT, marginTop: 4 }}>{squadTaskStats.bounties}</div>
+              <span style={{ fontSize: isMobile ? 11 : 12, color: 'rgba(255,255,255,0.5)' }}>
                 {squadTaskStats.airtime} Airtime • {squadTaskStats.data} Data • {squadTaskStats.cash} Cash
               </span>
             </div>
 
-            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Daily Tasks Today</span>
-              <div style={{ fontSize: 32, fontWeight: 700, color: RF_GOLD_YELLOW, marginTop: 4 }}>{squadTaskStats.daily}</div>
-              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>24-hour fast sprints</span>
+            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: isMobile ? '14px 16px' : '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Daily Tasks Today</span>
+              <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: RF_GOLD_YELLOW, marginTop: 4 }}>{squadTaskStats.daily}</div>
+              <span style={{ fontSize: isMobile ? 11 : 12, color: 'rgba(255,255,255,0.5)' }}>24-hour fast sprints</span>
             </div>
 
-            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Total Announcements</span>
-              <div style={{ fontSize: 32, fontWeight: 700, color: '#38BDF8', marginTop: 4 }}>{squadTaskStats.total}</div>
-              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>Lifetime missions cataloged</span>
+            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: isMobile ? '14px 16px' : '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Total Announcements</span>
+              <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: '#38BDF8', marginTop: 4 }}>{squadTaskStats.total}</div>
+              <span style={{ fontSize: isMobile ? 11 : 12, color: 'rgba(255,255,255,0.5)' }}>Lifetime missions cataloged</span>
             </div>
           </div>
 
           {/* Search and Filters */}
           <div style={{
-            background: 'rgba(255,255,255,0.02)', borderRadius: 18, padding: '18px 22px',
+            background: 'rgba(255,255,255,0.02)', borderRadius: 18, padding: isMobile ? '14px 16px' : '18px 22px',
             border: '1px solid rgba(255,255,255,0.08)', marginBottom: 24, display: 'flex',
-            flexWrap: 'wrap', gap: 14, alignItems: 'center', justifyContent: 'space-between'
+            flexWrap: 'wrap', gap: 12, alignItems: 'center', justifyContent: 'space-between'
           }}>
             <div style={{
-              display: 'flex', alignItems: 'center', gap: 10, flex: '1 1 260px',
+              display: 'flex', alignItems: 'center', gap: 10, flex: isMobile ? '1 1 100%' : '1 1 260px',
               background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.12)',
               borderRadius: 10, padding: '8px 14px'
             }}>
-              <Search size={16} color="rgba(255,255,255,0.4)" />
+              <Search size={16} color="rgba(255,255,255,0.4)" style={{ flexShrink: 0 }} />
               <input
                 type="text"
                 value={taskSearchTerm}
@@ -3252,14 +3278,15 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               )}
             </div>
 
-            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center', width: isMobile ? '100%' : 'auto' }}>
               {/* Squad Filter */}
               <select
                 value={taskSquadFilter}
                 onChange={e => setTaskSquadFilter(e.target.value)}
                 style={{
                   background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.15)',
-                  color: '#FFFFFF', borderRadius: 8, padding: '8px 12px', fontSize: 12.5, outline: 'none'
+                  color: '#FFFFFF', borderRadius: 8, padding: '8px 12px', fontSize: 12.5, outline: 'none',
+                  flex: isMobile ? '1 1 calc(50% - 6px)' : 'initial'
                 }}
               >
                 <option value="ALL">All Squads &amp; Divisions</option>
@@ -3278,7 +3305,8 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 onChange={e => setTaskBountyFilter(e.target.value)}
                 style={{
                   background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.15)',
-                  color: '#FFFFFF', borderRadius: 8, padding: '8px 12px', fontSize: 12.5, outline: 'none'
+                  color: '#FFFFFF', borderRadius: 8, padding: '8px 12px', fontSize: 12.5, outline: 'none',
+                  flex: isMobile ? '1 1 calc(50% - 6px)' : 'initial'
                 }}
               >
                 <option value="ALL">All Bounty Types</option>
@@ -3294,7 +3322,8 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 onChange={e => setTaskFrequencyFilter(e.target.value)}
                 style={{
                   background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.15)',
-                  color: '#FFFFFF', borderRadius: 8, padding: '8px 12px', fontSize: 12.5, outline: 'none'
+                  color: '#FFFFFF', borderRadius: 8, padding: '8px 12px', fontSize: 12.5, outline: 'none',
+                  flex: isMobile ? '1 1 calc(50% - 6px)' : 'initial'
                 }}
               >
                 <option value="ALL">All Cycles</option>
@@ -3309,7 +3338,8 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 onChange={e => setTaskStatusFilter(e.target.value as any)}
                 style={{
                   background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.15)',
-                  color: '#FFFFFF', borderRadius: 8, padding: '8px 12px', fontSize: 12.5, outline: 'none'
+                  color: '#FFFFFF', borderRadius: 8, padding: '8px 12px', fontSize: 12.5, outline: 'none',
+                  flex: isMobile ? '1 1 calc(50% - 6px)' : 'initial'
                 }}
               >
                 <option value="ALL">All Status</option>
@@ -3321,100 +3351,105 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
           {/* Tasks Table */}
           <div style={{
-            background: 'rgba(255,255,255,0.02)', borderRadius: 18,
+            background: 'rgba(255,255,255,0.02)', borderRadius: 20,
             border: '1px solid rgba(255,255,255,0.08)', overflow: 'hidden'
           }}>
             <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-              <table style={{ width: '100%', minWidth: 700, borderCollapse: 'collapse', textAlign: 'left', fontSize: 13 }}>
+              <table style={{ width: '100%', minWidth: 880, borderCollapse: 'collapse', textAlign: 'left', fontSize: 13 }}>
               <thead>
-                <tr style={{ background: 'rgba(0,0,0,0.3)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                  <th style={{ padding: '16px 20px', color: 'rgba(255,255,255,0.6)', fontWeight: 600, fontSize: 11.5, textTransform: 'uppercase' }}>Target Squad &amp; Mission</th>
-                  <th style={{ padding: '16px 20px', color: 'rgba(255,255,255,0.6)', fontWeight: 600, fontSize: 11.5, textTransform: 'uppercase' }}>Cycle &amp; Deadline</th>
-                  <th style={{ padding: '16px 20px', color: 'rgba(255,255,255,0.6)', fontWeight: 600, fontSize: 11.5, textTransform: 'uppercase' }}>Special Bounty Incentive</th>
-                  <th style={{ padding: '16px 20px', color: 'rgba(255,255,255,0.6)', fontWeight: 600, fontSize: 11.5, textTransform: 'uppercase' }}>Status</th>
-                  <th style={{ padding: '16px 20px', color: 'rgba(255,255,255,0.6)', fontWeight: 600, fontSize: 11.5, textTransform: 'uppercase', textAlign: 'right' }}>Broadcast &amp; Actions</th>
+                <tr style={{ background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                  <th style={{ padding: '14px 20px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Target Squad &amp; Mission</th>
+                  <th style={{ padding: '14px 20px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Cycle &amp; Deadline</th>
+                  <th style={{ padding: '14px 20px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Special Bounty Incentive</th>
+                  <th style={{ padding: '14px 20px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Status</th>
+                  <th style={{ padding: '14px 20px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: 'right' }}>Broadcast &amp; Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredSquadTasks.length === 0 ? (
                   <tr>
-                    <td colSpan={5} style={{ padding: '40px 20px', textAlign: 'center', color: 'rgba(255,255,255,0.5)' }}>
-                      No tasks found matching current filters. Click "+ Announce New Task" to create one.
+                    <td colSpan={5} style={{ padding: '48px 24px', textAlign: 'center', color: 'rgba(255,255,255,0.5)' }}>
+                      No tasks found matching current filters. Click "+ Announce Task" to create one.
                     </td>
                   </tr>
                 ) : (
                   filteredSquadTasks.map(task => {
                     const squadInfo = SQUAD_INFO[task.squad] || SQUAD_INFO.GENERAL;
                     const isCopied = copiedTaskBroadcastId === task.id;
+                    const formattedDeadline = formatTaskDeadline(task.deadline);
 
                     const getBountyPill = () => {
-                      switch (task.bounty_type) {
-                        case 'AIRTIME':
-                          return (
-                            <span style={{
-                              display: 'inline-flex', alignItems: 'center', gap: 4,
-                              background: 'rgba(255, 209, 102, 0.12)', color: RF_GOLD_YELLOW,
-                              border: `1px solid ${RF_GOLD_YELLOW}55`, padding: '2px 8px',
-                              borderRadius: 100, fontSize: 11, fontWeight: 700
-                            }}>
-                              <Gift size={11} /> {task.bounty_reward || 'Airtime Giveaway'}
-                            </span>
-                          );
-                        case 'DATA':
-                          return (
-                            <span style={{
-                              display: 'inline-flex', alignItems: 'center', gap: 4,
-                              background: 'rgba(56, 189, 248, 0.12)', color: '#38BDF8',
-                              border: '1px solid rgba(56, 189, 248, 0.4)', padding: '2px 8px',
-                              borderRadius: 100, fontSize: 11, fontWeight: 700
-                            }}>
-                              <Zap size={11} /> {task.bounty_reward || 'Data Subscription'}
-                            </span>
-                          );
-                        case 'CASH':
-                          return (
-                            <span style={{
-                              display: 'inline-flex', alignItems: 'center', gap: 4,
-                              background: 'rgba(24, 252, 92, 0.12)', color: RF_MINT_ACCENT,
-                              border: `1px solid ${RF_MINT_ACCENT}55`, padding: '2px 8px',
-                              borderRadius: 100, fontSize: 11, fontWeight: 700
-                            }}>
-                              <DollarSign size={11} /> {task.bounty_reward || 'Cash Bounty'}
-                            </span>
-                          );
-                        default:
-                          return (
-                            <span style={{
-                              display: 'inline-flex', alignItems: 'center', gap: 4,
-                              background: 'rgba(167, 139, 250, 0.12)', color: '#C084FC',
-                              border: '1px solid rgba(167, 139, 250, 0.3)', padding: '2px 8px',
-                              borderRadius: 100, fontSize: 11, fontWeight: 600
-                            }}>
-                              <Award size={11} /> Deliverable XP
-                            </span>
-                          );
+                      let icon = <Award size={13} style={{ flexShrink: 0 }} />;
+                      let bg = 'rgba(167, 139, 250, 0.12)';
+                      let color = '#C084FC';
+                      let border = '1px solid rgba(167, 139, 250, 0.3)';
+                      let label = task.bounty_reward || 'Deliverable XP';
+
+                      if (task.bounty_type === 'AIRTIME') {
+                        icon = <Gift size={13} style={{ flexShrink: 0 }} />;
+                        bg = 'rgba(255, 209, 102, 0.12)';
+                        color = RF_GOLD_YELLOW;
+                        border = `1px solid ${RF_GOLD_YELLOW}55`;
+                        label = task.bounty_reward || 'Airtime Giveaway';
+                      } else if (task.bounty_type === 'DATA') {
+                        icon = <Zap size={13} style={{ flexShrink: 0 }} />;
+                        bg = 'rgba(56, 189, 248, 0.12)';
+                        color = '#38BDF8';
+                        border = '1px solid rgba(56, 189, 248, 0.4)';
+                        label = task.bounty_reward || 'Data Subscription';
+                      } else if (task.bounty_type === 'CASH') {
+                        icon = <DollarSign size={13} style={{ flexShrink: 0 }} />;
+                        bg = 'rgba(24, 252, 92, 0.12)';
+                        color = RF_MINT_ACCENT;
+                        border = `1px solid ${RF_MINT_ACCENT}55`;
+                        label = task.bounty_reward || 'Cash Bounty';
                       }
+
+                      return (
+                        <div style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 6,
+                          background: bg,
+                          color,
+                          border,
+                          padding: '4px 10px',
+                          borderRadius: 8,
+                          fontSize: 12,
+                          fontWeight: 700,
+                          lineHeight: 1.3,
+                          maxWidth: '100%'
+                        }}>
+                          {icon}
+                          <span style={{ wordBreak: 'break-word' }}>{label}</span>
+                        </div>
+                      );
                     };
 
                     return (
-                      <tr key={task.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', transition: 'background 0.2s' }}>
+                      <tr
+                        key={task.id}
+                        style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', transition: 'background 0.15s' }}
+                        onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.02)')}
+                        onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                      >
                         {/* Squad & Mission */}
-                        <td style={{ padding: '16px 20px', verticalAlign: 'middle' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                        <td style={{ padding: '16px 20px', verticalAlign: 'middle', maxWidth: 320 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
                             <span style={{
-                              background: `${squadInfo.color}22`, color: squadInfo.color,
-                              border: `1px solid ${squadInfo.color}55`, padding: '2px 8px',
-                              borderRadius: 100, fontSize: 10.5, fontWeight: 700
+                              background: `${squadInfo.color}18`, color: squadInfo.color,
+                              border: `1px solid ${squadInfo.color}44`, padding: '2px 8px',
+                              borderRadius: 6, fontSize: 10.5, fontWeight: 700, letterSpacing: '0.03em'
                             }}>
                               {squadInfo.name}
                             </span>
-                            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)' }}>• {task.category}</span>
+                            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontWeight: 500 }}>• {task.category}</span>
                           </div>
-                          <div style={{ fontWeight: 600, color: '#FFFFFF', fontSize: 14 }}>
+                          <div style={{ fontWeight: 600, color: '#FFFFFF', fontSize: 14, lineHeight: 1.35 }}>
                             {task.title}
                           </div>
                           <div style={{
-                            fontSize: 12, color: 'rgba(255,255,255,0.6)', marginTop: 3,
+                            fontSize: 12, color: 'rgba(255,255,255,0.55)', marginTop: 4, lineHeight: 1.4,
                             display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden'
                           }}>
                             {task.description}
@@ -3424,26 +3459,28 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                         {/* Frequency & Deadline */}
                         <td style={{ padding: '16px 20px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
                           <span style={{
-                            background: task.frequency === 'DAILY' ? 'rgba(255, 209, 102, 0.15)' : 'rgba(255,255,255,0.08)',
-                            color: task.frequency === 'DAILY' ? RF_GOLD_YELLOW : '#FFFFFF',
-                            padding: '2px 8px', borderRadius: 6, fontSize: 11, fontWeight: 700
+                            background: task.frequency === 'DAILY' ? 'rgba(255, 209, 102, 0.12)' : task.frequency === 'WEEKLY' ? 'rgba(56, 189, 248, 0.12)' : 'rgba(167, 139, 250, 0.12)',
+                            color: task.frequency === 'DAILY' ? RF_GOLD_YELLOW : task.frequency === 'WEEKLY' ? '#38BDF8' : '#C084FC',
+                            border: `1px solid ${task.frequency === 'DAILY' ? RF_GOLD_YELLOW + '44' : task.frequency === 'WEEKLY' ? '#38BDF844' : '#C084FC44'}`,
+                            padding: '3px 8px', borderRadius: 6, fontSize: 11, fontWeight: 700, letterSpacing: '0.02em'
                           }}>
                             {task.frequency.replace('_', ' ')}
                           </span>
-                          {task.deadline && (
-                            <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.5)', marginTop: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
-                              <Clock size={12} /> {task.deadline}
+                          {formattedDeadline && (
+                            <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.5)', marginTop: 6, display: 'flex', alignItems: 'center', gap: 5 }}>
+                              <Clock size={12} style={{ flexShrink: 0, opacity: 0.7 }} />
+                              <span>{formattedDeadline}</span>
                             </div>
                           )}
                         </td>
 
                         {/* Bounty & Value */}
-                        <td style={{ padding: '16px 20px', verticalAlign: 'middle' }}>
+                        <td style={{ padding: '16px 20px', verticalAlign: 'middle', minWidth: 180 }}>
                           <div style={{ marginBottom: 4 }}>
                             {getBountyPill()}
                           </div>
-                          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)' }}>
-                            {task.bounty_slots || 'Verified Submissions'}
+                          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', marginTop: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
+                            <span>{task.bounty_slots || 'Verified Submissions'}</span>
                           </div>
                         </td>
 
@@ -3455,31 +3492,45 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                               background: task.status === 'ACTIVE' ? 'rgba(24, 252, 92, 0.12)' : 'rgba(255,255,255,0.06)',
                               color: task.status === 'ACTIVE' ? RF_MINT_ACCENT : 'rgba(255,255,255,0.45)',
                               border: `1px solid ${task.status === 'ACTIVE' ? RF_MINT_ACCENT + '55' : 'rgba(255,255,255,0.15)'}`,
-                              padding: '4px 10px', borderRadius: 100, fontSize: 11, fontWeight: 700,
-                              cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4
+                              padding: '5px 11px', borderRadius: 8, fontSize: 11.5, fontWeight: 700,
+                              cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 5,
+                              transition: 'all 0.15s'
+                            }}
+                            onMouseEnter={e => {
+                              e.currentTarget.style.background = task.status === 'ACTIVE' ? 'rgba(24, 252, 92, 0.2)' : 'rgba(255,255,255,0.12)';
+                            }}
+                            onMouseLeave={e => {
+                              e.currentTarget.style.background = task.status === 'ACTIVE' ? 'rgba(24, 252, 92, 0.12)' : 'rgba(255,255,255,0.06)';
                             }}
                             title="Click to toggle Active / Archived"
                           >
-                            {task.status === 'ACTIVE' ? <CheckCircle2 size={12} /> : <Clock size={12} />}
+                            <span style={{
+                              width: 6, height: 6, borderRadius: '50%',
+                              background: task.status === 'ACTIVE' ? RF_MINT_ACCENT : 'rgba(255,255,255,0.4)',
+                              display: 'inline-block'
+                            }} />
                             {task.status}
                           </button>
                         </td>
 
                         {/* Broadcast & Actions */}
                         <td style={{ padding: '16px 20px', verticalAlign: 'middle', textAlign: 'right' }}>
-                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, justifyContent: 'flex-end' }}>
                             {/* 1-Click WhatsApp Share */}
                             <button
                               onClick={() => openWhatsAppShare(task)}
                               style={{
                                 background: '#25D366', color: '#FFFFFF', border: 'none',
-                                padding: '6px 12px', borderRadius: 100, fontSize: 11.5,
-                                fontWeight: 700, cursor: 'pointer', display: 'inline-flex',
-                                alignItems: 'center', gap: 4, boxShadow: '0 2px 8px rgba(37, 211, 102, 0.3)'
+                                height: 32, padding: '0 12px', borderRadius: 8, fontSize: 12,
+                                fontWeight: 600, cursor: 'pointer', display: 'inline-flex',
+                                alignItems: 'center', gap: 5, boxShadow: '0 2px 8px rgba(37, 211, 102, 0.25)',
+                                transition: 'all 0.15s', whiteSpace: 'nowrap'
                               }}
+                              onMouseEnter={e => (e.currentTarget.style.filter = 'brightness(1.1)')}
+                              onMouseLeave={e => (e.currentTarget.style.filter = 'none')}
                               title="Broadcast task directly to WhatsApp group"
                             >
-                              <MessageSquare size={12} /> Broadcast
+                              <MessageSquare size={13} style={{ flexShrink: 0 }} /> Broadcast
                             </button>
 
                             {/* Copy Broadcast Text */}
@@ -3487,27 +3538,38 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                               onClick={() => handleCopyBroadcast(task)}
                               style={{
                                 background: isCopied ? 'rgba(24, 252, 92, 0.15)' : 'rgba(255,255,255,0.06)',
-                                border: `1px solid ${isCopied ? RF_MINT_ACCENT : 'rgba(255,255,255,0.18)'}`,
+                                border: `1px solid ${isCopied ? RF_MINT_ACCENT + '66' : 'rgba(255,255,255,0.15)'}`,
                                 color: isCopied ? RF_MINT_ACCENT : '#FFFFFF',
-                                padding: '6px 10px', borderRadius: 100, fontSize: 11.5,
-                                fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4
+                                height: 32, padding: '0 11px', borderRadius: 8, fontSize: 12,
+                                fontWeight: 500, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 5,
+                                transition: 'all 0.15s', whiteSpace: 'nowrap'
+                              }}
+                              onMouseEnter={e => {
+                                if (!isCopied) e.currentTarget.style.background = 'rgba(255,255,255,0.12)';
+                              }}
+                              onMouseLeave={e => {
+                                if (!isCopied) e.currentTarget.style.background = 'rgba(255,255,255,0.06)';
                               }}
                               title="Copy preformatted announcement text"
                             >
-                              <Copy size={12} /> {isCopied ? 'Copied!' : 'Copy'}
+                              {isCopied ? <CheckCircle2 size={13} style={{ flexShrink: 0 }} /> : <Copy size={13} style={{ flexShrink: 0 }} />}
+                              {isCopied ? 'Copied' : 'Copy'}
                             </button>
 
                             {/* Delete Task */}
                             <button
                               onClick={() => handleDeleteTask(task.id, task.title)}
                               style={{
-                                background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)',
-                                color: '#FCA5A5', padding: '6px 8px', borderRadius: 100, fontSize: 11,
-                                cursor: 'pointer', display: 'inline-flex', alignItems: 'center'
+                                background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.25)',
+                                color: '#FCA5A5', width: 32, height: 32, borderRadius: 8,
+                                cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                                transition: 'all 0.15s', flexShrink: 0
                               }}
+                              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(239, 68, 68, 0.22)')}
+                              onMouseLeave={e => (e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)')}
                               title="Delete task"
                             >
-                              <Trash2 size={12} />
+                              <Trash2 size={13} />
                             </button>
                           </div>
                         </td>
@@ -5087,11 +5149,12 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
         <div style={{
           position: 'fixed', inset: 0, zIndex: 1100,
           background: 'rgba(0, 0, 0, 0.85)', backdropFilter: 'blur(8px)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20
+          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: isMobile ? '12px 10px' : 20
         }}>
           <div style={{
-            maxWidth: 580, width: '100%', background: '#0F2E1E', borderRadius: 24,
-            border: `1px solid ${RF_GOLD_YELLOW}66`, padding: '32px',
+            maxWidth: 580, width: '100%', maxHeight: isMobile ? '94vh' : '90vh', overflowY: 'auto',
+            background: '#0F2E1E', borderRadius: isMobile ? 18 : 24,
+            border: `1px solid ${RF_GOLD_YELLOW}66`, padding: isMobile ? '20px 16px' : '32px',
             boxShadow: '0 25px 60px rgba(0,0,0,0.9)'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 20 }}>
@@ -5237,12 +5300,12 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
         <div style={{
           position: 'fixed', inset: 0, zIndex: 1100,
           background: 'rgba(0, 0, 0, 0.85)', backdropFilter: 'blur(8px)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20
+          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: isMobile ? '12px 10px' : 20
         }}>
           <div style={{
-            maxWidth: 720, width: '100%', maxHeight: '90vh', overflowY: 'auto',
-            background: '#0F2E1E', borderRadius: 24,
-            border: `1px solid ${RF_LEAF_GREEN}66`, padding: '32px',
+            maxWidth: 720, width: '100%', maxHeight: isMobile ? '94vh' : '90vh', overflowY: 'auto',
+            background: '#0F2E1E', borderRadius: isMobile ? 18 : 24,
+            border: `1px solid ${RF_LEAF_GREEN}66`, padding: isMobile ? '20px 16px' : '32px',
             boxShadow: '0 25px 60px rgba(0,0,0,0.9)'
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
