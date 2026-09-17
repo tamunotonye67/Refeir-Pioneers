@@ -3930,43 +3930,40 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               </div>
             </div>
 
-            {/* Audit Status Ratios */}
+            {/* Audits Pipeline Velocity */}
             <div style={{
               background: 'rgba(255, 255, 255, 0.02)',
               borderRadius: 12,
-              padding: '14px 16px',
+              padding: isMobile ? '12px 14px' : '14px 16px',
               border: '1px solid rgba(255, 255, 255, 0.06)',
               minWidth: 0,
-              overflow: 'hidden',
               width: '100%',
+              maxWidth: '100%',
               boxSizing: 'border-box'
             }}>
               <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 10 }}>
                 Audit Pipeline State
               </span>
               <div style={{
-                display: 'flex',
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+                gap: 0,
                 alignItems: 'center',
-                justifyContent: isMobile ? 'flex-start' : 'space-between',
-                gap: isMobile ? 14 : 10,
-                overflowX: isMobile ? 'auto' : 'visible',
-                WebkitOverflowScrolling: 'touch',
-                scrollbarWidth: 'none',
-                paddingBottom: isMobile ? 4 : 0
+                width: '100%',
+                maxWidth: '100%',
+                boxSizing: 'border-box'
               }}>
-                <div style={{ flexShrink: 0, minWidth: isMobile ? 90 : 'auto' }}>
-                  <div style={{ fontSize: 18, fontWeight: 800, color: RF_GOLD_YELLOW }}>{analytics.pendingProofs}</div>
-                  <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap' }}>Pending Audit</span>
+                <div style={{ minWidth: 0, textAlign: 'left', paddingRight: 12 }}>
+                  <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 800, color: RF_GOLD_YELLOW }}>{analytics.pendingProofs}</div>
+                  <span style={{ fontSize: isMobile ? 10 : 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>Pending Audit</span>
                 </div>
-                <div style={{ height: 26, width: 1, background: 'rgba(255,255,255,0.1)', flexShrink: 0 }} />
-                <div style={{ flexShrink: 0, minWidth: isMobile ? 90 : 'auto' }}>
-                  <div style={{ fontSize: 18, fontWeight: 800, color: RF_MINT_ACCENT }}>{analytics.verifiedProofs}</div>
-                  <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap' }}>Promoted Pass</span>
+                <div style={{ borderLeft: '1px solid rgba(255,255,255,0.1)', borderRight: '1px solid rgba(255,255,255,0.1)', padding: '0 12px', minWidth: 0, textAlign: 'left' }}>
+                  <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 800, color: RF_MINT_ACCENT }}>{analytics.verifiedProofs}</div>
+                  <span style={{ fontSize: isMobile ? 10 : 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>Promoted Pass</span>
                 </div>
-                <div style={{ height: 26, width: 1, background: 'rgba(255,255,255,0.1)', flexShrink: 0 }} />
-                <div style={{ flexShrink: 0, minWidth: isMobile ? 90 : 'auto' }}>
-                  <div style={{ fontSize: 18, fontWeight: 800, color: '#FFB27D' }}>{analytics.revisionProofs}</div>
-                  <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap' }}>Revision Loop</span>
+                <div style={{ minWidth: 0, textAlign: 'left', paddingLeft: 12 }}>
+                  <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 800, color: '#FFB27D' }}>{analytics.revisionProofs}</div>
+                  <span style={{ fontSize: isMobile ? 10 : 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>Revision Loop</span>
                 </div>
               </div>
             </div>
@@ -4355,28 +4352,38 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               <div style={{
                 background: 'rgba(255, 255, 255, 0.02)',
                 borderRadius: 12,
-                padding: '14px 16px',
-                border: '1px solid rgba(255, 255, 255, 0.06)'
+                padding: isMobile ? '12px 14px' : '14px 16px',
+                border: '1px solid rgba(255, 255, 255, 0.06)',
+                minWidth: 0,
+                width: '100%',
+                maxWidth: '100%',
+                boxSizing: 'border-box'
               }}>
                 <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 10 }}>
                   Account Health Standing
                 </span>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
-                  <div>
-                    <div style={{ fontSize: 18, fontWeight: 800, color: RF_MINT_ACCENT }}>{analytics.activeMembers}</div>
-                    <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)' }}>Active Standing</span>
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+                  gap: 0,
+                  alignItems: 'center',
+                  width: '100%',
+                  maxWidth: '100%',
+                  boxSizing: 'border-box'
+                }}>
+                  <div style={{ minWidth: 0, textAlign: 'left', paddingRight: 12 }}>
+                    <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 800, color: RF_MINT_ACCENT }}>{analytics.activeMembers}</div>
+                    <span style={{ fontSize: isMobile ? 10 : 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>Active Standing</span>
                   </div>
-                  <div style={{ height: 26, width: 1, background: 'rgba(255,255,255,0.1)' }} />
-                  <div>
-                    <div style={{ fontSize: 18, fontWeight: 800, color: analytics.suspendedMembers > 0 ? '#EF4444' : 'rgba(255,255,255,0.4)' }}>
+                  <div style={{ borderLeft: '1px solid rgba(255,255,255,0.1)', borderRight: '1px solid rgba(255,255,255,0.1)', padding: '0 12px', minWidth: 0, textAlign: 'left' }}>
+                    <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 800, color: analytics.suspendedMembers > 0 ? '#EF4444' : 'rgba(255,255,255,0.4)' }}>
                       {analytics.suspendedMembers}
                     </div>
-                    <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)' }}>Suspended</span>
+                    <span style={{ fontSize: isMobile ? 10 : 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>Suspended</span>
                   </div>
-                  <div style={{ height: 26, width: 1, background: 'rgba(255,255,255,0.1)' }} />
-                  <div>
-                    <div style={{ fontSize: 18, fontWeight: 800, color: '#38BDF8' }}>{analytics.totalMembers}</div>
-                    <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)' }}>Total Network</span>
+                  <div style={{ minWidth: 0, textAlign: 'left', paddingLeft: 12 }}>
+                    <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 800, color: '#38BDF8' }}>{analytics.totalMembers}</div>
+                    <span style={{ fontSize: isMobile ? 10 : 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>Total Network</span>
                   </div>
                 </div>
               </div>
@@ -5274,28 +5281,38 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               <div style={{
                 background: 'rgba(255, 255, 255, 0.02)',
                 borderRadius: 12,
-                padding: '14px 16px',
-                border: '1px solid rgba(255, 255, 255, 0.06)'
+                padding: isMobile ? '12px 14px' : '14px 16px',
+                border: '1px solid rgba(255, 255, 255, 0.06)',
+                minWidth: 0,
+                width: '100%',
+                maxWidth: '100%',
+                boxSizing: 'border-box'
               }}>
                 <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 10 }}>
                   Cryptographic Authenticity
                 </span>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
-                  <div>
-                    <div style={{ fontSize: 18, fontWeight: 800, color: RF_MINT_ACCENT }}>{analytics.activeCerts}</div>
-                    <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)' }}>Active Sovereign</span>
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+                  gap: 0,
+                  alignItems: 'center',
+                  width: '100%',
+                  maxWidth: '100%',
+                  boxSizing: 'border-box'
+                }}>
+                  <div style={{ minWidth: 0, textAlign: 'left', paddingRight: 12 }}>
+                    <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 800, color: RF_MINT_ACCENT }}>{analytics.activeCerts}</div>
+                    <span style={{ fontSize: isMobile ? 10 : 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>Active Sovereign</span>
                   </div>
-                  <div style={{ height: 26, width: 1, background: 'rgba(255,255,255,0.1)' }} />
-                  <div>
-                    <div style={{ fontSize: 18, fontWeight: 800, color: analytics.revokedCerts > 0 ? '#EF4444' : 'rgba(255,255,255,0.4)' }}>
+                  <div style={{ borderLeft: '1px solid rgba(255,255,255,0.1)', borderRight: '1px solid rgba(255,255,255,0.1)', padding: '0 12px', minWidth: 0, textAlign: 'left' }}>
+                    <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 800, color: analytics.revokedCerts > 0 ? '#EF4444' : 'rgba(255,255,255,0.4)' }}>
                       {analytics.revokedCerts}
                     </div>
-                    <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)' }}>Revoked</span>
+                    <span style={{ fontSize: isMobile ? 10 : 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>Revoked</span>
                   </div>
-                  <div style={{ height: 26, width: 1, background: 'rgba(255,255,255,0.1)' }} />
-                  <div>
-                    <div style={{ fontSize: 18, fontWeight: 800, color: '#38BDF8' }}>{analytics.totalCerts}</div>
-                    <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)' }}>Total Minted</span>
+                  <div style={{ minWidth: 0, textAlign: 'left', paddingLeft: 12 }}>
+                    <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 800, color: '#38BDF8' }}>{analytics.totalCerts}</div>
+                    <span style={{ fontSize: isMobile ? 10 : 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>Total Minted</span>
                   </div>
                 </div>
               </div>
@@ -5742,35 +5759,36 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               <div style={{
                 background: 'rgba(255, 255, 255, 0.02)',
                 borderRadius: 12,
-                padding: '14px 16px',
-                border: '1px solid rgba(255, 255, 255, 0.06)'
+                padding: isMobile ? '12px 14px' : '14px 16px',
+                border: '1px solid rgba(255, 255, 255, 0.06)',
+                minWidth: 0,
+                width: '100%',
+                maxWidth: '100%',
+                boxSizing: 'border-box'
               }}>
                 <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 10 }}>
                   Network Utility Bounties
                 </span>
                 <div style={{
-                  display: 'flex',
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+                  gap: 0,
                   alignItems: 'center',
-                  justifyContent: isMobile ? 'flex-start' : 'space-between',
-                  gap: isMobile ? 14 : 10,
-                  overflowX: isMobile ? 'auto' : 'visible',
-                  WebkitOverflowScrolling: 'touch',
-                  scrollbarWidth: 'none',
-                  paddingBottom: isMobile ? 4 : 0
+                  width: '100%',
+                  maxWidth: '100%',
+                  boxSizing: 'border-box'
                 }}>
-                  <div style={{ flexShrink: 0, minWidth: isMobile ? 90 : 'auto' }}>
-                    <div style={{ fontSize: 18, fontWeight: 800, color: RF_GOLD_YELLOW }}>{analytics.airtimeBounties}</div>
-                    <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap' }}>Airtime Top-ups</span>
+                  <div style={{ minWidth: 0, textAlign: 'left', paddingRight: 12 }}>
+                    <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 800, color: RF_GOLD_YELLOW }}>{analytics.airtimeBounties}</div>
+                    <span style={{ fontSize: isMobile ? 10 : 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>Airtime Top-ups</span>
                   </div>
-                  <div style={{ height: 26, width: 1, background: 'rgba(255,255,255,0.1)', flexShrink: 0 }} />
-                  <div style={{ flexShrink: 0, minWidth: isMobile ? 90 : 'auto' }}>
-                    <div style={{ fontSize: 18, fontWeight: 800, color: '#38BDF8' }}>{analytics.dataBounties}</div>
-                    <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap' }}>Data Subscriptions</span>
+                  <div style={{ borderLeft: '1px solid rgba(255,255,255,0.1)', borderRight: '1px solid rgba(255,255,255,0.1)', padding: '0 12px', minWidth: 0, textAlign: 'left' }}>
+                    <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 800, color: '#38BDF8' }}>{analytics.dataBounties}</div>
+                    <span style={{ fontSize: isMobile ? 10 : 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>Data Subscriptions</span>
                   </div>
-                  <div style={{ height: 26, width: 1, background: 'rgba(255,255,255,0.1)', flexShrink: 0 }} />
-                  <div style={{ flexShrink: 0, minWidth: isMobile ? 90 : 'auto' }}>
-                    <div style={{ fontSize: 18, fontWeight: 800, color: '#FFFFFF' }}>{analytics.activeTasksCount}</div>
-                    <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap' }}>Total Active</span>
+                  <div style={{ minWidth: 0, textAlign: 'left', paddingLeft: 12 }}>
+                    <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 800, color: '#FFFFFF' }}>{analytics.activeTasksCount}</div>
+                    <span style={{ fontSize: isMobile ? 10 : 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>Total Active</span>
                   </div>
                 </div>
               </div>
