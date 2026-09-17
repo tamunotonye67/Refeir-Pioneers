@@ -5594,26 +5594,29 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
           {/* Header with Title, "+ Announce Daily/Weekly Task" CTA & Refresh */}
           <div style={{
-            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-            marginBottom: isMobile ? 20 : 28, flexWrap: 'wrap', gap: 16
+            display: 'flex', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center',
+            marginBottom: isMobile ? 20 : 28, flexWrap: 'wrap', gap: isMobile ? 12 : 16,
+            overflow: 'hidden', width: '100%', boxSizing: 'border-box'
           }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '0 0 6px', flexWrap: 'wrap' }}>
-                <h2 style={{ fontSize: isMobile ? 20 : 24, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '0 0 6px', flexWrap: 'wrap', minWidth: 0 }}>
+                <h2 style={{ fontSize: isMobile ? 18 : 24, fontWeight: 700, color: '#FFFFFF', margin: 0, whiteSpace: isMobile ? 'nowrap' : 'normal', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 }}>
                   {isMobile ? 'Squad Missions' : 'Daily Squad Tasks & Bounties Management'}
                 </h2>
                 <span style={{
                   fontSize: 10.5, fontWeight: 700, background: 'rgba(24, 252, 92, 0.12)',
                   color: RF_MINT_ACCENT, border: `1px solid ${RF_MINT_ACCENT}55`,
                   padding: '3px 10px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 4,
-                  textTransform: 'uppercase'
+                  textTransform: 'uppercase', flexShrink: 0, whiteSpace: 'nowrap'
                 }}>
-                  <Radio size={11} /> {squadTaskStats.active} Active Missions
+                  <Radio size={11} /> {squadTaskStats.active} Active
                 </span>
               </div>
-              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', margin: 0, maxWidth: 820, lineHeight: 1.5 }}>
-                Announce daily and weekly tasks for each squad or the General community. Squad leads can distribute tasks directly to their official WhatsApp groups with pre-formatted broadcasts, incentivized by Airtime giveaways, Data subscriptions, Monetary cash bounties, and verified deliverable credits.
-              </p>
+              {!isMobile && (
+                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', margin: 0, maxWidth: 820, lineHeight: 1.5 }}>
+                  Announce daily and weekly tasks for each squad or the General community. Squad leads can distribute tasks directly to their official WhatsApp groups with pre-formatted broadcasts, incentivized by Airtime giveaways, Data subscriptions, Monetary cash bounties, and verified deliverable credits.
+                </p>
+              )}
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, width: isMobile ? '100%' : 'auto' }}>
@@ -5896,239 +5899,368 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             </div>
           </div>
 
-          {/* Tasks Table */}
+          {/* Tasks List — card stack on mobile, table on desktop */}
           <div style={{
             background: 'rgba(255,255,255,0.02)', borderRadius: 20,
-            border: '1px solid rgba(255,255,255,0.08)', overflow: 'hidden'
+            border: '1px solid rgba(255,255,255,0.08)', overflow: 'hidden',
+            width: '100%', maxWidth: '100%', boxSizing: 'border-box'
           }}>
-            <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-              <table style={{ width: '100%', minWidth: isMobile ? 920 : 880, borderCollapse: 'collapse', textAlign: 'left', fontSize: 13 }}>
-              <thead>
-                <tr style={{ background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                  <th style={{ padding: '14px 20px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>Target Squad &amp; Mission</th>
-                  <th style={{ padding: '14px 20px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>Cycle &amp; Deadline</th>
-                  <th style={{ padding: '14px 20px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>Special Bounty Incentive</th>
-                  <th style={{ padding: '14px 20px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>Status</th>
-                  <th style={{ padding: '14px 20px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: 'right', whiteSpace: 'nowrap' }}>Broadcast &amp; Actions</th>
-                </tr>
-              </thead>
-              <tbody>
+            {isMobile ? (
+              /* ─── MOBILE CARD STACK ─── */
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
                 {filteredSquadTasks.length === 0 ? (
-                  <tr>
-                    <td colSpan={5} style={{ padding: '48px 24px', textAlign: 'center', color: 'rgba(255,255,255,0.5)' }}>
-                      No tasks found matching current filters. Click "+ Announce Task" to create one.
-                    </td>
-                  </tr>
+                  <div style={{ padding: '48px 20px', textAlign: 'center', color: 'rgba(255,255,255,0.5)', fontSize: 13 }}>
+                    No tasks found. Tap &ldquo;Announce Task&rdquo; to create one.
+                  </div>
                 ) : (
-                  filteredSquadTasks.map(task => {
+                  filteredSquadTasks.map((task, idx) => {
                     const squadInfo = SQUAD_INFO[task.squad] || SQUAD_INFO.GENERAL;
                     const isCopied = copiedTaskBroadcastId === task.id;
                     const formattedDeadline = formatTaskDeadline(task.deadline);
-
-                    const getBountyPill = () => {
-                      let icon = <Award size={13} style={{ flexShrink: 0 }} />;
-                      let bg = 'rgba(167, 139, 250, 0.12)';
-                      let color = '#C084FC';
-                      let border = '1px solid rgba(167, 139, 250, 0.3)';
-                      let label = task.bounty_reward || 'Deliverable XP';
-
-                      if (task.bounty_type === 'AIRTIME') {
-                        icon = <Gift size={13} style={{ flexShrink: 0 }} />;
-                        bg = 'rgba(255, 209, 102, 0.12)';
-                        color = RF_GOLD_YELLOW;
-                        border = `1px solid ${RF_GOLD_YELLOW}55`;
-                        label = task.bounty_reward || 'Airtime Giveaway';
-                      } else if (task.bounty_type === 'DATA') {
-                        icon = <Zap size={13} style={{ flexShrink: 0 }} />;
-                        bg = 'rgba(56, 189, 248, 0.12)';
-                        color = '#38BDF8';
-                        border = '1px solid rgba(56, 189, 248, 0.4)';
-                        label = task.bounty_reward || 'Data Subscription';
-                      } else if (task.bounty_type === 'CASH') {
-                        icon = <DollarSign size={13} style={{ flexShrink: 0 }} />;
-                        bg = 'rgba(24, 252, 92, 0.12)';
-                        color = RF_MINT_ACCENT;
-                        border = `1px solid ${RF_MINT_ACCENT}55`;
-                        label = task.bounty_reward || 'Cash Bounty';
-                      }
-
-                      return (
-                        <div style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: 6,
-                          background: bg,
-                          color,
-                          border,
-                          padding: '4px 10px',
-                          borderRadius: 8,
-                          fontSize: 12,
-                          fontWeight: 700,
-                          lineHeight: 1.3,
-                          maxWidth: '100%'
-                        }}>
-                          {icon}
-                          <span style={{ wordBreak: 'break-word' }}>{label}</span>
-                        </div>
-                      );
+                    const getBountyLabel = () => {
+                      if (task.bounty_type === 'AIRTIME') return { label: task.bounty_reward || 'Airtime', color: RF_GOLD_YELLOW, bg: 'rgba(255,209,102,0.12)', border: `1px solid ${RF_GOLD_YELLOW}55` };
+                      if (task.bounty_type === 'DATA') return { label: task.bounty_reward || 'Data', color: '#38BDF8', bg: 'rgba(56,189,248,0.12)', border: '1px solid rgba(56,189,248,0.4)' };
+                      if (task.bounty_type === 'CASH') return { label: task.bounty_reward || 'Cash Bounty', color: RF_MINT_ACCENT, bg: 'rgba(24,252,92,0.12)', border: `1px solid ${RF_MINT_ACCENT}55` };
+                      return { label: task.bounty_reward || 'Deliverable XP', color: '#C084FC', bg: 'rgba(167,139,250,0.12)', border: '1px solid rgba(167,139,250,0.3)' };
                     };
-
+                    const bounty = getBountyLabel();
                     return (
-                      <tr
+                      <div
                         key={task.id}
-                        style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', transition: 'background 0.15s' }}
-                        onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.02)')}
-                        onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                        style={{
+                          padding: '14px 16px',
+                          borderBottom: idx < filteredSquadTasks.length - 1 ? '1px solid rgba(255,255,255,0.06)' : 'none',
+                          width: '100%', boxSizing: 'border-box', overflow: 'hidden'
+                        }}
                       >
-                        {/* Squad & Mission */}
-                        <td style={{ padding: '16px 20px', verticalAlign: 'middle', maxWidth: 320 }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                            <span style={{
-                              background: `${squadInfo.color}18`, color: squadInfo.color,
-                              border: `1px solid ${squadInfo.color}44`, padding: '2px 8px',
-                              borderRadius: 6, fontSize: 10.5, fontWeight: 700, letterSpacing: '0.03em'
-                            }}>
-                              {squadInfo.name}
-                            </span>
-                            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontWeight: 500 }}>• {task.category}</span>
-                          </div>
-                          <div style={{ fontWeight: 600, color: '#FFFFFF', fontSize: 14, lineHeight: 1.35 }}>
-                            {task.title}
-                          </div>
-                          <div style={{
-                            fontSize: 12, color: 'rgba(255,255,255,0.55)', marginTop: 4, lineHeight: 1.4,
-                            display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden'
-                          }}>
-                            {task.description}
-                          </div>
-                        </td>
-
-                        {/* Frequency & Deadline */}
-                        <td style={{ padding: '16px 20px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
+                        {/* Row 1: Squad badge + cycle pill + status */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginBottom: 8, width: '100%' }}>
                           <span style={{
-                            background: task.frequency === 'DAILY' ? 'rgba(255, 209, 102, 0.12)' : task.frequency === 'WEEKLY' ? 'rgba(56, 189, 248, 0.12)' : 'rgba(167, 139, 250, 0.12)',
+                            background: `${squadInfo.color}18`, color: squadInfo.color,
+                            border: `1px solid ${squadInfo.color}44`, padding: '2px 8px',
+                            borderRadius: 6, fontSize: 10.5, fontWeight: 700, letterSpacing: '0.03em',
+                            whiteSpace: 'nowrap', flexShrink: 0
+                          }}>
+                            {squadInfo.name}
+                          </span>
+                          <span style={{
+                            background: task.frequency === 'DAILY' ? 'rgba(255,209,102,0.12)' : task.frequency === 'WEEKLY' ? 'rgba(56,189,248,0.12)' : 'rgba(167,139,250,0.12)',
                             color: task.frequency === 'DAILY' ? RF_GOLD_YELLOW : task.frequency === 'WEEKLY' ? '#38BDF8' : '#C084FC',
                             border: `1px solid ${task.frequency === 'DAILY' ? RF_GOLD_YELLOW + '44' : task.frequency === 'WEEKLY' ? '#38BDF844' : '#C084FC44'}`,
-                            padding: '3px 8px', borderRadius: 6, fontSize: 11, fontWeight: 700, letterSpacing: '0.02em'
+                            padding: '2px 8px', borderRadius: 6, fontSize: 10.5, fontWeight: 700,
+                            whiteSpace: 'nowrap', flexShrink: 0
                           }}>
                             {task.frequency.replace('_', ' ')}
                           </span>
-                          {formattedDeadline && (
-                            <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.5)', marginTop: 6, display: 'flex', alignItems: 'center', gap: 5 }}>
-                              <Clock size={12} style={{ flexShrink: 0, opacity: 0.7 }} />
-                              <span>{formattedDeadline}</span>
-                            </div>
-                          )}
-                        </td>
-
-                        {/* Bounty & Value */}
-                        <td style={{ padding: '16px 20px', verticalAlign: 'middle', minWidth: 180 }}>
-                          <div style={{ marginBottom: 4 }}>
-                            {getBountyPill()}
-                          </div>
-                          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', marginTop: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
-                            <span>{task.bounty_slots || 'Verified Submissions'}</span>
-                          </div>
-                        </td>
-
-                        {/* Status */}
-                        <td style={{ padding: '16px 20px', verticalAlign: 'middle' }}>
-                          <button
+                          <span style={{
+                            marginLeft: 'auto', flexShrink: 0,
+                            background: task.status === 'ACTIVE' ? 'rgba(24,252,92,0.12)' : 'rgba(255,255,255,0.06)',
+                            color: task.status === 'ACTIVE' ? RF_MINT_ACCENT : 'rgba(255,255,255,0.45)',
+                            border: `1px solid ${task.status === 'ACTIVE' ? RF_MINT_ACCENT + '55' : 'rgba(255,255,255,0.15)'}`,
+                            padding: '2px 9px', borderRadius: 6, fontSize: 10.5, fontWeight: 700,
+                            cursor: 'pointer'
+                          }}
                             onClick={() => handleToggleTaskStatus(task.id)}
-                            style={{
-                              background: task.status === 'ACTIVE' ? 'rgba(24, 252, 92, 0.12)' : 'rgba(255,255,255,0.06)',
-                              color: task.status === 'ACTIVE' ? RF_MINT_ACCENT : 'rgba(255,255,255,0.45)',
-                              border: `1px solid ${task.status === 'ACTIVE' ? RF_MINT_ACCENT + '55' : 'rgba(255,255,255,0.15)'}`,
-                              padding: '5px 11px', borderRadius: 8, fontSize: 11.5, fontWeight: 700,
-                              cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 5,
-                              transition: 'all 0.15s'
-                            }}
-                            onMouseEnter={e => {
-                              e.currentTarget.style.background = task.status === 'ACTIVE' ? 'rgba(24, 252, 92, 0.2)' : 'rgba(255,255,255,0.12)';
-                            }}
-                            onMouseLeave={e => {
-                              e.currentTarget.style.background = task.status === 'ACTIVE' ? 'rgba(24, 252, 92, 0.12)' : 'rgba(255,255,255,0.06)';
-                            }}
-                            title="Click to toggle Active / Archived"
                           >
-                            <span style={{
-                              width: 6, height: 6, borderRadius: '50%',
-                              background: task.status === 'ACTIVE' ? RF_MINT_ACCENT : 'rgba(255,255,255,0.4)',
-                              display: 'inline-block'
-                            }} />
                             {task.status}
+                          </span>
+                        </div>
+
+                        {/* Row 2: Title */}
+                        <div style={{
+                          fontWeight: 700, color: '#FFFFFF', fontSize: 13.5, lineHeight: 1.35,
+                          marginBottom: 6, width: '100%', wordBreak: 'break-word', overflow: 'hidden'
+                        }}>
+                          {task.title}
+                        </div>
+
+                        {/* Row 3: Category + deadline */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 8 }}>
+                          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>{task.category}</span>
+                          {formattedDeadline && (
+                            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                              <Clock size={11} style={{ flexShrink: 0 }} /> {formattedDeadline}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Row 4: Bounty pill */}
+                        <div style={{
+                          display: 'inline-flex', alignItems: 'center', gap: 5,
+                          background: bounty.bg, color: bounty.color, border: bounty.border,
+                          padding: '4px 10px', borderRadius: 8, fontSize: 11.5, fontWeight: 700,
+                          marginBottom: 12, maxWidth: '100%', overflow: 'hidden'
+                        }}>
+                          <Award size={12} style={{ flexShrink: 0 }} />
+                          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {bounty.label}
+                          </span>
+                        </div>
+
+                        {/* Row 5: Actions */}
+                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                          <button
+                            onClick={() => openWhatsAppShare(task)}
+                            style={{
+                              background: '#25D366', color: '#FFFFFF', border: 'none',
+                              height: 34, padding: '0 14px', borderRadius: 8, fontSize: 12,
+                              fontWeight: 600, cursor: 'pointer', display: 'inline-flex',
+                              alignItems: 'center', gap: 5, flex: 1, justifyContent: 'center',
+                              boxShadow: '0 2px 8px rgba(37,211,102,0.25)'
+                            }}
+                          >
+                            <MessageSquare size={13} style={{ flexShrink: 0 }} /> Broadcast
                           </button>
-                        </td>
-
-                        {/* Broadcast & Actions */}
-                        <td style={{ padding: '16px 20px', verticalAlign: 'middle', textAlign: 'right' }}>
-                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, justifyContent: 'flex-end' }}>
-                            {/* 1-Click WhatsApp Share */}
-                            <button
-                              onClick={() => openWhatsAppShare(task)}
-                              style={{
-                                background: '#25D366', color: '#FFFFFF', border: 'none',
-                                height: 32, padding: '0 12px', borderRadius: 8, fontSize: 12,
-                                fontWeight: 600, cursor: 'pointer', display: 'inline-flex',
-                                alignItems: 'center', gap: 5, boxShadow: '0 2px 8px rgba(37, 211, 102, 0.25)',
-                                transition: 'all 0.15s', whiteSpace: 'nowrap'
-                              }}
-                              onMouseEnter={e => (e.currentTarget.style.filter = 'brightness(1.1)')}
-                              onMouseLeave={e => (e.currentTarget.style.filter = 'none')}
-                              title="Broadcast task directly to WhatsApp group"
-                            >
-                              <MessageSquare size={13} style={{ flexShrink: 0 }} /> Broadcast
-                            </button>
-
-                            {/* Copy Broadcast Text */}
-                            <button
-                              onClick={() => handleCopyBroadcast(task)}
-                              style={{
-                                background: isCopied ? 'rgba(24, 252, 92, 0.15)' : 'rgba(255,255,255,0.06)',
-                                border: `1px solid ${isCopied ? RF_MINT_ACCENT + '66' : 'rgba(255,255,255,0.15)'}`,
-                                color: isCopied ? RF_MINT_ACCENT : '#FFFFFF',
-                                height: 32, padding: '0 11px', borderRadius: 8, fontSize: 12,
-                                fontWeight: 500, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 5,
-                                transition: 'all 0.15s', whiteSpace: 'nowrap'
-                              }}
-                              onMouseEnter={e => {
-                                if (!isCopied) e.currentTarget.style.background = 'rgba(255,255,255,0.12)';
-                              }}
-                              onMouseLeave={e => {
-                                if (!isCopied) e.currentTarget.style.background = 'rgba(255,255,255,0.06)';
-                              }}
-                              title="Copy preformatted announcement text"
-                            >
-                              {isCopied ? <CheckCircle2 size={13} style={{ flexShrink: 0 }} /> : <Copy size={13} style={{ flexShrink: 0 }} />}
-                              {isCopied ? 'Copied' : 'Copy'}
-                            </button>
-
-                            {/* Delete Task */}
-                            <button
-                              onClick={() => handleDeleteTask(task.id, task.title)}
-                              style={{
-                                background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.25)',
-                                color: '#FCA5A5', width: 32, height: 32, borderRadius: 8,
-                                cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                                transition: 'all 0.15s', flexShrink: 0
-                              }}
-                              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(239, 68, 68, 0.22)')}
-                              onMouseLeave={e => (e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)')}
-                              title="Delete task"
-                            >
-                              <Trash2 size={13} />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
+                          <button
+                            onClick={() => handleCopyBroadcast(task)}
+                            style={{
+                              background: isCopied ? 'rgba(24,252,92,0.15)' : 'rgba(255,255,255,0.07)',
+                              border: `1px solid ${isCopied ? RF_MINT_ACCENT + '66' : 'rgba(255,255,255,0.15)'}`,
+                              color: isCopied ? RF_MINT_ACCENT : '#FFFFFF',
+                              height: 34, padding: '0 14px', borderRadius: 8, fontSize: 12,
+                              fontWeight: 500, cursor: 'pointer', display: 'inline-flex',
+                              alignItems: 'center', gap: 5, flex: 1, justifyContent: 'center'
+                            }}
+                          >
+                            {isCopied ? <CheckCircle2 size={13} style={{ flexShrink: 0 }} /> : <Copy size={13} style={{ flexShrink: 0 }} />}
+                            {isCopied ? 'Copied' : 'Copy'}
+                          </button>
+                          <button
+                            onClick={() => handleDeleteTask(task.id, task.title)}
+                            style={{
+                              background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)',
+                              color: '#FCA5A5', width: 34, height: 34, borderRadius: 8,
+                              cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
+                              justifyContent: 'center', flexShrink: 0
+                            }}
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        </div>
+                      </div>
                     );
                   })
                 )}
-              </tbody>
-            </table>
-            </div>
+              </div>
+            ) : (
+              /* ─── DESKTOP TABLE ─── */
+              <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                <table style={{ width: '100%', minWidth: 880, borderCollapse: 'collapse', textAlign: 'left', fontSize: 13 }}>
+                <thead>
+                  <tr style={{ background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                    <th style={{ padding: '14px 20px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>Target Squad &amp; Mission</th>
+                    <th style={{ padding: '14px 20px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>Cycle &amp; Deadline</th>
+                    <th style={{ padding: '14px 20px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>Special Bounty Incentive</th>
+                    <th style={{ padding: '14px 20px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>Status</th>
+                    <th style={{ padding: '14px 20px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: 'right', whiteSpace: 'nowrap' }}>Broadcast &amp; Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredSquadTasks.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} style={{ padding: '48px 24px', textAlign: 'center', color: 'rgba(255,255,255,0.5)' }}>
+                        No tasks found matching current filters. Click &ldquo;+ Announce Task&rdquo; to create one.
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredSquadTasks.map(task => {
+                      const squadInfo = SQUAD_INFO[task.squad] || SQUAD_INFO.GENERAL;
+                      const isCopied = copiedTaskBroadcastId === task.id;
+                      const formattedDeadline = formatTaskDeadline(task.deadline);
+
+                      const getBountyPill = () => {
+                        let icon = <Award size={13} style={{ flexShrink: 0 }} />;
+                        let bg = 'rgba(167, 139, 250, 0.12)';
+                        let color = '#C084FC';
+                        let border = '1px solid rgba(167, 139, 250, 0.3)';
+                        let label = task.bounty_reward || 'Deliverable XP';
+
+                        if (task.bounty_type === 'AIRTIME') {
+                          icon = <Gift size={13} style={{ flexShrink: 0 }} />;
+                          bg = 'rgba(255, 209, 102, 0.12)';
+                          color = RF_GOLD_YELLOW;
+                          border = `1px solid ${RF_GOLD_YELLOW}55`;
+                          label = task.bounty_reward || 'Airtime Giveaway';
+                        } else if (task.bounty_type === 'DATA') {
+                          icon = <Zap size={13} style={{ flexShrink: 0 }} />;
+                          bg = 'rgba(56, 189, 248, 0.12)';
+                          color = '#38BDF8';
+                          border = '1px solid rgba(56, 189, 248, 0.4)';
+                          label = task.bounty_reward || 'Data Subscription';
+                        } else if (task.bounty_type === 'CASH') {
+                          icon = <DollarSign size={13} style={{ flexShrink: 0 }} />;
+                          bg = 'rgba(24, 252, 92, 0.12)';
+                          color = RF_MINT_ACCENT;
+                          border = `1px solid ${RF_MINT_ACCENT}55`;
+                          label = task.bounty_reward || 'Cash Bounty';
+                        }
+
+                        return (
+                          <div style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 6,
+                            background: bg,
+                            color,
+                            border,
+                            padding: '4px 10px',
+                            borderRadius: 8,
+                            fontSize: 12,
+                            fontWeight: 700,
+                            lineHeight: 1.3,
+                            maxWidth: '100%'
+                          }}>
+                            {icon}
+                            <span style={{ wordBreak: 'break-word' }}>{label}</span>
+                          </div>
+                        );
+                      };
+
+                      return (
+                        <tr
+                          key={task.id}
+                          style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', transition: 'background 0.15s' }}
+                          onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.02)')}
+                          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                        >
+                          {/* Squad & Mission */}
+                          <td style={{ padding: '16px 20px', verticalAlign: 'middle', maxWidth: 320 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                              <span style={{
+                                background: `${squadInfo.color}18`, color: squadInfo.color,
+                                border: `1px solid ${squadInfo.color}44`, padding: '2px 8px',
+                                borderRadius: 6, fontSize: 10.5, fontWeight: 700, letterSpacing: '0.03em'
+                              }}>
+                                {squadInfo.name}
+                              </span>
+                              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontWeight: 500 }}>• {task.category}</span>
+                            </div>
+                            <div style={{ fontWeight: 600, color: '#FFFFFF', fontSize: 14, lineHeight: 1.35 }}>
+                              {task.title}
+                            </div>
+                            <div style={{
+                              fontSize: 12, color: 'rgba(255,255,255,0.55)', marginTop: 4, lineHeight: 1.4,
+                              display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden'
+                            }}>
+                              {task.description}
+                            </div>
+                          </td>
+
+                          {/* Frequency & Deadline */}
+                          <td style={{ padding: '16px 20px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
+                            <span style={{
+                              background: task.frequency === 'DAILY' ? 'rgba(255, 209, 102, 0.12)' : task.frequency === 'WEEKLY' ? 'rgba(56, 189, 248, 0.12)' : 'rgba(167, 139, 250, 0.12)',
+                              color: task.frequency === 'DAILY' ? RF_GOLD_YELLOW : task.frequency === 'WEEKLY' ? '#38BDF8' : '#C084FC',
+                              border: `1px solid ${task.frequency === 'DAILY' ? RF_GOLD_YELLOW + '44' : task.frequency === 'WEEKLY' ? '#38BDF844' : '#C084FC44'}`,
+                              padding: '3px 8px', borderRadius: 6, fontSize: 11, fontWeight: 700, letterSpacing: '0.02em'
+                            }}>
+                              {task.frequency.replace('_', ' ')}
+                            </span>
+                            {formattedDeadline && (
+                              <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.5)', marginTop: 6, display: 'flex', alignItems: 'center', gap: 5 }}>
+                                <Clock size={12} style={{ flexShrink: 0, opacity: 0.7 }} />
+                                <span>{formattedDeadline}</span>
+                              </div>
+                            )}
+                          </td>
+
+                          {/* Bounty & Value */}
+                          <td style={{ padding: '16px 20px', verticalAlign: 'middle', minWidth: 180 }}>
+                            <div style={{ marginBottom: 4 }}>
+                              {getBountyPill()}
+                            </div>
+                            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', marginTop: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
+                              <span>{task.bounty_slots || 'Verified Submissions'}</span>
+                            </div>
+                          </td>
+
+                          {/* Status */}
+                          <td style={{ padding: '16px 20px', verticalAlign: 'middle' }}>
+                            <button
+                              onClick={() => handleToggleTaskStatus(task.id)}
+                              style={{
+                                background: task.status === 'ACTIVE' ? 'rgba(24, 252, 92, 0.12)' : 'rgba(255,255,255,0.06)',
+                                color: task.status === 'ACTIVE' ? RF_MINT_ACCENT : 'rgba(255,255,255,0.45)',
+                                border: `1px solid ${task.status === 'ACTIVE' ? RF_MINT_ACCENT + '55' : 'rgba(255,255,255,0.15)'}`,
+                                padding: '5px 11px', borderRadius: 8, fontSize: 11.5, fontWeight: 700,
+                                cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 5,
+                                transition: 'all 0.15s'
+                              }}
+                              onMouseEnter={e => { e.currentTarget.style.background = task.status === 'ACTIVE' ? 'rgba(24, 252, 92, 0.2)' : 'rgba(255,255,255,0.12)'; }}
+                              onMouseLeave={e => { e.currentTarget.style.background = task.status === 'ACTIVE' ? 'rgba(24, 252, 92, 0.12)' : 'rgba(255,255,255,0.06)'; }}
+                              title="Click to toggle Active / Archived"
+                            >
+                              <span style={{
+                                width: 6, height: 6, borderRadius: '50%',
+                                background: task.status === 'ACTIVE' ? RF_MINT_ACCENT : 'rgba(255,255,255,0.4)',
+                                display: 'inline-block'
+                              }} />
+                              {task.status}
+                            </button>
+                          </td>
+
+                          {/* Broadcast & Actions */}
+                          <td style={{ padding: '16px 20px', verticalAlign: 'middle', textAlign: 'right' }}>
+                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, justifyContent: 'flex-end' }}>
+                              <button
+                                onClick={() => openWhatsAppShare(task)}
+                                style={{
+                                  background: '#25D366', color: '#FFFFFF', border: 'none',
+                                  height: 32, padding: '0 12px', borderRadius: 8, fontSize: 12,
+                                  fontWeight: 600, cursor: 'pointer', display: 'inline-flex',
+                                  alignItems: 'center', gap: 5, boxShadow: '0 2px 8px rgba(37, 211, 102, 0.25)',
+                                  transition: 'all 0.15s', whiteSpace: 'nowrap'
+                                }}
+                                onMouseEnter={e => (e.currentTarget.style.filter = 'brightness(1.1)')}
+                                onMouseLeave={e => (e.currentTarget.style.filter = 'none')}
+                                title="Broadcast task directly to WhatsApp group"
+                              >
+                                <MessageSquare size={13} style={{ flexShrink: 0 }} /> Broadcast
+                              </button>
+                              <button
+                                onClick={() => handleCopyBroadcast(task)}
+                                style={{
+                                  background: isCopied ? 'rgba(24, 252, 92, 0.15)' : 'rgba(255,255,255,0.06)',
+                                  border: `1px solid ${isCopied ? RF_MINT_ACCENT + '66' : 'rgba(255,255,255,0.15)'}`,
+                                  color: isCopied ? RF_MINT_ACCENT : '#FFFFFF',
+                                  height: 32, padding: '0 11px', borderRadius: 8, fontSize: 12,
+                                  fontWeight: 500, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 5,
+                                  transition: 'all 0.15s', whiteSpace: 'nowrap'
+                                }}
+                                onMouseEnter={e => { if (!isCopied) e.currentTarget.style.background = 'rgba(255,255,255,0.12)'; }}
+                                onMouseLeave={e => { if (!isCopied) e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; }}
+                                title="Copy preformatted announcement text"
+                              >
+                                {isCopied ? <CheckCircle2 size={13} style={{ flexShrink: 0 }} /> : <Copy size={13} style={{ flexShrink: 0 }} />}
+                                {isCopied ? 'Copied' : 'Copy'}
+                              </button>
+                              <button
+                                onClick={() => handleDeleteTask(task.id, task.title)}
+                                style={{
+                                  background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.25)',
+                                  color: '#FCA5A5', width: 32, height: 32, borderRadius: 8,
+                                  cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                                  transition: 'all 0.15s', flexShrink: 0
+                                }}
+                                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(239, 68, 68, 0.22)')}
+                                onMouseLeave={e => (e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)')}
+                                title="Delete task"
+                              >
+                                <Trash2 size={13} />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </div>
+
       )}
 
       {/* ─── ANALYTICS DASHBOARD TAB ─────────────────────────────────────── */}
