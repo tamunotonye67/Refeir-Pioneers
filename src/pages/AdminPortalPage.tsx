@@ -3373,15 +3373,19 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           background: 'rgba(255, 255, 255, 0.025)',
           border: '1px solid rgba(24, 252, 92, 0.16)',
           borderRadius: isMobile ? 14 : 18,
-          padding: isMobile ? '16px' : '20px 24px',
-          marginBottom: isMobile ? 18 : 28
+          padding: isMobile ? '14px 14px' : '20px 24px',
+          marginBottom: isMobile ? 18 : 28,
+          overflow: 'hidden',
+          width: '100%',
+          maxWidth: '100%',
+          boxSizing: 'border-box'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14, flexWrap: 'wrap', gap: 10 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <div style={{
                 width: 28, height: 28, borderRadius: 8,
                 background: 'rgba(24, 252, 92, 0.12)', color: RF_MINT_ACCENT,
-                display: 'flex', alignItems: 'center', justifyContent: 'center'
+                display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
               }}>
                 <Activity size={15} />
               </div>
@@ -3391,7 +3395,8 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             </div>
             <span style={{
               fontSize: 11, color: RF_MINT_ACCENT, background: 'rgba(24, 252, 92, 0.1)',
-              padding: '3px 10px', borderRadius: 100, fontWeight: 600, border: '1px solid rgba(24, 252, 92, 0.2)'
+              padding: '3px 10px', borderRadius: 100, fontWeight: 600, border: '1px solid rgba(24, 252, 92, 0.2)',
+              whiteSpace: 'nowrap'
             }}>
               Founding 100 Quota: {analytics.foundingCapPct}% Fulfilled
             </span>
@@ -3399,30 +3404,38 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
           <div style={{
             display: 'grid',
-            gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
-            gap: isMobile ? 14 : 20
+            gridTemplateColumns: isMobile ? 'minmax(0, 1fr)' : 'repeat(3, minmax(0, 1fr))',
+            gap: isMobile ? 12 : 20,
+            width: '100%',
+            maxWidth: '100%',
+            minWidth: 0,
+            boxSizing: 'border-box'
           }}>
             {/* Founding 100 Quota Bar */}
             <div style={{
               background: 'rgba(255, 255, 255, 0.02)',
               borderRadius: 12,
-              padding: '14px 16px',
-              border: '1px solid rgba(255, 255, 255, 0.06)'
+              padding: isMobile ? '12px 14px' : '14px 16px',
+              border: '1px solid rgba(255, 255, 255, 0.06)',
+              minWidth: 0,
+              width: '100%',
+              maxWidth: '100%',
+              boxSizing: 'border-box'
             }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8, gap: 8 }}>
                 <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Founding Quota Cap</span>
-                <span style={{ fontSize: 13, fontWeight: 700, color: RF_MINT_ACCENT }}>{analytics.foundingApps} / 100</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: RF_MINT_ACCENT, whiteSpace: 'nowrap' }}>{analytics.foundingApps} / 100</span>
               </div>
-              <div style={{ width: '100%', height: 8, borderRadius: 100, background: 'rgba(255,255,255,0.08)', overflow: 'hidden' }}>
+              <div style={{ width: '100%', maxWidth: '100%', height: 8, borderRadius: 100, background: 'rgba(255,255,255,0.08)', overflow: 'hidden', boxSizing: 'border-box' }}>
                 <div style={{
-                  width: `${analytics.foundingCapPct}%`,
+                  width: `${Math.min(100, Math.max(0, analytics.foundingCapPct))}%`,
                   height: '100%',
                   borderRadius: 100,
                   background: `linear-gradient(90deg, ${RF_LEAF_GREEN}, ${RF_MINT_ACCENT})`,
                   boxShadow: `0 0 10px ${RF_MINT_ACCENT}55`
                 }} />
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, fontSize: 11, color: 'rgba(255,255,255,0.45)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, fontSize: 11, color: 'rgba(255,255,255,0.45)', flexWrap: 'wrap', gap: 4 }}>
                 <span>{100 - analytics.foundingApps > 0 ? `${100 - analytics.foundingApps} slots remaining` : 'Full capacity reached'}</span>
                 <span>Max 100 seats</span>
               </div>
@@ -3432,35 +3445,42 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             <div style={{
               background: 'rgba(255, 255, 255, 0.02)',
               borderRadius: 12,
-              padding: '14px 16px',
-              border: '1px solid rgba(255, 255, 255, 0.06)'
+              padding: isMobile ? '12px 14px' : '14px 16px',
+              border: '1px solid rgba(255, 255, 255, 0.06)',
+              minWidth: 0,
+              width: '100%',
+              maxWidth: '100%',
+              boxSizing: 'border-box'
             }}>
               <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 10 }}>
                 Conversion Velocity
               </span>
               <div style={{
-                display: 'flex',
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+                gap: 6,
                 alignItems: 'center',
-                justifyContent: isMobile ? 'flex-start' : 'space-between',
-                gap: isMobile ? 14 : 10,
-                overflowX: isMobile ? 'auto' : 'visible',
-                WebkitOverflowScrolling: 'touch',
-                scrollbarWidth: 'none',
-                paddingBottom: isMobile ? 4 : 0
+                width: '100%',
+                maxWidth: '100%',
+                boxSizing: 'border-box'
               }}>
-                <div style={{ flexShrink: 0, minWidth: isMobile ? 100 : 'auto' }}>
-                  <div style={{ fontSize: 18, fontWeight: 800, color: RF_MINT_ACCENT }}>{analytics.acceptanceRate}%</div>
-                  <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap' }}>Acceptance ({analytics.acceptedApps})</span>
+                <div style={{ minWidth: 0, textAlign: 'center' }}>
+                  <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 800, color: RF_MINT_ACCENT }}>{analytics.acceptanceRate}%</div>
+                  <span style={{ fontSize: isMobile ? 10 : 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    Accept ({analytics.acceptedApps})
+                  </span>
                 </div>
-                <div style={{ height: 26, width: 1, background: 'rgba(255,255,255,0.1)', flexShrink: 0 }} />
-                <div style={{ flexShrink: 0, minWidth: isMobile ? 100 : 'auto' }}>
-                  <div style={{ fontSize: 18, fontWeight: 800, color: RF_GOLD_YELLOW }}>{analytics.pendingRate}%</div>
-                  <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap' }}>Pending ({analytics.pendingApps})</span>
+                <div style={{ borderLeft: '1px solid rgba(255,255,255,0.1)', borderRight: '1px solid rgba(255,255,255,0.1)', padding: '0 4px', minWidth: 0, textAlign: 'center' }}>
+                  <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 800, color: RF_GOLD_YELLOW }}>{analytics.pendingRate}%</div>
+                  <span style={{ fontSize: isMobile ? 10 : 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    Pending ({analytics.pendingApps})
+                  </span>
                 </div>
-                <div style={{ height: 26, width: 1, background: 'rgba(255,255,255,0.1)', flexShrink: 0 }} />
-                <div style={{ flexShrink: 0, minWidth: isMobile ? 80 : 'auto' }}>
-                  <div style={{ fontSize: 18, fontWeight: 800, color: '#38BDF8' }}>{analytics.waitlistedApps}</div>
-                  <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap' }}>Waitlisted</span>
+                <div style={{ minWidth: 0, textAlign: 'center' }}>
+                  <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 800, color: '#38BDF8' }}>{analytics.waitlistedApps}</div>
+                  <span style={{ fontSize: isMobile ? 10 : 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    Waitlisted
+                  </span>
                 </div>
               </div>
             </div>
@@ -3469,8 +3489,12 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             <div style={{
               background: 'rgba(255, 255, 255, 0.02)',
               borderRadius: 12,
-              padding: '14px 16px',
-              border: '1px solid rgba(255, 255, 255, 0.06)'
+              padding: isMobile ? '12px 14px' : '14px 16px',
+              border: '1px solid rgba(255, 255, 255, 0.06)',
+              minWidth: 0,
+              width: '100%',
+              maxWidth: '100%',
+              boxSizing: 'border-box'
             }}>
               <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 8 }}>
                 Squad Division Pipeline
@@ -3478,12 +3502,16 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               <div style={{
                 display: 'flex',
                 flexWrap: isMobile ? 'nowrap' : 'wrap',
-                overflowX: isMobile ? 'auto' : 'visible',
+                overflowX: 'auto',
                 WebkitOverflowScrolling: 'touch',
                 scrollbarWidth: 'none',
                 gap: 6,
-                paddingBottom: isMobile ? 4 : 0
-              }}>
+                paddingBottom: isMobile ? 4 : 0,
+                width: '100%',
+                maxWidth: '100%',
+                minWidth: 0,
+                boxSizing: 'border-box'
+              }} className="rp-sleek-scroll">
                 {Object.keys(analytics.appsByDivision).length === 0 ? (
                   <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.4)', whiteSpace: 'nowrap' }}>No division data yet</span>
                 ) : (
@@ -3591,18 +3619,18 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
         {/* Applications Data Table */}
         <div style={{
           background: 'rgba(255,255,255,0.02)', borderRadius: 18, border: '1px solid rgba(255,255,255,0.08)',
-          overflow: 'hidden'
+          overflow: 'hidden', width: '100%', maxWidth: '100%', boxSizing: 'border-box'
         }}>
-          <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-            <table style={{ width: '100%', minWidth: isMobile ? 920 : 700, borderCollapse: 'collapse', textAlign: 'left', fontSize: 13 }}>
+          <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }} className="rp-sleek-scroll">
+            <table style={{ width: '100%', minWidth: isMobile ? 960 : 780, borderCollapse: 'collapse', textAlign: 'left', fontSize: 13 }}>
               <thead>
                 <tr style={{ background: 'rgba(255,255,255,0.04)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                  <th style={{ padding: '14px 18px', fontWeight: 600, color: 'rgba(255,255,255,0.6)', whiteSpace: 'nowrap' }}>Application ID</th>
-                  <th style={{ padding: '14px 18px', fontWeight: 600, color: 'rgba(255,255,255,0.6)', whiteSpace: 'nowrap' }}>Candidate</th>
-                  <th style={{ padding: '14px 18px', fontWeight: 600, color: 'rgba(255,255,255,0.6)', whiteSpace: 'nowrap' }}>Division &amp; Roles</th>
-                  <th style={{ padding: '14px 18px', fontWeight: 600, color: 'rgba(255,255,255,0.6)', whiteSpace: 'nowrap' }}>Status</th>
-                  <th style={{ padding: '14px 18px', fontWeight: 600, color: 'rgba(255,255,255,0.6)', whiteSpace: 'nowrap' }}>Submitted</th>
-                  <th style={{ padding: '14px 18px', fontWeight: 600, color: 'rgba(255,255,255,0.6)', textAlign: 'right', whiteSpace: 'nowrap' }}>Actions</th>
+                  <th style={{ padding: '14px 18px', fontWeight: 600, color: 'rgba(255,255,255,0.6)', whiteSpace: 'nowrap', minWidth: 210, width: 220 }}>Application ID</th>
+                  <th style={{ padding: '14px 18px', fontWeight: 600, color: 'rgba(255,255,255,0.6)', whiteSpace: 'nowrap', minWidth: 230 }}>Candidate</th>
+                  <th style={{ padding: '14px 18px', fontWeight: 600, color: 'rgba(255,255,255,0.6)', whiteSpace: 'nowrap', minWidth: 190 }}>Division &amp; Roles</th>
+                  <th style={{ padding: '14px 18px', fontWeight: 600, color: 'rgba(255,255,255,0.6)', whiteSpace: 'nowrap', minWidth: 140 }}>Status</th>
+                  <th style={{ padding: '14px 18px', fontWeight: 600, color: 'rgba(255,255,255,0.6)', whiteSpace: 'nowrap', minWidth: 100 }}>Submitted</th>
+                  <th style={{ padding: '14px 18px', fontWeight: 600, color: 'rgba(255,255,255,0.6)', textAlign: 'right', whiteSpace: 'nowrap', minWidth: 90 }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -3625,26 +3653,30 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                     >
                       {/* ID & Founding & Acceptance Code */}
-                      <td style={{ padding: '16px 18px' }}>
-                        <div style={{ fontFamily: 'monospace', fontSize: 12.5, fontWeight: 700, color: RF_MINT_ACCENT }}>
+                      <td style={{ padding: '16px 18px', minWidth: 210, width: 220, verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
+                        <div style={{ fontFamily: 'monospace', fontSize: 13, fontWeight: 700, color: RF_MINT_ACCENT, whiteSpace: 'nowrap', letterSpacing: '0.02em' }}>
                           {app.application_number}
                         </div>
                         {app.is_founding_100 && (
-                          <span style={{
-                            display: 'inline-block', fontSize: 10, fontWeight: 700, color: RF_GOLD_YELLOW,
-                            marginTop: 3, letterSpacing: '0.04em'
-                          }}>
-                            ⭐ {app.pioneer_id || 'FOUNDING 100'}
-                          </span>
+                          <div style={{ marginTop: 4 }}>
+                            <span style={{
+                              display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 10.5, fontWeight: 700, color: RF_GOLD_YELLOW,
+                              background: 'rgba(246, 178, 26, 0.12)', border: '1px solid rgba(246, 178, 26, 0.3)',
+                              padding: '2px 8px', borderRadius: 6, whiteSpace: 'nowrap', letterSpacing: '0.04em'
+                            }}>
+                              ⭐ {app.pioneer_id || 'FOUNDING 100'}
+                            </span>
+                          </div>
                         )}
                         {app.status === 'ACCEPTED' && (
-                          <div style={{ marginTop: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
+                          <div style={{ marginTop: 5, display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
                             <span style={{
-                              fontSize: 10, fontFamily: 'monospace', color: RF_MINT_ACCENT,
-                              background: 'rgba(24, 252, 92, 0.1)', padding: '2px 6px', borderRadius: 4,
-                              border: `1px solid ${RF_LEAF_GREEN}44`, fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 3
+                              fontSize: 10.5, fontFamily: 'monospace', color: RF_MINT_ACCENT,
+                              background: 'rgba(24, 252, 92, 0.1)', padding: '3px 8px', borderRadius: 6,
+                              border: `1px solid ${RF_LEAF_GREEN}55`, fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 4,
+                              whiteSpace: 'nowrap'
                             }}>
-                              <Key size={9} />
+                              <Key size={10} style={{ flexShrink: 0 }} />
                               {app.acceptance_code || 'ACC-PENDING'}
                             </span>
                             {app.acceptance_code && (
@@ -3657,12 +3689,14 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                                   setTimeout(() => setCopiedCodeAppId(null), 2000);
                                 }}
                                 style={{
-                                  background: 'none', border: 'none',
-                                  color: copiedCodeAppId === app.id ? RF_MINT_ACCENT : 'rgba(255,255,255,0.45)',
-                                  cursor: 'pointer', padding: 2, display: 'inline-flex', alignItems: 'center'
+                                  background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)',
+                                  borderRadius: 6, color: copiedCodeAppId === app.id ? RF_MINT_ACCENT : 'rgba(255,255,255,0.6)',
+                                  cursor: 'pointer', padding: '3px 7px', display: 'inline-flex', alignItems: 'center', gap: 3,
+                                  fontSize: 10.5, fontWeight: 600, transition: 'all 0.15s ease', whiteSpace: 'nowrap'
                                 }}
                               >
-                                {copiedCodeAppId === app.id ? <Check size={11} /> : <Copy size={11} />}
+                                {copiedCodeAppId === app.id ? <Check size={11} strokeWidth={3} /> : <Copy size={11} />}
+                                <span>{copiedCodeAppId === app.id ? 'Copied' : 'Copy'}</span>
                               </button>
                             )}
                           </div>
@@ -3670,25 +3704,25 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                       </td>
 
                       {/* Candidate Name & Location */}
-                      <td style={{ padding: '16px 18px' }}>
-                        <div style={{ fontWeight: 600, color: '#FFFFFF' }}>{app.full_name}</div>
-                        <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.5)' }}>
+                      <td style={{ padding: '16px 18px', minWidth: 230, verticalAlign: 'middle' }}>
+                        <div style={{ fontWeight: 600, color: '#FFFFFF', fontSize: 13.5 }}>{app.full_name}</div>
+                        <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.5)', marginTop: 2 }}>
                           {app.city ? `${app.city}, ` : ''}{app.country} • {app.email}
                         </div>
                       </td>
 
                       {/* Division & Roles */}
-                      <td style={{ padding: '16px 18px' }}>
+                      <td style={{ padding: '16px 18px', minWidth: 190, verticalAlign: 'middle' }}>
                         <div style={{ fontSize: 12.5, fontWeight: 600, color: '#FFFFFF' }}>
                           {app.primary_division?.replace('_', ' ') || 'General'}
                         </div>
-                        <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.5)', maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.5)', maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: 2 }}>
                           {(app.roles || []).join(', ')}
                         </div>
                       </td>
 
                       {/* Review Status & Contributor Level */}
-                      <td style={{ padding: '16px 18px' }}>
+                      <td style={{ padding: '16px 18px', minWidth: 140, verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
                         <div>{renderStatusBadge(app.status)}</div>
                         <div style={{ marginTop: 4 }}>
                           <span style={{
@@ -3710,12 +3744,12 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                       </td>
 
                       {/* Date */}
-                      <td style={{ padding: '16px 18px', color: 'rgba(255,255,255,0.5)', fontSize: 12 }}>
+                      <td style={{ padding: '16px 18px', minWidth: 100, verticalAlign: 'middle', color: 'rgba(255,255,255,0.5)', fontSize: 12, whiteSpace: 'nowrap' }}>
                         {new Date(app.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                       </td>
 
                       {/* Action Button */}
-                      <td style={{ padding: '16px 18px', textAlign: 'right' }}>
+                      <td style={{ padding: '16px 18px', minWidth: 90, textAlign: 'right', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
                         <button
                           onClick={e => { e.stopPropagation(); openReviewModal(app); }}
                           style={{
@@ -6812,8 +6846,12 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               display: 'flex', justifyContent: 'space-between', alignItems: 'center'
             }}>
               <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
-                  <span style={{ fontSize: 11, fontWeight: 700, fontFamily: 'monospace', color: RF_MINT_ACCENT }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4, flexWrap: 'wrap' }}>
+                  <span style={{
+                    fontSize: 11.5, fontWeight: 700, fontFamily: 'monospace', color: RF_MINT_ACCENT,
+                    background: 'rgba(24, 252, 92, 0.1)', padding: '2px 8px', borderRadius: 6,
+                    border: `1px solid ${RF_LEAF_GREEN}44`, whiteSpace: 'nowrap'
+                  }}>
                     {activeApp.application_number}
                   </span>
                   {renderStatusBadge(editStatus)}
@@ -7027,17 +7065,22 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 {editStatus === 'ACCEPTED' && (
                   <div style={{
                     background: 'rgba(24, 252, 92, 0.08)', border: `1px solid ${RF_LEAF_GREEN}66`,
-                    borderRadius: 12, padding: '14px 16px', display: 'flex', alignItems: 'center',
-                    justifyContent: 'space-between', flexWrap: 'wrap', gap: 12
+                    borderRadius: 12, padding: isMobile ? '12px 14px' : '16px 18px', display: 'flex', alignItems: 'center',
+                    justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, width: '100%', boxSizing: 'border-box'
                   }}>
-                    <div>
+                    <div style={{ minWidth: 0, flex: '1 1 240px' }}>
                       <div style={{ fontSize: 11, fontWeight: 700, color: RF_MINT_ACCENT, letterSpacing: '0.08em', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <Key size={13} /> Official Acceptance Code Issued
+                        <Key size={13} style={{ flexShrink: 0 }} /> Official Acceptance Code Issued
                       </div>
-                      <div style={{ fontSize: 16, fontWeight: 800, color: '#FFFFFF', fontFamily: 'monospace', marginTop: 4 }}>
+                      <div style={{
+                        fontSize: isMobile ? 15 : 17, fontWeight: 800, color: '#FFFFFF', fontFamily: 'monospace',
+                        marginTop: 6, background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(24, 252, 92, 0.25)',
+                        padding: '6px 12px', borderRadius: 8, display: 'inline-block', letterSpacing: '0.04em',
+                        wordBreak: 'break-all'
+                      }}>
                         {editAcceptanceCode || activeApp.acceptance_code || '(Will be automatically generated upon saving)'}
                       </div>
-                      <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.65)', marginTop: 2 }}>
+                      <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.65)', marginTop: 6, lineHeight: 1.4 }}>
                         Share this code with the candidate. They must provide it with Application ID ({activeApp.application_number}) to activate their contributor profile.
                       </div>
                     </div>
@@ -7053,8 +7096,9 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                         }}
                         style={{
                           background: RF_LEAF_GREEN, color: RF_DEEP_GREEN, border: 'none',
-                          padding: '8px 16px', borderRadius: 8, fontSize: 12, fontWeight: 700,
-                          cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6
+                          padding: '10px 18px', borderRadius: 8, fontSize: 12, fontWeight: 700,
+                          cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
+                          width: isMobile ? '100%' : 'auto', justifyContent: 'center', flexShrink: 0
                         }}
                       >
                         {copiedModalCode ? <Check size={13} /> : <Copy size={13} />}
