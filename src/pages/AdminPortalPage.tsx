@@ -7,7 +7,7 @@ import {
   UserPlus, Trash2, Key, EyeOff, Copy, Ban, UserX, Calendar,
   Building2, Globe, Phone, Send, AtSign, Share2, Briefcase,
   AlertTriangle, Brain, Gift, Zap, Megaphone, PlusCircle, Radio, DollarSign,
-  Bell, X, CheckCheck
+  Bell, X, CheckCheck, Menu
 } from 'lucide-react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import {
@@ -258,7 +258,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
     return 'applications';
   });
 
-
+  const [adminMobileNavOpen, setAdminMobileNavOpen] = useState(false);
   const [applications, setApplications] = useState<ApplicationRecord[]>([]);
   const [taskSubmissions, setTaskSubmissions] = useState<TaskSubmissionRecord[]>([]);
   const [membersList, setMembersList] = useState<ContributorProfile[]>(() => getAllContributors());
@@ -1530,6 +1530,29 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
         }}>
           {/* Brand & Suite Indicator */}
           <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 8 : 10 }}>
+            {/* Mobile Admin Navigation Hamburger Toggle */}
+            {isMobile && (
+              <button
+                onClick={() => setAdminMobileNavOpen(prev => !prev)}
+                aria-label="Toggle Admin Navigation Menu"
+                style={{
+                  background: adminMobileNavOpen ? 'rgba(24, 252, 92, 0.16)' : 'rgba(255, 255, 255, 0.05)',
+                  border: `1px solid ${adminMobileNavOpen ? RF_MINT_ACCENT : 'rgba(255, 255, 255, 0.12)'}`,
+                  color: adminMobileNavOpen ? RF_MINT_ACCENT : '#FFFFFF',
+                  width: 32,
+                  height: 32,
+                  borderRadius: 8,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  flexShrink: 0
+                }}
+              >
+                {adminMobileNavOpen ? <X size={16} /> : <Menu size={16} />}
+              </button>
+            )}
+
             <div style={{
               background: 'rgba(24, 252, 92, 0.12)',
               border: '1px solid rgba(24, 252, 92, 0.28)',
@@ -1978,6 +2001,148 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
         </div>
       </header>
 
+      {/* Mobile Admin Navigation Drawer Overlay */}
+      {adminMobileNavOpen && isMobile && (
+        <div
+          onClick={() => setAdminMobileNavOpen(false)}
+          style={{
+            position: 'fixed', inset: 0, top: 58, zIndex: 999,
+            background: 'rgba(3, 10, 6, 0.75)', backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)'
+          }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              background: `linear-gradient(180deg, ${RF_DARK_GREEN} 0%, #05140B 100%)`,
+              borderBottom: '1px solid rgba(24, 252, 92, 0.2)',
+              boxShadow: '0 20px 40px rgba(0,0,0,0.8)',
+              padding: '16px 16px 20px',
+              display: 'flex', flexDirection: 'column', gap: 12,
+              maxHeight: 'calc(100vh - 65px)', overflowY: 'auto'
+            }}
+          >
+            {/* Staff identity card */}
+            {loggedInStaff && (
+              <div style={{
+                background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
+                borderRadius: 10, padding: '10px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <div style={{
+                    width: 28, height: 28, borderRadius: '50%', background: 'rgba(24, 252, 92, 0.15)',
+                    color: RF_MINT_ACCENT, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 11, fontWeight: 800
+                  }}>
+                    {loggedInStaff.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: '#FFFFFF' }}>{loggedInStaff.name}</div>
+                    <div style={{ fontSize: 10.5, color: RF_MINT_ACCENT, fontWeight: 600 }}>{loggedInStaff.role.replace('_', ' ')}</div>
+                  </div>
+                </div>
+                <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', fontFamily: 'monospace' }}>STAFF ID: {loggedInStaff.id}</span>
+              </div>
+            )}
+
+            {/* Nav modules list */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {[
+                { id: 'applications', label: 'Applications & Admissions', icon: UserCheck, count: stats.total, desc: 'Review candidate applications & Founding 100' },
+                { id: 'proofs', label: 'Task Proofs of Work', icon: FileCheck, count: taskStats.total, desc: 'Verify mission deliverables & points' },
+                { id: 'members', label: 'Pioneer Profiles', icon: Award, count: membersList.length, desc: 'Manage member records & accounts', onClick: refreshMembers },
+                { id: 'workers', label: 'Review Team & Staff', icon: Users, count: staffList.length, desc: 'Manage evaluation staff & workers' },
+                { id: 'certificates', label: 'Pioneer Certifications', icon: Award, count: certificatesList.length, desc: 'Issue & inspect level completion credentials', onClick: refreshCertificates },
+                { id: 'tasks', label: 'Squad Missions & Bounties', icon: Megaphone, count: tasksList.filter(t => t.status === 'ACTIVE').length, desc: 'Announce daily directives & WhatsApp tasks', onClick: refreshTasks },
+              ].map(item => {
+                const isActive = adminTab === item.id;
+                const Icon = item.icon;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => {
+                      setAdminTab(item.id as any);
+                      if (item.onClick) item.onClick();
+                      setAdminMobileNavOpen(false);
+                    }}
+                    style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                      padding: '10px 14px', borderRadius: 10,
+                      background: isActive ? 'rgba(24, 252, 92, 0.12)' : 'rgba(255,255,255,0.03)',
+                      border: isActive ? '1px solid rgba(24, 252, 92, 0.3)' : '1px solid rgba(255,255,255,0.06)',
+                      cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s ease'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <div style={{
+                        width: 32, height: 32, borderRadius: 8,
+                        background: isActive ? 'rgba(24, 252, 92, 0.18)' : 'rgba(255,255,255,0.05)',
+                        color: isActive ? RF_MINT_ACCENT : 'rgba(255,255,255,0.6)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center'
+                      }}>
+                        <Icon size={16} />
+                      </div>
+                      <div>
+                        <div style={{ fontSize: 13, fontWeight: isActive ? 700 : 600, color: isActive ? '#FFFFFF' : 'rgba(255,255,255,0.85)' }}>
+                          {item.label}
+                        </div>
+                        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)' }}>
+                          {item.desc}
+                        </div>
+                      </div>
+                    </div>
+                    <span style={{
+                      fontSize: 11, fontWeight: 700, padding: '2px 7px', borderRadius: 6,
+                      background: isActive ? 'rgba(24, 252, 92, 0.2)' : 'rgba(255,255,255,0.07)',
+                      color: isActive ? RF_MINT_ACCENT : 'rgba(255,255,255,0.5)'
+                    }}>
+                      {item.count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Quick action bar */}
+            <div style={{
+              display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8,
+              paddingTop: 10, borderTop: '1px solid rgba(255,255,255,0.07)'
+            }}>
+              <button
+                onClick={() => { fetchApplications(); setAdminMobileNavOpen(false); }}
+                style={{
+                  background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
+                  color: '#FFFFFF', padding: '8px 6px', borderRadius: 8, fontSize: 11.5, fontWeight: 600,
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5
+                }}
+              >
+                <RefreshCw size={12} /> Refresh
+              </button>
+              <button
+                onClick={() => { handleExportCSV(); setAdminMobileNavOpen(false); }}
+                style={{
+                  background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
+                  color: '#FFFFFF', padding: '8px 6px', borderRadius: 8, fontSize: 11.5, fontWeight: 600,
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5
+                }}
+              >
+                <Download size={12} /> Export
+              </button>
+              <button
+                onClick={() => { handleLogout(); setAdminMobileNavOpen(false); }}
+                style={{
+                  background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.25)',
+                  color: '#FCA5A5', padding: '8px 6px', borderRadius: 8, fontSize: 11.5, fontWeight: 600,
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5
+                }}
+              >
+                <LogOut size={12} /> Exit
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: isMobile ? '16px 14px 60px' : '26px 24px 80px' }}>
         {/* Modern Minimalist Navigation Tabs */}
         <div style={{
@@ -2049,6 +2214,60 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
         {adminTab === 'applications' && (
           <div>
+            {/* Section Header with Title & Action Controls */}
+            <div style={{
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+              marginBottom: isMobile ? 20 : 28, flexWrap: 'wrap', gap: 16
+            }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '0 0 6px', flexWrap: 'wrap' }}>
+                  <h2 style={{ fontSize: isMobile ? 20 : 24, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
+                    Pioneer Admissions &amp; Applications
+                  </h2>
+                  <span style={{
+                    fontSize: 10.5, fontWeight: 700, background: 'rgba(24, 252, 92, 0.12)',
+                    color: RF_MINT_ACCENT, border: `1px solid ${RF_MINT_ACCENT}55`,
+                    padding: '3px 10px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 4,
+                    textTransform: 'uppercase'
+                  }}>
+                    <UserCheck size={11} /> {stats.total} Total Applicants
+                  </span>
+                </div>
+                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', margin: 0, maxWidth: 820, lineHeight: 1.5 }}>
+                  Review incoming applications across all 6 squads. Inspect candidate GitHub profiles, portfolios, motivation letters, learning goals, and issue acceptance or waitlist decisions.
+                </p>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, width: isMobile ? '100%' : 'auto' }}>
+                <button
+                  onClick={handleExportCSV}
+                  style={{
+                    background: RF_LEAF_GREEN, color: RF_DEEP_GREEN, border: 'none',
+                    padding: isMobile ? '10px 16px' : '10px 20px', borderRadius: 100, fontSize: 13, fontWeight: 700,
+                    cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
+                    boxShadow: `0 4px 14px ${RF_LEAF_GREEN}44`, transition: 'all 0.2s',
+                    flex: isMobile ? 1 : 'initial', justifyContent: 'center'
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.background = RF_MINT_ACCENT)}
+                  onMouseLeave={e => (e.currentTarget.style.background = RF_LEAF_GREEN)}
+                >
+                  <Download size={14} /> Export CSV
+                </button>
+
+                <button
+                  onClick={fetchApplications}
+                  disabled={loading}
+                  style={{
+                    background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.18)',
+                    color: '#FFFFFF', padding: isMobile ? '10px 14px' : '10px 18px', borderRadius: 100, fontSize: 13,
+                    fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6
+                  }}
+                >
+                  <RefreshCw size={14} className={loading ? 'rp-spin' : ''} /> Refresh
+                </button>
+              </div>
+            </div>
+
             {/* KPI & Metrics Bar */}
         <div style={{
           display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fit, minmax(200px, 1fr))',
@@ -2308,105 +2527,149 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
     {adminTab === 'proofs' && (
       <div>
-          {/* KPI Bar for Task Submissions */}
-          <div style={{
-            display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: 16, marginBottom: 32
-          }}>
-            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Total Mission Submissions</span>
-              <div style={{ fontSize: 32, fontWeight: 700, color: '#FFFFFF', marginTop: 4 }}>{taskStats.total}</div>
-              <span style={{ fontSize: 12, color: RF_MINT_ACCENT }}>All time reported</span>
+        {/* Section Header with Title & Action Controls */}
+        <div style={{
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          marginBottom: isMobile ? 20 : 28, flexWrap: 'wrap', gap: 16
+        }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '0 0 6px', flexWrap: 'wrap' }}>
+              <h2 style={{ fontSize: isMobile ? 20 : 24, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
+                Proof of Work &amp; Task Verifications
+              </h2>
+              <span style={{
+                fontSize: 10.5, fontWeight: 700, background: 'rgba(255, 209, 102, 0.12)',
+                color: RF_GOLD_YELLOW, border: `1px solid ${RF_GOLD_YELLOW}55`,
+                padding: '3px 10px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 4,
+                textTransform: 'uppercase'
+              }}>
+                <Clock size={11} /> {taskStats.pending} Pending Review
+              </span>
             </div>
-
-            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Pending Verification</span>
-              <div style={{ fontSize: 32, fontWeight: 700, color: RF_GOLD_YELLOW, marginTop: 4 }}>{taskStats.pending}</div>
-              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>Requires squad review</span>
-            </div>
-
-            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Verified &amp; Promoted</span>
-              <div style={{ fontSize: 32, fontWeight: 700, color: RF_MINT_ACCENT, marginTop: 4 }}>{taskStats.verified}</div>
-              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>Ladder rank upgraded</span>
-            </div>
-
-            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Needs Revision</span>
-              <div style={{ fontSize: 32, fontWeight: 700, color: '#FFB27D', marginTop: 4 }}>{taskStats.needsRevision}</div>
-              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>Actionable notes sent</span>
-            </div>
+            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', margin: 0, maxWidth: 820, lineHeight: 1.5 }}>
+              Audit and verify deliverables submitted by active contributors against published squad directives. Approve proofs to award advancement points, or request actionable revisions.
+            </p>
           </div>
 
-          {/* Proofs Filter Bar */}
-          <div style={{
-            background: 'rgba(255,255,255,0.02)', borderRadius: 18, padding: '20px 22px',
-            border: '1px solid rgba(255,255,255,0.08)', marginBottom: 24,
-            display: 'flex', flexWrap: 'wrap', gap: 14, alignItems: 'center', justifyContent: 'space-between'
-          }}>
-            {/* Search */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: '1 1 300px', minWidth: 260 }}>
-              <Search size={16} color="rgba(255,255,255,0.4)" />
-              <input
-                type="text"
-                placeholder="Search by contributor name, mission title, email, or POW code..."
-                value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-                style={{
-                  background: 'none', border: 'none', color: '#FFFFFF', fontSize: 14,
-                  width: '100%', outline: 'none'
-                }}
-              />
-              {searchTerm && (
-                <button
-                  onClick={() => setSearchTerm('')}
-                  style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer' }}
-                >
-                  ✕
-                </button>
-              )}
-            </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, width: isMobile ? '100%' : 'auto' }}>
+            <button
+              onClick={handleExportCSV}
+              style={{
+                background: RF_LEAF_GREEN, color: RF_DEEP_GREEN, border: 'none',
+                padding: isMobile ? '10px 16px' : '10px 20px', borderRadius: 100, fontSize: 13, fontWeight: 700,
+                cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
+                boxShadow: `0 4px 14px ${RF_LEAF_GREEN}44`, transition: 'all 0.2s',
+                flex: isMobile ? 1 : 'initial', justifyContent: 'center'
+              }}
+              onMouseEnter={e => (e.currentTarget.style.background = RF_MINT_ACCENT)}
+              onMouseLeave={e => (e.currentTarget.style.background = RF_LEAF_GREEN)}
+            >
+              <Download size={14} /> Export Proofs
+            </button>
 
-            {/* Status Filter */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>Status:</span>
-              <select
-                value={taskFilterStatus}
-                onChange={e => setTaskFilterStatus(e.target.value)}
-                style={{
-                  background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.15)',
-                  color: '#FFFFFF', padding: '6px 12px', borderRadius: 8, fontSize: 12.5, outline: 'none'
-                }}
-              >
-                <option value="ALL">All Proofs ({taskStats.total})</option>
-                <option value="PENDING">Pending Verification ({taskStats.pending})</option>
-                <option value="VERIFIED">Verified ({taskStats.verified})</option>
-                <option value="NEEDS_REVISION">Needs Revision ({taskStats.needsRevision})</option>
-                <option value="REJECTED">Rejected</option>
-              </select>
-            </div>
-
-            {/* Division Filter */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>Division:</span>
-              <select
-                value={divisionFilter}
-                onChange={e => setDivisionFilter(e.target.value)}
-                style={{
-                  background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.15)',
-                  color: '#FFFFFF', padding: '6px 12px', borderRadius: 8, fontSize: 12.5, outline: 'none'
-                }}
-              >
-                <option value="ALL">All Divisions</option>
-                <option value="TECHNOLOGY">💻 Technology</option>
-                <option value="DESIGN">🎨 Product &amp; Design</option>
-                <option value="GROWTH">📈 Growth &amp; Referrals</option>
-                <option value="COMMUNITY">🌍 Community &amp; Campus</option>
-                <option value="OPERATIONS">⚙️ Operations &amp; QA</option>
-                <option value="BUSINESS">🤝 Business &amp; Partnerships</option>
-              </select>
-            </div>
+            <button
+              onClick={fetchApplications}
+              disabled={loading}
+              style={{
+                background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.18)',
+                color: '#FFFFFF', padding: isMobile ? '10px 14px' : '10px 18px', borderRadius: 100, fontSize: 13,
+                fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6
+              }}
+            >
+              <RefreshCw size={14} className={loading ? 'rp-spin' : ''} /> Refresh
+            </button>
           </div>
+        </div>
+
+        {/* KPI Bar for Task Submissions */}
+        <div style={{
+          display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fit, minmax(200px, 1fr))',
+          gap: isMobile ? 10 : 16, marginBottom: isMobile ? 20 : 32
+        }}>
+          <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: isMobile ? 14 : 16, padding: isMobile ? '14px 16px' : '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Total Mission Submissions</span>
+            <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: '#FFFFFF', marginTop: 4 }}>{taskStats.total}</div>
+            <span style={{ fontSize: isMobile ? 11 : 12, color: RF_MINT_ACCENT }}>All time reported</span>
+          </div>
+
+          <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: isMobile ? 14 : 16, padding: isMobile ? '14px 16px' : '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Pending Verification</span>
+            <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: RF_GOLD_YELLOW, marginTop: 4 }}>{taskStats.pending}</div>
+            <span style={{ fontSize: isMobile ? 11 : 12, color: 'rgba(255,255,255,0.5)' }}>Requires squad review</span>
+          </div>
+
+          <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: isMobile ? 14 : 16, padding: isMobile ? '14px 16px' : '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Verified &amp; Promoted</span>
+            <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: RF_MINT_ACCENT, marginTop: 4 }}>{taskStats.verified}</div>
+            <span style={{ fontSize: isMobile ? 11 : 12, color: 'rgba(255,255,255,0.5)' }}>Ladder rank upgraded</span>
+          </div>
+
+          <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: isMobile ? 14 : 16, padding: isMobile ? '14px 16px' : '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Needs Revision</span>
+            <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: '#FFB27D', marginTop: 4 }}>{taskStats.needsRevision}</div>
+            <span style={{ fontSize: isMobile ? 11 : 12, color: 'rgba(255,255,255,0.5)' }}>Actionable notes sent</span>
+          </div>
+        </div>
+
+        {/* Proofs Filter Bar */}
+        <div style={{
+          background: 'rgba(255,255,255,0.02)', borderRadius: isMobile ? 14 : 18, padding: isMobile ? '14px 16px' : '18px 22px',
+          border: '1px solid rgba(255,255,255,0.08)', marginBottom: 24,
+          display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center', justifyContent: 'space-between'
+        }}>
+          {/* Search */}
+          <div style={{ position: 'relative', flex: isMobile ? '1 1 100%' : '1 1 280px', maxWidth: isMobile ? '100%' : 420 }}>
+            <Search size={16} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)' }} />
+            <input
+              type="text"
+              placeholder="Search by contributor, title, email, POW..."
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              style={{
+                width: '100%', padding: '10px 16px 10px 42px', borderRadius: 100,
+                background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)',
+                color: '#FFFFFF', fontSize: 13, outline: 'none'
+              }}
+            />
+          </div>
+
+          {/* Status & Division Filters */}
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', width: isMobile ? '100%' : 'auto' }}>
+            <select
+              value={taskFilterStatus}
+              onChange={e => setTaskFilterStatus(e.target.value)}
+              style={{
+                background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)',
+                color: '#FFFFFF', padding: isMobile ? '7px 12px' : '9px 16px', borderRadius: 100, fontSize: 12, outline: 'none',
+                flex: isMobile ? 1 : 'none'
+              }}
+            >
+              <option value="ALL">All Proofs ({taskStats.total})</option>
+              <option value="PENDING">Pending Review ({taskStats.pending})</option>
+              <option value="VERIFIED">Verified ({taskStats.verified})</option>
+              <option value="NEEDS_REVISION">Needs Revision ({taskStats.needsRevision})</option>
+              <option value="REJECTED">Rejected</option>
+            </select>
+
+            <select
+              value={divisionFilter}
+              onChange={e => setDivisionFilter(e.target.value)}
+              style={{
+                background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)',
+                color: '#FFFFFF', padding: isMobile ? '7px 12px' : '9px 16px', borderRadius: 100, fontSize: 12, outline: 'none',
+                flex: isMobile ? 1 : 'none'
+              }}
+            >
+              <option value="ALL">All Divisions</option>
+              <option value="TECHNOLOGY">Tech &amp; Engineering</option>
+              <option value="DESIGN">Creative &amp; Design</option>
+              <option value="GROWTH">Growth &amp; Referrals</option>
+              <option value="COMMUNITY">Community &amp; Campus</option>
+              <option value="OPERATIONS">Operations &amp; QA</option>
+              <option value="BUSINESS">Business &amp; Partnerships</option>
+            </select>
+          </div>
+        </div>
 
           {/* Proofs Table */}
           <div style={{
@@ -2618,9 +2881,9 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           }}>
             {/* Search */}
             <div style={{
-              display: 'flex', alignItems: 'center', gap: 10, flex: isMobile ? '1 1 100%' : '1 1 280px',
-              background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.12)',
-              borderRadius: 10, padding: '8px 14px'
+              display: 'flex', alignItems: 'center', gap: 10, flex: isMobile ? '1 1 100%' : '1 1 300px',
+              background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.12)',
+              borderRadius: 100, padding: '10px 18px'
             }}>
               <Search size={16} color="rgba(255,255,255,0.4)" style={{ flexShrink: 0 }} />
               <input
@@ -2636,9 +2899,9 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               {memberSearchTerm && (
                 <button
                   onClick={() => setMemberSearchTerm('')}
-                  style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', fontSize: 11 }}
+                  style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', fontSize: 12 }}
                 >
-                  Clear
+                  ✕
                 </button>
               )}
             </div>
@@ -2649,9 +2912,9 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 value={memberStatusFilter}
                 onChange={e => setMemberStatusFilter(e.target.value as any)}
                 style={{
-                  background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.15)',
-                  color: '#FFFFFF', padding: '8px 12px', borderRadius: 8, fontSize: 12.5, outline: 'none',
-                  flex: isMobile ? '1 1 calc(50% - 6px)' : 'initial'
+                  background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.15)',
+                  color: '#FFFFFF', padding: '10px 16px', borderRadius: 100, fontSize: 13, outline: 'none',
+                  flex: isMobile ? '1 1 calc(50% - 6px)' : 'initial', cursor: 'pointer'
                 }}
               >
                 <option value="ALL">All Statuses</option>
@@ -2664,9 +2927,9 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 value={memberDivisionFilter}
                 onChange={e => setMemberDivisionFilter(e.target.value)}
                 style={{
-                  background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.15)',
-                  color: '#FFFFFF', padding: '8px 12px', borderRadius: 8, fontSize: 12.5, outline: 'none',
-                  flex: isMobile ? '1 1 calc(50% - 6px)' : 'initial'
+                  background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.15)',
+                  color: '#FFFFFF', padding: '10px 16px', borderRadius: 100, fontSize: 13, outline: 'none',
+                  flex: isMobile ? '1 1 calc(50% - 6px)' : 'initial', cursor: 'pointer'
                 }}
               >
                 <option value="ALL">All Squads</option>
@@ -2684,9 +2947,9 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 value={memberLevelFilter}
                 onChange={e => setMemberLevelFilter(e.target.value)}
                 style={{
-                  background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.15)',
-                  color: '#FFFFFF', padding: '8px 12px', borderRadius: 8, fontSize: 12.5, outline: 'none',
-                  flex: isMobile ? '1 1 calc(50% - 6px)' : 'initial'
+                  background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.15)',
+                  color: '#FFFFFF', padding: '10px 16px', borderRadius: 100, fontSize: 13, outline: 'none',
+                  flex: isMobile ? '1 1 100%' : 'initial', cursor: 'pointer'
                 }}
               >
                 <option value="ALL">All Tiers</option>
@@ -2949,20 +3212,20 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
       {/* ─── REVIEW TEAM & WORKERS MANAGEMENT TAB ──────────────────────────────── */}
       {adminTab === 'workers' && (
         <div>
-          {/* Header with Title & "+ Add Worker" CTA */}
+          {/* Header with Title & Action Controls */}
           <div style={{
             display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-            marginBottom: 28, flexWrap: 'wrap', gap: 16
+            marginBottom: isMobile ? 20 : 28, flexWrap: 'wrap', gap: 16
           }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '0 0 6px', flexWrap: 'wrap' }}>
-                <h2 style={{ fontSize: 24, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
+                <h2 style={{ fontSize: isMobile ? 20 : 24, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
                   Review Team &amp; Squad Workers
                 </h2>
                 {isSuperAdmin ? (
                   <span style={{
                     fontSize: 10.5, fontWeight: 700, background: 'rgba(24, 252, 92, 0.12)',
-                    color: RF_MINT_ACCENT, border: `1px solid ${RF_LEAF_GREEN}44`,
+                    color: RF_MINT_ACCENT, border: `1px solid ${RF_MINT_ACCENT}55`,
                     padding: '3px 10px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 4,
                     textTransform: 'uppercase'
                   }}>
@@ -2971,7 +3234,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 ) : (
                   <span style={{
                     fontSize: 10.5, fontWeight: 700, background: 'rgba(255, 209, 102, 0.12)',
-                    color: RF_GOLD_YELLOW, border: `1px solid ${RF_GOLD_YELLOW}44`,
+                    color: RF_GOLD_YELLOW, border: `1px solid ${RF_GOLD_YELLOW}55`,
                     padding: '3px 10px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 4,
                     textTransform: 'uppercase'
                   }}>
@@ -2979,101 +3242,109 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                   </span>
                 )}
               </div>
-              <p style={{ fontSize: 13.5, color: 'rgba(255,255,255,0.65)', margin: 0, maxWidth: 680 }}>
-                Delegate admissions evaluation, task verification, and squad level reviews to verified workers. Suspending, modifying, and adding new workers is exclusively reserved for Super Admin (Tonye Taylor).
+              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', margin: 0, maxWidth: 820, lineHeight: 1.5 }}>
+                Delegate admissions evaluation, task verification, and squad level reviews to verified workers. Suspending, modifying, and adding new workers is exclusively reserved for Super Admin.
               </p>
             </div>
 
-            {isSuperAdmin ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, width: isMobile ? '100%' : 'auto' }}>
+              {isSuperAdmin && (
+                <button
+                  onClick={() => {
+                    setNewWorkerPasscode(`worker26_${Math.floor(100 + Math.random() * 900)}`);
+                    setWorkerFormError('');
+                    setAddWorkerModalOpen(true);
+                  }}
+                  style={{
+                    background: RF_LEAF_GREEN, color: RF_DEEP_GREEN, border: 'none',
+                    padding: isMobile ? '10px 16px' : '10px 20px', borderRadius: 100, fontSize: 13, fontWeight: 700,
+                    cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
+                    boxShadow: `0 4px 14px ${RF_LEAF_GREEN}44`, transition: 'all 0.2s',
+                    flex: isMobile ? 1 : 'initial', justifyContent: 'center'
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.background = RF_MINT_ACCENT)}
+                  onMouseLeave={e => (e.currentTarget.style.background = RF_LEAF_GREEN)}
+                >
+                  <UserPlus size={14} /> Add Worker
+                </button>
+              )}
+
               <button
-                onClick={() => {
-                  setNewWorkerPasscode(`worker26_${Math.floor(100 + Math.random() * 900)}`);
-                  setWorkerFormError('');
-                  setAddWorkerModalOpen(true);
-                }}
+                onClick={() => setStaffList(getStaffMembers())}
                 style={{
-                  background: RF_LEAF_GREEN, color: RF_DEEP_GREEN, border: 'none',
-                  padding: '12px 22px', borderRadius: 100, fontSize: 13.5, fontWeight: 700,
-                  cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
-                  boxShadow: `0 4px 16px ${RF_LEAF_GREEN}44`, transition: 'all 0.2s'
+                  background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.18)',
+                  color: '#FFFFFF', padding: isMobile ? '10px 14px' : '10px 18px', borderRadius: 100, fontSize: 13,
+                  fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6
                 }}
-                onMouseEnter={e => (e.currentTarget.style.background = RF_MINT_ACCENT)}
-                onMouseLeave={e => (e.currentTarget.style.background = RF_LEAF_GREEN)}
               >
-                <UserPlus size={16} />
-                Add New Worker
+                <RefreshCw size={14} /> Refresh
               </button>
-            ) : (
-              <div style={{
-                background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.12)',
-                padding: '9px 18px', borderRadius: 100, fontSize: 12.5, color: 'rgba(255,255,255,0.5)',
-                display: 'flex', alignItems: 'center', gap: 6
-              }}>
-                <Lock size={13} color={RF_GOLD_YELLOW} />
-                Worker provisioning reserved for Super Admin
-              </div>
-            )}
+            </div>
           </div>
 
           {/* Workers KPI Metrics */}
           <div style={{
-            display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: 16, marginBottom: 32
+            display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: isMobile ? 10 : 16, marginBottom: isMobile ? 20 : 32
           }}>
-            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Total Review Staff</span>
-              <div style={{ fontSize: 32, fontWeight: 700, color: '#FFFFFF', marginTop: 4 }}>{staffList.length}</div>
-              <span style={{ fontSize: 12, color: RF_MINT_ACCENT }}>Provisioned accounts</span>
+            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: isMobile ? '14px 16px' : '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Total Review Staff</span>
+              <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: '#FFFFFF', marginTop: 4 }}>{staffList.length}</div>
+              <span style={{ fontSize: isMobile ? 11 : 12, color: RF_MINT_ACCENT }}>Provisioned accounts</span>
             </div>
 
-            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Active Reviewers</span>
-              <div style={{ fontSize: 32, fontWeight: 700, color: RF_MINT_ACCENT, marginTop: 4 }}>
+            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: isMobile ? '14px 16px' : '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Active Reviewers</span>
+              <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: RF_MINT_ACCENT, marginTop: 4 }}>
                 {staffList.filter(s => s.status === 'ACTIVE').length}
               </div>
-              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>Authorized to verify</span>
+              <span style={{ fontSize: isMobile ? 11 : 12, color: 'rgba(255,255,255,0.5)' }}>Authorized to verify</span>
             </div>
 
-            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Total Reviews Handled</span>
-              <div style={{ fontSize: 32, fontWeight: 700, color: RF_GOLD_YELLOW, marginTop: 4 }}>
-                {staffList.reduce((acc, s) => acc + (s.reviews_count || 0), 0)}
+            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: isMobile ? '14px 16px' : '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Suspended Staff</span>
+              <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: staffList.filter(s => s.status === 'SUSPENDED').length > 0 ? '#EF4444' : 'rgba(255,255,255,0.4)', marginTop: 4 }}>
+                {staffList.filter(s => s.status === 'SUSPENDED').length}
               </div>
-              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>Decisions &amp; promotions logged</span>
+              <span style={{ fontSize: isMobile ? 11 : 12, color: 'rgba(255,255,255,0.5)' }}>Revoked credentials</span>
             </div>
 
-            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Root Super Admin</span>
-              <div style={{ fontSize: 18, fontWeight: 700, color: '#FFFFFF', marginTop: 8 }}>
-                Tonye Taylor
+            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: isMobile ? '14px 16px' : '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Super Admins</span>
+              <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: RF_GOLD_YELLOW, marginTop: 4 }}>
+                {staffList.filter(s => s.role === 'SUPER_ADMIN').length}
               </div>
-              <span style={{ fontSize: 12, color: RF_GOLD_YELLOW }}>Platform Architect</span>
+              <span style={{ fontSize: isMobile ? 11 : 12, color: 'rgba(255,255,255,0.5)' }}>Full root authority</span>
             </div>
           </div>
 
           {/* Workers Filter & Search Bar */}
           <div style={{
-            background: 'rgba(255,255,255,0.02)', borderRadius: 18, padding: '18px 22px',
+            background: 'rgba(255,255,255,0.02)', borderRadius: 18, padding: isMobile ? '14px 16px' : '18px 22px',
             border: '1px solid rgba(255,255,255,0.08)', marginBottom: 24,
             display: 'flex', flexWrap: 'wrap', gap: 14, alignItems: 'center', justifyContent: 'space-between'
           }}>
             {/* Search */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: '1 1 280px', minWidth: 240 }}>
-              <Search size={16} color="rgba(255,255,255,0.4)" />
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 10, flex: isMobile ? '1 1 100%' : '1 1 300px',
+              background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.12)',
+              borderRadius: 100, padding: '10px 18px'
+            }}>
+              <Search size={16} color="rgba(255,255,255,0.4)" style={{ flexShrink: 0 }} />
               <input
                 type="text"
                 placeholder="Search worker by name, email, or division..."
                 value={staffSearchTerm}
                 onChange={e => setStaffSearchTerm(e.target.value)}
                 style={{
-                  background: 'none', border: 'none', color: '#FFFFFF', fontSize: 14,
+                  background: 'none', border: 'none', color: '#FFFFFF', fontSize: 13,
                   width: '100%', outline: 'none'
                 }}
               />
               {staffSearchTerm && (
                 <button
                   onClick={() => setStaffSearchTerm('')}
-                  style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer' }}
+                  style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', fontSize: 12 }}
                 >
                   ✕
                 </button>
@@ -3081,14 +3352,14 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             </div>
 
             {/* Role Filter */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>Role:</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: isMobile ? '100%' : 'auto' }}>
               <select
                 value={staffRoleFilter}
                 onChange={e => setStaffRoleFilter(e.target.value)}
                 style={{
                   background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.15)',
-                  color: '#FFFFFF', padding: '6px 12px', borderRadius: 8, fontSize: 12.5, outline: 'none'
+                  color: '#FFFFFF', padding: '10px 16px', borderRadius: 100, fontSize: 13, outline: 'none',
+                  flex: isMobile ? '1 1 100%' : 'initial', cursor: 'pointer'
                 }}
               >
                 <option value="ALL">All Roles</option>
@@ -3397,9 +3668,9 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           }}>
             {/* Search */}
             <div style={{
-              display: 'flex', alignItems: 'center', gap: 10, flex: isMobile ? '1 1 100%' : '1 1 280px',
-              background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.12)',
-              borderRadius: 10, padding: '8px 14px'
+              display: 'flex', alignItems: 'center', gap: 10, flex: isMobile ? '1 1 100%' : '1 1 300px',
+              background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.12)',
+              borderRadius: 100, padding: '10px 18px'
             }}>
               <Search size={16} color="rgba(255,255,255,0.4)" style={{ flexShrink: 0 }} />
               <input
@@ -3415,9 +3686,9 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               {certSearchTerm && (
                 <button
                   onClick={() => setCertSearchTerm('')}
-                  style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', fontSize: 11 }}
+                  style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', fontSize: 12 }}
                 >
-                  Clear
+                  ✕
                 </button>
               )}
             </div>
@@ -3428,9 +3699,9 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 value={certLevelFilter}
                 onChange={e => setCertLevelFilter(e.target.value)}
                 style={{
-                  background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.15)',
-                  color: '#FFFFFF', padding: '8px 12px', borderRadius: 8, fontSize: 12.5, outline: 'none',
-                  flex: isMobile ? '1 1 calc(50% - 6px)' : 'initial'
+                  background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.15)',
+                  color: '#FFFFFF', padding: '10px 16px', borderRadius: 100, fontSize: 13, outline: 'none',
+                  flex: isMobile ? '1 1 calc(50% - 6px)' : 'initial', cursor: 'pointer'
                 }}
               >
                 <option value="ALL">All Tier Levels</option>
@@ -3446,9 +3717,9 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 value={certStatusFilter}
                 onChange={e => setCertStatusFilter(e.target.value as any)}
                 style={{
-                  background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.15)',
-                  color: '#FFFFFF', padding: '8px 12px', borderRadius: 8, fontSize: 12.5, outline: 'none',
-                  flex: isMobile ? '1 1 calc(50% - 6px)' : 'initial'
+                  background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.15)',
+                  color: '#FFFFFF', padding: '10px 16px', borderRadius: 100, fontSize: 13, outline: 'none',
+                  flex: isMobile ? '1 1 calc(50% - 6px)' : 'initial', cursor: 'pointer'
                 }}
               >
                 <option value="ALL">All Statuses</option>
@@ -4091,11 +4362,11 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
       {modalOpen && activeApp && (
         <div style={{
           position: 'fixed', inset: 0, zIndex: 1000,
-          background: 'rgba(5, 18, 11, 0.85)', backdropFilter: 'blur(10px)',
+          background: 'rgba(5, 18, 11, 0.85)', backdropFilter: 'blur(12px)',
           display: 'flex', alignItems: 'center', justifyContent: 'center', padding: isMobile ? '12px 10px' : 20
         }} onClick={() => setModalOpen(false)}>
           <div style={{
-            background: `linear-gradient(135deg, ${RF_DARK_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
+            background: 'linear-gradient(145deg, #0B2416 0%, #061A0F 100%)',
             border: '1px solid rgba(102, 187, 42, 0.35)',
             borderRadius: isMobile ? 18 : 24, maxWidth: 680, width: '100%', maxHeight: isMobile ? '94vh' : '90vh',
             boxShadow: '0 25px 60px rgba(0,0,0,0.85)', position: 'relative',
@@ -4113,7 +4384,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                   </span>
                   {renderStatusBadge(editStatus)}
                 </div>
-                <h3 style={{ fontSize: 22, fontWeight: 600, color: '#FFFFFF', margin: 0 }}>
+                <h3 style={{ fontSize: isMobile ? 18 : 22, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
                   {activeApp.full_name}
                 </h3>
               </div>
@@ -4131,7 +4402,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             </div>
 
             {/* Modal Scrollable Body */}
-            <div style={{ padding: '24px 28px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 20 }}>
+            <div style={{ padding: isMobile ? '16px 14px' : '24px 28px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 20 }}>
               {/* Quick Contact Bar */}
               <div style={{
                 background: 'rgba(255,255,255,0.04)', borderRadius: 14, padding: '14px 18px',
@@ -4391,7 +4662,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
             {/* Modal Footer Actions */}
             <div style={{
-              padding: '18px 28px', borderTop: '1px solid rgba(255,255,255,0.08)',
+              padding: isMobile ? '14px 18px' : '18px 28px', borderTop: '1px solid rgba(255,255,255,0.08)',
               display: 'flex', justifyContent: 'space-between', alignItems: 'center'
             }}>
               <button
@@ -4427,11 +4698,11 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
       {taskModalOpen && activeTask && (
         <div style={{
           position: 'fixed', inset: 0, zIndex: 1000,
-          background: 'rgba(5, 18, 11, 0.85)', backdropFilter: 'blur(10px)',
+          background: 'rgba(5, 18, 11, 0.85)', backdropFilter: 'blur(12px)',
           display: 'flex', alignItems: 'center', justifyContent: 'center', padding: isMobile ? '12px 10px' : 20
         }} onClick={() => setTaskModalOpen(false)}>
           <div style={{
-            background: `linear-gradient(135deg, ${RF_DARK_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
+            background: 'linear-gradient(145deg, #0B2416 0%, #061A0F 100%)',
             border: '1px solid rgba(102, 187, 42, 0.35)',
             borderRadius: isMobile ? 18 : 24, maxWidth: 740, width: '100%', maxHeight: isMobile ? '94vh' : '90vh',
             boxShadow: '0 25px 60px rgba(0,0,0,0.85)', position: 'relative',
@@ -4449,7 +4720,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                   </span>
                   {renderTaskStatusBadge(activeTask.status)}
                 </div>
-                <h3 style={{ fontSize: 20, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
+                <h3 style={{ fontSize: isMobile ? 18 : 20, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
                   {activeTask.task_title}
                 </h3>
               </div>
@@ -4467,7 +4738,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             </div>
 
             {/* Modal Body */}
-            <div style={{ padding: '24px 28px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 20 }}>
+            <div style={{ padding: isMobile ? '16px 14px' : '24px 28px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 20 }}>
               {/* Contributor Card */}
               <div style={{
                 background: 'rgba(255,255,255,0.04)', borderRadius: 14, padding: '14px 18px',
@@ -4684,7 +4955,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
             {/* Modal Actions */}
             <div style={{
-              padding: '18px 28px', borderTop: '1px solid rgba(255,255,255,0.08)',
+              padding: isMobile ? '14px 18px' : '18px 28px', borderTop: '1px solid rgba(255,255,255,0.08)',
               display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: 10
             }}>
               <button
@@ -4756,24 +5027,27 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           onClick={() => setScreenshotModalUrl(null)}
           style={{
             position: 'fixed', inset: 0, zIndex: 1100,
-            background: 'rgba(0,0,0,0.9)', backdropFilter: 'blur(12px)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24
+            background: 'rgba(5, 18, 11, 0.92)', backdropFilter: 'blur(12px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: isMobile ? '12px 10px' : 24
           }}
         >
-          <div style={{ position: 'relative', maxWidth: '92vw', maxHeight: '92vh' }}>
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{ position: 'relative', maxWidth: '92vw', maxHeight: '92vh' }}
+          >
             <img
               src={screenshotModalUrl}
               alt="Screenshot Full View"
-              style={{ maxWidth: '100%', maxHeight: '88vh', borderRadius: 12, border: '1px solid rgba(255,255,255,0.2)' }}
+              style={{ maxWidth: '100%', maxHeight: '88vh', borderRadius: isMobile ? 12 : 16, border: '1px solid rgba(255,255,255,0.2)' }}
             />
             <button
               onClick={() => setScreenshotModalUrl(null)}
               style={{
-                position: 'absolute', top: -14, right: -14,
+                position: 'absolute', top: isMobile ? 8 : -14, right: isMobile ? 8 : -14,
                 width: 34, height: 34, borderRadius: '50%',
                 background: '#FFFFFF', color: '#000000', border: 'none',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                cursor: 'pointer', fontWeight: 800
+                cursor: 'pointer', fontWeight: 800, boxShadow: '0 2px 8px rgba(0,0,0,0.5)'
               }}
             >
               ✕
@@ -4789,22 +5063,23 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           style={{
             position: 'fixed', inset: 0, zIndex: 1100,
             background: 'rgba(5, 18, 11, 0.85)', backdropFilter: 'blur(12px)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20
+            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: isMobile ? '12px 10px' : 20
           }}
         >
           <div
             onClick={e => e.stopPropagation()}
             style={{
-              background: `linear-gradient(145deg, ${RF_DARK_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
+              background: 'linear-gradient(145deg, #0B2416 0%, #061A0F 100%)',
               border: '1px solid rgba(102, 187, 42, 0.35)',
-              borderRadius: 24, maxWidth: 500, width: '100%',
+              borderRadius: isMobile ? 18 : 24, maxWidth: 500, width: '100%',
+              maxHeight: isMobile ? '94vh' : '90vh',
               boxShadow: '0 25px 60px rgba(0,0,0,0.85)',
-              position: 'relative', overflow: 'hidden'
+              position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column'
             }}
           >
             {/* Header */}
             <div style={{
-              padding: '24px 28px 18px', borderBottom: '1px solid rgba(255,255,255,0.08)',
+              padding: isMobile ? '16px 18px 14px' : '24px 28px 18px', borderBottom: '1px solid rgba(255,255,255,0.08)',
               display: 'flex', justifyContent: 'space-between', alignItems: 'center'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -4816,7 +5091,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                   <UserPlus size={18} />
                 </div>
                 <div>
-                  <h3 style={{ fontSize: 18, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
+                  <h3 style={{ fontSize: isMobile ? 16 : 18, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
                     Add Review Worker
                   </h3>
                   <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', margin: '2px 0 0' }}>
@@ -4838,7 +5113,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             </div>
 
             {/* Form */}
-            <form onSubmit={handleCreateWorker} style={{ padding: '24px 28px' }}>
+            <form onSubmit={handleCreateWorker} style={{ padding: isMobile ? '16px 18px 20px' : '24px 28px', overflowY: 'auto' }}>
               {workerFormError && (
                 <div style={{
                   background: 'rgba(239, 68, 68, 0.15)', border: '1px solid #EF4444',
@@ -4982,24 +5257,33 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
       {/* ─── SELECTED MEMBER FULL PROFILE MODAL ──────────────────────────────── */}
       {memberModalOpen && selectedMember && (
-        <div style={{
-          position: 'fixed', inset: 0, zIndex: 1000,
-          background: 'rgba(0, 0, 0, 0.82)', backdropFilter: 'blur(8px)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20
-        }}>
-          <div style={{
-            maxWidth: 900, width: '100%', maxHeight: '92vh', overflowY: 'auto',
-            background: '#0B2416', borderRadius: 24, border: '1px solid rgba(102, 187, 42, 0.3)',
-            padding: '32px 32px 36px', position: 'relative', boxShadow: '0 25px 60px rgba(0,0,0,0.85)'
-          }}>
+        <div
+          onClick={() => setMemberModalOpen(false)}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 1000,
+            background: 'rgba(5, 18, 11, 0.85)', backdropFilter: 'blur(12px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: isMobile ? '12px 10px' : 20
+          }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              maxWidth: 900, width: '100%', maxHeight: isMobile ? '94vh' : '92vh', overflowY: 'auto',
+              background: 'linear-gradient(145deg, #0B2416 0%, #061A0F 100%)',
+              borderRadius: isMobile ? 18 : 24, border: '1px solid rgba(102, 187, 42, 0.35)',
+              padding: isMobile ? '20px 16px 24px' : '32px 32px 36px', position: 'relative',
+              boxShadow: '0 25px 60px rgba(0,0,0,0.85)'
+            }}
+          >
             {/* Close Button */}
             <button
               onClick={() => setMemberModalOpen(false)}
               style={{
-                position: 'absolute', top: 22, right: 22, background: 'rgba(255,255,255,0.08)',
-                border: 'none', color: 'rgba(255,255,255,0.7)', width: 34, height: 34,
-                borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center',
-                justifyContent: 'center', fontSize: 16, transition: 'all 0.2s'
+                position: 'absolute', top: isMobile ? 16 : 22, right: isMobile ? 16 : 22,
+                background: 'rgba(255,255,255,0.08)', border: 'none', color: 'rgba(255,255,255,0.7)',
+                width: 34, height: 34, borderRadius: '50%', cursor: 'pointer', display: 'flex',
+                alignItems: 'center', justifyContent: 'center', fontSize: 16, transition: 'all 0.2s',
+                zIndex: 2
               }}
               onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.18)')}
               onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.08)')}
@@ -5530,16 +5814,23 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
       {/* ─── SUSPEND MEMBER CONFIRMATION MODAL ──────────────────────────────── */}
       {suspendModalMember && (
-        <div style={{
-          position: 'fixed', inset: 0, zIndex: 1100,
-          background: 'rgba(0, 0, 0, 0.86)', backdropFilter: 'blur(8px)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20
-        }}>
-          <div style={{
-            maxWidth: 540, width: '100%', background: '#140D0D', borderRadius: 24,
-            border: '1px solid rgba(239, 68, 68, 0.4)', padding: '32px',
-            boxShadow: '0 25px 60px rgba(0,0,0,0.9)'
-          }}>
+        <div
+          onClick={() => setSuspendModalMember(null)}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 1100,
+            background: 'rgba(5, 18, 11, 0.85)', backdropFilter: 'blur(12px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: isMobile ? '12px 10px' : 20
+          }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              maxWidth: 540, width: '100%', maxHeight: isMobile ? '94vh' : '90vh', overflowY: 'auto',
+              background: 'linear-gradient(145deg, #180B0B 0%, #0D0505 100%)', borderRadius: isMobile ? 18 : 24,
+              border: '1px solid rgba(239, 68, 68, 0.45)', padding: isMobile ? '20px 18px 24px' : 32,
+              boxShadow: '0 25px 60px rgba(0,0,0,0.9)'
+            }}
+          >
             <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 18 }}>
               <div style={{
                 width: 48, height: 48, borderRadius: 14, background: 'rgba(239, 68, 68, 0.15)',
@@ -5645,33 +5936,52 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
       {/* ─── ISSUE CERTIFICATE MODAL ────────────────────────────────────── */}
       {issueCertModalOpen && (
-        <div style={{
-          position: 'fixed', inset: 0, zIndex: 1100,
-          background: 'rgba(0, 0, 0, 0.85)', backdropFilter: 'blur(8px)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: isMobile ? '12px 10px' : 20
-        }}>
-          <div style={{
-            maxWidth: 580, width: '100%', maxHeight: isMobile ? '94vh' : '90vh', overflowY: 'auto',
-            background: '#0F2E1E', borderRadius: isMobile ? 18 : 24,
-            border: `1px solid ${RF_GOLD_YELLOW}66`, padding: isMobile ? '20px 16px' : '32px',
-            boxShadow: '0 25px 60px rgba(0,0,0,0.9)'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 20 }}>
-              <div style={{
-                width: 48, height: 48, borderRadius: 14, background: 'rgba(255, 209, 102, 0.15)',
-                border: `1px solid ${RF_GOLD_YELLOW}66`, display: 'flex', alignItems: 'center',
-                justifyContent: 'center', color: RF_GOLD_YELLOW
-              }}>
-                <Award size={24} />
-              </div>
-              <div>
-                <h3 style={{ fontSize: 20, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
-                  Issue Pioneer Certificate of Level Completion
-                </h3>
-                <div style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.6)', marginTop: 2 }}>
-                  Mint a tamper-evident accreditation credential for a verified contributor
+        <div
+          onClick={() => setIssueCertModalOpen(false)}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 1100,
+            background: 'rgba(5, 18, 11, 0.85)', backdropFilter: 'blur(12px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: isMobile ? '12px 10px' : 20
+          }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              maxWidth: 580, width: '100%', maxHeight: isMobile ? '94vh' : '90vh', overflowY: 'auto',
+              background: 'linear-gradient(145deg, #0B2416 0%, #061A0F 100%)', borderRadius: isMobile ? 18 : 24,
+              border: '1px solid rgba(102, 187, 42, 0.35)', padding: isMobile ? '20px 16px' : '32px',
+              boxShadow: '0 25px 60px rgba(0,0,0,0.9)', position: 'relative'
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                <div style={{
+                  width: 48, height: 48, borderRadius: 14, background: 'rgba(255, 209, 102, 0.15)',
+                  border: `1px solid ${RF_GOLD_YELLOW}66`, display: 'flex', alignItems: 'center',
+                  justifyContent: 'center', color: RF_GOLD_YELLOW, flexShrink: 0
+                }}>
+                  <Award size={24} />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: isMobile ? 17 : 20, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
+                    Issue Pioneer Certificate
+                  </h3>
+                  <div style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.6)', marginTop: 2 }}>
+                    Mint a tamper-evident accreditation credential for a verified contributor
+                  </div>
                 </div>
               </div>
+
+              <button
+                onClick={() => setIssueCertModalOpen(false)}
+                style={{
+                  background: 'rgba(255,255,255,0.06)', border: 'none', color: 'rgba(255,255,255,0.6)',
+                  width: 32, height: 32, borderRadius: '50%', cursor: 'pointer', display: 'flex',
+                  alignItems: 'center', justifyContent: 'center', flexShrink: 0
+                }}
+              >
+                ✕
+              </button>
             </div>
 
             <form onSubmit={handleConfirmIssueCertificate} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -5796,17 +6106,23 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
       {/* ─── ANNOUNCE NEW SQUAD TASK / BOUNTY MODAL ───────────────────────── */}
       {newTaskModalOpen && (
-        <div style={{
-          position: 'fixed', inset: 0, zIndex: 1100,
-          background: 'rgba(0, 0, 0, 0.85)', backdropFilter: 'blur(8px)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: isMobile ? '12px 10px' : 20
-        }}>
-          <div style={{
-            maxWidth: 720, width: '100%', maxHeight: isMobile ? '94vh' : '90vh', overflowY: 'auto',
-            background: '#0F2E1E', borderRadius: isMobile ? 18 : 24,
-            border: `1px solid ${RF_LEAF_GREEN}66`, padding: isMobile ? '20px 16px' : '32px',
-            boxShadow: '0 25px 60px rgba(0,0,0,0.9)'
-          }}>
+        <div
+          onClick={() => setNewTaskModalOpen(false)}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 1100,
+            background: 'rgba(5, 18, 11, 0.85)', backdropFilter: 'blur(12px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: isMobile ? '12px 10px' : 20
+          }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              maxWidth: 720, width: '100%', maxHeight: isMobile ? '94vh' : '90vh', overflowY: 'auto',
+              background: 'linear-gradient(145deg, #0B2416 0%, #061A0F 100%)', borderRadius: isMobile ? 18 : 24,
+              border: '1px solid rgba(102, 187, 42, 0.35)', padding: isMobile ? '20px 16px' : '32px',
+              boxShadow: '0 25px 60px rgba(0,0,0,0.9)'
+            }}
+          >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
                 <div style={{
