@@ -1074,7 +1074,7 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                           value={division}
                           onChange={e => setDivision(e.target.value)}
                           style={{
-                            width: '100%', padding: '10px 12px 10px 38px', borderRadius: 10,
+                            width: '100%', padding: '10px 42px 10px 38px', borderRadius: 10,
                             background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.15)',
                             color: '#FFFFFF', fontSize: 13.5, outline: 'none', boxSizing: 'border-box'
                           }}
@@ -1165,7 +1165,7 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                           value={taskCategory}
                           onChange={e => setTaskCategory(e.target.value)}
                           style={{
-                            width: '100%', padding: '10px 12px 10px 38px', borderRadius: 10,
+                            width: '100%', padding: '10px 42px 10px 38px', borderRadius: 10,
                             background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.15)',
                             color: '#FFFFFF', fontSize: 13.5, outline: 'none', boxSizing: 'border-box'
                           }}

@@ -655,6 +655,7 @@ export const SquadTasksPage: React.FC<SquadTasksPageProps> = ({ onNavigate, onOp
               <div style={{ position: 'relative', width: '100%' }}>
                 <select
                   id="rp-mobile-squad-select"
+                  className="rp-has-custom-chevron"
                   value={selectedSquad}
                   onChange={e => setSelectedSquad(e.target.value as SquadDivision | 'ALL')}
                   style={{
@@ -665,7 +666,7 @@ export const SquadTasksPage: React.FC<SquadTasksPageProps> = ({ onNavigate, onOp
                     background: 'rgba(6, 20, 13, 0.95)',
                     border: `1px solid ${selectedSquad === 'ALL' ? 'rgba(102, 187, 42, 0.35)' : SQUAD_INFO[selectedSquad as SquadDivision]?.color || RF_LEAF_GREEN}`,
                     borderRadius: 12,
-                    padding: '12px 38px 12px 14px',
+                    padding: '12px 46px 12px 16px',
                     color: '#FFFFFF',
                     fontSize: 14,
                     fontWeight: 600,
@@ -695,7 +696,7 @@ export const SquadTasksPage: React.FC<SquadTasksPageProps> = ({ onNavigate, onOp
 
                 <div style={{
                   position: 'absolute',
-                  right: 14,
+                  right: 18,
                   top: '50%',
                   transform: 'translateY(-50%)',
                   pointerEvents: 'none',

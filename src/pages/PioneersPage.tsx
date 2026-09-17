@@ -3572,7 +3572,8 @@ const ApplicationSection: React.FC = () => {
                   <select
                     value={form.country}
                     onChange={e => updateField('country', e.target.value)}
-                    style={{ ...inputStyle(!!errors.country), cursor: 'pointer' }}
+                    className="rp-light-select"
+                    style={{ ...inputStyle(!!errors.country), paddingRight: isMobile ? 40 : 44, cursor: 'pointer' }}
                   >
                     <option value="">Select your country</option>
                     {AFRICAN_COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
@@ -3670,7 +3671,8 @@ const ApplicationSection: React.FC = () => {
                   <select
                     value={form.primaryDivision}
                     onChange={e => updateField('primaryDivision', e.target.value)}
-                    style={{ ...inputStyle(!!errors.primaryDivision), cursor: 'pointer' }}
+                    className="rp-light-select"
+                    style={{ ...inputStyle(!!errors.primaryDivision), paddingRight: isMobile ? 40 : 44, cursor: 'pointer' }}
                   >
                     <option value="">Select a division</option>
                     {DIVISIONS_LIST.map(d => <option key={d.value} value={d.value}>{d.label}</option>)}
@@ -3683,7 +3685,8 @@ const ApplicationSection: React.FC = () => {
                   <select
                     value={form.availability}
                     onChange={e => updateField('availability', e.target.value)}
-                    style={{ ...inputStyle(!!errors.availability), cursor: 'pointer' }}
+                    className="rp-light-select"
+                    style={{ ...inputStyle(!!errors.availability), paddingRight: isMobile ? 40 : 44, cursor: 'pointer' }}
                   >
                     <option value="">How much time can you commit?</option>
                     {AVAILABILITY_OPTIONS.map(a => <option key={a} value={a}>{a}</option>)}

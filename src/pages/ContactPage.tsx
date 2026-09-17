@@ -206,9 +206,11 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
                     <select
                       value={formData.category}
                       onChange={e => setFormData({ ...formData, category: e.target.value })}
+                      className="rp-light-select"
                       style={{
-                        width: '100%', padding: '12px 16px', borderRadius: 10,
-                        border: '1px solid #CBD5E1', fontSize: 14, outline: 'none', background: '#FFFFFF'
+                        width: '100%', padding: '12px 42px 12px 16px', borderRadius: 10,
+                        border: '1px solid #CBD5E1', fontSize: 14, outline: 'none', background: '#FFFFFF',
+                        color: '#0F2E1E'
                       }}
                     >
                       <option value="PIONEER_ADMISSIONS">Pioneer Admissions & Review Question</option>

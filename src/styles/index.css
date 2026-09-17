@@ -2326,10 +2326,18 @@ img, svg {
   background: #051A0E;
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 10px;
-  padding: 10px 12px;
+  padding: 10px 42px 10px 14px;
   color: #FFFFFF;
   font-size: 13.5px;
   outline: none;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2318FC5C' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 14px 14px;
   transition: border-color 0.15s ease;
 }
 
@@ -3667,4 +3675,57 @@ img, svg {
 
 .rp-sleek-scroll::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.32);
+}
+
+/* ─── UNIVERSAL MODERN DROPDOWN SELECT STYLING & WELL-PADDED CHEVRON ─── */
+select {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2318FC5C' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 16px center !important;
+  background-size: 14px 14px !important;
+  padding-right: 44px !important;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+/* Pill selects (border-radius: 100 or 999 or .rp-admin-select) need extra space for curved ends */
+select[style*="borderRadius: 100"],
+select[style*="border-radius: 100"],
+select[style*="borderRadius: 999"],
+select[style*="border-radius: 999"],
+.rp-admin-select,
+.rp-select-pill {
+  background-position: right 18px center !important;
+  padding-right: 48px !important;
+}
+
+/* Light Mode / Light Card Selects */
+[data-theme="light"] select,
+.theme-light select,
+#apply select,
+#contact select,
+.rp-light-select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%231E3628' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;
+}
+
+/* Select options styling across all platforms */
+select option {
+  background: #07180F;
+  color: #FFFFFF;
+  padding: 10px 14px;
+}
+
+[data-theme="light"] select option,
+#apply select option,
+#contact select option {
+  background: #FFFFFF;
+  color: #0A1C12;
+}
+
+/* If a custom chevron container exists (e.g. SquadTasksPage) prevent duplicate icon */
+select.rp-has-custom-chevron {
+  background-image: none !important;
 }

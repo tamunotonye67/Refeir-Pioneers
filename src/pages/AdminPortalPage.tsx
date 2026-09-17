@@ -3543,8 +3543,8 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               onChange={e => setStatusFilter(e.target.value)}
               style={{
                 background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)',
-                color: '#FFFFFF', padding: isMobile ? '7px 12px' : '9px 16px', borderRadius: 100, fontSize: 12, outline: 'none',
-                flex: isMobile ? 1 : 'none'
+                color: '#FFFFFF', padding: isMobile ? '7px 38px 7px 14px' : '9px 42px 9px 16px', borderRadius: 100, fontSize: 12, outline: 'none',
+                flex: isMobile ? 1 : 'none', cursor: 'pointer'
               }}
             >
               <option value="ALL">All Statuses</option>
@@ -3560,8 +3560,8 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               onChange={e => setDivisionFilter(e.target.value)}
               style={{
                 background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)',
-                color: '#FFFFFF', padding: isMobile ? '7px 12px' : '9px 16px', borderRadius: 100, fontSize: 12, outline: 'none',
-                flex: isMobile ? 1 : 'none'
+                color: '#FFFFFF', padding: isMobile ? '7px 38px 7px 14px' : '9px 42px 9px 16px', borderRadius: 100, fontSize: 12, outline: 'none',
+                flex: isMobile ? 1 : 'none', cursor: 'pointer'
               }}
             >
               <option value="ALL">All Divisions</option>
@@ -4001,8 +4001,8 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               onChange={e => setTaskFilterStatus(e.target.value)}
               style={{
                 background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)',
-                color: '#FFFFFF', padding: isMobile ? '7px 12px' : '9px 16px', borderRadius: 100, fontSize: 12, outline: 'none',
-                flex: isMobile ? 1 : 'none'
+                color: '#FFFFFF', padding: isMobile ? '7px 38px 7px 14px' : '9px 42px 9px 16px', borderRadius: 100, fontSize: 12, outline: 'none',
+                flex: isMobile ? 1 : 'none', cursor: 'pointer'
               }}
             >
               <option value="ALL">All Proofs ({taskStats.total})</option>
@@ -4017,8 +4017,8 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               onChange={e => setDivisionFilter(e.target.value)}
               style={{
                 background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)',
-                color: '#FFFFFF', padding: isMobile ? '7px 12px' : '9px 16px', borderRadius: 100, fontSize: 12, outline: 'none',
-                flex: isMobile ? 1 : 'none'
+                color: '#FFFFFF', padding: isMobile ? '7px 38px 7px 14px' : '9px 42px 9px 16px', borderRadius: 100, fontSize: 12, outline: 'none',
+                flex: isMobile ? 1 : 'none', cursor: 'pointer'
               }}
             >
               <option value="ALL">All Divisions</option>
@@ -4398,7 +4398,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 onChange={e => setMemberStatusFilter(e.target.value as any)}
                 style={{
                   background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.15)',
-                  color: '#FFFFFF', padding: '10px 16px', borderRadius: 100, fontSize: 13, outline: 'none',
+                  color: '#FFFFFF', padding: '10px 42px 10px 16px', borderRadius: 100, fontSize: 13, outline: 'none',
                   flex: isMobile ? '1 1 calc(50% - 6px)' : 'initial', cursor: 'pointer'
                 }}
               >
@@ -4413,7 +4413,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 onChange={e => setMemberDivisionFilter(e.target.value)}
                 style={{
                   background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.15)',
-                  color: '#FFFFFF', padding: '10px 16px', borderRadius: 100, fontSize: 13, outline: 'none',
+                  color: '#FFFFFF', padding: '10px 42px 10px 16px', borderRadius: 100, fontSize: 13, outline: 'none',
                   flex: isMobile ? '1 1 calc(50% - 6px)' : 'initial', cursor: 'pointer'
                 }}
               >
@@ -4433,7 +4433,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 onChange={e => setMemberLevelFilter(e.target.value)}
                 style={{
                   background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.15)',
-                  color: '#FFFFFF', padding: '10px 16px', borderRadius: 100, fontSize: 13, outline: 'none',
+                  color: '#FFFFFF', padding: '10px 42px 10px 16px', borderRadius: 100, fontSize: 13, outline: 'none',
                   flex: isMobile ? '1 1 100%' : 'initial', cursor: 'pointer'
                 }}
               >
@@ -4843,7 +4843,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 onChange={e => setStaffRoleFilter(e.target.value)}
                 style={{
                   background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.15)',
-                  color: '#FFFFFF', padding: '10px 16px', borderRadius: 100, fontSize: 13, outline: 'none',
+                  color: '#FFFFFF', padding: '10px 42px 10px 16px', borderRadius: 100, fontSize: 13, outline: 'none',
                   flex: isMobile ? '1 1 100%' : 'initial', cursor: 'pointer'
                 }}
               >
@@ -5297,7 +5297,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 onChange={e => setCertLevelFilter(e.target.value)}
                 style={{
                   background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.15)',
-                  color: '#FFFFFF', padding: '10px 16px', borderRadius: 100, fontSize: 13, outline: 'none',
+                  color: '#FFFFFF', padding: '10px 42px 10px 16px', borderRadius: 100, fontSize: 13, outline: 'none',
                   flex: isMobile ? '1 1 calc(50% - 6px)' : 'initial', cursor: 'pointer'
                 }}
               >
@@ -5315,7 +5315,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 onChange={e => setCertStatusFilter(e.target.value as any)}
                 style={{
                   background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.15)',
-                  color: '#FFFFFF', padding: '10px 16px', borderRadius: 100, fontSize: 13, outline: 'none',
+                  color: '#FFFFFF', padding: '10px 42px 10px 16px', borderRadius: 100, fontSize: 13, outline: 'none',
                   flex: isMobile ? '1 1 calc(50% - 6px)' : 'initial', cursor: 'pointer'
                 }}
               >
@@ -5762,8 +5762,8 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 onChange={e => setTaskSquadFilter(e.target.value)}
                 style={{
                   background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.15)',
-                  color: '#FFFFFF', borderRadius: 8, padding: '8px 12px', fontSize: 12.5, outline: 'none',
-                  flex: isMobile ? '1 1 calc(50% - 6px)' : 'initial'
+                  color: '#FFFFFF', borderRadius: 10, padding: '9px 38px 9px 14px', fontSize: 12.5, outline: 'none',
+                  flex: isMobile ? '1 1 calc(50% - 6px)' : 'initial', cursor: 'pointer'
                 }}
               >
                 <option value="ALL">All Squads &amp; Divisions</option>
@@ -5782,8 +5782,8 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 onChange={e => setTaskBountyFilter(e.target.value)}
                 style={{
                   background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.15)',
-                  color: '#FFFFFF', borderRadius: 8, padding: '8px 12px', fontSize: 12.5, outline: 'none',
-                  flex: isMobile ? '1 1 calc(50% - 6px)' : 'initial'
+                  color: '#FFFFFF', borderRadius: 10, padding: '9px 38px 9px 14px', fontSize: 12.5, outline: 'none',
+                  flex: isMobile ? '1 1 calc(50% - 6px)' : 'initial', cursor: 'pointer'
                 }}
               >
                 <option value="ALL">All Bounty Types</option>
@@ -5799,8 +5799,8 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 onChange={e => setTaskFrequencyFilter(e.target.value)}
                 style={{
                   background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.15)',
-                  color: '#FFFFFF', borderRadius: 8, padding: '8px 12px', fontSize: 12.5, outline: 'none',
-                  flex: isMobile ? '1 1 calc(50% - 6px)' : 'initial'
+                  color: '#FFFFFF', borderRadius: 10, padding: '9px 38px 9px 14px', fontSize: 12.5, outline: 'none',
+                  flex: isMobile ? '1 1 calc(50% - 6px)' : 'initial', cursor: 'pointer'
                 }}
               >
                 <option value="ALL">All Cycles</option>
@@ -5815,8 +5815,8 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 onChange={e => setTaskStatusFilter(e.target.value as any)}
                 style={{
                   background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.15)',
-                  color: '#FFFFFF', borderRadius: 8, padding: '8px 12px', fontSize: 12.5, outline: 'none',
-                  flex: isMobile ? '1 1 calc(50% - 6px)' : 'initial'
+                  color: '#FFFFFF', borderRadius: 10, padding: '9px 38px 9px 14px', fontSize: 12.5, outline: 'none',
+                  flex: isMobile ? '1 1 calc(50% - 6px)' : 'initial', cursor: 'pointer'
                 }}
               >
                 <option value="ALL">All Status</option>
@@ -6943,9 +6943,9 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                       value={editStatus}
                       onChange={e => setEditStatus(e.target.value as ReviewStatus)}
                       style={{
-                        width: '100%', padding: '9px 12px', borderRadius: 8,
+                        width: '100%', padding: '10px 40px 10px 14px', borderRadius: 10,
                         background: '#07180F', border: '1px solid rgba(255,255,255,0.2)',
-                        color: '#FFFFFF', fontSize: 13, outline: 'none'
+                        color: '#FFFFFF', fontSize: 13, outline: 'none', cursor: 'pointer'
                       }}
                     >
                       <option value="PENDING">PENDING</option>
@@ -6964,9 +6964,9 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                       value={editContributorLevel}
                       onChange={e => setEditContributorLevel(e.target.value as ContributorTier)}
                       style={{
-                        width: '100%', padding: '9px 12px', borderRadius: 8,
+                        width: '100%', padding: '10px 40px 10px 14px', borderRadius: 10,
                         background: '#07180F', border: '1px solid rgba(255,255,255,0.2)',
-                        color: RF_MINT_ACCENT, fontSize: 13, outline: 'none', fontWeight: 600
+                        color: RF_MINT_ACCENT, fontSize: 13, outline: 'none', fontWeight: 600, cursor: 'pointer'
                       }}
                     >
                       <option value="LEVEL_1">Level 1: Refeir Member (Starting • 0 jobs)</option>
@@ -7655,9 +7655,9 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                     value={newWorkerRole}
                     onChange={e => setNewWorkerRole(e.target.value as StaffRole)}
                     style={{
-                      width: '100%', padding: '11px 14px', borderRadius: 10,
+                      width: '100%', padding: '11px 40px 11px 14px', borderRadius: 10,
                       background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.15)',
-                      color: '#FFFFFF', fontSize: 13, outline: 'none', boxSizing: 'border-box'
+                      color: '#FFFFFF', fontSize: 13, outline: 'none', boxSizing: 'border-box', cursor: 'pointer'
                     }}
                   >
                     <option value="ADMISSIONS_REVIEWER">Admissions Reviewer</option>
@@ -7675,9 +7675,9 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                     value={newWorkerDivision}
                     onChange={e => setNewWorkerDivision(e.target.value)}
                     style={{
-                      width: '100%', padding: '11px 14px', borderRadius: 10,
+                      width: '100%', padding: '11px 40px 11px 14px', borderRadius: 10,
                       background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.15)',
-                      color: '#FFFFFF', fontSize: 13, outline: 'none', boxSizing: 'border-box'
+                      color: '#FFFFFF', fontSize: 13, outline: 'none', boxSizing: 'border-box', cursor: 'pointer'
                     }}
                   >
                     <option value="ALL">All Squads (Global)</option>
@@ -8252,7 +8252,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                   onChange={e => handlePromoteMemberLevel(selectedMember.email, e.target.value as any)}
                   style={{
                     background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.2)',
-                    color: RF_GOLD_YELLOW, padding: '7px 12px', borderRadius: 8, fontSize: 12.5,
+                    color: RF_GOLD_YELLOW, padding: '7px 38px 7px 12px', borderRadius: 8, fontSize: 12.5,
                     fontWeight: 700, outline: 'none', cursor: 'pointer'
                   }}
                 >
@@ -8500,7 +8500,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                   value={issueCertMemberEmail}
                   onChange={e => setIssueCertMemberEmail(e.target.value)}
                   style={{
-                    width: '100%', padding: '10px 14px', borderRadius: 10,
+                    width: '100%', padding: '10px 42px 10px 14px', borderRadius: 10,
                     background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.2)',
                     color: '#FFFFFF', fontSize: 13, outline: 'none'
                   }}
@@ -8523,7 +8523,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                   value={issueCertLevel}
                   onChange={e => setIssueCertLevel(e.target.value as any)}
                   style={{
-                    width: '100%', padding: '10px 14px', borderRadius: 10,
+                    width: '100%', padding: '10px 42px 10px 14px', borderRadius: 10,
                     background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.2)',
                     color: RF_GOLD_YELLOW, fontSize: 13, fontWeight: 700, outline: 'none'
                   }}
@@ -8696,7 +8696,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                     value={newTaskSquad}
                     onChange={e => setNewTaskSquad(e.target.value as any)}
                     style={{
-                      width: '100%', padding: '10px 14px', borderRadius: 10,
+                      width: '100%', padding: '10px 42px 10px 14px', borderRadius: 10,
                       background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.2)',
                       color: '#FFFFFF', fontSize: 13, outline: 'none'
                     }}
@@ -8720,7 +8720,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                     value={newTaskFrequency}
                     onChange={e => setNewTaskFrequency(e.target.value as any)}
                     style={{
-                      width: '100%', padding: '10px 14px', borderRadius: 10,
+                      width: '100%', padding: '10px 42px 10px 14px', borderRadius: 10,
                       background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.2)',
                       color: '#FFFFFF', fontSize: 13, outline: 'none'
                     }}
@@ -8792,7 +8792,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                       value={newTaskBountyType}
                       onChange={e => setNewTaskBountyType(e.target.value as any)}
                       style={{
-                        width: '100%', padding: '8px 12px', borderRadius: 8,
+                        width: '100%', padding: '8px 38px 8px 12px', borderRadius: 8,
                         background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.2)',
                         color: '#FFFFFF', fontSize: 12.5, outline: 'none'
                       }}
