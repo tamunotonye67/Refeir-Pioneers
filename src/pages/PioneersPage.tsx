@@ -3057,6 +3057,19 @@ const ApplicationSection: React.FC = () => {
   const [appId, setAppId] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  const [isMobile, setIsMobile] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    return window.innerWidth < 640;
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const updateField = (key: keyof FormData, value: any) => {
     setForm(prev => ({ ...prev, [key]: value }));
     if (errors[key]) {
@@ -3186,19 +3199,19 @@ const ApplicationSection: React.FC = () => {
   };
 
   const inputStyle = (hasError?: boolean): React.CSSProperties => ({
-    width: '100%', padding: '13px 15px', borderRadius: 10,
+    width: '100%', padding: isMobile ? '10px 12px' : '12px 14px', borderRadius: 10,
     border: `1.5px solid ${hasError ? '#EF4444' : 'rgba(18, 43, 26, 0.15)'}`,
-    fontSize: 15, color: RF_DARK_GREEN, background: '#FFFFFF', outline: 'none',
+    fontSize: isMobile ? 13.5 : 14.5, color: RF_DARK_GREEN, background: '#FFFFFF', outline: 'none',
     fontFamily: 'inherit', boxSizing: 'border-box', transition: 'border-color 0.2s'
   });
 
   const labelStyle: React.CSSProperties = {
-    display: 'block', fontSize: 13, fontWeight: 700, color: RF_DARK_GREEN,
-    marginBottom: 7, letterSpacing: '0.02em'
+    display: 'block', fontSize: isMobile ? 12 : 12.5, fontWeight: 700, color: RF_DARK_GREEN,
+    marginBottom: 5, letterSpacing: '0.01em'
   };
 
   const errStyle: React.CSSProperties = {
-    fontSize: 12, color: '#EF4444', marginTop: 5
+    fontSize: 11.5, color: '#EF4444', marginTop: 4
   };
 
   // SUCCESS VIEW
@@ -3252,71 +3265,87 @@ const ApplicationSection: React.FC = () => {
   return (
     <section id="apply" style={{
       background: `linear-gradient(145deg, ${RF_DEEP_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
-      padding: '100px 24px'
+      padding: isMobile ? '44px 14px' : '88px 24px'
     }}>
       <div style={{ maxWidth: 780, margin: '0 auto' }}>
         {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: 56 }}>
-          <p style={{ fontSize: 11, fontWeight: 900, color: RF_MINT_ACCENT, letterSpacing: '0.22em', marginBottom: 16 }}>
+        <div style={{ textAlign: 'center', marginBottom: isMobile ? 24 : 40 }}>
+          <p style={{ fontSize: 10.5, fontWeight: 900, color: RF_MINT_ACCENT, letterSpacing: '0.18em', marginBottom: 10 }}>
             APPLY NOW
           </p>
           <h2 style={{
-            fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 900, color: '#FFFFFF',
-            lineHeight: 1.1, letterSpacing: '-0.02em', marginBottom: 14,
+            fontSize: isMobile ? 'clamp(22px, 6vw, 28px)' : 'clamp(28px, 4vw, 44px)',
+            fontWeight: 900, color: '#FFFFFF',
+            lineHeight: 1.15, letterSpacing: '-0.02em', marginBottom: 10,
             fontFamily: 'Plus Jakarta Sans, sans-serif'
           }}>
             READY TO HELP BUILD REFEIR?
           </h2>
-          <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.7)', lineHeight: 1.75 }}>
-            Tell us who you are, what you can contribute and where you think you can help.
+          <p style={{ fontSize: isMobile ? 13.5 : 15, color: 'rgba(255,255,255,0.7)', lineHeight: 1.6, margin: '0 auto', maxWidth: 540 }}>
+            Tell us who you are, what you can contribute, and where you want to make an impact.
           </p>
         </div>
 
-        {/* Step Progress */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 44 }}>
-          {stepLabels.map((label, i) => {
-            const stepNum = (i + 1) as AppStep;
-            const isDone = step > stepNum;
-            const isActive = step === stepNum;
-            return (
-              <React.Fragment key={label}>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 7 }}>
-                  <div style={{
-                    width: 38, height: 38, borderRadius: '50%',
-                    background: isDone || isActive ? RF_LEAF_GREEN : 'rgba(255,255,255,0.1)',
-                    border: `2px solid ${isDone || isActive ? RF_LEAF_GREEN : 'rgba(255,255,255,0.2)'}`,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    color: isDone || isActive ? RF_DEEP_GREEN : 'rgba(255,255,255,0.4)',
-                    fontSize: 14, fontWeight: 900, transition: 'all 0.28s'
-                  }}>
-                    {isDone ? <Check size={16} strokeWidth={3} /> : stepNum}
-                  </div>
-                  <span style={{
-                    fontSize: 10, fontWeight: 700, letterSpacing: '0.07em',
-                    color: isActive ? '#FFFFFF' : 'rgba(255,255,255,0.4)',
-                    textTransform: 'uppercase', maxWidth: 64, textAlign: 'center', lineHeight: 1.3
-                  }}>
-                    {label}
-                  </span>
-                </div>
-                {i < 3 && (
-                  <div style={{
-                    flex: 1, height: 2,
-                    background: step > stepNum ? RF_LEAF_GREEN : 'rgba(255,255,255,0.12)',
-                    margin: '0 8px', marginBottom: 26, transition: 'background 0.28s'
-                  }} />
-                )}
-              </React.Fragment>
-            );
-          })}
+        {/* Modern Responsive Step Progress Bar */}
+        <div style={{ marginBottom: isMobile ? 20 : 32 }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: 8
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{
+                fontSize: 11,
+                fontWeight: 800,
+                color: RF_MINT_ACCENT,
+                textTransform: 'uppercase',
+                letterSpacing: '0.06em'
+              }}>
+                Step {step} of 4
+              </span>
+              <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: 11 }}>•</span>
+              <span style={{ fontSize: isMobile ? 12.5 : 13.5, fontWeight: 600, color: '#FFFFFF' }}>
+                {stepLabels[step - 1]}
+              </span>
+            </div>
+            <span style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)' }}>
+              {step * 25}%
+            </span>
+          </div>
+
+          {/* 4 Connected Progress Segments */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 6 }}>
+            {[1, 2, 3, 4].map(s => {
+              const isPast = step > s;
+              const isCurr = step === s;
+              return (
+                <div
+                  key={s}
+                  style={{
+                    height: 4,
+                    borderRadius: 100,
+                    background: isPast || isCurr ? RF_MINT_ACCENT : 'rgba(255,255,255,0.14)',
+                    boxShadow: isCurr ? '0 0 8px rgba(24, 252, 92, 0.5)' : 'none',
+                    transition: 'all 0.3s ease'
+                  }}
+                />
+              );
+            })}
+          </div>
         </div>
 
         {/* Form Card */}
-        <div style={{ background: '#FFFFFF', borderRadius: 24, padding: 'clamp(24px, 5vw, 48px)', boxShadow: '0 25px 60px rgba(0,0,0,0.5)' }}>
+        <div style={{
+          background: '#FFFFFF',
+          borderRadius: isMobile ? 16 : 24,
+          padding: isMobile ? '18px 14px' : '36px 36px',
+          boxShadow: '0 20px 50px rgba(0,0,0,0.45)'
+        }}>
           {/* STEP 1 */}
           {step === 1 && (
             <div>
-              <h3 style={{ fontSize: 20, fontWeight: 900, color: RF_DARK_GREEN, marginBottom: 32 }}>
+              <h3 style={{ fontSize: isMobile ? 18 : 20, fontWeight: 900, color: RF_DARK_GREEN, marginBottom: isMobile ? 16 : 24 }}>
                 Step 1 — About You
               </h3>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: 20 }}>
@@ -3383,17 +3412,17 @@ const ApplicationSection: React.FC = () => {
           {/* STEP 2 */}
           {step === 2 && (
             <div>
-              <h3 style={{ fontSize: 20, fontWeight: 900, color: RF_DARK_GREEN, marginBottom: 8 }}>
+              <h3 style={{ fontSize: isMobile ? 18 : 20, fontWeight: 900, color: RF_DARK_GREEN, marginBottom: 4 }}>
                 Step 2 — Your Skills
               </h3>
-              <p style={{ fontSize: 14, color: '#475569', marginBottom: 32 }}>
+              <p style={{ fontSize: isMobile ? 12.5 : 13.5, color: '#475569', marginBottom: isMobile ? 18 : 24 }}>
                 Select all primary roles and skills that apply to you.
               </p>
 
-              <div style={{ marginBottom: 28 }}>
+              <div style={{ marginBottom: isMobile ? 18 : 24 }}>
                 <label style={labelStyle}>Primary Role(s) *</label>
                 {errors.roles && <p style={{ ...errStyle, marginBottom: 8 }}>{errors.roles}</p>}
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: isMobile ? 6 : 8 }}>
                   {ROLES_LIST.map(role => {
                     const isSelected = form.roles.includes(role);
                     return (
@@ -3402,11 +3431,11 @@ const ApplicationSection: React.FC = () => {
                         type="button"
                         onClick={() => toggleRole(role)}
                         style={{
-                          padding: '8px 16px', borderRadius: 100,
+                          padding: isMobile ? '6px 12px' : '7px 14px', borderRadius: 8,
                           background: isSelected ? RF_DEEP_GREEN : '#F4F7F5',
                           border: `1.5px solid ${isSelected ? RF_LEAF_GREEN : 'rgba(18, 43, 26, 0.12)'}`,
                           color: isSelected ? RF_MINT_ACCENT : '#1E293B',
-                          fontSize: 14, fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s'
+                          fontSize: isMobile ? 12.5 : 13.5, fontWeight: 700, cursor: 'pointer', transition: 'all 0.15s ease'
                         }}
                       >
                         {role}
@@ -3416,9 +3445,9 @@ const ApplicationSection: React.FC = () => {
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: 20 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(230px, 1fr))', gap: isMobile ? 12 : 18 }}>
                 <div>
-                  <label style={labelStyle}>Skills & Tools</label>
+                  <label style={labelStyle}>Skills &amp; Tools</label>
                   <textarea
                     value={form.skills}
                     onChange={e => updateField('skills', e.target.value)}
@@ -3436,7 +3465,7 @@ const ApplicationSection: React.FC = () => {
                     placeholder="https://..."
                     style={inputStyle()}
                   />
-                  <p style={{ fontSize: 12, color: '#64748B', marginTop: 5 }}>
+                  <p style={{ fontSize: 11.5, color: '#64748B', marginTop: 4 }}>
                     Link to your portfolio, GitHub, Behance, or LinkedIn
                   </p>
                 </div>
@@ -3447,11 +3476,11 @@ const ApplicationSection: React.FC = () => {
           {/* STEP 3 */}
           {step === 3 && (
             <div>
-              <h3 style={{ fontSize: 20, fontWeight: 900, color: RF_DARK_GREEN, marginBottom: 32 }}>
+              <h3 style={{ fontSize: isMobile ? 18 : 20, fontWeight: 900, color: RF_DARK_GREEN, marginBottom: isMobile ? 16 : 24 }}>
                 Step 3 — Your Contribution
               </h3>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: 20, marginBottom: 20 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: isMobile ? 12 : 18, marginBottom: isMobile ? 14 : 18 }}>
                 <div>
                   <label style={labelStyle}>Preferred Pioneer Division *</label>
                   <select
@@ -3479,7 +3508,7 @@ const ApplicationSection: React.FC = () => {
                 </div>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? 12 : 18 }}>
                 <div>
                   <label style={labelStyle}>What Can You Contribute?</label>
                   <textarea
@@ -3497,20 +3526,20 @@ const ApplicationSection: React.FC = () => {
                     value={form.motivation}
                     onChange={e => updateField('motivation', e.target.value)}
                     placeholder="Tell us what excites you about Refeir's referral-powered marketplace vision..."
-                    rows={4}
+                    rows={3}
                     style={{ ...inputStyle(!!errors.motivation), resize: 'vertical' }}
                   />
                   {errors.motivation && <p style={errStyle}>{errors.motivation}</p>}
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: 20 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(230px, 1fr))', gap: isMobile ? 12 : 18 }}>
                   <div>
                     <label style={labelStyle}>What Would You Like to Learn?</label>
                     <textarea
                       value={form.learningGoals}
                       onChange={e => updateField('learningGoals', e.target.value)}
                       placeholder="Skills, mentorship, or leadership areas you want to develop..."
-                      rows={3}
+                      rows={2}
                       style={{ ...inputStyle(), resize: 'vertical' }}
                     />
                   </div>
@@ -3532,14 +3561,16 @@ const ApplicationSection: React.FC = () => {
           {/* STEP 4 */}
           {step === 4 && (
             <div>
-              <h3 style={{ fontSize: 20, fontWeight: 900, color: RF_DARK_GREEN, marginBottom: 8 }}>
-                Step 4 — Agreement
-              </h3>
-              <p style={{ fontSize: 14, color: '#475569', marginBottom: 32 }}>
-                Please review and accept these community terms before submitting.
-              </p>
+              <div style={{ marginBottom: isMobile ? 16 : 22 }}>
+                <h3 style={{ fontSize: isMobile ? 18 : 20, fontWeight: 900, color: RF_DARK_GREEN, marginBottom: 4 }}>
+                  Agreement &amp; Terms
+                </h3>
+                <p style={{ fontSize: isMobile ? 12.5 : 13.5, color: '#64748B', margin: 0, lineHeight: 1.5 }}>
+                  Please review and accept these community terms before submitting.
+                </p>
+              </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? 10 : 14 }}>
                 {[
                   {
                     k: 'agreeEmployment' as keyof FormData,
@@ -3547,11 +3578,11 @@ const ApplicationSection: React.FC = () => {
                   },
                   {
                     k: 'agreeConduct' as keyof FormData,
-                    text: 'I agree to follow the Refeir Pioneer Community Code of Conduct.'
+                    text: 'I agree to follow the Refeir Pioneer Community Code of Conduct and uphold collaborative standards.'
                   },
                   {
                     k: 'agreeData' as keyof FormData,
-                    text: 'I agree that the information I provide may be used to evaluate my application and communicate with me regarding Refeir Pioneers.'
+                    text: 'I agree that the information I provide may be used to evaluate my application and communicate regarding Refeir Pioneers.'
                   },
                 ].map(({ k, text }) => {
                   const checked = form[k] as boolean;
@@ -3559,27 +3590,44 @@ const ApplicationSection: React.FC = () => {
                   return (
                     <label
                       key={k}
+                      onClick={() => updateField(k, !checked)}
                       style={{
-                        display: 'flex', gap: 14, cursor: 'pointer', padding: 18,
-                        borderRadius: 12, border: `1.5px solid ${hasErr ? '#EF4444' : checked ? RF_LEAF_GREEN : 'rgba(18, 43, 26, 0.12)'}`,
-                        background: checked ? `${RF_LEAF_GREEN}10` : '#FFFFFF', transition: 'all 0.2s'
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: isMobile ? 11 : 14,
+                        cursor: 'pointer',
+                        padding: isMobile ? '12px 14px' : '16px 18px',
+                        borderRadius: 12,
+                        border: `1.5px solid ${hasErr ? '#EF4444' : checked ? RF_LEAF_GREEN : 'rgba(18, 43, 26, 0.12)'}`,
+                        background: checked ? `${RF_LEAF_GREEN}0c` : '#FAFAFA',
+                        transition: 'all 0.18s ease'
                       }}
                     >
                       <div
-                        onClick={() => updateField(k, !checked)}
                         style={{
-                          width: 24, height: 24, borderRadius: 6, flexShrink: 0,
+                          width: 20,
+                          height: 20,
+                          borderRadius: 6,
+                          flexShrink: 0,
+                          marginTop: 2,
                           border: `2px solid ${checked ? RF_LEAF_GREEN : '#CBD5E1'}`,
                           background: checked ? RF_LEAF_GREEN : '#FFFFFF',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          transition: 'all 0.2s'
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          transition: 'all 0.18s ease'
                         }}
                       >
-                        {checked && <Check size={14} color={RF_DEEP_GREEN} strokeWidth={3} />}
+                        {checked && <Check size={13} color={RF_DEEP_GREEN} strokeWidth={3} />}
                       </div>
-                      <p style={{ fontSize: 14, color: '#1E293B', lineHeight: 1.7 }}>
+                      <span style={{
+                        fontSize: isMobile ? 12.5 : 13.5,
+                        color: checked ? '#0F172A' : '#334155',
+                        lineHeight: 1.55,
+                        fontWeight: checked ? 500 : 400
+                      }}>
                         {text}
-                      </p>
+                      </span>
                     </label>
                   );
                 })}
@@ -3587,8 +3635,13 @@ const ApplicationSection: React.FC = () => {
 
               {status === 'error' && (
                 <div style={{
-                  marginTop: 20, padding: 14, borderRadius: 10,
-                  background: '#FEF2F2', border: '1px solid #FECACA', color: '#991B1B', fontSize: 14
+                  marginTop: 16,
+                  padding: '10px 14px',
+                  borderRadius: 8,
+                  background: '#FEF2F2',
+                  border: '1px solid #FECACA',
+                  color: '#991B1B',
+                  fontSize: 13
                 }}>
                   Something went wrong submitting your application. Please try again.
                 </div>
@@ -3596,22 +3649,40 @@ const ApplicationSection: React.FC = () => {
             </div>
           )}
 
-          {/* Navigation Buttons */}
+          {/* Navigation Buttons - Perfectly Aligned Row */}
           <div style={{
-            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-            marginTop: 40, paddingTop: 28, borderTop: '1px solid #E2E8F0', gap: 14, flexWrap: 'wrap'
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginTop: isMobile ? 22 : 32,
+            paddingTop: isMobile ? 16 : 22,
+            borderTop: '1px solid #E2E8F0',
+            gap: isMobile ? 8 : 12
           }}>
             {step > 1 ? (
               <button
                 type="button"
                 onClick={handleBack}
                 style={{
-                  background: '#F1F5F9', color: '#334155', border: 'none',
-                  padding: '11px 22px', borderRadius: 100, fontSize: 13.5,
-                  fontWeight: 500, cursor: 'pointer', transition: 'background 0.2s'
+                  height: 44,
+                  padding: isMobile ? '0 16px' : '0 24px',
+                  borderRadius: 10,
+                  background: '#F1F5F9',
+                  color: '#334155',
+                  border: '1px solid #E2E8F0',
+                  fontSize: 13,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 6,
+                  flex: isMobile ? '0 0 auto' : '0 0 auto',
+                  transition: 'background 0.15s ease'
                 }}
               >
-                ← Back
+                <ChevronLeft size={16} />
+                <span>Back</span>
               </button>
             ) : <div />}
 
@@ -3620,15 +3691,26 @@ const ApplicationSection: React.FC = () => {
                 type="button"
                 onClick={handleNext}
                 style={{
-                  background: RF_DEEP_GREEN, color: '#FFFFFF', border: 'none',
-                  padding: '12px 28px', borderRadius: 100, fontSize: 13.5,
-                  fontWeight: 600, cursor: 'pointer', letterSpacing: '0.01em',
-                  display: 'flex', alignItems: 'center', gap: 7, transition: 'background 0.2s'
+                  height: 44,
+                  padding: isMobile ? '0 20px' : '0 28px',
+                  borderRadius: 10,
+                  background: RF_DEEP_GREEN,
+                  color: '#FFFFFF',
+                  border: 'none',
+                  fontSize: 13,
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 6,
+                  flex: isMobile && step > 1 ? 1 : isMobile ? 1 : '0 0 auto',
+                  transition: 'background 0.15s ease',
+                  boxShadow: '0 2px 10px rgba(15, 46, 30, 0.2)'
                 }}
-                onMouseEnter={e => (e.currentTarget.style.background = RF_DARK_GREEN)}
-                onMouseLeave={e => (e.currentTarget.style.background = RF_DEEP_GREEN)}
               >
-                Continue <ArrowRight size={14} />
+                <span>Next</span>
+                <ArrowRight size={15} />
               </button>
             ) : (
               <button
@@ -3636,14 +3718,32 @@ const ApplicationSection: React.FC = () => {
                 onClick={handleSubmit}
                 disabled={status === 'submitting'}
                 style={{
+                  height: 44,
+                  padding: isMobile ? '0 18px' : '0 32px',
+                  borderRadius: 10,
                   background: status === 'submitting' ? '#94A3B8' : RF_LEAF_GREEN,
-                  color: RF_DEEP_GREEN, border: 'none', padding: '13px 32px',
-                  borderRadius: 100, fontSize: 14, fontWeight: 600,
+                  color: RF_DEEP_GREEN,
+                  border: 'none',
+                  fontSize: 13.5,
+                  fontWeight: 800,
                   cursor: status === 'submitting' ? 'not-allowed' : 'pointer',
-                  letterSpacing: '0.01em', transition: 'all 0.2s', boxShadow: `0 4px 18px ${RF_LEAF_GREEN}35`
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 6,
+                  flex: isMobile ? 1 : '0 0 auto',
+                  transition: 'all 0.15s ease',
+                  boxShadow: `0 4px 16px ${RF_LEAF_GREEN}44`
                 }}
               >
-                {status === 'submitting' ? 'Submitting...' : 'Submit Application'}
+                {status === 'submitting' ? (
+                  <span>Submitting...</span>
+                ) : (
+                  <>
+                    <span>{isMobile ? 'Submit' : 'Submit Application'}</span>
+                    <Check size={16} strokeWidth={3} />
+                  </>
+                )}
               </button>
             )}
           </div>
