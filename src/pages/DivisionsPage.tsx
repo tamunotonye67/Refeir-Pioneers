@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Code2, Palette, TrendingUp, Briefcase, Users, FlaskConical,
   ArrowRight, CheckCircle2, Award, Clock, Target, Layers
@@ -176,6 +176,14 @@ const DIVISIONS_CATALOG: DivisionDetail[] = [
 
 export const DivisionsPage: React.FC<DivisionsPageProps> = ({ onNavigate }) => {
   const [selectedId, setSelectedId] = useState<string>('TECH_PRODUCT');
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const activeDivision = DIVISIONS_CATALOG.find(d => d.id === selectedId) || DIVISIONS_CATALOG[0];
 
   return (
@@ -183,20 +191,21 @@ export const DivisionsPage: React.FC<DivisionsPageProps> = ({ onNavigate }) => {
       {/* Header Banner */}
       <section style={{
         background: `linear-gradient(135deg, ${RF_DEEP_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
-        padding: '130px 24px 70px', position: 'relative', overflow: 'hidden', color: '#FFFFFF', textAlign: 'center'
+        padding: isMobile ? '80px 16px 36px' : '130px 24px 70px',
+        position: 'relative', overflow: 'hidden', color: '#FFFFFF', textAlign: 'center'
       }}>
         <div style={{ maxWidth: 940, margin: '0 auto', position: 'relative', zIndex: 2 }}>
           <span style={{
-            display: 'inline-block', fontSize: 11, fontWeight: 700, letterSpacing: '0.16em',
+            display: 'inline-block', fontSize: isMobile ? 10.5 : 11, fontWeight: 700, letterSpacing: '0.14em',
             color: RF_MINT_ACCENT, background: 'rgba(24, 252, 92, 0.1)', border: `1px solid ${RF_LEAF_GREEN}33`,
-            padding: '6px 16px', borderRadius: 100, textTransform: 'uppercase', marginBottom: 20
+            padding: isMobile ? '5px 14px' : '6px 16px', borderRadius: 100, textTransform: 'uppercase', marginBottom: isMobile ? 14 : 20
           }}>
             Pioneer Divisions & Squads
           </span>
 
           <h1 style={{
-            fontSize: 'clamp(34px, 5vw, 64px)', fontWeight: 500, lineHeight: 1.15,
-            letterSpacing: '-0.02em', marginBottom: 20, fontFamily: 'Plus Jakarta Sans, sans-serif'
+            fontSize: isMobile ? '28px' : 'clamp(34px, 5vw, 64px)', fontWeight: 600, lineHeight: 1.15,
+            letterSpacing: '-0.02em', marginBottom: isMobile ? 14 : 20, fontFamily: 'Plus Jakarta Sans, sans-serif'
           }}>
             Six squads building the<br />
             <span style={{
@@ -209,15 +218,25 @@ export const DivisionsPage: React.FC<DivisionsPageProps> = ({ onNavigate }) => {
           </h1>
 
           <p style={{
-            fontSize: 'clamp(15px, 1.8vw, 18px)', color: 'rgba(255,255,255,0.85)',
-            lineHeight: 1.7, maxWidth: 680, margin: '0 auto 32px'
+            fontSize: isMobile ? 14 : 'clamp(15px, 1.8vw, 18px)', color: 'rgba(255,255,255,0.85)',
+            lineHeight: 1.6, maxWidth: 680, margin: isMobile ? '0 auto 24px' : '0 auto 32px'
           }}>
-            Every Refeir Pioneer is assigned to a specialized division based on their unique superpowers. Discover where your expertise can make the deepest impact.
+            Every Refeir Pioneer is assigned to a specialized division based on their superpowers. Discover where your expertise can make the deepest impact.
           </p>
 
-          {/* Quick Division Selector Pills */}
+          {/* Quick Division Selector Pills - Smooth horizontal scroll on mobile, flex wrap on desktop */}
           <div style={{
-            display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap', maxWidth: 840, margin: '0 auto'
+            display: 'flex',
+            gap: isMobile ? 8 : 10,
+            justifyContent: isMobile ? 'flex-start' : 'center',
+            flexWrap: isMobile ? 'nowrap' : 'wrap',
+            overflowX: isMobile ? 'auto' : 'visible',
+            padding: isMobile ? '4px 4px 10px' : '0',
+            maxWidth: 840,
+            margin: '0 auto',
+            WebkitOverflowScrolling: 'touch',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none'
           }}>
             {DIVISIONS_CATALOG.map(div => {
               const isSelected = div.id === selectedId;
@@ -226,14 +245,24 @@ export const DivisionsPage: React.FC<DivisionsPageProps> = ({ onNavigate }) => {
                   key={div.id}
                   onClick={() => setSelectedId(div.id)}
                   style={{
-                    background: isSelected ? 'rgba(255,255,255,0.14)' : 'rgba(255,255,255,0.04)',
+                    background: isSelected ? 'rgba(255,255,255,0.16)' : 'rgba(255,255,255,0.04)',
                     color: isSelected ? '#FFFFFF' : 'rgba(255,255,255,0.7)',
-                    border: `1px solid ${isSelected ? div.color : 'rgba(255,255,255,0.12)'}`,
-                    borderRadius: 100, padding: '9px 18px', fontSize: 13, fontWeight: isSelected ? 600 : 500,
-                    cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: 8
+                    border: `1px solid ${isSelected ? div.color : 'rgba(255,255,255,0.14)'}`,
+                    borderRadius: 100,
+                    padding: isMobile ? '7px 14px' : '9px 18px',
+                    fontSize: isMobile ? 12 : 13,
+                    fontWeight: isSelected ? 600 : 500,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 7,
+                    flexShrink: 0,
+                    whiteSpace: 'nowrap',
+                    boxShadow: isSelected ? `0 0 16px ${div.color}33` : 'none'
                   }}
                 >
-                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: div.color }} />
+                  <span style={{ width: 7, height: 7, borderRadius: '50%', background: div.color, flexShrink: 0 }} />
                   {div.name.replace(' Squad', '')}
                 </button>
               );
@@ -243,51 +272,65 @@ export const DivisionsPage: React.FC<DivisionsPageProps> = ({ onNavigate }) => {
       </section>
 
       {/* Main Selected Division Deep Dive */}
-      <section style={{ padding: '80px 24px', background: '#F8FAF9' }}>
+      <section style={{ padding: isMobile ? '24px 12px 40px' : '80px 24px', background: '#F8FAF9' }}>
         <div style={{ maxWidth: 1140, margin: '0 auto' }}>
           <div style={{
-            background: '#FFFFFF', borderRadius: 24, border: '1px solid #E2E8F0',
+            background: '#FFFFFF', borderRadius: isMobile ? 18 : 24, border: '1px solid #E2E8F0',
             overflow: 'hidden', boxShadow: '0 12px 40px rgba(0,0,0,0.06)'
           }}>
             {/* Division Banner Top */}
             <div style={{
               background: `linear-gradient(135deg, ${RF_DARK_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
-              padding: '36px 36px', color: '#FFFFFF',
-              display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 20
+              padding: isMobile ? '20px 16px' : '36px 36px', color: '#FFFFFF',
+              display: 'flex', flexDirection: isMobile ? 'column' : 'row',
+              justifyContent: 'space-between', alignItems: isMobile ? 'stretch' : 'center',
+              gap: isMobile ? 16 : 20
             }}>
               <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
                   <span style={{
-                    fontSize: 11, fontWeight: 700, color: activeDivision.color, fontFamily: 'monospace',
-                    background: 'rgba(255,255,255,0.1)', padding: '3px 9px', borderRadius: 6
+                    fontSize: 10.5, fontWeight: 700, color: activeDivision.color, fontFamily: 'monospace',
+                    background: 'rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: 6
                   }}>
                     {activeDivision.badge}
                   </span>
-                  <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>{activeDivision.lead}</span>
+                  <span style={{ fontSize: isMobile ? 12 : 13, color: 'rgba(255,255,255,0.65)' }}>{activeDivision.lead}</span>
                 </div>
                 <h2 style={{
-                  fontSize: 'clamp(26px, 3.5vw, 38px)', fontWeight: 500,
-                  fontFamily: 'Plus Jakarta Sans, sans-serif', margin: 0
+                  fontSize: isMobile ? 22 : 'clamp(26px, 3.5vw, 38px)', fontWeight: 600,
+                  fontFamily: 'Plus Jakarta Sans, sans-serif', margin: 0, lineHeight: 1.2
                 }}>
                   {activeDivision.name}
                 </h2>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: isMobile ? 'space-between' : 'flex-end',
+                gap: 10,
+                width: isMobile ? '100%' : 'auto',
+                paddingTop: isMobile ? 8 : 0,
+                borderTop: isMobile ? '1px solid rgba(255,255,255,0.08)' : 'none'
+              }}>
                 <div style={{
-                  background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.14)',
-                  padding: '8px 16px', borderRadius: 100, fontSize: 13, color: 'rgba(255,255,255,0.85)'
+                  background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.14)',
+                  padding: isMobile ? '6px 12px' : '8px 16px', borderRadius: 100, fontSize: isMobile ? 11.5 : 13,
+                  color: 'rgba(255,255,255,0.85)', display: 'flex', alignItems: 'center', gap: 6
                 }}>
-                  Commitment: <strong>{activeDivision.weeklyHours}</strong>
+                  <Clock size={12} color={RF_MINT_ACCENT} />
+                  <span>{activeDivision.weeklyHours}</span>
                 </div>
 
                 <button
                   onClick={() => onNavigate('/#apply')}
                   style={{
                     background: RF_LEAF_GREEN, color: RF_DEEP_GREEN, border: 'none',
-                    padding: '11px 24px', borderRadius: 100, fontSize: 13.5, fontWeight: 600,
-                    cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
-                    transition: 'all 0.2s', boxShadow: `0 4px 14px ${RF_LEAF_GREEN}44`
+                    padding: isMobile ? '8px 18px' : '11px 22px', borderRadius: 100,
+                    fontSize: isMobile ? 12.5 : 13.5, fontWeight: 600,
+                    cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
+                    transition: 'all 0.2s', boxShadow: `0 4px 14px ${RF_LEAF_GREEN}44`,
+                    whiteSpace: 'nowrap'
                   }}
                   onMouseEnter={e => {
                     e.currentTarget.style.transform = 'translateY(-1px)';
@@ -298,45 +341,49 @@ export const DivisionsPage: React.FC<DivisionsPageProps> = ({ onNavigate }) => {
                     e.currentTarget.style.background = RF_LEAF_GREEN;
                   }}
                 >
-                  Apply for this Squad <ArrowRight size={14} />
+                  Join Squad <ArrowRight size={13} />
                 </button>
               </div>
             </div>
 
             {/* Division Body Grid */}
             <div style={{
-              display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-              gap: 36, padding: '40px 36px', alignItems: 'start'
+              display: 'grid',
+              gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(320px, 1fr))',
+              gap: isMobile ? 24 : 36,
+              padding: isMobile ? '22px 16px' : '40px 36px',
+              alignItems: 'start'
             }}>
               {/* Left Column: Description & Responsibilities */}
               <div>
-                <h3 style={{ fontSize: 18, fontWeight: 700, color: RF_DEEP_GREEN, marginBottom: 12 }}>
+                <h3 style={{ fontSize: isMobile ? 16 : 18, fontWeight: 700, color: RF_DEEP_GREEN, marginBottom: isMobile ? 8 : 12 }}>
                   Squad Mission
                 </h3>
-                <p style={{ fontSize: 15, color: '#475569', lineHeight: 1.8, marginBottom: 28 }}>
+                <p style={{ fontSize: isMobile ? 13.5 : 15, color: '#475569', lineHeight: 1.7, marginBottom: isMobile ? 20 : 28 }}>
                   {activeDivision.description}
                 </p>
 
-                <h3 style={{ fontSize: 18, fontWeight: 700, color: RF_DEEP_GREEN, marginBottom: 14 }}>
+                <h3 style={{ fontSize: isMobile ? 16 : 18, fontWeight: 700, color: RF_DEEP_GREEN, marginBottom: isMobile ? 10 : 14 }}>
                   Core Responsibilities
                 </h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 32 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? 10 : 12, marginBottom: isMobile ? 22 : 32 }}>
                   {activeDivision.responsibilities.map((resp, i) => (
-                    <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-                      <CheckCircle2 size={16} color={activeDivision.accent} style={{ marginTop: 3, flexShrink: 0 }} />
-                      <span style={{ fontSize: 14, color: '#334155', lineHeight: 1.6 }}>{resp}</span>
+                    <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                      <CheckCircle2 size={15} color={activeDivision.accent} style={{ marginTop: 3, flexShrink: 0 }} />
+                      <span style={{ fontSize: isMobile ? 13 : 14, color: '#334155', lineHeight: 1.55 }}>{resp}</span>
                     </div>
                   ))}
                 </div>
 
-                <h3 style={{ fontSize: 18, fontWeight: 700, color: RF_DEEP_GREEN, marginBottom: 14 }}>
+                <h3 style={{ fontSize: isMobile ? 16 : 18, fontWeight: 700, color: RF_DEEP_GREEN, marginBottom: isMobile ? 10 : 14 }}>
                   Key Skills & Superpowers
                 </h3>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                   {activeDivision.skills.map((skill, i) => (
                     <span key={i} style={{
-                      background: '#F1F5F9', color: '#1E293B', padding: '6px 14px',
-                      borderRadius: 100, fontSize: 13, fontWeight: 600
+                      background: '#F1F5F9', color: '#1E293B',
+                      padding: isMobile ? '5px 11px' : '6px 14px',
+                      borderRadius: 100, fontSize: isMobile ? 12 : 13, fontWeight: 600
                     }}>
                       {skill}
                     </span>
@@ -346,30 +393,35 @@ export const DivisionsPage: React.FC<DivisionsPageProps> = ({ onNavigate }) => {
 
               {/* Right Column: Visual Persona & Key Deliverables */}
               <div style={{
-                background: '#F8FAF9', borderRadius: 20, padding: '30px 26px',
-                border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', gap: 24
+                background: '#F8FAF9', borderRadius: isMobile ? 16 : 20,
+                padding: isMobile ? '18px 14px' : '30px 26px',
+                border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', gap: isMobile ? 18 : 24
               }}>
                 <div style={{ textAlign: 'center' }}>
                   <img
                     src={activeDivision.image}
                     alt={activeDivision.name}
                     style={{
-                      height: 220, width: 'auto', objectFit: 'contain', margin: '0 auto',
+                      height: isMobile ? 160 : 220, width: 'auto', objectFit: 'contain', margin: '0 auto',
                       filter: 'drop-shadow(0 12px 24px rgba(0,0,0,0.12))'
                     }}
                   />
                 </div>
 
                 <div>
-                  <h4 style={{ fontSize: 15, fontWeight: 700, color: RF_DEEP_GREEN, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <Target size={17} color={RF_LEAF_GREEN} />
+                  <h4 style={{
+                    fontSize: isMobile ? 14 : 15, fontWeight: 700, color: RF_DEEP_GREEN,
+                    marginBottom: 10, display: 'flex', alignItems: 'center', gap: 7
+                  }}>
+                    <Target size={16} color={RF_LEAF_GREEN} />
                     Current Cohort Deliverables
                   </h4>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                     {activeDivision.deliverables.map((item, i) => (
                       <div key={i} style={{
-                        background: '#FFFFFF', padding: '12px 16px', borderRadius: 12,
-                        border: '1px solid #E2E8F0', fontSize: 13.5, color: '#334155', fontWeight: 500
+                        background: '#FFFFFF', padding: isMobile ? '10px 12px' : '12px 16px',
+                        borderRadius: 10, border: '1px solid #E2E8F0',
+                        fontSize: isMobile ? 12.5 : 13.5, color: '#334155', fontWeight: 500
                       }}>
                         {item}
                       </div>
@@ -383,48 +435,82 @@ export const DivisionsPage: React.FC<DivisionsPageProps> = ({ onNavigate }) => {
       </section>
 
       {/* All 6 Divisions Compact Overview */}
-      <section style={{ padding: '80px 24px', background: '#FFFFFF' }}>
+      <section style={{ padding: isMobile ? '44px 14px' : '80px 24px', background: '#FFFFFF' }}>
         <div style={{ maxWidth: 1140, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 48 }}>
-            <span style={{ fontSize: 12, fontWeight: 700, color: RF_LEAF_GREEN, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+          <div style={{ textAlign: 'center', marginBottom: isMobile ? 28 : 48 }}>
+            <span style={{ fontSize: 11, fontWeight: 700, color: RF_LEAF_GREEN, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
               Full Squad Directory
             </span>
             <h2 style={{
-              fontSize: 'clamp(28px, 3.5vw, 42px)', fontWeight: 500, color: RF_DEEP_GREEN,
-              fontFamily: 'Plus Jakarta Sans, sans-serif', marginTop: 8
+              fontSize: isMobile ? 24 : 'clamp(28px, 3.5vw, 42px)', fontWeight: 600, color: RF_DEEP_GREEN,
+              fontFamily: 'Plus Jakarta Sans, sans-serif', marginTop: 6
             }}>
               Find where you fit best
             </h2>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 24 }}>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(300px, 1fr))',
+            gap: isMobile ? 14 : 24
+          }}>
             {DIVISIONS_CATALOG.map(item => (
               <div
                 key={item.id}
-                onClick={() => { setSelectedId(item.id); window.scrollTo({ top: 400, behavior: 'smooth' }); }}
+                onClick={() => { setSelectedId(item.id); window.scrollTo({ top: isMobile ? 280 : 400, behavior: 'smooth' }); }}
                 style={{
                   background: item.id === selectedId ? `${RF_LEAF_GREEN}08` : '#F8FAF9',
                   border: `1.5px solid ${item.id === selectedId ? RF_LEAF_GREEN : '#E2E8F0'}`,
-                  borderRadius: 18, padding: '28px 24px', cursor: 'pointer', transition: 'all 0.2s',
+                  borderRadius: isMobile ? 14 : 18,
+                  padding: isMobile ? '18px 16px' : '28px 24px',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
                   position: 'relative'
                 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: item.color, fontFamily: 'monospace' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                  <span style={{ fontSize: 10.5, fontWeight: 700, color: item.color, fontFamily: 'monospace' }}>
                     {item.badge}
                   </span>
-                  <span style={{ fontSize: 12, color: '#94A3B8' }}>{item.weeklyHours}</span>
+                  <span style={{ fontSize: 11.5, color: '#94A3B8' }}>{item.weeklyHours}</span>
                 </div>
 
-                <h3 style={{ fontSize: 18, fontWeight: 700, color: RF_DEEP_GREEN, marginBottom: 8 }}>
+                <h3 style={{ fontSize: isMobile ? 16 : 18, fontWeight: 700, color: RF_DEEP_GREEN, marginBottom: 6 }}>
                   {item.name}
                 </h3>
-                <p style={{ fontSize: 13.5, color: '#64748B', lineHeight: 1.6, marginBottom: 18 }}>
+                <p style={{ fontSize: isMobile ? 13 : 13.5, color: '#64748B', lineHeight: 1.55, marginBottom: 14 }}>
                   {item.description}
                 </p>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: RF_LEAF_GREEN }}>
-                  View squad details <ArrowRight size={13} />
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  paddingTop: 10,
+                  borderTop: '1px solid #E2E8F0',
+                  marginTop: 4
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12.5, fontWeight: 600, color: RF_LEAF_GREEN }}>
+                    {item.id === selectedId ? 'Selected Squad' : 'View Details'} <ArrowRight size={12} />
+                  </div>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onNavigate('/#apply');
+                    }}
+                    style={{
+                      background: item.id === selectedId ? RF_LEAF_GREEN : 'rgba(24, 252, 92, 0.08)',
+                      color: RF_DEEP_GREEN,
+                      border: `1px solid ${RF_LEAF_GREEN}44`,
+                      borderRadius: 100,
+                      padding: '4px 12px',
+                      fontSize: 11.5,
+                      fontWeight: 600,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Apply
+                  </button>
                 </div>
               </div>
             ))}
@@ -435,20 +521,29 @@ export const DivisionsPage: React.FC<DivisionsPageProps> = ({ onNavigate }) => {
       {/* Pioneer Perks Section */}
       <section style={{
         background: `linear-gradient(135deg, ${RF_DEEP_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
-        padding: '80px 24px', color: '#FFFFFF', textAlign: 'center'
+        padding: isMobile ? '48px 14px' : '80px 24px', color: '#FFFFFF', textAlign: 'center'
       }}>
         <div style={{ maxWidth: 1000, margin: '0 auto' }}>
           <h2 style={{
-            fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 500, fontFamily: 'Plus Jakarta Sans, sans-serif',
-            marginBottom: 16
+            fontSize: isMobile ? 24 : 'clamp(28px, 4vw, 44px)', fontWeight: 600, fontFamily: 'Plus Jakarta Sans, sans-serif',
+            marginBottom: 12
           }}>
             What every Pioneer receives
           </h2>
-          <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, maxWidth: 640, margin: '0 auto 40px' }}>
+          <p style={{
+            fontSize: isMobile ? 13.5 : 15, color: 'rgba(255,255,255,0.75)', lineHeight: 1.6,
+            maxWidth: 640, margin: isMobile ? '0 auto 24px' : '0 auto 40px'
+          }}>
             Pioneer membership is an exclusive community for builders who want priority access and economic equity in the Refeir ecosystem.
           </p>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20, textAlign: 'left', marginBottom: 40 }}>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(280px, 1fr))',
+            gap: isMobile ? 10 : 20,
+            textAlign: 'left',
+            marginBottom: isMobile ? 28 : 40
+          }}>
             {[
               { title: 'Founding 100 ID', desc: 'Permanent on-chain badge signifying your inaugural builder status.' },
               { title: 'Referral Multiplier', desc: 'Guaranteed higher protocol commission tier upon public platform release.' },
@@ -457,9 +552,12 @@ export const DivisionsPage: React.FC<DivisionsPageProps> = ({ onNavigate }) => {
               { title: 'Verified Credentials', desc: 'Official cryptographic certificate of contribution and executive recommendation letters.' },
               { title: 'Priority Alpha Bounties', desc: 'First-look access to paid client pilot contracts, feature bounties, and platform launches.' }
             ].map((perk, i) => (
-              <div key={i} style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 14, padding: '22px 20px', border: '1px solid rgba(255,255,255,0.1)' }}>
-                <h4 style={{ fontSize: 15, fontWeight: 700, color: RF_MINT_ACCENT, marginBottom: 6 }}>{perk.title}</h4>
-                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.6, margin: 0 }}>{perk.desc}</p>
+              <div key={i} style={{
+                background: 'rgba(255,255,255,0.04)', borderRadius: isMobile ? 12 : 14,
+                padding: isMobile ? '16px 14px' : '22px 20px', border: '1px solid rgba(255,255,255,0.1)'
+              }}>
+                <h4 style={{ fontSize: isMobile ? 14 : 15, fontWeight: 700, color: RF_MINT_ACCENT, marginBottom: 4 }}>{perk.title}</h4>
+                <p style={{ fontSize: isMobile ? 12.5 : 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.55, margin: 0 }}>{perk.desc}</p>
               </div>
             ))}
           </div>
@@ -468,8 +566,10 @@ export const DivisionsPage: React.FC<DivisionsPageProps> = ({ onNavigate }) => {
             onClick={() => onNavigate('/#apply')}
             style={{
               background: RF_LEAF_GREEN, color: RF_DEEP_GREEN, border: 'none',
-              padding: '13px 32px', borderRadius: 100, fontSize: 14, fontWeight: 600,
-              cursor: 'pointer', transition: 'all 0.2s', boxShadow: `0 4px 18px ${RF_LEAF_GREEN}35`
+              padding: isMobile ? '11px 26px' : '13px 32px', borderRadius: 100,
+              fontSize: isMobile ? 13 : 14, fontWeight: 600,
+              cursor: 'pointer', transition: 'all 0.2s', boxShadow: `0 4px 18px ${RF_LEAF_GREEN}35`,
+              display: 'inline-flex', alignItems: 'center', gap: 8, justifyContent: 'center'
             }}
             onMouseEnter={e => {
               e.currentTarget.style.transform = 'translateY(-1px)';
@@ -480,7 +580,7 @@ export const DivisionsPage: React.FC<DivisionsPageProps> = ({ onNavigate }) => {
               e.currentTarget.style.background = RF_LEAF_GREEN;
             }}
           >
-            Apply to Join a Squad <ArrowRight size={14} style={{ display: 'inline', marginLeft: 6, verticalAlign: 'middle' }} />
+            Apply Now <ArrowRight size={14} />
           </button>
         </div>
       </section>
