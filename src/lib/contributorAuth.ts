@@ -414,6 +414,103 @@ export const signInContributor = async (emailInput: string, passwordInput: strin
   return safeSession;
 };
 
+/**
+ * Sign in or activate account using Google Authentication
+ */
+export const signInWithGoogle = async (googleEmail?: string, googleName?: string, googleAvatar?: string): Promise<ContributorProfile> => {
+  // If no email provided and Supabase is configured, trigger OAuth flow
+  if (!googleEmail && isSupabaseConfigured) {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin
+      }
+    });
+    if (error) throw new Error(error.message);
+  }
+
+  const email = (googleEmail || '').trim().toLowerCase();
+  if (!email) {
+    throw new Error('Google authentication did not return a valid email address.');
+  }
+
+  const users = getStoredUsers();
+  let user = users.find(u => u.email.toLowerCase() === email);
+
+  // If not found locally, check live Supabase database
+  if (!user && isSupabaseConfigured) {
+    try {
+      const { data, error } = await supabase
+        .from('contributor_profiles')
+        .select('*')
+        .eq('email', email)
+        .single();
+      if (data && !error) {
+        user = {
+          ...data,
+          password: data.password_hash || 'google_oauth'
+        } as ContributorProfile;
+        users.push(user);
+        saveStoredUsers(users);
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  if (user) {
+    if (user.is_suspended) {
+      throw new Error(`Your contributor account has been SUSPENDED by Administration.${user.suspension_reason ? ` Reason: ${user.suspension_reason}.` : ''} Please contact admissions@refeir.com.`);
+    }
+    const safeSession = { ...user };
+    delete safeSession.password;
+    localStorage.setItem(SESSION_KEY, JSON.stringify(safeSession));
+    notifyAuthChange();
+    return safeSession;
+  }
+
+  // If no user exists, check if there is an ACCEPTED application for this email
+  const allApps = getStoredApplications();
+  const matchedApp = allApps.find(a => a.email.toLowerCase() === email);
+
+  if (matchedApp) {
+    if (matchedApp.status === 'ACCEPTED') {
+      const newProfile: ContributorProfile = {
+        id: `usr-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+        email,
+        full_name: googleName || matchedApp.full_name,
+        division: matchedApp.primary_division || 'GROWTH',
+        application_number: matchedApp.application_number,
+        pioneer_id: matchedApp.pioneer_id || '',
+        acceptance_code: matchedApp.acceptance_code || '',
+        whatsapp_number: matchedApp.whatsapp_number,
+        avatar_url: googleAvatar,
+        contributor_level: matchedApp.contributor_level || 'LEVEL_1',
+        is_profile_completed: false,
+        password: 'google_oauth',
+        created_at: new Date().toISOString()
+      };
+      users.push(newProfile);
+      saveStoredUsers(users);
+      updateStoredApplication(matchedApp.application_number, { account_created: true });
+
+      const safeSession = { ...newProfile };
+      delete safeSession.password;
+      localStorage.setItem(SESSION_KEY, JSON.stringify(safeSession));
+      notifyAuthChange();
+      return safeSession;
+    } else {
+      throw new Error(
+        `Application found (${matchedApp.application_number}), but its review status is currently ${matchedApp.status}. Only accepted applicants can sign in.`
+      );
+    }
+  }
+
+  throw new Error(
+    `No Pioneer application or account found for ${email}. Please apply to join Refeir Pioneers first, or activate with your Application ID.`
+  );
+};
+
 export const getAllContributors = (): ContributorProfile[] => {
   return getStoredUsers();
 };

@@ -1,4 +1,4 @@
-export type StaffRole = 'ADMISSIONS_REVIEWER' | 'TASK_VERIFIER' | 'SQUAD_LEAD' | 'SUPER_ADMIN';
+export type StaffRole = 'SUPER_ADMIN' | 'MANAGER' | 'SQUAD_LEAD' | 'TASK_VIEWER' | 'ADMISSIONS_REVIEWER' | 'TASK_VERIFIER';
 
 export interface StaffMember {
   id: string;
@@ -31,6 +31,18 @@ const DEFAULT_STAFF: StaffMember[] = [
     added_at: '2026-01-15T00:00:00.000Z'
   },
   {
+    id: 'staff-mgr',
+    name: 'Nkechi Okafor',
+    email: 'manager@refeir.com',
+    role: 'MANAGER',
+    assigned_division: 'ALL',
+    passcode: 'manager2026',
+    password: 'Manager@2026!',
+    status: 'ACTIVE',
+    reviews_count: 51,
+    added_at: '2026-01-20T00:00:00.000Z'
+  },
+  {
     id: 'staff-2',
     name: 'Sarah Alabi',
     email: 'sarah.alabi@refeir.com',
@@ -47,14 +59,50 @@ const DEFAULT_STAFF: StaffMember[] = [
     name: 'Chidi Eze',
     email: 'chidi.eze@refeir.com',
     role: 'SQUAD_LEAD',
-    assigned_division: 'TECHNOLOGY',
+    assigned_division: 'TECH_PRODUCT',
     passcode: 'techlead26',
     password: 'Chidi@TechLead26',
     status: 'ACTIVE',
     reviews_count: 19,
     added_at: '2026-02-10T00:00:00.000Z'
+  },
+  {
+    id: 'staff-viewer',
+    name: 'Zainab Bello',
+    email: 'viewer@refeir.com',
+    role: 'TASK_VIEWER',
+    assigned_division: 'ALL',
+    passcode: 'viewer2026',
+    password: 'Viewer@2026!',
+    status: 'ACTIVE',
+    reviews_count: 12,
+    added_at: '2026-02-15T00:00:00.000Z'
   }
 ];
+
+/**
+ * Returns whether a given staff role is authorized to view a specific admin tab
+ */
+export const isTabAuthorized = (role: StaffRole, tab: string): boolean => {
+  switch (role) {
+    case 'SUPER_ADMIN':
+      return true; // Super Admin has access to all tabs
+    case 'MANAGER':
+      // Manager has access to all operations except Staff Review Team management
+      return ['applications', 'proofs', 'members', 'certificates', 'tasks', 'analytics'].includes(tab);
+    case 'SQUAD_LEAD':
+      // Squad Lead accesses missions, task proofs, and member directory for their squad
+      return ['tasks', 'proofs', 'members'].includes(tab);
+    case 'TASK_VIEWER':
+    case 'TASK_VERIFIER':
+      // Task Viewer strictly accesses task submissions / proofs and squad missions
+      return ['proofs', 'tasks'].includes(tab);
+    case 'ADMISSIONS_REVIEWER':
+      return ['applications', 'members'].includes(tab);
+    default:
+      return ['proofs', 'tasks'].includes(tab);
+  }
+};
 
 export const getStaffMembers = (): StaffMember[] => {
   const data = localStorage.getItem(STAFF_STORAGE_KEY);

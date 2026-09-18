@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   Shield, Search, Filter, CheckCircle2, Clock, XCircle, AlertCircle,
   ExternalLink, Download, MessageSquare, Mail, RefreshCw, UserCheck,
-  ChevronDown, ChevronUp, ChevronRight, Edit3, Save, Lock, LogOut, ArrowRight, Star,
+  ChevronDown, ChevronUp, ChevronRight, Edit3, Save, Lock, LogOut, ArrowRight, ArrowLeft, Star,
   Image as ImageIcon, Award, Eye, Check, FileCheck, Users,
   UserPlus, Trash2, Key, EyeOff, Copy, Ban, UserX, Calendar,
   Building2, Globe, Phone, Send, AtSign, Share2, Briefcase,
@@ -38,13 +38,15 @@ import {
   StaffMember,
   StaffRole,
   getStaffMembers,
+  saveStaffMembers,
   addStaffMember,
   toggleStaffStatus,
   deleteStaffMember,
   verifyStaffPasscode,
   verifyStaffEmailPassword,
   getActiveStaffSession,
-  setActiveStaffSession
+  setActiveStaffSession,
+  isTabAuthorized
 } from '../lib/staffManagement';
 import {
   PioneerCertificate,
@@ -324,6 +326,15 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
   const [staffRoleFilter, setStaffRoleFilter] = useState('ALL');
   const [revealedPasscodes, setRevealedPasscodes] = useState<Record<string, boolean>>({});
   const [copiedPasscodeId, setCopiedPasscodeId] = useState<string | null>(null);
+
+  // Squad Lead Appointment from Pioneer Members State
+  const [appointSquadLeadModalOpen, setAppointSquadLeadModalOpen] = useState(false);
+  const [appointLeadMember, setAppointLeadMember] = useState<ContributorProfile | null>(null);
+  const [appointLeadDivision, setAppointLeadDivision] = useState<string>('TECH_PRODUCT');
+  const [appointLeadPasscode, setAppointLeadPasscode] = useState<string>('');
+  const [appointLeadPassword, setAppointLeadPassword] = useState<string>('');
+  const [appointLeadError, setAppointLeadError] = useState<string>('');
+  const [appointLeadSearchTerm, setAppointLeadSearchTerm] = useState<string>('');
 
   // New Worker Form Fields
   const [newWorkerName, setNewWorkerName] = useState('');
@@ -680,9 +691,19 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
   }, [isAuthenticated]);
 
   useEffect(() => {
+    if (isAuthenticated && loggedInStaff) {
+      if (!isTabAuthorized(loggedInStaff.role, adminTab)) {
+        const allowed: AdminTabType[] = ['applications', 'proofs', 'members', 'workers', 'certificates', 'tasks', 'analytics'];
+        const firstAllowed = allowed.find(t => isTabAuthorized(loggedInStaff.role, t));
+        if (firstAllowed) {
+          setAdminTabState(firstAllowed);
+          return;
+        }
+      }
+    }
     try {
       const saved = getSavedTab();
-      if (saved && saved !== adminTab) {
+      if (saved && saved !== adminTab && (!loggedInStaff || isTabAuthorized(loggedInStaff.role, saved))) {
         setAdminTabState(saved);
       }
       localStorage.setItem('refeir_admin_tab', adminTab);
@@ -693,7 +714,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
         window.history.replaceState(null, '', url.pathname + url.search);
       }
     } catch {}
-  }, [adminTab]);
+  }, [adminTab, isAuthenticated, loggedInStaff]);
 
   // Filtered Applications List
   const filteredApps = useMemo(() => {
@@ -868,6 +889,76 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
     setMemberActionFeedback(`Rank upgraded to ${newLevel.replace('_', ' ')} and Certificate issued.`);
     setTimeout(() => setMemberActionFeedback(''), 4000);
+  };
+
+  const handleOpenAppointSquadLead = (member?: ContributorProfile) => {
+    if (member) {
+      setAppointLeadMember(member);
+      const app = applications.find(a => a.email.toLowerCase() === member.email.toLowerCase());
+      setAppointLeadDivision(app?.primary_division || 'TECH_PRODUCT');
+    } else {
+      setAppointLeadMember(null);
+      setAppointLeadDivision('TECH_PRODUCT');
+    }
+    const randomPin = Math.floor(1000 + Math.random() * 9000);
+    const cleanFirst = member?.full_name?.split(' ')[0]?.toLowerCase() || 'lead';
+    setAppointLeadPasscode(`${cleanFirst}${randomPin}`);
+    setAppointLeadPassword(`Refeir@${randomPin}!`);
+    setAppointLeadError('');
+    setAppointLeadSearchTerm('');
+    setAppointSquadLeadModalOpen(true);
+  };
+
+  const handleConfirmAppointSquadLead = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!appointLeadMember) {
+      setAppointLeadError('Please select a pioneer member to appoint as Squad Lead.');
+      return;
+    }
+    if (!appointLeadDivision) {
+      setAppointLeadError('Please select an assigned division.');
+      return;
+    }
+    if (!appointLeadPasscode.trim()) {
+      setAppointLeadError('Please enter a passcode for the Squad Lead.');
+      return;
+    }
+
+    // Check if member already has a staff account
+    const existingStaff = staffList.find(s => s.email.toLowerCase() === appointLeadMember.email.toLowerCase());
+    if (existingStaff) {
+      const updated = staffList.map(s => s.id === existingStaff.id ? {
+        ...s,
+        role: 'SQUAD_LEAD' as StaffRole,
+        assigned_division: appointLeadDivision,
+        passcode: appointLeadPasscode.trim(),
+        password: appointLeadPassword.trim() || s.password || `Refeir@2026!`,
+        status: 'ACTIVE' as const
+      } : s);
+      saveStaffMembers(updated);
+      setStaffList(updated);
+    } else {
+      addStaffMember({
+        name: appointLeadMember.full_name,
+        email: appointLeadMember.email,
+        role: 'SQUAD_LEAD',
+        assigned_division: appointLeadDivision,
+        passcode: appointLeadPasscode.trim(),
+        password: appointLeadPassword.trim() || `Refeir@2026!`,
+        status: 'ACTIVE'
+      });
+      setStaffList(getStaffMembers());
+    }
+
+    // Upgrade rank to Level 3 (Squad Architect) if lower
+    if (!appointLeadMember.contributor_level || appointLeadMember.contributor_level === 'LEVEL_1' || appointLeadMember.contributor_level === 'LEVEL_2') {
+      updateContributorLevel(appointLeadMember.email, 'LEVEL_3');
+      refreshMembers();
+    }
+
+    setAppointSquadLeadModalOpen(false);
+    setRefreshSuccessToast(`⭐ ${appointLeadMember.full_name} was successfully appointed as Squad Lead for ${appointLeadDivision.replace('_', ' ')}!`);
+    setTimeout(() => setRefreshSuccessToast(''), 5000);
   };
 
   const refreshCertificates = () => {
@@ -1701,24 +1792,14 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             <Shield size={11} /> SUPER ADMIN
           </span>
         );
-      case 'ADMISSIONS_REVIEWER':
+      case 'MANAGER':
         return (
           <span style={{
-            background: `${RF_MINT_ACCENT}15`, color: RF_MINT_ACCENT, border: `1px solid ${RF_MINT_ACCENT}55`,
+            background: 'rgba(168, 85, 247, 0.15)', color: '#C084FC', border: '1px solid rgba(168, 85, 247, 0.45)',
             padding: '4px 10px', borderRadius: 100, fontSize: 11, fontWeight: 700, letterSpacing: '0.04em',
             display: 'inline-flex', alignItems: 'center', gap: 4
           }}>
-            <UserCheck size={11} /> ADMISSIONS REVIEWER
-          </span>
-        );
-      case 'TASK_VERIFIER':
-        return (
-          <span style={{
-            background: `${RF_LEAF_GREEN}15`, color: RF_LEAF_GREEN, border: `1px solid ${RF_LEAF_GREEN}55`,
-            padding: '4px 10px', borderRadius: 100, fontSize: 11, fontWeight: 700, letterSpacing: '0.04em',
-            display: 'inline-flex', alignItems: 'center', gap: 4
-          }}>
-            <Award size={11} /> TASK VERIFIER
+            <Briefcase size={11} /> MANAGER
           </span>
         );
       case 'SQUAD_LEAD':
@@ -1729,6 +1810,28 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             display: 'inline-flex', alignItems: 'center', gap: 4
           }}>
             <Star size={11} /> SQUAD LEAD
+          </span>
+        );
+      case 'TASK_VIEWER':
+      case 'TASK_VERIFIER':
+        return (
+          <span style={{
+            background: `${RF_LEAF_GREEN}15`, color: RF_LEAF_GREEN, border: `1px solid ${RF_LEAF_GREEN}55`,
+            padding: '4px 10px', borderRadius: 100, fontSize: 11, fontWeight: 700, letterSpacing: '0.04em',
+            display: 'inline-flex', alignItems: 'center', gap: 4
+          }}>
+            <Eye size={11} /> TASK VIEWER
+          </span>
+        );
+      case 'ADMISSIONS_REVIEWER':
+      default:
+        return (
+          <span style={{
+            background: `${RF_MINT_ACCENT}15`, color: RF_MINT_ACCENT, border: `1px solid ${RF_MINT_ACCENT}55`,
+            padding: '4px 10px', borderRadius: 100, fontSize: 11, fontWeight: 700, letterSpacing: '0.04em',
+            display: 'inline-flex', alignItems: 'center', gap: 4
+          }}>
+            <UserCheck size={11} /> ADMISSIONS REVIEWER
           </span>
         );
     }
@@ -1874,9 +1977,11 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               </p>
               <div style={{ display: 'flex', justifyContent: 'center', gap: 6, flexWrap: 'wrap' }}>
                 {[
-                  { label: 'Tonye', code: 'refeir2026', accent: true },
-                  { label: 'Sarah', code: 'admit2026', accent: false },
-                  { label: 'Chidi', code: 'techlead26', accent: false },
+                  { label: 'Tonye (Super Admin)', code: 'refeir2026', accent: true },
+                  { label: 'Nkechi (Manager)', code: 'manager2026', accent: false },
+                  { label: 'Chidi (Squad Lead)', code: 'techlead26', accent: false },
+                  { label: 'Zainab (Task Viewer)', code: 'viewer2026', accent: false },
+                  { label: 'Sarah (Admissions)', code: 'admit2026', accent: false },
                 ].map(({ label, code, accent }) => (
                   <button
                     key={code}
@@ -2137,58 +2242,38 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               </div>
             )}
 
-            {/* Desktop Refresh */}
-            {!isMobile && (
-              <button
-                onClick={handleRefreshData}
-                disabled={loading}
-                title="Sync & Refresh All Data"
-                style={{
-                  background: 'rgba(255,255,255,0.05)',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  color: '#FFFFFF',
-                  height: 32,
-                  padding: '0 12px',
-                  borderRadius: 8,
-                  fontSize: 12,
-                  fontWeight: 500,
-                  cursor: 'pointer',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 5,
-                  transition: 'all 0.15s ease'
-                }}
-              >
-                <RefreshCw size={12} className={loading ? 'rp-spin' : ''} />
-                <span>{loading ? 'Syncing...' : 'Refresh'}</span>
-              </button>
-            )}
-
-            {/* Desktop Export CSV */}
-            {!isMobile && (
-              <button
-                onClick={handleExportCSV}
-                title="Export CSV"
-                style={{
-                  background: 'rgba(255,255,255,0.05)',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  color: '#FFFFFF',
-                  height: 32,
-                  padding: '0 12px',
-                  borderRadius: 8,
-                  fontSize: 12,
-                  fontWeight: 500,
-                  cursor: 'pointer',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 5,
-                  transition: 'all 0.15s ease'
-                }}
-              >
-                <Download size={12} />
-                <span>Export</span>
-              </button>
-            )}
+            {/* Return to Website Button */}
+            <button
+              onClick={() => onNavigate('/')}
+              title="Return to Main Website"
+              style={{
+                background: 'rgba(24, 252, 92, 0.08)',
+                border: '1px solid rgba(24, 252, 92, 0.22)',
+                color: RF_MINT_ACCENT,
+                height: 32,
+                padding: isMobile ? '0 10px' : '0 13px',
+                borderRadius: 8,
+                fontSize: 12,
+                fontWeight: 600,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 5,
+                transition: 'all 0.15s ease',
+                flexShrink: 0
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.background = 'rgba(24, 252, 92, 0.16)';
+                e.currentTarget.style.borderColor = RF_MINT_ACCENT;
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = 'rgba(24, 252, 92, 0.08)';
+                e.currentTarget.style.borderColor = 'rgba(24, 252, 92, 0.22)';
+              }}
+            >
+              <ArrowLeft size={13} />
+              <span>{isMobile ? 'Website' : 'Return to Website'}</span>
+            </button>
 
             {/* Desktop Exit / Sign Out */}
             {!isMobile && (
@@ -3328,82 +3413,32 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
       )}
 
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: isMobile ? '16px 14px calc(90px + env(safe-area-inset-bottom, 24px))' : '26px 24px 80px' }}>
-        {/* Mobile Active Section Breadcrumb & Switcher Trigger */}
-        {isMobile && (
-          <div style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            marginBottom: 20, padding: '10px 14px',
-            background: 'rgba(255, 255, 255, 0.03)',
-            border: '1px solid rgba(255, 255, 255, 0.07)',
-            borderRadius: 12
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{
-                width: 28, height: 28, borderRadius: 8,
-                background: 'rgba(24, 252, 92, 0.15)', color: RF_MINT_ACCENT,
-                display: 'flex', alignItems: 'center', justifyContent: 'center'
-              }}>
-                {adminTab === 'applications' && <UserCheck size={15} />}
-                {adminTab === 'proofs' && <FileCheck size={15} />}
-                {adminTab === 'members' && <Users size={15} />}
-                {adminTab === 'workers' && <Briefcase size={15} />}
-                {adminTab === 'certificates' && <Award size={15} />}
-                {adminTab === 'tasks' && <Megaphone size={15} />}
-                {adminTab === 'analytics' && <BarChart3 size={15} />}
-              </div>
-              <div>
-                <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block' }}>
-                  Current Section
-                </span>
-                <div style={{ fontSize: 13, fontWeight: 700, color: '#FFFFFF' }}>
-                  {adminTab === 'applications' && (isMobile ? 'Admissions' : 'Candidate Applications')}
-                  {adminTab === 'proofs' && (isMobile ? 'Task Proofs' : 'Task Proofs of Work')}
-                  {adminTab === 'members' && 'Pioneer Profiles Registry'}
-                  {adminTab === 'workers' && (isMobile ? 'Review Team' : 'Review Staff Team')}
-                  {adminTab === 'certificates' && 'Pioneer Certifications'}
-                  {adminTab === 'tasks' && (isMobile ? 'Squad Missions' : 'Squad Missions & Bounties')}
-                  {adminTab === 'analytics' && 'Analytics Dashboard'}
-                </div>
-              </div>
-            </div>
-            <button
-              onClick={() => setAdminMobileNavOpen(true)}
-              style={{
-                background: 'rgba(24, 252, 92, 0.12)', border: '1px solid rgba(24, 252, 92, 0.28)',
-                color: RF_MINT_ACCENT, padding: '6px 12px', borderRadius: 100, fontSize: 11.5,
-                fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 5
-              }}
-            >
-              <Menu size={12} /> Switch
-            </button>
-          </div>
-        )}
-
-        {/* Desktop Navigation Tabs (Hidden on mobile) */}
-        {!isMobile && (
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 6,
-            marginBottom: 26,
-            padding: '4px',
-            background: 'rgba(255, 255, 255, 0.03)',
-            border: '1px solid rgba(255, 255, 255, 0.07)',
-            borderRadius: 12,
-            overflowX: 'auto',
-            WebkitOverflowScrolling: 'touch',
-            scrollbarWidth: 'none',
-            msOverflowStyle: 'none'
-          }}>
-            {[
-              { id: 'applications', label: 'Applications', icon: UserCheck, count: stats.total },
-              { id: 'proofs', label: 'Task Proofs', icon: FileCheck, count: taskStats.total },
-              { id: 'members', label: 'Pioneer Profiles', icon: Users, count: membersList.length, onClick: refreshMembers },
-              { id: 'workers', label: 'Review Team', icon: Briefcase, count: staffList.length },
-              { id: 'certificates', label: 'Certifications', icon: Award, count: certificatesList.length, onClick: refreshCertificates },
-              { id: 'tasks', label: 'Squad Missions', icon: Megaphone, count: tasksList.filter(t => t.status === 'ACTIVE').length, onClick: refreshTasks },
-              { id: 'analytics', label: 'Analytics', icon: BarChart3, count: 0 },
-            ].map(tab => {
+        {/* Unified Responsive Navigation Tabs (Filtered by Role Permissions) */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6,
+          marginBottom: isMobile ? 18 : 26,
+          padding: '5px',
+          background: 'rgba(255, 255, 255, 0.03)',
+          border: '1px solid rgba(255, 255, 255, 0.07)',
+          borderRadius: 12,
+          overflowX: 'auto',
+          WebkitOverflowScrolling: 'touch',
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none'
+        }}>
+          {[
+            { id: 'applications', label: isMobile ? 'Admissions' : 'Applications', icon: UserCheck, count: stats.total },
+            { id: 'proofs', label: isMobile ? 'Task Proofs' : 'Task Proofs', icon: FileCheck, count: taskStats.total },
+            { id: 'members', label: isMobile ? 'Pioneers' : 'Pioneer Profiles', icon: Users, count: membersList.length, onClick: refreshMembers },
+            { id: 'workers', label: isMobile ? 'Review Team' : 'Review Team', icon: Briefcase, count: staffList.length },
+            { id: 'certificates', label: isMobile ? 'Certs' : 'Certifications', icon: Award, count: certificatesList.length, onClick: refreshCertificates },
+            { id: 'tasks', label: isMobile ? 'Missions' : 'Squad Missions', icon: Megaphone, count: tasksList.filter(t => t.status === 'ACTIVE').length, onClick: refreshTasks },
+            { id: 'analytics', label: 'Analytics', icon: BarChart3, count: 0 },
+          ]
+            .filter(tab => isTabAuthorized(loggedInStaff?.role || 'SUPER_ADMIN', tab.id))
+            .map(tab => {
               const isActive = adminTab === tab.id;
               const Icon = tab.icon;
               return (
@@ -3416,10 +3451,10 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                   style={{
                     flexShrink: 0,
                     whiteSpace: 'nowrap',
-                    height: 36,
-                    padding: '0 16px',
+                    height: isMobile ? 36 : 38,
+                    padding: isMobile ? '0 12px' : '0 16px',
                     borderRadius: 8,
-                    fontSize: 12.5,
+                    fontSize: isMobile ? 12 : 12.5,
                     fontWeight: isActive ? 700 : 500,
                     color: isActive ? RF_MINT_ACCENT : 'rgba(255, 255, 255, 0.65)',
                     background: isActive ? 'rgba(24, 252, 92, 0.12)' : 'transparent',
@@ -3428,27 +3463,28 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 7,
+                    gap: 6,
                     transition: 'all 0.16s ease'
                   }}
                 >
                   <Icon size={14} style={{ opacity: isActive ? 1 : 0.7 }} />
                   <span>{tab.label}</span>
-                  <span style={{
-                    background: isActive ? 'rgba(24, 252, 92, 0.2)' : 'rgba(255, 255, 255, 0.08)',
-                    color: isActive ? RF_MINT_ACCENT : 'rgba(255, 255, 255, 0.55)',
-                    padding: '1px 6px',
-                    borderRadius: 6,
-                    fontSize: 10.5,
-                    fontWeight: 700
-                  }}>
-                    {tab.count}
-                  </span>
+                  {tab.id !== 'analytics' && (
+                    <span style={{
+                      background: isActive ? 'rgba(24, 252, 92, 0.2)' : 'rgba(255, 255, 255, 0.08)',
+                      color: isActive ? RF_MINT_ACCENT : 'rgba(255, 255, 255, 0.55)',
+                      padding: '1px 6px',
+                      borderRadius: 6,
+                      fontSize: 10.5,
+                      fontWeight: 700
+                    }}>
+                      {tab.count}
+                    </span>
+                  )}
                 </button>
               );
             })}
-          </div>
-        )}
+        </div>
 
         {adminTab === 'applications' && (
           <div>
@@ -4974,26 +5010,50 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               </p>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, width: isMobile ? '100%' : 'auto' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, width: isMobile ? '100%' : 'auto', flexWrap: 'wrap' }}>
               {isSuperAdmin && (
-                <button
-                  onClick={() => {
-                    setNewWorkerPasscode(`worker26_${Math.floor(100 + Math.random() * 900)}`);
-                    setWorkerFormError('');
-                    setAddWorkerModalOpen(true);
-                  }}
-                  style={{
-                    background: RF_LEAF_GREEN, color: RF_DEEP_GREEN, border: 'none',
-                    padding: isMobile ? '10px 16px' : '10px 20px', borderRadius: 100, fontSize: 13, fontWeight: 700,
-                    cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
-                    boxShadow: `0 4px 14px ${RF_LEAF_GREEN}44`, transition: 'all 0.2s',
-                    flex: isMobile ? 1 : 'initial', justifyContent: 'center'
-                  }}
-                  onMouseEnter={e => (e.currentTarget.style.background = RF_MINT_ACCENT)}
-                  onMouseLeave={e => (e.currentTarget.style.background = RF_LEAF_GREEN)}
-                >
-                  <UserPlus size={14} /> Add Worker
-                </button>
+                <>
+                  <button
+                    onClick={() => handleOpenAppointSquadLead()}
+                    style={{
+                      background: 'rgba(251, 191, 36, 0.15)',
+                      border: '1px solid rgba(251, 191, 36, 0.4)',
+                      color: RF_GOLD_YELLOW,
+                      padding: isMobile ? '10px 14px' : '10px 18px',
+                      borderRadius: 100, fontSize: 13, fontWeight: 700,
+                      cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
+                      transition: 'all 0.2s',
+                      flex: isMobile ? 1 : 'initial', justifyContent: 'center'
+                    }}
+                    onMouseEnter={e => {
+                      e.currentTarget.style.background = 'rgba(251, 191, 36, 0.25)';
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.background = 'rgba(251, 191, 36, 0.15)';
+                    }}
+                  >
+                    <Star size={14} /> Appoint Squad Lead
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setNewWorkerPasscode(`worker26_${Math.floor(100 + Math.random() * 900)}`);
+                      setWorkerFormError('');
+                      setAddWorkerModalOpen(true);
+                    }}
+                    style={{
+                      background: RF_LEAF_GREEN, color: RF_DEEP_GREEN, border: 'none',
+                      padding: isMobile ? '10px 16px' : '10px 20px', borderRadius: 100, fontSize: 13, fontWeight: 700,
+                      cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
+                      boxShadow: `0 4px 14px ${RF_LEAF_GREEN}44`, transition: 'all 0.2s',
+                      flex: isMobile ? 1 : 'initial', justifyContent: 'center'
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.background = RF_MINT_ACCENT)}
+                    onMouseLeave={e => (e.currentTarget.style.background = RF_LEAF_GREEN)}
+                  >
+                    <UserPlus size={14} /> Add Worker
+                  </button>
+                </>
               )}
 
               <button
@@ -8167,6 +8227,297 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
         </div>
       )}
 
+      {/* ─── APPOINT SQUAD LEAD MODAL ────────────────────────────────────────── */}
+      {appointSquadLeadModalOpen && (
+        <div
+          onClick={() => setAppointSquadLeadModalOpen(false)}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 1100,
+            background: 'rgba(5, 18, 11, 0.88)', backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            padding: isMobile ? '12px 10px calc(16px + env(safe-area-inset-bottom, 16px))' : 20
+          }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              background: 'linear-gradient(145deg, #0D281A 0%, #061A0F 100%)',
+              border: `1.5px solid ${RF_GOLD_YELLOW}55`,
+              borderRadius: isMobile ? 18 : 24, maxWidth: 520, width: '100%',
+              maxHeight: isMobile ? 'calc(100dvh - 28px - env(safe-area-inset-bottom, 16px))' : '90vh',
+              boxShadow: '0 25px 60px rgba(0,0,0,0.9), 0 0 30px rgba(246, 178, 26, 0.15)',
+              position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column'
+            }}
+          >
+            {/* Header */}
+            <div style={{
+              flexShrink: 0,
+              padding: isMobile ? '16px 18px 14px' : '22px 26px 18px', borderBottom: '1px solid rgba(255,255,255,0.08)',
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+              background: 'rgba(246, 178, 26, 0.04)'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{
+                  width: 38, height: 38, borderRadius: 10, background: 'rgba(246, 178, 26, 0.15)',
+                  border: '1px solid rgba(246, 178, 26, 0.35)', display: 'flex', alignItems: 'center',
+                  justifyContent: 'center', color: RF_GOLD_YELLOW
+                }}>
+                  <Star size={18} />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: isMobile ? 16 : 18, fontWeight: 800, color: '#FFFFFF', margin: 0 }}>
+                    Appoint Squad Lead
+                  </h3>
+                  <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', margin: '2px 0 0' }}>
+                    Promote a pioneer to lead a squad &amp; verify deliverables
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setAppointSquadLeadModalOpen(false)}
+                style={{
+                  background: 'rgba(255,255,255,0.06)', border: 'none', color: 'rgba(255,255,255,0.6)',
+                  width: 32, height: 32, borderRadius: '50%', cursor: 'pointer', display: 'flex',
+                  alignItems: 'center', justifyContent: 'center'
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Form */}
+            <form
+              onSubmit={handleConfirmAppointSquadLead}
+              className="rp-sleek-scroll"
+              style={{
+                flex: 1,
+                minHeight: 0,
+                padding: isMobile ? '16px 18px calc(24px + env(safe-area-inset-bottom, 18px))' : '22px 26px',
+                overflowY: 'auto',
+                WebkitOverflowScrolling: 'touch',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 16
+              }}
+            >
+              {appointLeadError && (
+                <div style={{
+                  padding: '10px 14px', borderRadius: 10,
+                  background: 'rgba(239, 68, 68, 0.12)', border: '1px solid rgba(239, 68, 68, 0.3)',
+                  color: '#FCA5A5', fontSize: 12.5, display: 'flex', alignItems: 'center', gap: 8
+                }}>
+                  <AlertCircle size={15} /> {appointLeadError}
+                </div>
+              )}
+
+              {/* Target Pioneer Member */}
+              <div>
+                <label style={{ display: 'block', fontSize: 12.5, fontWeight: 700, color: '#FFFFFF', marginBottom: 6 }}>
+                  Target Pioneer Member *
+                </label>
+
+                {appointLeadMember ? (
+                  <div style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    padding: '12px 14px', borderRadius: 12,
+                    background: 'rgba(255, 255, 255, 0.04)', border: '1px solid rgba(255, 255, 255, 0.12)'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+                      <div style={{
+                        width: 36, height: 36, borderRadius: '50%', background: `${RF_LEAF_GREEN}22`,
+                        border: `1px solid ${RF_MINT_ACCENT}66`, color: RF_MINT_ACCENT,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 800, flexShrink: 0
+                      }}>
+                        {appointLeadMember.full_name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()}
+                      </div>
+                      <div style={{ minWidth: 0 }}>
+                        <div style={{ fontSize: 13.5, fontWeight: 700, color: '#FFFFFF', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {appointLeadMember.full_name}
+                        </div>
+                        <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {appointLeadMember.email} • {appointLeadMember.pioneer_id || 'Pioneer'}
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setAppointLeadMember(null)}
+                      style={{
+                        background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)',
+                        color: 'rgba(255,255,255,0.7)', fontSize: 11, padding: '4px 8px', borderRadius: 6,
+                        cursor: 'pointer', flexShrink: 0
+                      }}
+                    >
+                      Change
+                    </button>
+                  </div>
+                ) : (
+                  <div>
+                    <input
+                      type="text"
+                      placeholder="Search member by name or email..."
+                      value={appointLeadSearchTerm}
+                      onChange={e => setAppointLeadSearchTerm(e.target.value)}
+                      style={{
+                        width: '100%', padding: '10px 14px', borderRadius: 10,
+                        background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)',
+                        color: '#FFFFFF', fontSize: 13, outline: 'none', boxSizing: 'border-box', marginBottom: 8
+                      }}
+                    />
+                    <div className="rp-sleek-scroll" style={{ maxHeight: 180, overflowY: 'auto', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, background: 'rgba(0,0,0,0.2)' }}>
+                      {membersList
+                        .filter(m => {
+                          const q = appointLeadSearchTerm.toLowerCase();
+                          return !q || m.full_name.toLowerCase().includes(q) || m.email.toLowerCase().includes(q);
+                        })
+                        .slice(0, 15)
+                        .map(m => (
+                          <div
+                            key={m.id}
+                            onClick={() => {
+                              setAppointLeadMember(m);
+                              const app = applications.find(a => a.email.toLowerCase() === m.email.toLowerCase());
+                              setAppointLeadDivision(app?.primary_division || 'TECH_PRODUCT');
+                              const randomPin = Math.floor(1000 + Math.random() * 9000);
+                              const cleanFirst = m.full_name.split(' ')[0].toLowerCase();
+                              setAppointLeadPasscode(`${cleanFirst}${randomPin}`);
+                              setAppointLeadPassword(`Refeir@${randomPin}!`);
+                            }}
+                            style={{
+                              padding: '8px 12px', borderBottom: '1px solid rgba(255,255,255,0.04)',
+                              cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                              transition: 'background 0.15s'
+                            }}
+                            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(24, 252, 92, 0.08)')}
+                            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                          >
+                            <div>
+                              <div style={{ fontSize: 13, fontWeight: 600, color: '#FFFFFF' }}>{m.full_name}</div>
+                              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)' }}>{m.email}</div>
+                            </div>
+                            <span style={{ fontSize: 10.5, color: RF_GOLD_YELLOW, fontWeight: 700 }}>
+                              Select →
+                            </span>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Assigned Squad Division */}
+              <div>
+                <label style={{ display: 'block', fontSize: 12.5, fontWeight: 700, color: '#FFFFFF', marginBottom: 6 }}>
+                  Assigned Squad Division *
+                </label>
+                <select
+                  value={appointLeadDivision}
+                  onChange={e => setAppointLeadDivision(e.target.value)}
+                  style={{
+                    width: '100%', padding: '11px 14px', borderRadius: 10,
+                    background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.18)',
+                    color: '#FFFFFF', fontSize: 13, outline: 'none', boxSizing: 'border-box', cursor: 'pointer'
+                  }}
+                >
+                  <option value="TECH_PRODUCT">Tech &amp; Architecture Squad</option>
+                  <option value="CREATIVE">Creative &amp; Design Squad</option>
+                  <option value="GROWTH">Growth &amp; Referrals Squad</option>
+                  <option value="BUSINESS">Business Development Squad</option>
+                  <option value="COMMUNITY">Community &amp; Chapters Squad</option>
+                  <option value="RESEARCH_TESTING">Research &amp; QA Squad</option>
+                </select>
+                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', marginTop: 4, display: 'block' }}>
+                  The appointed lead will manage squad missions, task verifications, and member deliverables for this division.
+                </span>
+              </div>
+
+              {/* Passcode & Password */}
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 12 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.85)', marginBottom: 6 }}>
+                    Staff Passcode *
+                  </label>
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type="text"
+                      value={appointLeadPasscode}
+                      onChange={e => setAppointLeadPasscode(e.target.value)}
+                      placeholder="e.g. lead4829"
+                      style={{
+                        width: '100%', padding: '10px 12px 10px 32px', borderRadius: 10,
+                        background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)',
+                        color: '#FFFFFF', fontSize: 13, fontFamily: 'monospace', outline: 'none', boxSizing: 'border-box'
+                      }}
+                    />
+                    <Key size={14} style={{ position: 'absolute', left: 10, top: 12, color: 'rgba(255,255,255,0.4)' }} />
+                  </div>
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.85)', marginBottom: 6 }}>
+                    Portal Password *
+                  </label>
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type="text"
+                      value={appointLeadPassword}
+                      onChange={e => setAppointLeadPassword(e.target.value)}
+                      placeholder="Refeir@2026!"
+                      style={{
+                        width: '100%', padding: '10px 12px 10px 32px', borderRadius: 10,
+                        background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)',
+                        color: '#FFFFFF', fontSize: 13, fontFamily: 'monospace', outline: 'none', boxSizing: 'border-box'
+                      }}
+                    />
+                    <Lock size={14} style={{ position: 'absolute', left: 10, top: 12, color: 'rgba(255,255,255,0.4)' }} />
+                  </div>
+                </div>
+              </div>
+
+              {/* Automatic Promotion Notice */}
+              <div style={{
+                padding: '10px 12px', borderRadius: 10,
+                background: 'rgba(246, 178, 26, 0.08)', border: '1px solid rgba(246, 178, 26, 0.25)',
+                display: 'flex', alignItems: 'center', gap: 8
+              }}>
+                <Award size={16} color={RF_GOLD_YELLOW} style={{ flexShrink: 0 }} />
+                <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.8)' }}>
+                  Appointing will automatically elevate this pioneer's registry badge to <strong style={{ color: RF_GOLD_YELLOW }}>Level 3 (Squad Architect)</strong>.
+                </span>
+              </div>
+
+              {/* Actions */}
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 6 }}>
+                <button
+                  type="button"
+                  onClick={() => setAppointSquadLeadModalOpen(false)}
+                  style={{
+                    background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)',
+                    color: '#FFFFFF', padding: '10px 18px', borderRadius: 100, fontSize: 13,
+                    cursor: 'pointer'
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  style={{
+                    background: RF_GOLD_YELLOW, color: '#07180F', border: 'none',
+                    padding: '10px 22px', borderRadius: 100, fontSize: 13, fontWeight: 800,
+                    cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
+                    boxShadow: '0 2px 14px rgba(246, 178, 26, 0.4)'
+                  }}
+                >
+                  <Star size={14} /> Confirm Squad Lead Appointment
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* ─── SELECTED MEMBER FULL PROFILE MODAL ──────────────────────────────── */}
       {memberModalOpen && selectedMember && (
         <div
@@ -8766,8 +9117,27 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               {/* Action Buttons */}
               <div style={{
                 display: 'flex', alignItems: 'center', gap: 8,
-                width: isMobile ? '100%' : 'auto'
+                width: isMobile ? '100%' : 'auto', flexWrap: 'wrap'
               }}>
+                {(isSuperAdmin || loggedInStaff?.role === 'MANAGER') && !selectedMember.is_suspended && (
+                  <button
+                    onClick={() => {
+                      setMemberModalOpen(false);
+                      handleOpenAppointSquadLead(selectedMember);
+                    }}
+                    style={{
+                      flex: isMobile ? 1 : 'none',
+                      background: 'rgba(251, 191, 36, 0.14)', border: '1px solid rgba(251, 191, 36, 0.4)',
+                      color: RF_GOLD_YELLOW, padding: isMobile ? '10px 14px' : '8px 16px', borderRadius: 100, fontSize: 12,
+                      fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 5,
+                      whiteSpace: 'nowrap'
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(251, 191, 36, 0.25)')}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'rgba(251, 191, 36, 0.14)')}
+                  >
+                    <Star size={13} /> Appoint Squad Lead
+                  </button>
+                )}
                 {selectedMember.is_suspended ? (
                   <button
                     onClick={() => handleReactivateMember(selectedMember)}
