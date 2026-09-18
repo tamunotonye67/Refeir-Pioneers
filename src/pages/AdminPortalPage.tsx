@@ -8476,10 +8476,10 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
             {/* ── COLLAPSIBLE CULTURE & REASONING SURVEY ── */}
             <div style={{
-              marginBottom: 22,
+              marginBottom: isMobile ? 16 : 20,
               background: 'rgba(255,255,255,0.02)',
               border: `1px solid ${surveyExpanded ? 'rgba(24,252,92,0.3)' : 'rgba(255,255,255,0.07)'}`,
-              borderRadius: 16,
+              borderRadius: 14,
               overflow: 'hidden',
               transition: 'border-color 0.2s ease'
             }}>
@@ -8488,54 +8488,60 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 onClick={() => setSurveyExpanded(prev => !prev)}
                 style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  padding: '14px 18px', cursor: 'pointer',
+                  padding: isMobile ? '11px 13px' : '14px 18px', cursor: 'pointer',
                   background: surveyExpanded ? 'rgba(24,252,92,0.05)' : 'rgba(255,255,255,0.015)',
-                  userSelect: 'none', transition: 'background 0.2s ease'
+                  userSelect: 'none', transition: 'background 0.2s ease', gap: 10
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, flex: 1 }}>
                   <div style={{
                     width: 28, height: 28, borderRadius: 8,
                     background: 'rgba(24,252,92,0.12)', border: '1px solid rgba(24,252,92,0.25)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', color: RF_MINT_ACCENT
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', color: RF_MINT_ACCENT,
+                    flexShrink: 0
                   }}>
-                    <Brain size={15} />
+                    <Brain size={14} />
                   </div>
-                  <div>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: 8 }}>
-                      Culture &amp; Reasoning Survey
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: isMobile ? 12.5 : 13, fontWeight: 700, color: '#FFFFFF', whiteSpace: 'nowrap' }}>
+                        Reasoning Survey
+                      </span>
                       {selectedMember.survey_responses && selectedMember.survey_responses.length > 0 ? (
                         <span style={{
-                          fontSize: 10.5, fontWeight: 700, color: RF_MINT_ACCENT,
-                          background: 'rgba(24,252,92,0.12)', padding: '2px 7px', borderRadius: 100
+                          fontSize: 10, fontWeight: 700, color: RF_MINT_ACCENT,
+                          background: 'rgba(24,252,92,0.12)', padding: '1px 6px', borderRadius: 100,
+                          whiteSpace: 'nowrap'
                         }}>
-                          {selectedMember.survey_responses.length} / 10 Completed
+                          {selectedMember.survey_responses.length}/10
                         </span>
                       ) : (
                         <span style={{
-                          fontSize: 10.5, fontWeight: 700, color: 'rgba(255,255,255,0.4)',
-                          background: 'rgba(255,255,255,0.06)', padding: '2px 7px', borderRadius: 100
+                          fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.45)',
+                          background: 'rgba(255,255,255,0.06)', padding: '1px 6px', borderRadius: 100,
+                          whiteSpace: 'nowrap'
                         }}>
                           Pending
                         </span>
                       )}
                     </div>
-                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', marginTop: 2 }}>
-                      {surveyExpanded ? 'Click header to collapse survey questions' : 'Click to expand cognitive responses and mindset reflections'}
+                    <div style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.45)', marginTop: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {surveyExpanded ? 'Tap header to collapse' : '10-question evaluation'}
                     </div>
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ flexShrink: 0 }}>
                   <span style={{
-                    fontSize: 11.5, fontWeight: 700,
-                    color: surveyExpanded ? RF_MINT_ACCENT : 'rgba(255,255,255,0.6)',
+                    fontSize: 11, fontWeight: 700,
+                    color: surveyExpanded ? RF_MINT_ACCENT : 'rgba(255,255,255,0.65)',
                     background: surveyExpanded ? 'rgba(24,252,92,0.1)' : 'rgba(255,255,255,0.06)',
                     border: `1px solid ${surveyExpanded ? 'rgba(24,252,92,0.25)' : 'rgba(255,255,255,0.1)'}`,
-                    padding: '4px 10px', borderRadius: 100, display: 'flex', alignItems: 'center', gap: 4
+                    padding: '4px 9px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 3,
+                    whiteSpace: 'nowrap'
                   }}>
-                    {surveyExpanded ? 'Hide' : 'View Answers'}
-                    {surveyExpanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+                    {surveyExpanded ? 'Hide' : 'View'}
+                    {surveyExpanded ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
                   </span>
                 </div>
               </div>
@@ -8543,15 +8549,17 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               {/* Collapsed Preview Strip */}
               {!surveyExpanded && selectedMember.survey_responses && selectedMember.survey_responses.length > 0 && (
                 <div style={{
-                  padding: '9px 18px 11px',
+                  padding: '8px 14px 9px',
                   background: 'rgba(0,0,0,0.2)',
                   borderTop: '1px solid rgba(255,255,255,0.04)',
-                  fontSize: 11.5, color: 'rgba(255,255,255,0.4)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between'
+                  fontSize: 11, color: 'rgba(255,255,255,0.4)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8
                 }}>
-                  <span>✓ 10-question situational judgment &amp; work ethic evaluation verified</span>
-                  <span style={{ color: RF_MINT_ACCENT, fontWeight: 600, fontSize: 11, cursor: 'pointer' }} onClick={() => setSurveyExpanded(true)}>
-                    Expand to read →
+                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    ✓ 10 situational judgment responses verified
+                  </span>
+                  <span style={{ color: RF_MINT_ACCENT, fontWeight: 600, fontSize: 10.5, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }} onClick={() => setSurveyExpanded(true)}>
+                    Read →
                   </span>
                 </div>
               )}
@@ -8559,45 +8567,46 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               {/* Expanded Survey Content */}
               {surveyExpanded && (
                 <div style={{
-                  padding: '14px 18px 18px',
+                  padding: isMobile ? '12px 14px' : '14px 18px 18px',
                   borderTop: '1px solid rgba(255,255,255,0.06)',
                   background: 'rgba(0,0,0,0.25)'
                 }}>
                   {selectedMember.survey_responses && selectedMember.survey_responses.length > 0 ? (
-                    <div className="rp-sleek-scroll" style={{ display: 'flex', flexDirection: 'column', gap: 10, maxHeight: 380, overflowY: 'auto', paddingRight: 4 }}>
+                    <div className="rp-sleek-scroll" style={{ display: 'flex', flexDirection: 'column', gap: 9, maxHeight: 360, overflowY: 'auto', paddingRight: 4 }}>
                       {selectedMember.survey_responses.map((resp, idx) => (
                         <div
                           key={idx}
                           style={{
                             background: 'rgba(255,255,255,0.03)',
                             border: '1px solid rgba(255,255,255,0.06)',
-                            borderRadius: 12, padding: '12px 14px'
+                            borderRadius: 10, padding: '10px 12px'
                           }}
                         >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 5 }}>
                             <span style={{
-                              fontSize: 10, fontWeight: 800, color: RF_MINT_ACCENT,
-                              background: 'rgba(24,252,92,0.1)', padding: '2px 6px', borderRadius: 4, fontFamily: 'monospace'
+                              fontSize: 9.5, fontWeight: 800, color: RF_MINT_ACCENT,
+                              background: 'rgba(24,252,92,0.1)', padding: '2px 5px', borderRadius: 4, fontFamily: 'monospace',
+                              flexShrink: 0
                             }}>
                               Q{resp.question_id || idx + 1}
                             </span>
-                            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', fontWeight: 500 }}>
+                            <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.7)', fontWeight: 500, lineHeight: 1.3 }}>
                               {(resp as any).question_text || resp.question || `Scenario Question ${idx + 1}`}
                             </span>
                           </div>
 
                           <div style={{
-                            fontSize: 12.5, fontWeight: 700, color: '#FFFFFF',
+                            fontSize: 12, fontWeight: 700, color: '#FFFFFF',
                             background: 'rgba(24,252,92,0.06)', borderLeft: `2px solid ${RF_MINT_ACCENT}`,
-                            padding: '6px 10px', borderRadius: '0 6px 6px 0', marginBottom: resp.reasoning_notes ? 6 : 0
+                            padding: '5px 8px', borderRadius: '0 5px 5px 0', marginBottom: resp.reasoning_notes ? 5 : 0
                           }}>
                             {resp.selected_option}
                           </div>
 
                           {resp.reasoning_notes && (
                             <div style={{
-                              fontSize: 11.5, color: 'rgba(255,255,255,0.6)', fontStyle: 'italic',
-                              paddingLeft: 10, marginTop: 4, lineHeight: 1.4
+                              fontSize: 11, color: 'rgba(255,255,255,0.6)', fontStyle: 'italic',
+                              paddingLeft: 8, marginTop: 3, lineHeight: 1.35
                             }}>
                               "{resp.reasoning_notes}"
                             </div>
@@ -8606,7 +8615,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                       ))}
                     </div>
                   ) : (
-                    <div style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.35)', padding: '16px 0', textAlign: 'center' }}>
+                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', padding: '14px 0', textAlign: 'center' }}>
                       Reasoning survey responses have not been recorded for this profile yet.
                     </div>
                   )}
@@ -8615,27 +8624,30 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             </div>
 
             {/* ── CERTIFICATES & ACCREDITATIONS ── */}
-            <div style={{ marginBottom: 24 }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <Award size={14} color={RF_GOLD_YELLOW} />
-                  <span style={{ fontSize: 11.5, fontWeight: 800, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                    Certificates &amp; Accreditations
+            <div style={{ marginBottom: isMobile ? 18 : 22 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, gap: 10 }}>
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+                  <Award size={13} color={RF_GOLD_YELLOW} style={{ flexShrink: 0 }} />
+                  <span style={{
+                    fontSize: 11, fontWeight: 800, color: 'rgba(255,255,255,0.7)',
+                    textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap'
+                  }}>
+                    {isMobile ? 'Certificates' : 'Certificates & Accreditations'}
                   </span>
                 </div>
                 <button
                   type="button"
                   onClick={() => handleOpenIssueCertModal(selectedMember.email, selectedMember.contributor_level)}
                   style={{
-                    background: 'rgba(246,178,26,0.1)', border: `1px solid ${RF_GOLD_YELLOW}60`,
-                    color: RF_GOLD_YELLOW, padding: '5px 14px', borderRadius: 100, fontSize: 11.5,
-                    fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 5,
-                    transition: 'all 0.15s ease'
+                    background: 'rgba(246,178,26,0.1)', border: `1px solid ${RF_GOLD_YELLOW}55`,
+                    color: RF_GOLD_YELLOW, padding: isMobile ? '4px 10px' : '5px 13px', borderRadius: 100, fontSize: 11,
+                    fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4,
+                    transition: 'all 0.15s ease', whiteSpace: 'nowrap', flexShrink: 0
                   }}
                   onMouseEnter={e => { e.currentTarget.style.background = 'rgba(246,178,26,0.2)'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'rgba(246,178,26,0.1)'; }}
                 >
-                  <Award size={12} /> Issue Certificate
+                  <Award size={11} /> {isMobile ? '+ Issue' : 'Issue Certificate'}
                 </button>
               </div>
 
@@ -8644,7 +8656,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 if (memberCerts.length === 0) {
                   return (
                     <div style={{
-                      fontSize: 12.5, color: 'rgba(255,255,255,0.35)', padding: '16px 0',
+                      fontSize: 12, color: 'rgba(255,255,255,0.35)', padding: '14px',
                       background: 'rgba(255,255,255,0.015)', border: '1px solid rgba(255,255,255,0.05)',
                       borderRadius: 12, textAlign: 'center'
                     }}>
@@ -8656,24 +8668,25 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                     {memberCerts.map(cert => (
                       <div key={cert.id} style={{
-                        display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12,
+                        display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10,
                         background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.07)',
-                        borderRadius: 12, padding: '12px 16px'
+                        borderRadius: 10, padding: isMobile ? '10px 12px' : '12px 16px'
                       }}>
-                        <div style={{ minWidth: 0 }}>
-                          <div style={{ fontSize: 13, fontWeight: 700, color: '#FFFFFF', marginBottom: 2 }}>
+                        <div style={{ minWidth: 0, flex: 1 }}>
+                          <div style={{ fontSize: 12.5, fontWeight: 700, color: '#FFFFFF', marginBottom: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                             {cert.level_title}
                           </div>
-                          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)' }}>
-                            Issued {new Date(cert.issued_at).toLocaleDateString()} · {cert.verified_jobs_count > 0 ? `${cert.verified_jobs_count} verified jobs` : 'Founding Induction'}
+                          <div style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.45)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {new Date(cert.issued_at).toLocaleDateString()} · {cert.verified_jobs_count > 0 ? `${cert.verified_jobs_count} jobs` : 'Induction'}
                           </div>
                         </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
                           <span style={{
-                            fontSize: 10.5, fontWeight: 800, padding: '3px 8px', borderRadius: 5,
+                            fontSize: 10, fontWeight: 800, padding: '2px 6px', borderRadius: 4,
                             background: cert.status === 'ISSUED' ? 'rgba(24,252,92,0.12)' : 'rgba(239,68,68,0.12)',
                             color: cert.status === 'ISSUED' ? RF_MINT_ACCENT : '#FCA5A5',
-                            border: `1px solid ${cert.status === 'ISSUED' ? 'rgba(24,252,92,0.25)' : 'rgba(239,68,68,0.25)'}`
+                            border: `1px solid ${cert.status === 'ISSUED' ? 'rgba(24,252,92,0.25)' : 'rgba(239,68,68,0.25)'}`,
+                            whiteSpace: 'nowrap'
                           }}>
                             {cert.status}
                           </span>
@@ -8682,11 +8695,12 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                             onClick={() => handleViewCertificate(cert)}
                             style={{
                               background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)',
-                              color: 'rgba(255,255,255,0.85)', padding: '5px 12px', borderRadius: 8, fontSize: 11.5,
-                              fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4
+                              color: 'rgba(255,255,255,0.85)', padding: '4px 10px', borderRadius: 6, fontSize: 11,
+                              fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 3,
+                              whiteSpace: 'nowrap'
                             }}
                           >
-                            <Eye size={12} /> View
+                            <Eye size={11} /> View
                           </button>
                         </div>
                       </div>
@@ -8698,18 +8712,34 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
             {/* ── FOOTER ACTIONS ── */}
             <div style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              gap: 12, flexWrap: 'wrap', paddingTop: 18, borderTop: '1px solid rgba(255,255,255,0.08)'
+              display: 'flex',
+              flexDirection: isMobile ? 'column' : 'row',
+              alignItems: isMobile ? 'stretch' : 'center',
+              justifyContent: 'space-between',
+              gap: 12,
+              paddingTop: 16,
+              borderTop: '1px solid rgba(255,255,255,0.08)'
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.5)', fontWeight: 600 }}>Rank Promotion:</span>
+              {/* Rank Dropdown */}
+              <div style={{
+                display: 'flex', alignItems: 'center', justifyContent: isMobile ? 'space-between' : 'flex-start',
+                gap: 8, background: isMobile ? 'rgba(0,0,0,0.25)' : 'transparent',
+                border: isMobile ? '1px solid rgba(255,255,255,0.08)' : 'none',
+                borderRadius: isMobile ? 10 : 0, padding: isMobile ? '6px 12px' : 0
+              }}>
+                <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.5)', fontWeight: 600, whiteSpace: 'nowrap' }}>
+                  Rank Promotion:
+                </span>
                 <select
                   value={selectedMember.contributor_level || 'LEVEL_1'}
                   onChange={e => handlePromoteMemberLevel(selectedMember.email, e.target.value as any)}
                   style={{
-                    background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.15)',
-                    color: RF_GOLD_YELLOW, padding: '7px 28px 7px 12px', borderRadius: 8, fontSize: 12,
-                    fontWeight: 700, outline: 'none', cursor: 'pointer'
+                    background: isMobile ? 'transparent' : 'rgba(0,0,0,0.4)',
+                    border: isMobile ? 'none' : '1px solid rgba(255,255,255,0.15)',
+                    color: RF_GOLD_YELLOW, padding: isMobile ? '4px 0' : '7px 28px 7px 12px',
+                    borderRadius: 8, fontSize: 12,
+                    fontWeight: 700, outline: 'none', cursor: 'pointer',
+                    textAlign: isMobile ? 'right' : 'left'
                   }}
                 >
                   <option value="LEVEL_1">L1 · Associate</option>
@@ -8720,14 +8750,20 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 </select>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              {/* Action Buttons */}
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 8,
+                width: isMobile ? '100%' : 'auto'
+              }}>
                 {selectedMember.is_suspended ? (
                   <button
                     onClick={() => handleReactivateMember(selectedMember)}
                     style={{
+                      flex: isMobile ? 1 : 'none',
                       background: 'rgba(24,252,92,0.15)', border: `1px solid ${RF_LEAF_GREEN}`,
-                      color: RF_MINT_ACCENT, padding: '8px 16px', borderRadius: 100, fontSize: 12,
-                      fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 5
+                      color: RF_MINT_ACCENT, padding: isMobile ? '10px 14px' : '8px 16px', borderRadius: 100, fontSize: 12,
+                      fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 5,
+                      whiteSpace: 'nowrap'
                     }}
                   >
                     <CheckCircle2 size={13} /> Reactivate
@@ -8736,9 +8772,11 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                   <button
                     onClick={() => handleOpenSuspendModal(selectedMember)}
                     style={{
+                      flex: isMobile ? 1 : 'none',
                       background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.35)',
-                      color: '#FCA5A5', padding: '8px 16px', borderRadius: 100, fontSize: 12,
-                      fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 5
+                      color: '#FCA5A5', padding: isMobile ? '10px 14px' : '8px 16px', borderRadius: 100, fontSize: 12,
+                      fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 5,
+                      whiteSpace: 'nowrap'
                     }}
                   >
                     <Ban size={13} /> Suspend Member
@@ -8747,9 +8785,11 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 <button
                   onClick={() => setMemberModalOpen(false)}
                   style={{
+                    flex: isMobile ? 1 : 'none',
                     background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)',
-                    color: '#FFFFFF', padding: '8px 20px', borderRadius: 100, fontSize: 12,
-                    fontWeight: 700, cursor: 'pointer'
+                    color: '#FFFFFF', padding: isMobile ? '10px 16px' : '8px 20px', borderRadius: 100, fontSize: 12,
+                    fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                    whiteSpace: 'nowrap'
                   }}
                 >
                   Done
