@@ -250,18 +250,40 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
   const [authError, setAuthError] = useState('');
 
   // Data & Management State
-  const [adminTab, setAdminTab] = useState<'applications' | 'proofs' | 'members' | 'workers' | 'certificates' | 'tasks' | 'analytics'>(() => {
+  type AdminTabType = 'applications' | 'proofs' | 'members' | 'workers' | 'certificates' | 'tasks' | 'analytics';
+
+  const getSavedTab = (): AdminTabType => {
     try {
       const params = new URLSearchParams(window.location.search);
-      const tabParam = params.get('tab')?.toLowerCase();
-      if (tabParam === 'tasks' || tabParam === 'squad-tasks' || tabParam === 'bounties') return 'tasks';
-      if (tabParam === 'proofs') return 'proofs';
-      if (tabParam === 'members') return 'members';
-      if (tabParam === 'workers') return 'workers';
-      if (tabParam === 'certificates') return 'certificates';
+      const urlTab = params.get('tab')?.toLowerCase();
+      const storedTab = (localStorage.getItem('refeir_admin_tab') || sessionStorage.getItem('refeir_admin_tab'))?.toLowerCase();
+      const candidate = urlTab || storedTab;
+
+      if (candidate === 'tasks' || candidate === 'squad-tasks' || candidate === 'bounties') return 'tasks';
+      if (candidate === 'proofs' || candidate === 'submissions') return 'proofs';
+      if (candidate === 'members' || candidate === 'pioneers') return 'members';
+      if (candidate === 'workers' || candidate === 'staff' || candidate === 'team') return 'workers';
+      if (candidate === 'certificates' || candidate === 'accreditations') return 'certificates';
+      if (candidate === 'analytics' || candidate === 'telemetry') return 'analytics';
+      if (candidate === 'applications' || candidate === 'admissions') return 'applications';
     } catch {}
     return 'applications';
-  });
+  };
+
+  const [adminTab, setAdminTabState] = useState<AdminTabType>(getSavedTab);
+
+  const setAdminTab = (newTab: AdminTabType) => {
+    setAdminTabState(newTab);
+    try {
+      localStorage.setItem('refeir_admin_tab', newTab);
+      sessionStorage.setItem('refeir_admin_tab', newTab);
+      const url = new URL(window.location.href);
+      url.searchParams.set('tab', newTab);
+      window.history.replaceState(null, '', url.pathname + url.search);
+    } catch {}
+  };
+
+  const [refreshSuccessToast, setRefreshSuccessToast] = useState('');
 
   const [adminMobileNavOpen, setAdminMobileNavOpen] = useState(false);
   const [adminProfileDockerOpen, setAdminProfileDockerOpen] = useState(false);
@@ -573,24 +595,104 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
     }
   };
 
+  // Comprehensive Unified Refresh Handler
+  const handleRefreshData = async () => {
+    setLoading(true);
+    try {
+      // 1. Refresh Applications from DB / Storage
+      await fetchApplications();
+
+      // 2. Refresh Task Submissions
+      try {
+        const tasks = await getTaskSubmissions();
+        setTaskSubmissions(tasks);
+      } catch (e) {
+        console.warn('Error reloading task submissions:', e);
+      }
+
+      // 3. Refresh Pioneer Members
+      try {
+        if (isSupabaseConfigured) {
+          const dbContributors = await fetchContributorsFromDatabase();
+          if (dbContributors && dbContributors.length > 0) {
+            setMembersList(dbContributors);
+          } else {
+            setMembersList(getAllContributors());
+          }
+        } else {
+          setMembersList(getAllContributors());
+        }
+      } catch {
+        setMembersList(getAllContributors());
+      }
+
+      // 4. Refresh Staff
+      setStaffList(getStaffMembers());
+
+      // 5. Refresh Certificates
+      try {
+        if (isSupabaseConfigured) {
+          const dbCerts = await fetchCertificatesFromDatabase();
+          if (dbCerts && dbCerts.length > 0) {
+            setCertificatesList(dbCerts);
+          } else {
+            setCertificatesList(getAllCertificates());
+          }
+        } else {
+          setCertificatesList(getAllCertificates());
+        }
+      } catch {
+        setCertificatesList(getAllCertificates());
+      }
+
+      // 6. Refresh Squad Tasks
+      try {
+        if (isSupabaseConfigured) {
+          const dbTasks = await fetchSquadTasksFromDatabase();
+          if (dbTasks && dbTasks.length > 0) {
+            setTasksList(dbTasks);
+          } else {
+            setTasksList(getAllSquadTasks());
+          }
+        } else {
+          setTasksList(getAllSquadTasks());
+        }
+      } catch {
+        setTasksList(getAllSquadTasks());
+      }
+
+      setRefreshSuccessToast('Portal data synchronized & refreshed successfully!');
+      setTimeout(() => setRefreshSuccessToast(''), 3500);
+    } catch (err) {
+      console.error('Error refreshing portal data:', err);
+      setRefreshSuccessToast('Portal data reloaded from local storage.');
+      setTimeout(() => setRefreshSuccessToast(''), 3500);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (isAuthenticated) {
-      fetchApplications();
+      handleRefreshData();
     }
   }, [isAuthenticated]);
 
   useEffect(() => {
     try {
-      const params = new URLSearchParams(window.location.search);
-      const tabParam = params.get('tab')?.toLowerCase();
-      if (tabParam === 'tasks' || tabParam === 'squad-tasks' || tabParam === 'bounties') setAdminTab('tasks');
-      else if (tabParam === 'proofs') setAdminTab('proofs');
-      else if (tabParam === 'members') setAdminTab('members');
-      else if (tabParam === 'workers') setAdminTab('workers');
-      else if (tabParam === 'certificates') setAdminTab('certificates');
-      else if (tabParam === 'applications') setAdminTab('applications');
+      const saved = getSavedTab();
+      if (saved && saved !== adminTab) {
+        setAdminTabState(saved);
+      }
+      localStorage.setItem('refeir_admin_tab', adminTab);
+      sessionStorage.setItem('refeir_admin_tab', adminTab);
+      const url = new URL(window.location.href);
+      if (url.searchParams.get('tab') !== adminTab) {
+        url.searchParams.set('tab', adminTab);
+        window.history.replaceState(null, '', url.pathname + url.search);
+      }
     } catch {}
-  }, []);
+  }, [adminTab]);
 
   // Filtered Applications List
   const filteredApps = useMemo(() => {
@@ -1967,9 +2069,9 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             {/* Desktop Refresh */}
             {!isMobile && (
               <button
-                onClick={fetchApplications}
+                onClick={handleRefreshData}
                 disabled={loading}
-                title="Refresh Data"
+                title="Sync & Refresh All Data"
                 style={{
                   background: 'rgba(255,255,255,0.05)',
                   border: '1px solid rgba(255,255,255,0.1)',
@@ -1987,7 +2089,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 }}
               >
                 <RefreshCw size={12} className={loading ? 'rp-spin' : ''} />
-                <span>Refresh</span>
+                <span>{loading ? 'Syncing...' : 'Refresh'}</span>
               </button>
             )}
 
@@ -2831,14 +2933,14 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               borderTop: '1px solid rgba(255,255,255,0.07)', marginTop: 'auto'
             }}>
               <button
-                onClick={() => { fetchApplications(); setAdminMobileNavOpen(false); }}
+                onClick={() => { handleRefreshData(); setAdminMobileNavOpen(false); }}
                 style={{
                   background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)',
                   color: '#FFFFFF', padding: '10px 8px', borderRadius: 10, fontSize: 12, fontWeight: 600,
                   cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6
                 }}
               >
-                <RefreshCw size={13} /> Refresh
+                <RefreshCw size={13} className={loading ? 'rp-spin' : ''} /> Refresh
               </button>
               <button
                 onClick={() => { handleExportCSV(); setAdminMobileNavOpen(false); }}
@@ -3071,8 +3173,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               {/* Refresh Pipeline Data */}
               <button
                 onClick={() => {
-                  fetchApplications();
-                  refreshTasks();
+                  handleRefreshData();
                   setAdminProfileDockerOpen(false);
                 }}
                 style={{
@@ -3321,7 +3422,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 </button>
 
                 <button
-                  onClick={fetchApplications}
+                  onClick={handleRefreshData}
                   disabled={loading}
                   style={{
                     background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.18)',
@@ -3329,7 +3430,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                     fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6
                   }}
                 >
-                  <RefreshCw size={14} className={loading ? 'rp-spin' : ''} /> Refresh
+                  <RefreshCw size={14} className={loading ? 'rp-spin' : ''} /> {loading ? 'Syncing...' : 'Refresh'}
                 </button>
               </div>
             </div>
@@ -3814,7 +3915,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             </button>
 
             <button
-              onClick={fetchApplications}
+              onClick={handleRefreshData}
               disabled={loading}
               style={{
                 background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.18)',
@@ -3822,7 +3923,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6
               }}
             >
-              <RefreshCw size={14} className={loading ? 'rp-spin' : ''} /> Refresh
+              <RefreshCw size={14} className={loading ? 'rp-spin' : ''} /> {loading ? 'Syncing...' : 'Refresh'}
             </button>
           </div>
         </div>
@@ -4237,7 +4338,8 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             </div>
 
             <button
-              onClick={refreshMembers}
+              onClick={handleRefreshData}
+              disabled={loading}
               style={{
                 background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.18)',
                 color: '#FFFFFF', padding: isMobile ? '10px 14px' : '10px 18px', borderRadius: 100, fontSize: 13,
@@ -4247,7 +4349,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.12)')}
               onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
             >
-              <RefreshCw size={14} /> Refresh Directory
+              <RefreshCw size={14} className={loading ? 'rp-spin' : ''} /> {loading ? 'Syncing...' : 'Refresh Directory'}
             </button>
           </div>
 
@@ -4820,14 +4922,15 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               )}
 
               <button
-                onClick={() => setStaffList(getStaffMembers())}
+                onClick={handleRefreshData}
+                disabled={loading}
                 style={{
                   background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.18)',
                   color: '#FFFFFF', padding: isMobile ? '10px 14px' : '10px 18px', borderRadius: 100, fontSize: 13,
                   fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6
                 }}
               >
-                <RefreshCw size={14} /> Refresh
+                <RefreshCw size={14} className={loading ? 'rp-spin' : ''} /> {loading ? 'Syncing...' : 'Refresh'}
               </button>
             </div>
           </div>
@@ -5166,14 +5269,15 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               </button>
 
               <button
-                onClick={refreshCertificates}
+                onClick={handleRefreshData}
+                disabled={loading}
                 style={{
                   background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.18)',
                   color: '#FFFFFF', padding: isMobile ? '10px 14px' : '10px 18px', borderRadius: 100, fontSize: 13,
                   fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6
                 }}
               >
-                <RefreshCw size={14} /> Refresh
+                <RefreshCw size={14} className={loading ? 'rp-spin' : ''} /> {loading ? 'Syncing...' : 'Refresh'}
               </button>
             </div>
           </div>
@@ -5653,14 +5757,15 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               </button>
 
               <button
-                onClick={refreshTasks}
+                onClick={handleRefreshData}
+                disabled={loading}
                 style={{
                   background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.18)',
                   color: '#FFFFFF', padding: isMobile ? '10px 14px' : '10px 18px', borderRadius: 100, fontSize: 13,
                   fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6
                 }}
               >
-                <RefreshCw size={14} /> Refresh
+                <RefreshCw size={14} className={loading ? 'rp-spin' : ''} /> {loading ? 'Syncing...' : 'Refresh'}
               </button>
             </div>
           </div>
@@ -6513,7 +6618,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, width: isMobile ? '100%' : 'auto' }}>
                 <button
-                  onClick={fetchApplications}
+                  onClick={handleRefreshData}
                   disabled={loading}
                   style={{
                     background: 'rgba(255,255,255,0.06)',
@@ -6532,7 +6637,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                     transition: 'all 0.2s'
                   }}
                 >
-                  <RefreshCw size={14} className={loading ? 'rp-spin' : ''} /> Refresh Data
+                  <RefreshCw size={14} className={loading ? 'rp-spin' : ''} /> {loading ? 'Syncing...' : 'Refresh Data'}
                 </button>
               </div>
             </div>
@@ -9002,6 +9107,67 @@ ${newTaskBountyType !== 'NONE' ? `🎁 *Bounty Reward:* ${newTaskBountyReward ||
           isOpen={isCertificateModalOpen}
           onClose={() => setIsCertificateModalOpen(false)}
         />
+      )}
+
+      {/* ─── FLOATING REFRESH SUCCESS TOAST ───────────────────────── */}
+      {refreshSuccessToast && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: isMobile ? 'calc(24px + env(safe-area-inset-bottom, 16px))' : 32,
+            right: isMobile ? 16 : 32,
+            left: isMobile ? 16 : 'auto',
+            zIndex: 99999,
+            background: 'linear-gradient(135deg, #0D2E1C 0%, #07190F 100%)',
+            border: `1.5px solid ${RF_MINT_ACCENT}`,
+            borderRadius: 14,
+            padding: '12px 18px',
+            boxShadow: '0 10px 30px rgba(0,0,0,0.7), 0 0 20px rgba(24, 252, 92, 0.25)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            animation: 'fadeIn 0.25s ease-out'
+          }}
+        >
+          <div
+            style={{
+              width: 32,
+              height: 32,
+              borderRadius: '50%',
+              background: 'rgba(24, 252, 92, 0.15)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: RF_MINT_ACCENT,
+              flexShrink: 0
+            }}
+          >
+            <Check size={18} />
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#FFFFFF' }}>
+              {refreshSuccessToast}
+            </div>
+            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', marginTop: 1 }}>
+              All stores synchronized in real time
+            </div>
+          </div>
+          <button
+            onClick={() => setRefreshSuccessToast('')}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: 'rgba(255,255,255,0.5)',
+              cursor: 'pointer',
+              padding: 4,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            <X size={15} />
+          </button>
+        </div>
       )}
     </div>
   );
