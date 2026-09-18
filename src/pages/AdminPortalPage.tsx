@@ -5965,11 +5965,9 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                   <Radio size={10} /> {squadTaskStats.active} Active
                 </span>
               </div>
-              {!isMobile && (
-                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', margin: 0, maxWidth: 820, lineHeight: 1.5 }}>
-                  Broadcast squad missions, manage bounties, and distribute tasks.
-                </p>
-              )}
+              <p style={{ fontSize: isMobile ? 12 : 13, color: 'rgba(255,255,255,0.65)', margin: 0, maxWidth: 820, lineHeight: 1.5 }}>
+                Broadcast squad missions, manage bounties, and distribute tasks.
+              </p>
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: isMobile ? '100%' : 'auto' }}>
@@ -6845,11 +6843,9 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                     <Activity size={10} /> Real-Time Telemetry
                   </span>
                 </div>
-                {!isMobile && (
-                  <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', margin: 0, maxWidth: 820, lineHeight: 1.5 }}>
-                    Track admissions conversion, task velocity, contributor tiers, and bounties.
-                  </p>
-                )}
+                <p style={{ fontSize: isMobile ? 12 : 13, color: 'rgba(255,255,255,0.65)', margin: 0, maxWidth: 820, lineHeight: 1.5 }}>
+                  Track admissions conversion, task velocity, contributor tiers, and bounties.
+                </p>
               </div>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: isMobile ? '100%' : 'auto' }}>
