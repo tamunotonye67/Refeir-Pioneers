@@ -1,3 +1,6 @@
+import { db, isFirebaseConfigured } from './firebase';
+import { collection, doc, getDocs, setDoc, deleteDoc } from 'firebase/firestore';
+
 export type StaffRole = 'SUPER_ADMIN' | 'MANAGER' | 'SQUAD_LEAD' | 'TASK_VIEWER' | 'ADMISSIONS_REVIEWER' | 'TASK_VERIFIER';
 
 export interface StaffMember {
@@ -278,18 +281,44 @@ export const addStaffMember = (input: Omit<StaffMember, 'id' | 'reviews_count' |
   };
   all.push(newMember);
   saveStaffMembers(all);
+
+  if (isFirebaseConfigured) {
+    setDoc(doc(db, 'staff_members', newMember.id), newMember, { merge: true }).catch(err => {
+      console.warn('Firestore staff insert error:', err);
+    });
+  }
+
   return newMember;
 };
 
 export const toggleStaffStatus = (id: string): void => {
   const all = getStaffMembers();
-  const updated = all.map(s => s.id === id ? { ...s, status: (s.status === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE') as any } : s);
+  let updatedMember: StaffMember | undefined;
+  const updated = all.map(s => {
+    if (s.id === id) {
+      updatedMember = { ...s, status: (s.status === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE') as any };
+      return updatedMember;
+    }
+    return s;
+  });
   saveStaffMembers(updated);
+
+  if (isFirebaseConfigured && updatedMember) {
+    setDoc(doc(db, 'staff_members', id), { status: updatedMember.status }, { merge: true }).catch(err => {
+      console.warn('Firestore staff status update error:', err);
+    });
+  }
 };
 
 export const deleteStaffMember = (id: string): void => {
   const all = getStaffMembers().filter(s => s.id !== id);
   saveStaffMembers(all);
+
+  if (isFirebaseConfigured) {
+    deleteDoc(doc(db, 'staff_members', id)).catch(err => {
+      console.warn('Firestore staff delete error:', err);
+    });
+  }
 };
 
 /**
@@ -348,6 +377,11 @@ export const updateStaffMember = (
   });
   if (updatedMember) {
     saveStaffMembers(updated);
+    if (isFirebaseConfigured) {
+      setDoc(doc(db, 'staff_members', id), updates, { merge: true }).catch(err => {
+        console.warn('Firestore staff update error:', err);
+      });
+    }
   }
   return updatedMember;
 };
@@ -359,6 +393,12 @@ export const updateStaffPassword = (id: string, newPassword: string): void => {
   const all = getStaffMembers();
   const updated = all.map(s => s.id === id ? { ...s, password: newPassword } : s);
   saveStaffMembers(updated);
+
+  if (isFirebaseConfigured) {
+    setDoc(doc(db, 'staff_members', id), { password: newPassword }, { merge: true }).catch(err => {
+      console.warn('Firestore staff password update error:', err);
+    });
+  }
 };
 
 export const getActiveStaffSession = (): StaffMember | null => {
@@ -378,3 +418,46 @@ export const setActiveStaffSession = (staff: StaffMember | null): void => {
     sessionStorage.setItem(ACTIVE_STAFF_SESSION_KEY, JSON.stringify(staff));
   }
 };
+
+/**
+ * Fetches staff members from Firebase Firestore if configured.
+ */
+export const fetchStaffMembersFromDatabase = async (): Promise<StaffMember[]> => {
+  if (!isFirebaseConfigured) {
+    return getStaffMembers();
+  }
+
+  try {
+    const snap = await getDocs(collection(db, 'staff_members'));
+    if (!snap.empty) {
+      const items = snap.docs.map(d => d.data() as StaffMember);
+      saveStaffMembers(items);
+      return items;
+    }
+  } catch (err) {
+    console.warn('Could not query Firestore staff_members:', err);
+  }
+
+  return getStaffMembers();
+};
+
+/**
+ * Syncs all staff members to Firebase Firestore.
+ */
+export const syncStaffMembersToFirebase = async (): Promise<{ success: boolean; count: number; error?: string }> => {
+  if (!isFirebaseConfigured) {
+    return { success: false, count: 0, error: 'Firebase is not configured in .env' };
+  }
+
+  const staff = getStaffMembers();
+  try {
+    for (const member of staff) {
+      await setDoc(doc(db, 'staff_members', member.id), member, { merge: true });
+    }
+    return { success: true, count: staff.length };
+  } catch (err: any) {
+    return { success: false, count: 0, error: err?.message || 'Sync failed' };
+  }
+};
+
+export const syncStaffMembersToSupabase = syncStaffMembersToFirebase;

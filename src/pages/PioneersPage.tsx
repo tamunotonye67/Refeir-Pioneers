@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { db, isFirebaseConfigured } from '../lib/firebase';
+import { collection, getDocs, doc, setDoc } from 'firebase/firestore';
 import { addStoredApplication, getStoredApplications } from '../lib/pioneerApplications';
 import { PioneersNav } from '../components/PioneersNav';
 import { PioneersFooter } from '../components/PioneersFooter';
@@ -2312,17 +2313,15 @@ const Founding100: React.FC = () => {
     const stored = getStoredApplications();
     let total = stored.length;
 
-    // 2. If Supabase is configured, check pioneer_applications table
-    if (isSupabaseConfigured) {
+    // 2. If Firebase is configured, check pioneer_applications collection
+    if (isFirebaseConfigured) {
       try {
-        const { count: sbCount, error } = await supabase
-          .from('pioneer_applications')
-          .select('*', { count: 'exact', head: true });
-        if (!error && typeof sbCount === 'number') {
-          total = Math.max(total, sbCount);
+        const snap = await getDocs(collection(db, 'pioneer_applications'));
+        if (!snap.empty) {
+          total = Math.max(total, snap.size);
         }
       } catch (err) {
-        console.warn('Could not query Supabase applicant count:', err);
+        console.warn('Could not query Firestore applicant count:', err);
       }
     }
 
@@ -3159,26 +3158,16 @@ const ApplicationSection: React.FC = () => {
       is_founding_100: false,
     };
 
-    if (isSupabaseConfigured) {
+    if (isFirebaseConfigured) {
       try {
-        const { data, error } = await supabase
-          .from('pioneer_applications')
-          .insert(payload)
-          .select('application_number')
-          .single();
-
-        if (error) {
-          console.error('Supabase error:', error);
-          setAppId(appNumber);
-        } else {
-          setAppId(data?.application_number || appNumber);
-        }
+        await setDoc(doc(db, 'pioneer_applications', appNumber), payload, { merge: true });
+        setAppId(appNumber);
       } catch (err) {
-        console.error(err);
+        console.error('Firestore application submit error:', err);
         setAppId(appNumber);
       }
     } else {
-      await new Promise(r => setTimeout(r, 1400));
+      await new Promise(r => setTimeout(r, 800));
       setAppId(appNumber);
     }
 

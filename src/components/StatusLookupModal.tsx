@@ -3,7 +3,8 @@ import {
   Search, X, CheckCircle2, Clock, AlertCircle, ExternalLink,
   Copy, Check, Key, ArrowRight, Shield
 } from 'lucide-react';
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { db, isFirebaseConfigured } from '../lib/firebase';
+import { collection, query as fsQuery, where, getDocs, limit } from 'firebase/firestore';
 import { findApplicationByLookup, PioneerApplicationRecord } from '../lib/pioneerApplications';
 import {
   RF_DEEP_GREEN,
@@ -96,29 +97,38 @@ export const StatusLookupModal: React.FC<StatusModalProps> = ({
         return;
       }
 
-      if (isSupabaseConfigured) {
-        let sbQuery = supabase.from('pioneer_applications').select('*');
+      if (isFirebaseConfigured) {
+        let q;
         if (appNumber.trim()) {
-          sbQuery = sbQuery.ilike('application_number', appNumber.trim());
+          q = fsQuery(
+            collection(db, 'pioneer_applications'),
+            where('application_number', '==', appNumber.trim().toUpperCase()),
+            limit(1)
+          );
         } else if (email.trim()) {
-          sbQuery = sbQuery.ilike('email', email.trim());
+          q = fsQuery(
+            collection(db, 'pioneer_applications'),
+            where('email', '==', email.trim().toLowerCase()),
+            limit(1)
+          );
         }
 
-        const { data, error } = await sbQuery.limit(1);
-
-        if (!error && data && data.length > 0) {
-          const app = data[0];
-          setResult({
-            status: (app.review_status as PioneerReviewStatus) || 'PENDING',
-            fullName: app.full_name || 'Applicant',
-            applicationNumber: app.application_number || query.toUpperCase(),
-            acceptanceCode: app.acceptance_code || undefined,
-            division: app.primary_division,
-            isFounding: app.is_founding_100,
-            pioneerId: app.pioneer_id
-          });
-          setLookupState('found');
-          return;
+        if (q) {
+          const snap = await getDocs(q);
+          if (!snap.empty) {
+            const app = snap.docs[0].data() as any;
+            setResult({
+              status: (app.review_status || app.status || 'PENDING') as PioneerReviewStatus,
+              fullName: app.full_name || 'Applicant',
+              applicationNumber: app.application_number || query.toUpperCase(),
+              acceptanceCode: app.acceptance_code || undefined,
+              division: app.primary_division,
+              isFounding: app.is_founding_100,
+              pioneerId: app.pioneer_id
+            });
+            setLookupState('found');
+            return;
+          }
         }
       }
 

@@ -1,4 +1,5 @@
-import { supabase, isSupabaseConfigured } from './supabase';
+import { db, isFirebaseConfigured } from './firebase';
+import { collection, doc, getDocs, setDoc, updateDoc, query, orderBy } from 'firebase/firestore';
 import { issueCertificate } from './certificates';
 import { touchContributorActivity } from './contributorAuth';
 
@@ -96,18 +97,18 @@ const INITIAL_DEMO_TASKS: TaskSubmissionRecord[] = [
 ];
 
 export const getTaskSubmissions = async (): Promise<TaskSubmissionRecord[]> => {
-  if (isSupabaseConfigured) {
+  if (isFirebaseConfigured) {
     try {
-      const { data, error } = await supabase
-        .from('pioneer_proof_of_work')
-        .select('*')
-        .order('created_at', { ascending: false });
+      const q = query(collection(db, 'pioneer_proof_of_work'), orderBy('created_at', 'desc'));
+      const snapshot = await getDocs(q);
 
-      if (!error && data && data.length > 0) {
-        return data as TaskSubmissionRecord[];
+      if (!snapshot.empty) {
+        const records = snapshot.docs.map(d => d.data() as TaskSubmissionRecord);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+        return records;
       }
     } catch (err) {
-      console.warn('Supabase proof_of_work fetch error, falling back to local storage:', err);
+      console.warn('Firestore proof_of_work fetch error, falling back to local storage:', err);
     }
   }
 
@@ -143,38 +144,15 @@ export const saveTaskSubmission = async (
     touchContributorActivity(record.email);
   } catch {}
 
-  // Try Supabase first if configured
-  if (isSupabaseConfigured) {
+  // Try Firestore first if configured
+  if (isFirebaseConfigured) {
     try {
-      const { data, error } = await supabase
-        .from('pioneer_proof_of_work')
-        .insert({
-          reference_id: record.reference_id,
-          full_name: record.full_name,
-          email: record.email,
-          application_number: record.application_number,
-          pioneer_id: record.pioneer_id,
-          division: record.division,
-          target_level: record.target_level,
-          task_title: record.task_title,
-          task_category: record.task_category,
-          task_description: record.task_description,
-          deliverable_url: record.deliverable_url || null,
-          additional_url: record.additional_url || null,
-          screenshots: record.screenshots,
-          status: 'PENDING'
-        })
-        .select('*')
-        .single();
-
-      if (!error && data) {
-        // Also sync local
-        const current = await getTaskSubmissions();
-        localStorage.setItem(STORAGE_KEY, JSON.stringify([data, ...current]));
-        return data as TaskSubmissionRecord;
-      }
+      await setDoc(doc(db, 'pioneer_proof_of_work', record.reference_id), record, { merge: true });
+      const current = await getTaskSubmissions();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify([record, ...current]));
+      return record;
     } catch (err) {
-      console.warn('Supabase insert failed, caching locally:', err);
+      console.warn('Firestore insert failed, caching locally:', err);
     }
   }
 
@@ -186,57 +164,40 @@ export const saveTaskSubmission = async (
 };
 
 /**
- * Synchronizes local cached proof-of-work submissions to Supabase.
+ * Synchronizes local cached proof-of-work submissions to Firebase Firestore.
  */
 export const syncTaskSubmissionsToSupabase = async (): Promise<{ synced: number; error: string | null }> => {
-  if (!isSupabaseConfigured) {
-    return { synced: 0, error: 'Supabase credentials not configured' };
+  if (!isFirebaseConfigured) {
+    return { synced: 0, error: 'Firebase credentials not configured' };
   }
 
   try {
     const local = await getTaskSubmissions();
-    const records = local.map(item => ({
-      reference_id: item.reference_id,
-      full_name: item.full_name,
-      email: item.email,
-      application_number: item.application_number,
-      pioneer_id: item.pioneer_id,
-      division: item.division,
-      target_level: item.target_level,
-      task_title: item.task_title,
-      task_category: item.task_category,
-      task_description: item.task_description,
-      deliverable_url: item.deliverable_url || null,
-      additional_url: item.additional_url || null,
-      screenshots: item.screenshots,
-      status: item.status,
-      admin_feedback: item.admin_feedback || null,
-      created_at: item.created_at
-    }));
-
-    const { error } = await supabase.from('pioneer_proof_of_work').upsert(records, { onConflict: 'reference_id' });
-    if (error) {
-      return { synced: 0, error: error.message };
-    }
-    return { synced: records.length, error: null };
+    const promises = local.map(item =>
+      setDoc(doc(db, 'pioneer_proof_of_work', item.reference_id), item, { merge: true })
+    );
+    await Promise.all(promises);
+    return { synced: local.length, error: null };
   } catch (err: any) {
     return { synced: 0, error: err?.message || 'Sync failed' };
   }
 };
+
+export const syncTaskSubmissionsToFirebase = syncTaskSubmissionsToSupabase;
 
 export const updateTaskSubmissionStatus = async (
   id: string,
   status: 'VERIFIED' | 'NEEDS_REVISION' | 'REJECTED',
   admin_feedback?: string
 ): Promise<void> => {
-  if (isSupabaseConfigured) {
+  if (isFirebaseConfigured) {
     try {
-      await supabase
-        .from('pioneer_proof_of_work')
-        .update({ status, admin_feedback: admin_feedback || null })
-        .eq('id', id);
+      await updateDoc(doc(db, 'pioneer_proof_of_work', id), {
+        status,
+        admin_feedback: admin_feedback || null
+      });
     } catch (err) {
-      console.warn('Supabase update failed:', err);
+      console.warn('Firestore update failed:', err);
     }
   }
 

@@ -1,4 +1,5 @@
-import { supabase, isSupabaseConfigured } from './supabase';
+import { db, isFirebaseConfigured } from './firebase';
+import { collection, doc, getDoc, getDocs, setDoc, query, orderBy } from 'firebase/firestore';
 import {
   validateAcceptanceCredentials,
   updateStoredApplication,
@@ -187,26 +188,23 @@ export const signUpContributor = async (data: {
   users.push(newProfile);
   saveStoredUsers(users);
 
-  if (isSupabaseConfigured) {
-    supabase
-      .from('contributor_profiles')
-      .insert([{
-        id: newProfile.id,
-        email: newProfile.email,
-        full_name: newProfile.full_name,
-        division: newProfile.division,
-        application_number: newProfile.application_number,
-        pioneer_id: newProfile.pioneer_id,
-        acceptance_code: newProfile.acceptance_code,
-        whatsapp_number: newProfile.whatsapp_number,
-        contributor_level: newProfile.contributor_level,
-        is_profile_completed: false,
-        password_hash: newProfile.password,
-        created_at: newProfile.created_at
-      }])
-      .then(({ error }) => {
-        if (error) console.warn('Supabase contributor profile insert error:', error.message);
-      });
+  if (isFirebaseConfigured) {
+    setDoc(doc(db, 'contributor_profiles', newProfile.email.toLowerCase()), {
+      id: newProfile.id,
+      email: newProfile.email,
+      full_name: newProfile.full_name,
+      division: newProfile.division,
+      application_number: newProfile.application_number,
+      pioneer_id: newProfile.pioneer_id,
+      acceptance_code: newProfile.acceptance_code,
+      whatsapp_number: newProfile.whatsapp_number,
+      contributor_level: newProfile.contributor_level,
+      is_profile_completed: false,
+      password_hash: newProfile.password,
+      created_at: newProfile.created_at
+    }, { merge: true }).catch(err => {
+      console.warn('Firestore contributor profile insert error:', err);
+    });
   }
 
   // Mark application as having an account created
@@ -313,41 +311,37 @@ export const completeContributorProfile = async (
   users[userIdx] = updated;
   saveStoredUsers(users);
 
-  if (isSupabaseConfigured) {
-    supabase
-      .from('contributor_profiles')
-      .update({
-        full_name: updated.full_name,
-        avatar_url: updated.avatar_url,
-        date_of_birth: updated.date_of_birth,
-        whatsapp_number: updated.whatsapp_number,
-        telegram_handle: updated.telegram_handle,
-        twitter_handle: updated.twitter_handle,
-        instagram_handle: updated.instagram_handle,
-        github_url: updated.github_url,
-        linkedin_url: updated.linkedin_url,
-        portfolio_url: updated.portfolio_url,
-        institution: updated.institution,
-        country: updated.country,
-        city: updated.city,
-        division: updated.division,
-        bio: updated.bio,
-        skills: updated.skills,
-        payout_preference: updated.payout_preference,
-        payout_details: updated.payout_details,
-        bank_name: updated.bank_name,
-        account_number: updated.account_number,
-        account_name: updated.account_name,
-        survey_responses: updated.survey_responses,
-        survey_completed_at: updated.survey_completed_at,
-        pioneer_id: updated.pioneer_id,
-        is_profile_completed: true,
-        profile_completed_at: updated.profile_completed_at
-      })
-      .eq('email', user.email)
-      .then(({ error }) => {
-        if (error) console.warn('Supabase contributor profile update error:', error.message);
-      });
+  if (isFirebaseConfigured) {
+    setDoc(doc(db, 'contributor_profiles', user.email.toLowerCase()), {
+      full_name: updated.full_name,
+      avatar_url: updated.avatar_url,
+      date_of_birth: updated.date_of_birth,
+      whatsapp_number: updated.whatsapp_number,
+      telegram_handle: updated.telegram_handle,
+      twitter_handle: updated.twitter_handle,
+      instagram_handle: updated.instagram_handle,
+      github_url: updated.github_url,
+      linkedin_url: updated.linkedin_url,
+      portfolio_url: updated.portfolio_url,
+      institution: updated.institution,
+      country: updated.country,
+      city: updated.city,
+      division: updated.division,
+      bio: updated.bio,
+      skills: updated.skills,
+      payout_preference: updated.payout_preference,
+      payout_details: updated.payout_details,
+      bank_name: updated.bank_name,
+      account_number: updated.account_number,
+      account_name: updated.account_name,
+      survey_responses: updated.survey_responses,
+      survey_completed_at: updated.survey_completed_at,
+      pioneer_id: updated.pioneer_id,
+      is_profile_completed: true,
+      profile_completed_at: updated.profile_completed_at
+    }, { merge: true }).catch(err => {
+      console.warn('Firestore contributor profile update error:', err);
+    });
   }
 
   // Sync to pioneerApplications
@@ -376,19 +370,15 @@ export const signInContributor = async (emailInput: string, passwordInput: strin
 
   let user = users.find(u => u.email.toLowerCase() === email);
 
-  // If user not found in local cache, check live Supabase database
-  if (!user && isSupabaseConfigured) {
+  // If user not found in local cache, check live Firebase Firestore database
+  if (!user && isFirebaseConfigured) {
     try {
-      const { data, error } = await supabase
-        .from('contributor_profiles')
-        .select('*')
-        .eq('email', email)
-        .single();
-
-      if (data && !error) {
+      const docSnap = await getDoc(doc(db, 'contributor_profiles', email));
+      if (docSnap.exists()) {
+        const data = docSnap.data();
         user = {
           ...data,
-          password: data.password_hash || 'password123'
+          password: data.password_hash || data.password || 'password123'
         } as ContributorProfile;
         users.push(user);
         saveStoredUsers(users);
@@ -426,17 +416,6 @@ export const signInContributor = async (emailInput: string, passwordInput: strin
  * Sign in or activate account using Google Authentication
  */
 export const signInWithGoogle = async (googleEmail?: string, googleName?: string, googleAvatar?: string): Promise<ContributorProfile> => {
-  // If no email provided and Supabase is configured, trigger OAuth flow
-  if (!googleEmail && isSupabaseConfigured) {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: window.location.origin
-      }
-    });
-    if (error) throw new Error(error.message);
-  }
-
   const email = (googleEmail || '').trim().toLowerCase();
   if (!email) {
     throw new Error('Google authentication did not return a valid email address.');
@@ -445,18 +424,15 @@ export const signInWithGoogle = async (googleEmail?: string, googleName?: string
   const users = getStoredUsers();
   let user = users.find(u => u.email.toLowerCase() === email);
 
-  // If not found locally, check live Supabase database
-  if (!user && isSupabaseConfigured) {
+  // If not found locally, check live Firebase Firestore database
+  if (!user && isFirebaseConfigured) {
     try {
-      const { data, error } = await supabase
-        .from('contributor_profiles')
-        .select('*')
-        .eq('email', email)
-        .single();
-      if (data && !error) {
+      const docSnap = await getDoc(doc(db, 'contributor_profiles', email));
+      if (docSnap.exists()) {
+        const data = docSnap.data();
         user = {
           ...data,
-          password: data.password_hash || 'google_oauth'
+          password: data.password_hash || data.password || 'google_oauth'
         } as ContributorProfile;
         users.push(user);
         saveStoredUsers(users);
@@ -786,17 +762,15 @@ export const enforceInactivityRule = (
         } catch {}
       }
 
-      // Sync Supabase if configured
-      if (isSupabaseConfigured) {
-        supabase
-          .from('contributor_profiles')
-          .update({
-            contributor_level: 'LEVEL_1'
-          })
-          .eq('email', user.email)
-          .then(({ error }) => {
-            if (error) console.warn('Supabase demotion sync error:', error?.message);
-          });
+      // Sync Firebase if configured
+      if (isFirebaseConfigured) {
+        setDoc(doc(db, 'contributor_profiles', user.email.toLowerCase()), {
+          contributor_level: 'LEVEL_1',
+          demoted_due_to_inactivity: true,
+          last_inactivity_demotion_at: new Date().toISOString()
+        }, { merge: true }).catch(err => {
+          console.warn('Firestore demotion sync error:', err);
+        });
       }
 
       return demotedUser;
@@ -830,89 +804,84 @@ export const notifyAuthChange = () => {
 };
 
 /**
- * Fetches all contributor profiles from Supabase if configured, and updates local cache.
+ * Fetches all contributor profiles from Firebase Firestore if configured, and updates local cache.
  */
 export const fetchContributorsFromDatabase = async (): Promise<ContributorProfile[]> => {
-  if (!isSupabaseConfigured) {
+  if (!isFirebaseConfigured) {
     return getStoredUsers();
   }
 
   try {
-    const { data, error } = await supabase
-      .from('contributor_profiles')
-      .select('*')
-      .order('created_at', { ascending: false });
+    const q = query(collection(db, 'contributor_profiles'), orderBy('created_at', 'desc'));
+    const snap = await getDocs(q);
 
-    if (!error && Array.isArray(data) && data.length > 0) {
-      const mapped = data.map(u => ({
-        ...u,
-        password: u.password_hash || 'password123'
-      }));
+    if (!snap.empty) {
+      const mapped = snap.docs.map(d => {
+        const data = d.data();
+        return {
+          ...data,
+          password: data.password_hash || data.password || 'password123'
+        };
+      });
       saveStoredUsers(mapped as ContributorProfile[]);
       notifyAuthChange();
       return mapped as ContributorProfile[];
     }
   } catch (err) {
-    console.warn('Could not query Supabase contributor_profiles:', err);
+    console.warn('Could not query Firestore contributor_profiles:', err);
   }
 
   return getStoredUsers();
 };
 
 /**
- * Pushes all locally stored contributors to Supabase (useful for initial cloud migration).
+ * Pushes all locally stored contributors to Firebase Firestore (useful for initial cloud migration).
  */
-export const syncContributorsToSupabase = async (): Promise<{ success: boolean; count: number; error?: string }> => {
-  if (!isSupabaseConfigured) {
-    return { success: false, count: 0, error: 'Supabase is not configured in .env' };
+export const syncContributorsToFirebase = async (): Promise<{ success: boolean; count: number; error?: string }> => {
+  if (!isFirebaseConfigured) {
+    return { success: false, count: 0, error: 'Firebase is not configured in .env' };
   }
 
   const users = getStoredUsers();
   try {
-    const payload = users.map(u => ({
-      id: u.id,
-      email: u.email,
-      full_name: u.full_name,
-      application_number: u.application_number,
-      pioneer_id: u.pioneer_id,
-      acceptance_code: u.acceptance_code,
-      division: u.division,
-      contributor_level: u.contributor_level,
-      date_of_birth: u.date_of_birth || null,
-      avatar_url: u.avatar_url || null,
-      whatsapp_number: u.whatsapp_number || null,
-      telegram_handle: u.telegram_handle || null,
-      twitter_handle: u.twitter_handle || null,
-      instagram_handle: u.instagram_handle || null,
-      github_url: u.github_url || null,
-      linkedin_url: u.linkedin_url || null,
-      portfolio_url: u.portfolio_url || null,
-      institution: u.institution || null,
-      country: u.country || null,
-      city: u.city || null,
-      bio: u.bio || null,
-      skills: u.skills || [],
-      payout_preference: u.payout_preference || 'BANK',
-      payout_details: u.payout_details || null,
-      bank_name: u.bank_name || null,
-      account_number: u.account_number || null,
-      account_name: u.account_name || null,
-      is_profile_completed: u.is_profile_completed,
-      password_hash: u.password || 'password123',
-      survey_responses: u.survey_responses || [],
-      survey_completed_at: u.survey_completed_at || null,
-      is_suspended: u.is_suspended || false,
-      suspension_reason: u.suspension_reason || null,
-      suspended_at: u.suspended_at || null,
-      created_at: u.created_at || new Date().toISOString()
-    }));
-
-    const { error } = await supabase
-      .from('contributor_profiles')
-      .upsert(payload, { onConflict: 'email' });
-
-    if (error) {
-      return { success: false, count: 0, error: error.message };
+    for (const u of users) {
+      await setDoc(doc(db, 'contributor_profiles', u.email.toLowerCase()), {
+        id: u.id,
+        email: u.email,
+        full_name: u.full_name,
+        application_number: u.application_number,
+        pioneer_id: u.pioneer_id,
+        acceptance_code: u.acceptance_code,
+        division: u.division,
+        contributor_level: u.contributor_level,
+        date_of_birth: u.date_of_birth || null,
+        avatar_url: u.avatar_url || null,
+        whatsapp_number: u.whatsapp_number || null,
+        telegram_handle: u.telegram_handle || null,
+        twitter_handle: u.twitter_handle || null,
+        instagram_handle: u.instagram_handle || null,
+        github_url: u.github_url || null,
+        linkedin_url: u.linkedin_url || null,
+        portfolio_url: u.portfolio_url || null,
+        institution: u.institution || null,
+        country: u.country || null,
+        city: u.city || null,
+        bio: u.bio || null,
+        skills: u.skills || [],
+        payout_preference: u.payout_preference || 'BANK',
+        payout_details: u.payout_details || null,
+        bank_name: u.bank_name || null,
+        account_number: u.account_number || null,
+        account_name: u.account_name || null,
+        is_profile_completed: u.is_profile_completed,
+        password_hash: u.password || 'password123',
+        survey_responses: u.survey_responses || [],
+        survey_completed_at: u.survey_completed_at || null,
+        is_suspended: u.is_suspended || false,
+        suspension_reason: u.suspension_reason || null,
+        suspended_at: u.suspended_at || null,
+        created_at: u.created_at || new Date().toISOString()
+      }, { merge: true });
     }
 
     return { success: true, count: users.length };
@@ -920,4 +889,6 @@ export const syncContributorsToSupabase = async (): Promise<{ success: boolean; 
     return { success: false, count: 0, error: err?.message || 'Sync failed' };
   }
 };
+
+export const syncContributorsToSupabase = syncContributorsToFirebase;
 

@@ -1,5 +1,6 @@
 import { ContributorProfile } from './contributorAuth';
-import { supabase, isSupabaseConfigured } from './supabase';
+import { db, isFirebaseConfigured } from './firebase';
+import { collection, doc, getDocs, setDoc, updateDoc, query, orderBy } from 'firebase/firestore';
 
 export type ContributorTier = 'LEVEL_1' | 'LEVEL_2' | 'LEVEL_3' | 'LEVEL_4' | 'LEVEL_5';
 
@@ -126,39 +127,35 @@ export function getAllCertificates(): PioneerCertificate[] {
  * updates local storage cache, and returns them.
  */
 export async function fetchCertificatesFromDatabase(): Promise<PioneerCertificate[]> {
-  if (!isSupabaseConfigured) {
+  if (!isFirebaseConfigured) {
     return getAllCertificates();
   }
 
   try {
-    const { data, error } = await supabase
-      .from('pioneer_certificates')
-      .select('*')
-      .order('issued_at', { ascending: false });
+    const q = query(collection(db, 'pioneer_certificates'), orderBy('issued_at', 'desc'));
+    const snapshot = await getDocs(q);
 
-    if (error) {
-      console.warn('Supabase fetch error for pioneer_certificates, falling back to local storage:', error.message);
-      return getAllCertificates();
-    }
-
-    if (data && data.length > 0) {
-      const mapped: PioneerCertificate[] = data.map(item => ({
-        id: item.credential_id || item.id,
-        pioneer_id: item.pioneer_id,
-        application_number: item.application_number || '',
-        recipient_name: item.recipient_name,
-        recipient_email: item.recipient_email,
-        level: item.level as ContributorTier,
-        level_title: item.title,
-        division: item.division,
-        verified_jobs_count: item.verified_jobs_count || 0,
-        issued_at: item.issued_at,
-        issued_by: item.issued_by || 'Refeir Admissions Committee & Protocol Stewards',
-        special_distinction: item.special_distinction || item.description || '',
-        verification_hash: item.verification_hash,
-        status: item.is_revoked ? 'REVOKED' : 'ISSUED',
-        revocation_reason: item.revoked_reason || undefined
-      }));
+    if (!snapshot.empty) {
+      const mapped: PioneerCertificate[] = snapshot.docs.map(docSnap => {
+        const item = docSnap.data();
+        return {
+          id: item.credential_id || item.id || docSnap.id,
+          pioneer_id: item.pioneer_id,
+          application_number: item.application_number || '',
+          recipient_name: item.recipient_name,
+          recipient_email: item.recipient_email,
+          level: (item.level as ContributorTier) || 'LEVEL_1',
+          level_title: item.title || item.level_title || LEVEL_NAMES[item.level as ContributorTier] || 'Level 1: Pioneer Associate',
+          division: item.division || 'GENERAL',
+          verified_jobs_count: item.verified_jobs_count || 0,
+          issued_at: item.issued_at,
+          issued_by: item.issued_by || 'Refeir Admissions Committee & Protocol Stewards',
+          special_distinction: item.special_distinction || item.description || '',
+          verification_hash: item.verification_hash,
+          status: (item.is_revoked || item.status === 'REVOKED') ? 'REVOKED' : 'ISSUED',
+          revocation_reason: item.revoked_reason || item.revocation_reason || undefined
+        };
+      });
 
       localStorage.setItem(CERTIFICATES_STORAGE_KEY, JSON.stringify(mapped));
       return mapped;
@@ -166,49 +163,50 @@ export async function fetchCertificatesFromDatabase(): Promise<PioneerCertificat
 
     return getAllCertificates();
   } catch (err) {
-    console.error('Failed to fetch certificates from Supabase:', err);
+    console.error('Failed to fetch certificates from Firestore:', err);
     return getAllCertificates();
   }
 }
 
 /**
- * Synchronizes local cached certificates to Supabase database.
+ * Synchronizes local cached certificates to Firebase Firestore database.
  */
 export async function syncCertificatesToSupabase(): Promise<{ synced: number; error: string | null }> {
-  if (!isSupabaseConfigured) {
-    return { synced: 0, error: 'Supabase credentials not configured' };
+  if (!isFirebaseConfigured) {
+    return { synced: 0, error: 'Firebase credentials not configured' };
   }
 
   try {
     const localCerts = getAllCertificates();
-    const records = localCerts.map(c => ({
-      credential_id: c.id,
-      pioneer_id: c.pioneer_id,
-      application_number: c.application_number,
-      recipient_name: c.recipient_name,
-      recipient_email: c.recipient_email,
-      division: c.division,
-      level: c.level,
-      title: c.level_title,
-      description: c.special_distinction || '',
-      verified_jobs_count: c.verified_jobs_count,
-      issued_at: c.issued_at,
-      issued_by: c.issued_by,
-      special_distinction: c.special_distinction,
-      is_revoked: c.status === 'REVOKED',
-      revoked_reason: c.revocation_reason || null,
-      verification_hash: c.verification_hash
-    }));
+    const promises = localCerts.map(c =>
+      setDoc(doc(db, 'pioneer_certificates', c.id), {
+        credential_id: c.id,
+        pioneer_id: c.pioneer_id,
+        application_number: c.application_number,
+        recipient_name: c.recipient_name,
+        recipient_email: c.recipient_email,
+        division: c.division,
+        level: c.level,
+        title: c.level_title,
+        description: c.special_distinction || '',
+        verified_jobs_count: c.verified_jobs_count,
+        issued_at: c.issued_at,
+        issued_by: c.issued_by,
+        special_distinction: c.special_distinction,
+        is_revoked: c.status === 'REVOKED',
+        revoked_reason: c.revocation_reason || null,
+        verification_hash: c.verification_hash
+      }, { merge: true })
+    );
 
-    const { error } = await supabase.from('pioneer_certificates').upsert(records, { onConflict: 'credential_id' });
-    if (error) {
-      return { synced: 0, error: error.message };
-    }
-    return { synced: records.length, error: null };
+    await Promise.all(promises);
+    return { synced: localCerts.length, error: null };
   } catch (err: any) {
     return { synced: 0, error: err?.message || 'Sync failed' };
   }
 }
+
+export const syncCertificatesToFirebase = syncCertificatesToSupabase;
 
 export function getCertificatesByEmail(email: string): PioneerCertificate[] {
   if (!email) return [];
@@ -275,9 +273,9 @@ export function issueCertificate(params: {
   const updated = [newCert, ...all];
   localStorage.setItem(CERTIFICATES_STORAGE_KEY, JSON.stringify(updated));
 
-  // Asynchronously sync to Supabase if configured
-  if (isSupabaseConfigured) {
-    supabase.from('pioneer_certificates').upsert({
+  // Asynchronously sync to Firestore if configured
+  if (isFirebaseConfigured) {
+    setDoc(doc(db, 'pioneer_certificates', newCert.id), {
       credential_id: newCert.id,
       pioneer_id: newCert.pioneer_id,
       application_number: newCert.application_number,
@@ -293,8 +291,8 @@ export function issueCertificate(params: {
       special_distinction: newCert.special_distinction,
       is_revoked: false,
       verification_hash: newCert.verification_hash
-    }, { onConflict: 'credential_id' }).then(({ error }) => {
-      if (error) console.warn('Supabase certificate insert error:', error.message);
+    }, { merge: true }).catch(err => {
+      console.warn('Firestore certificate insert error:', err?.message);
     });
   }
 
@@ -319,13 +317,14 @@ export function revokeCertificate(id: string, reason: string): PioneerCertificat
 
   localStorage.setItem(CERTIFICATES_STORAGE_KEY, JSON.stringify(updated));
 
-  if (isSupabaseConfigured && targetCert) {
-    supabase.from('pioneer_certificates').update({
+  if (isFirebaseConfigured && targetCert) {
+    updateDoc(doc(db, 'pioneer_certificates', id), {
       is_revoked: true,
+      status: 'REVOKED',
       revoked_reason: reason || 'Administrative decision',
       revoked_at: new Date().toISOString()
-    }).eq('credential_id', id).then(({ error }) => {
-      if (error) console.warn('Supabase certificate revoke error:', error.message);
+    }).catch(err => {
+      console.warn('Firestore certificate revoke error:', err?.message);
     });
   }
 

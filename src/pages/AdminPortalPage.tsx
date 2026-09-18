@@ -9,12 +9,13 @@ import {
   AlertTriangle, Brain, Gift, Zap, Megaphone, PlusCircle, Radio, DollarSign,
   Bell, X, CheckCheck, Menu, BarChart3, Activity, TrendingUp, Target, PieChart, Info, HelpCircle
 } from 'lucide-react';
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { db, isFirebaseConfigured, checkFirebaseConnection, FirebaseHealthStatus } from '../lib/firebase';
 import {
   TaskSubmissionRecord,
   getTaskSubmissions,
   updateTaskSubmissionStatus,
   MIN_JOBS_FOR_PROMOTION,
+  syncTaskSubmissionsToFirebase,
   syncTaskSubmissionsToSupabase
 } from '../lib/taskSubmissions';
 import {
@@ -23,6 +24,7 @@ import {
   suspendContributor,
   activateContributor,
   ContributorProfile,
+  syncContributorsToFirebase,
   syncContributorsToSupabase,
   fetchContributorsFromDatabase,
   enforceInactivityRule,
@@ -34,6 +36,7 @@ import {
   getStoredApplications,
   generateAcceptanceCode,
   updateStoredApplication,
+  syncApplicationsToFirebase,
   syncApplicationsToSupabase,
   fetchApplicationsFromDatabase
 } from '../lib/pioneerApplications';
@@ -53,7 +56,9 @@ import {
   getActiveStaffSession,
   setActiveStaffSession,
   isTabAuthorized,
-  getStaffPermissions
+  getStaffPermissions,
+  fetchStaffMembersFromDatabase,
+  syncStaffMembersToFirebase
 } from '../lib/staffManagement';
 import {
   PioneerCertificate,
@@ -63,6 +68,7 @@ import {
   getCertificatesByEmail,
   LEVEL_NAMES,
   LEVEL_DESCRIPTIONS,
+  syncCertificatesToFirebase,
   syncCertificatesToSupabase,
   fetchCertificatesFromDatabase
 } from '../lib/certificates';
@@ -79,6 +85,7 @@ import {
   toggleTaskStatus,
   generateWhatsAppBroadcast,
   openWhatsAppShare,
+  syncSquadTasksToFirebase,
   syncSquadTasksToSupabase,
   fetchSquadTasksFromDatabase
 } from '../lib/squadTasks';
@@ -610,14 +617,10 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
         console.warn('Error loading task submissions:', e);
       }
 
-      if (isSupabaseConfigured) {
-        const { data, error } = await supabase
-          .from('pioneer_applications')
-          .select('*')
-          .order('created_at', { ascending: false });
-
-        if (!error && data && data.length > 0) {
-          setApplications(data as ApplicationRecord[]);
+      if (isFirebaseConfigured) {
+        const apps = await fetchApplicationsFromDatabase();
+        if (apps && apps.length > 0) {
+          setApplications(apps as ApplicationRecord[]);
           setLoading(false);
           return;
         }
@@ -735,7 +738,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
       // 3. Refresh Pioneer Members & Enforce 14-Day Inactivity Rule
       try {
         let loadedMembers: ContributorProfile[] = [];
-        if (isSupabaseConfigured) {
+        if (isFirebaseConfigured) {
           const dbContributors = await fetchContributorsFromDatabase();
           if (dbContributors && dbContributors.length > 0) {
             loadedMembers = dbContributors;
@@ -758,11 +761,20 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
       }
 
       // 4. Refresh Staff
-      setStaffList(getStaffMembers());
+      try {
+        if (isFirebaseConfigured) {
+          const dbStaff = await fetchStaffMembersFromDatabase();
+          setStaffList(dbStaff || getStaffMembers());
+        } else {
+          setStaffList(getStaffMembers());
+        }
+      } catch {
+        setStaffList(getStaffMembers());
+      }
 
       // 5. Refresh Certificates
       try {
-        if (isSupabaseConfigured) {
+        if (isFirebaseConfigured) {
           const dbCerts = await fetchCertificatesFromDatabase();
           if (dbCerts && dbCerts.length > 0) {
             setCertificatesList(dbCerts);
@@ -778,7 +790,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
       // 6. Refresh Squad Tasks
       try {
-        if (isSupabaseConfigured) {
+        if (isFirebaseConfigured) {
           const dbTasks = await fetchSquadTasksFromDatabase();
           if (dbTasks && dbTasks.length > 0) {
             setTasksList(dbTasks);
@@ -1790,14 +1802,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
     };
 
     try {
-      if (isSupabaseConfigured) {
-        await supabase
-          .from('pioneer_applications')
-          .update(updatedFields)
-          .eq('id', activeApp.id);
-      }
-
-      // Update in persistent local applications storage
+      // Update in persistent applications storage (and Firestore if configured)
       updateStoredApplication(activeApp.id, updatedFields);
 
       // Update local state

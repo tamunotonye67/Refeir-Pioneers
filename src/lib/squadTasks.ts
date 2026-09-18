@@ -1,4 +1,5 @@
-import { supabase, isSupabaseConfigured } from './supabase';
+import { db, isFirebaseConfigured } from './firebase';
+import { collection, doc, getDocs, setDoc, deleteDoc, updateDoc, query, orderBy } from 'firebase/firestore';
 
 export type SquadDivision =
   | 'GENERAL'
@@ -217,89 +218,68 @@ export function getAllSquadTasks(): SquadTask[] {
  * updates local storage cache, and returns the records.
  */
 export async function fetchSquadTasksFromDatabase(): Promise<SquadTask[]> {
-  if (!isSupabaseConfigured) {
+  if (!isFirebaseConfigured) {
     return getAllSquadTasks();
   }
 
   try {
-    const { data, error } = await supabase
-      .from('squad_tasks')
-      .select('*')
-      .order('created_at', { ascending: false });
+    const q = query(collection(db, 'squad_tasks'), orderBy('created_at', 'desc'));
+    const snapshot = await getDocs(q);
 
-    if (error) {
-      console.warn('Supabase fetch error for squad_tasks, falling back to local storage:', error.message);
-      return getAllSquadTasks();
-    }
-
-    if (data && data.length > 0) {
-      const mapped: SquadTask[] = data.map(item => ({
-        id: item.id,
-        title: item.title,
-        squad: item.squad,
-        frequency: item.frequency,
-        category: item.category,
-        description: item.description,
-        requirements: item.requirements || [],
-        submission_format: item.submission_format,
-        bounty_type: item.bounty_type,
-        bounty_reward: item.bounty_reward || undefined,
-        bounty_slots: item.bounty_slots || undefined,
-        bounty_instructions: item.bounty_instructions || undefined,
-        deadline: item.deadline,
-        status: item.status,
-        announced_by: item.announced_by,
-        created_at: item.created_at
-      }));
+    if (!snapshot.empty) {
+      const mapped: SquadTask[] = snapshot.docs.map(docSnap => {
+        const item = docSnap.data();
+        return {
+          id: item.id || docSnap.id,
+          title: item.title,
+          squad: item.squad,
+          frequency: item.frequency,
+          category: item.category,
+          description: item.description,
+          requirements: item.requirements || [],
+          submission_format: item.submission_format,
+          bounty_type: item.bounty_type,
+          bounty_reward: item.bounty_reward || undefined,
+          bounty_slots: item.bounty_slots || undefined,
+          bounty_instructions: item.bounty_instructions || undefined,
+          deadline: item.deadline,
+          status: item.status,
+          announced_by: item.announced_by,
+          created_at: item.created_at
+        };
+      });
       localStorage.setItem(STORAGE_KEY, JSON.stringify(mapped));
       return mapped;
     }
 
     return getAllSquadTasks();
   } catch (err) {
-    console.error('Failed to fetch squad tasks from Supabase:', err);
+    console.error('Failed to fetch squad tasks from Firestore:', err);
     return getAllSquadTasks();
   }
 }
 
 /**
- * Synchronizes local cached squad tasks up to Supabase database.
+ * Synchronizes local cached squad tasks up to Firebase Firestore database.
  */
 export async function syncSquadTasksToSupabase(): Promise<{ synced: number; error: string | null }> {
-  if (!isSupabaseConfigured) {
-    return { synced: 0, error: 'Supabase credentials not configured' };
+  if (!isFirebaseConfigured) {
+    return { synced: 0, error: 'Firebase credentials not configured' };
   }
 
   try {
     const localTasks = getAllSquadTasks();
-    const records = localTasks.map(t => ({
-      id: t.id,
-      title: t.title,
-      squad: t.squad,
-      frequency: t.frequency,
-      category: t.category,
-      description: t.description,
-      requirements: t.requirements,
-      submission_format: t.submission_format,
-      bounty_type: t.bounty_type,
-      bounty_reward: t.bounty_reward || null,
-      bounty_slots: t.bounty_slots || null,
-      bounty_instructions: t.bounty_instructions || null,
-      deadline: t.deadline,
-      status: t.status,
-      announced_by: t.announced_by,
-      created_at: t.created_at
-    }));
-
-    const { error } = await supabase.from('squad_tasks').upsert(records, { onConflict: 'id' });
-    if (error) {
-      return { synced: 0, error: error.message };
-    }
-    return { synced: records.length, error: null };
+    const promises = localTasks.map(t =>
+      setDoc(doc(db, 'squad_tasks', t.id), t, { merge: true })
+    );
+    await Promise.all(promises);
+    return { synced: localTasks.length, error: null };
   } catch (err: any) {
     return { synced: 0, error: err?.message || 'Sync failed' };
   }
 }
+
+export const syncSquadTasksToFirebase = syncSquadTasksToSupabase;
 
 export function getActiveTasksBySquad(squad?: SquadDivision | 'ALL'): SquadTask[] {
   const all = getAllSquadTasks();
@@ -320,28 +300,10 @@ export function createSquadTask(task: Omit<SquadTask, 'id' | 'created_at'>): Squ
   const updated = [newTask, ...all];
   localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
 
-  // Async sync to Supabase if configured
-  if (isSupabaseConfigured) {
-    supabase.from('squad_tasks').insert({
-      id: newTask.id,
-      title: newTask.title,
-      squad: newTask.squad,
-      frequency: newTask.frequency,
-      category: newTask.category,
-      description: newTask.description,
-      requirements: newTask.requirements,
-      submission_format: newTask.submission_format,
-      bounty_type: newTask.bounty_type,
-      bounty_reward: newTask.bounty_reward || null,
-      bounty_slots: newTask.bounty_slots || null,
-      bounty_instructions: newTask.bounty_instructions || null,
-      deadline: newTask.deadline,
-      status: newTask.status,
-      announced_by: newTask.announced_by,
-      created_at: newTask.created_at
-    }).then(({ error }) => {
-      if (error) console.warn('Supabase task insert error:', error.message);
-    });
+  // Async sync to Firestore if configured
+  if (isFirebaseConfigured) {
+    setDoc(doc(db, 'squad_tasks', newTask.id), newTask, { merge: true })
+      .catch(err => console.warn('Firestore task insert error:', err?.message));
   }
 
   return newTask;
@@ -359,28 +321,9 @@ export function updateSquadTask(id: string, updates: Partial<SquadTask>): SquadT
   });
   localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
 
-  if (isSupabaseConfigured && updatedTask) {
-    supabase.from('squad_tasks')
-      .update({
-        title: updatedTask.title,
-        squad: updatedTask.squad,
-        frequency: updatedTask.frequency,
-        category: updatedTask.category,
-        description: updatedTask.description,
-        requirements: updatedTask.requirements,
-        submission_format: updatedTask.submission_format,
-        bounty_type: updatedTask.bounty_type,
-        bounty_reward: updatedTask.bounty_reward || null,
-        bounty_slots: updatedTask.bounty_slots || null,
-        bounty_instructions: updatedTask.bounty_instructions || null,
-        deadline: updatedTask.deadline,
-        status: updatedTask.status,
-        announced_by: updatedTask.announced_by
-      })
-      .eq('id', id)
-      .then(({ error }) => {
-        if (error) console.warn('Supabase task update error:', error.message);
-      });
+  if (isFirebaseConfigured && updatedTask) {
+    setDoc(doc(db, 'squad_tasks', id), updatedTask, { merge: true })
+      .catch(err => console.warn('Firestore task update error:', err?.message));
   }
 
   return updatedTask;
@@ -391,10 +334,9 @@ export function deleteSquadTask(id: string): boolean {
   const filtered = all.filter(t => t.id !== id);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
 
-  if (isSupabaseConfigured) {
-    supabase.from('squad_tasks').delete().eq('id', id).then(({ error }) => {
-      if (error) console.warn('Supabase task delete error:', error.message);
-    });
+  if (isFirebaseConfigured) {
+    deleteDoc(doc(db, 'squad_tasks', id))
+      .catch(err => console.warn('Firestore task delete error:', err?.message));
   }
 
   return true;
@@ -413,13 +355,9 @@ export function toggleTaskStatus(id: string): SquadTask | undefined {
   });
   localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
 
-  if (isSupabaseConfigured && updatedTask) {
-    supabase.from('squad_tasks')
-      .update({ status: updatedTask.status })
-      .eq('id', id)
-      .then(({ error }) => {
-        if (error) console.warn('Supabase task toggle status error:', error.message);
-      });
+  if (isFirebaseConfigured && updatedTask) {
+    updateDoc(doc(db, 'squad_tasks', id), { status: updatedTask.status })
+      .catch(err => console.warn('Firestore task toggle status error:', err?.message));
   }
 
   return updatedTask;

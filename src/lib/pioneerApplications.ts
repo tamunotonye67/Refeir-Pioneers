@@ -1,4 +1,5 @@
-import { supabase, isSupabaseConfigured } from './supabase';
+import { db, isFirebaseConfigured } from './firebase';
+import { collection, doc, getDocs, setDoc, query, orderBy } from 'firebase/firestore';
 
 export type PioneerReviewStatus = 'PENDING' | 'REVIEWING' | 'ACCEPTED' | 'WAITLISTED' | 'REJECTED';
 export type ContributorTier = 'LEVEL_1' | 'LEVEL_2' | 'LEVEL_3' | 'LEVEL_4' | 'LEVEL_5';
@@ -98,19 +99,19 @@ export const INITIAL_DEMO_APPLICATIONS: PioneerApplicationRecord[] = [
     skills: 'Viral loops, Campus Ambassador Growth, Content Strategy',
     portfolio_url: 'https://linkedin.com/in/kwame-demo',
     primary_division: 'GROWTH',
-    contribution: 'Setting up campus developer chapters across University of Ghana and KNUST.',
-    availability: '6–10 hours/week',
-    motivation: 'I run a 5,000+ member student tech community eager for verified freelance opportunities.',
-    learning_goals: 'Mastering platform referral economics and community scaling.',
-    discovery_source: 'WhatsApp Community',
+    contribution: 'Organizing campus developer orientation hackathons across Ghanaian universities.',
+    availability: '5–8 hours/week',
+    motivation: 'Refeir can solve graduate underemployment by turning student networks into economic assets.',
+    learning_goals: 'Mastering viral referral design and Web3 community growth frameworks.',
+    discovery_source: 'University Campus Club',
     status: 'ACCEPTED',
     contributor_level: 'LEVEL_2',
-    is_founding_100: false,
+    is_founding_100: true,
     pioneer_id: 'RP-045',
     acceptance_code: 'ACC-4920-7712',
     account_created: true,
-    internal_notes: 'Promoted to Level 2 based on campus ambassador chapters launched.',
-    created_at: new Date(Date.now() - 3600000 * 6).toISOString()
+    internal_notes: 'Campus ambassador and developer advocate in Accra.',
+    created_at: new Date(Date.now() - 3600000 * 48).toISOString()
   },
   {
     id: 'app-demo-4',
@@ -140,10 +141,21 @@ export const INITIAL_DEMO_APPLICATIONS: PioneerApplicationRecord[] = [
   }
 ];
 
+export const generateApplicationNumber = (): string => {
+  const timestamp = Date.now().toString().slice(-4);
+  const random = Math.floor(1000 + Math.random() * 9000);
+  return `RP-2026-${timestamp}${random}`.slice(0, 15);
+};
+
 export const generateAcceptanceCode = (appNumber: string): string => {
-  const digits = appNumber.replace(/\D/g, '').slice(-4) || '2026';
-  const rand = Math.random().toString(36).substring(2, 6).toUpperCase();
-  return `ACC-${digits}-${rand}`;
+  const clean = appNumber.replace(/[^0-9]/g, '');
+  const prefix = clean.slice(-4) || '9041';
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let rand = '';
+  for (let i = 0; i < 4; i++) {
+    rand += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return `ACC-${prefix}-${rand}`;
 };
 
 export const getStoredApplications = (): PioneerApplicationRecord[] => {
@@ -177,13 +189,9 @@ export const addStoredApplication = (app: Omit<PioneerApplicationRecord, 'id' | 
   apps.unshift(newApp);
   saveStoredApplications(apps);
 
-  if (isSupabaseConfigured) {
-    supabase
-      .from('pioneer_applications')
-      .insert([newApp])
-      .then(({ error }) => {
-        if (error) console.warn('Supabase application insert warning:', error.message);
-      });
+  if (isFirebaseConfigured) {
+    setDoc(doc(db, 'pioneer_applications', newApp.application_number), newApp, { merge: true })
+      .catch(err => console.warn('Firestore application insert warning:', err?.message));
   }
 
   return newApp;
@@ -230,14 +238,9 @@ export const updateStoredApplication = (
   if (updatedApp) {
     saveStoredApplications(modified);
 
-    if (isSupabaseConfigured) {
-      supabase
-        .from('pioneer_applications')
-        .update(updatedApp)
-        .eq('application_number', (updatedApp as PioneerApplicationRecord).application_number)
-        .then(({ error }) => {
-          if (error) console.warn('Supabase application update warning:', error.message);
-        });
+    if (isFirebaseConfigured) {
+      setDoc(doc(db, 'pioneer_applications', (updatedApp as PioneerApplicationRecord).application_number), updatedApp, { merge: true })
+        .catch(err => console.warn('Firestore application update warning:', err?.message));
     }
   }
   return updatedApp;
@@ -311,50 +314,46 @@ export const generateNextPioneerId = (): string => {
 };
 
 /**
- * Fetches applications from Supabase if configured, and updates local cache.
+ * Fetches applications from Firebase Firestore if configured, and updates local cache.
  */
 export const fetchApplicationsFromDatabase = async (): Promise<PioneerApplicationRecord[]> => {
-  if (!isSupabaseConfigured) {
+  if (!isFirebaseConfigured) {
     return getStoredApplications();
   }
 
   try {
-    const { data, error } = await supabase
-      .from('pioneer_applications')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (!error && Array.isArray(data) && data.length > 0) {
-      saveStoredApplications(data as PioneerApplicationRecord[]);
-      return data as PioneerApplicationRecord[];
+    const q = query(collection(db, 'pioneer_applications'), orderBy('created_at', 'desc'));
+    const snapshot = await getDocs(q);
+    if (!snapshot.empty) {
+      const records = snapshot.docs.map(d => d.data() as PioneerApplicationRecord);
+      saveStoredApplications(records);
+      return records;
     }
   } catch (err) {
-    console.warn('Could not query Supabase pioneer_applications, falling back to local storage:', err);
+    console.warn('Could not query Firestore pioneer_applications, falling back to local storage:', err);
   }
 
   return getStoredApplications();
 };
 
 /**
- * Pushes all locally stored applications to Supabase (useful for seeding fresh Supabase instance).
+ * Pushes all locally stored applications to Firebase Firestore.
  */
 export const syncApplicationsToSupabase = async (): Promise<{ success: boolean; count: number; error?: string }> => {
-  if (!isSupabaseConfigured) {
-    return { success: false, count: 0, error: 'Supabase is not configured. Add credentials to .env' };
+  if (!isFirebaseConfigured) {
+    return { success: false, count: 0, error: 'Firebase is not configured. Add credentials to .env' };
   }
 
   const apps = getStoredApplications();
   try {
-    const { error } = await supabase
-      .from('pioneer_applications')
-      .upsert(apps, { onConflict: 'application_number' });
-
-    if (error) {
-      return { success: false, count: 0, error: error.message };
-    }
-
+    const promises = apps.map(app =>
+      setDoc(doc(db, 'pioneer_applications', app.application_number), app, { merge: true })
+    );
+    await Promise.all(promises);
     return { success: true, count: apps.length };
   } catch (err: any) {
     return { success: false, count: 0, error: err?.message || 'Sync failed' };
   }
 };
+
+export const syncApplicationsToFirebase = syncApplicationsToSupabase;
