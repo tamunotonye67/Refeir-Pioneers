@@ -1649,8 +1649,8 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
         return (
           <span style={{
             background: 'rgba(24, 252, 92, 0.15)', color: RF_MINT_ACCENT, border: `1px solid ${RF_LEAF_GREEN}66`,
-            padding: '4px 10px', borderRadius: 100, fontSize: 11.5, fontWeight: 700, letterSpacing: '0.04em',
-            display: 'inline-flex', alignItems: 'center', gap: 4
+            padding: '5px 12px', borderRadius: 100, fontSize: 11.5, fontWeight: 700, letterSpacing: '0.04em',
+            display: 'inline-flex', alignItems: 'center', gap: 5, whiteSpace: 'nowrap', flexShrink: 0
           }}>
             <Check size={12} /> VERIFIED
           </span>
@@ -1659,28 +1659,31 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
         return (
           <span style={{
             background: 'rgba(244, 124, 32, 0.15)', color: '#FFB27D', border: `1px solid rgba(244, 124, 32, 0.5)`,
-            padding: '4px 10px', borderRadius: 100, fontSize: 11.5, fontWeight: 700, letterSpacing: '0.04em'
+            padding: '5px 12px', borderRadius: 100, fontSize: 11.5, fontWeight: 700, letterSpacing: '0.04em',
+            display: 'inline-flex', alignItems: 'center', gap: 5, whiteSpace: 'nowrap', flexShrink: 0
           }}>
-            NEEDS REVISION
+            <AlertTriangle size={12} /> NEEDS REVISION
           </span>
         );
       case 'REJECTED':
         return (
           <span style={{
             background: 'rgba(239, 68, 68, 0.12)', color: '#FCA5A5', border: '1px solid rgba(239, 68, 68, 0.4)',
-            padding: '4px 10px', borderRadius: 100, fontSize: 11.5, fontWeight: 700, letterSpacing: '0.04em'
+            padding: '5px 12px', borderRadius: 100, fontSize: 11.5, fontWeight: 700, letterSpacing: '0.04em',
+            display: 'inline-flex', alignItems: 'center', gap: 5, whiteSpace: 'nowrap', flexShrink: 0
           }}>
-            REJECTED
+            <XCircle size={12} /> REJECTED
           </span>
         );
       case 'PENDING':
       default:
         return (
           <span style={{
-            background: 'rgba(246, 178, 26, 0.15)', color: RF_GOLD_YELLOW, border: '1px solid rgba(246, 178, 26, 0.4)',
-            padding: '4px 10px', borderRadius: 100, fontSize: 11.5, fontWeight: 700, letterSpacing: '0.04em'
+            background: 'rgba(246, 178, 26, 0.15)', color: RF_GOLD_YELLOW, border: '1px solid rgba(246, 178, 26, 0.45)',
+            padding: '5px 12px', borderRadius: 100, fontSize: 11.5, fontWeight: 700, letterSpacing: '0.04em',
+            display: 'inline-flex', alignItems: 'center', gap: 5, whiteSpace: 'nowrap', flexShrink: 0
           }}>
-            PENDING PROOF
+            <Clock size={12} /> PENDING PROOF
           </span>
         );
     }
@@ -4255,17 +4258,17 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             background: 'rgba(255,255,255,0.02)', borderRadius: 18,
             border: '1px solid rgba(255,255,255,0.08)', overflow: 'hidden'
           }}>
-            <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-              <table style={{ width: '100%', minWidth: isMobile ? 920 : 700, borderCollapse: 'collapse', textAlign: 'left' }}>
+            <div className="rp-sleek-scroll" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', width: '100%' }}>
+              <table style={{ width: '100%', minWidth: 1100, borderCollapse: 'collapse', textAlign: 'left' }}>
               <thead>
                 <tr style={{ background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                  <th style={{ padding: '14px 18px', fontSize: 11.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Reference / Date</th>
-                  <th style={{ padding: '14px 18px', fontSize: 11.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Contributor</th>
-                  <th style={{ padding: '14px 18px', fontSize: 11.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Target Rank</th>
-                  <th style={{ padding: '14px 18px', fontSize: 11.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Mission &amp; Category</th>
-                  <th style={{ padding: '14px 18px', fontSize: 11.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Evidence</th>
-                  <th style={{ padding: '14px 18px', fontSize: 11.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Status</th>
-                  <th style={{ padding: '14px 18px', fontSize: 11.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', textAlign: 'right', whiteSpace: 'nowrap' }}>Action</th>
+                  <th style={{ padding: '15px 18px', minWidth: 150, fontSize: 11.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Reference / Date</th>
+                  <th style={{ padding: '15px 18px', minWidth: 230, fontSize: 11.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Contributor</th>
+                  <th style={{ padding: '15px 18px', minWidth: 120, fontSize: 11.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Target Rank</th>
+                  <th style={{ padding: '15px 18px', minWidth: 260, fontSize: 11.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Mission &amp; Category</th>
+                  <th style={{ padding: '15px 18px', minWidth: 140, fontSize: 11.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Evidence</th>
+                  <th style={{ padding: '15px 18px', minWidth: 160, fontSize: 11.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Status</th>
+                  <th style={{ padding: '15px 18px', minWidth: 140, fontSize: 11.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', textAlign: 'right', whiteSpace: 'nowrap' }}>Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -4287,71 +4290,75 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                       onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.03)')}
                       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                     >
-                      <td style={{ padding: '16px 18px' }}>
+                      <td style={{ padding: '16px 18px', minWidth: 150, whiteSpace: 'nowrap' }}>
                         <span style={{ fontSize: 12, fontWeight: 700, fontFamily: 'monospace', color: RF_MINT_ACCENT, display: 'block' }}>
                           {task.reference_id}
                         </span>
-                        <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)' }}>
+                        <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', marginTop: 3, display: 'block' }}>
                           {new Date(task.created_at).toLocaleDateString()}
                         </span>
                       </td>
-                      <td style={{ padding: '16px 18px' }}>
+                      <td style={{ padding: '16px 18px', minWidth: 230 }}>
                         <span style={{ fontSize: 13.5, fontWeight: 600, color: '#FFFFFF', display: 'block' }}>
                           {task.full_name}
                         </span>
-                        <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.5)', display: 'block' }}>
+                        <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.5)', display: 'block', marginTop: 2 }}>
                           {task.email}
                         </span>
-                        <div style={{ display: 'flex', gap: 6, marginTop: 4, flexWrap: 'wrap' }}>
+                        <div style={{ display: 'flex', gap: 6, marginTop: 5, flexWrap: 'wrap', alignItems: 'center' }}>
                           {task.application_number && (
-                            <span style={{ fontSize: 10.5, fontFamily: 'monospace', color: RF_MINT_ACCENT, background: 'rgba(24, 252, 92, 0.08)', padding: '1px 6px', borderRadius: 4 }}>
+                            <span style={{ fontSize: 10.5, fontFamily: 'monospace', color: RF_MINT_ACCENT, background: 'rgba(24, 252, 92, 0.08)', padding: '2px 7px', borderRadius: 4, whiteSpace: 'nowrap' }}>
                               {task.application_number}
                             </span>
                           )}
                           {task.pioneer_id && (
-                            <span style={{ fontSize: 10.5, fontFamily: 'monospace', fontWeight: 700, color: RF_GOLD_YELLOW, background: 'rgba(246, 178, 26, 0.1)', padding: '1px 6px', borderRadius: 4 }}>
+                            <span style={{ fontSize: 10.5, fontFamily: 'monospace', fontWeight: 700, color: RF_GOLD_YELLOW, background: 'rgba(246, 178, 26, 0.1)', padding: '2px 7px', borderRadius: 4, whiteSpace: 'nowrap' }}>
                               {task.pioneer_id}
                             </span>
                           )}
                         </div>
                       </td>
-                      <td style={{ padding: '16px 18px' }}>
+                      <td style={{ padding: '16px 18px', minWidth: 120, whiteSpace: 'nowrap' }}>
                         <span style={{
-                          padding: '3px 9px', borderRadius: 100, fontSize: 11, fontWeight: 700,
+                          padding: '4px 10px', borderRadius: 100, fontSize: 11, fontWeight: 700,
                           background: task.target_level === 'LEVEL_2' ? `${RF_MINT_ACCENT}15` : `${RF_GOLD_YELLOW}15`,
                           border: `1px solid ${task.target_level === 'LEVEL_2' ? RF_MINT_ACCENT : RF_GOLD_YELLOW}55`,
-                          color: task.target_level === 'LEVEL_2' ? RF_MINT_ACCENT : RF_GOLD_YELLOW
+                          color: task.target_level === 'LEVEL_2' ? RF_MINT_ACCENT : RF_GOLD_YELLOW,
+                          whiteSpace: 'nowrap', display: 'inline-block'
                         }}>
                           {task.target_level.replace('_', ' ')}
                         </span>
                       </td>
-                      <td style={{ padding: '16px 18px' }}>
-                        <span style={{ fontSize: 13, fontWeight: 600, color: '#FFFFFF', display: 'block', maxWidth: 260, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <td style={{ padding: '16px 18px', minWidth: 260 }}>
+                        <span style={{ fontSize: 13, fontWeight: 600, color: '#FFFFFF', display: 'block', maxWidth: 300, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {task.task_title}
                         </span>
-                        <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)' }}>
+                        <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', marginTop: 3, display: 'block' }}>
                           {task.task_category}
                         </span>
                       </td>
-                      <td style={{ padding: '16px 18px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <td style={{ padding: '16px 18px', minWidth: 140, whiteSpace: 'nowrap' }}>
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
                           <ImageIcon size={14} color={task.screenshots.length > 0 ? RF_MINT_ACCENT : 'rgba(255,255,255,0.4)'} />
-                          <span style={{ fontSize: 12, fontWeight: 600, color: task.screenshots.length > 0 ? '#FFFFFF' : 'rgba(255,255,255,0.4)' }}>
+                          <span style={{ fontSize: 12, fontWeight: 600, color: task.screenshots.length > 0 ? '#FFFFFF' : 'rgba(255,255,255,0.4)', whiteSpace: 'nowrap' }}>
                             {task.screenshots.length} Screenshot{task.screenshots.length === 1 ? '' : 's'}
                           </span>
                         </div>
                       </td>
-                      <td style={{ padding: '16px 18px' }}>
+                      <td style={{ padding: '16px 18px', minWidth: 160, whiteSpace: 'nowrap' }}>
                         {renderTaskStatusBadge(task.status)}
                       </td>
-                      <td style={{ padding: '16px 18px', textAlign: 'right' }}>
+                      <td style={{ padding: '16px 18px', minWidth: 140, textAlign: 'right', whiteSpace: 'nowrap' }}>
                         <button
                           onClick={e => { e.stopPropagation(); handleOpenTaskModal(task); }}
                           style={{
                             background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.18)',
-                            color: '#FFFFFF', padding: '6px 14px', borderRadius: 100, fontSize: 12,
-                            fontWeight: 500, cursor: 'pointer'
+                            color: '#FFFFFF', padding: '7px 16px', borderRadius: 100, fontSize: 12,
+                            fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap', display: 'inline-flex',
+                            alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s ease'
                           }}
+                          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.12)'; e.currentTarget.style.borderColor = RF_MINT_ACCENT; }}
+                          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.18)'; }}
                         >
                           Review Proof
                         </button>
