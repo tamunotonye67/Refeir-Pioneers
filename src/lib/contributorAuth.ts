@@ -45,6 +45,7 @@ export interface ContributorProfile {
   account_number?: string;
   account_name?: string;
   is_profile_completed: boolean;
+  is_founding_100?: boolean;
   password?: string;
   created_at: string;
   profile_completed_at?: string;

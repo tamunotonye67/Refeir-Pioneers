@@ -2,12 +2,12 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   Shield, Search, Filter, CheckCircle2, Clock, XCircle, AlertCircle,
   ExternalLink, Download, MessageSquare, Mail, RefreshCw, UserCheck,
-  ChevronDown, ChevronRight, Edit3, Save, Lock, LogOut, ArrowRight, Star,
+  ChevronDown, ChevronUp, ChevronRight, Edit3, Save, Lock, LogOut, ArrowRight, Star,
   Image as ImageIcon, Award, Eye, Check, FileCheck, Users,
   UserPlus, Trash2, Key, EyeOff, Copy, Ban, UserX, Calendar,
   Building2, Globe, Phone, Send, AtSign, Share2, Briefcase,
   AlertTriangle, Brain, Gift, Zap, Megaphone, PlusCircle, Radio, DollarSign,
-  Bell, X, CheckCheck, Menu, BarChart3, Activity, TrendingUp, Target, PieChart, Info
+  Bell, X, CheckCheck, Menu, BarChart3, Activity, TrendingUp, Target, PieChart, Info, HelpCircle
 } from 'lucide-react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import {
@@ -308,6 +308,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
   // Pioneer Members State
   const [selectedMember, setSelectedMember] = useState<ContributorProfile | null>(null);
   const [memberModalOpen, setMemberModalOpen] = useState(false);
+  const [surveyExpanded, setSurveyExpanded] = useState(false);
   const [memberSearchTerm, setMemberSearchTerm] = useState('');
   const [memberStatusFilter, setMemberStatusFilter] = useState<'ALL' | 'ACTIVE' | 'SUSPENDED'>('ALL');
   const [memberDivisionFilter, setMemberDivisionFilter] = useState('ALL');
@@ -802,6 +803,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
   const handleOpenMemberModal = (member: ContributorProfile) => {
     setSelectedMember(member);
+    setSurveyExpanded(false);
     setMemberModalOpen(true);
   };
 
@@ -978,6 +980,72 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
   const [newTaskBountyInstructions, setNewTaskBountyInstructions] = useState('First 10 verified submissions will receive instant mobile airtime recharge code on WhatsApp.');
   const [newTaskDeadline, setNewTaskDeadline] = useState('Today 11:59 PM WAT');
   const [newTaskMaxClaims, setNewTaskMaxClaims] = useState(10);
+
+  // Global Escape Key Listener for Modals, Popups, and Dockers
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' || e.key === 'Esc') {
+        if (screenshotModalUrl) {
+          setScreenshotModalUrl(null);
+          return;
+        }
+        if (isCertificateModalOpen) {
+          setIsCertificateModalOpen(false);
+          return;
+        }
+        if (suspendModalMember) {
+          setSuspendModalMember(null);
+          return;
+        }
+        if (issueCertModalOpen) {
+          setIssueCertModalOpen(false);
+          return;
+        }
+        if (newTaskModalOpen) {
+          setNewTaskModalOpen(false);
+          return;
+        }
+        if (memberModalOpen) {
+          setMemberModalOpen(false);
+          return;
+        }
+        if (taskModalOpen) {
+          setTaskModalOpen(false);
+          return;
+        }
+        if (addWorkerModalOpen) {
+          setAddWorkerModalOpen(false);
+          return;
+        }
+        if (modalOpen) {
+          setModalOpen(false);
+          return;
+        }
+        if (adminProfileDockerOpen) {
+          setAdminProfileDockerOpen(false);
+          return;
+        }
+        if (adminMobileNavOpen) {
+          setAdminMobileNavOpen(false);
+          return;
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [
+    screenshotModalUrl,
+    isCertificateModalOpen,
+    suspendModalMember,
+    issueCertModalOpen,
+    newTaskModalOpen,
+    memberModalOpen,
+    taskModalOpen,
+    addWorkerModalOpen,
+    modalOpen,
+    adminProfileDockerOpen,
+    adminMobileNavOpen
+  ]);
 
   // Comprehensive Analytics Calculations across all admin modules
   const analytics = useMemo(() => {
@@ -8085,43 +8153,51 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           onClick={() => setMemberModalOpen(false)}
           style={{
             position: 'fixed', inset: 0, zIndex: 1000,
-            background: 'rgba(5, 18, 11, 0.85)', backdropFilter: 'blur(12px)',
+            background: 'rgba(3, 10, 6, 0.88)', backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            padding: isMobile ? '12px 10px calc(16px + env(safe-area-inset-bottom, 16px))' : 20
+            padding: isMobile ? '12px 10px calc(16px + env(safe-area-inset-bottom, 16px))' : '24px 20px'
           }}
         >
           <div
             onClick={e => e.stopPropagation()}
             className="rp-sleek-scroll"
             style={{
-              maxWidth: 900, width: '100%',
-              maxHeight: isMobile ? 'calc(100dvh - 28px - env(safe-area-inset-bottom, 16px))' : '92vh',
+              maxWidth: 860, width: '100%',
+              maxHeight: isMobile ? 'calc(100dvh - 28px - env(safe-area-inset-bottom, 16px))' : '90vh',
               overflowY: 'auto',
               WebkitOverflowScrolling: 'touch',
               overscrollBehavior: 'contain',
-              background: 'linear-gradient(145deg, #0B2416 0%, #061A0F 100%)',
-              borderRadius: isMobile ? 18 : 24, border: '1px solid rgba(102, 187, 42, 0.35)',
-              padding: isMobile ? '20px 16px calc(30px + env(safe-area-inset-bottom, 24px))' : '32px 32px 36px',
+              background: 'linear-gradient(160deg, #0A2417 0%, #06170E 100%)',
+              borderRadius: isMobile ? 20 : 24,
+              border: '1px solid rgba(24, 252, 92, 0.22)',
+              padding: isMobile ? '20px 16px calc(28px + env(safe-area-inset-bottom, 20px))' : '32px 32px 34px',
               position: 'relative',
-              boxShadow: '0 25px 60px rgba(0,0,0,0.85)'
+              boxShadow: '0 28px 70px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,255,255,0.06)'
             }}
           >
             {/* Close Button */}
             <button
               onClick={() => setMemberModalOpen(false)}
+              aria-label="Close modal"
               style={{
                 position: 'absolute', top: isMobile ? 14 : 20, right: isMobile ? 14 : 20,
-                background: 'rgba(255,255,255,0.07)', border: 'none', color: 'rgba(255,255,255,0.6)',
-                width: 32, height: 32, borderRadius: '50%', cursor: 'pointer', display: 'flex',
-                alignItems: 'center', justifyContent: 'center', fontSize: 15, zIndex: 2
+                background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
+                color: 'rgba(255,255,255,0.7)', width: 34, height: 34, borderRadius: '50%',
+                cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 16, zIndex: 10, transition: 'all 0.2s ease'
               }}
-            >✕</button>
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.14)'; e.currentTarget.style.color = '#FFFFFF'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; }}
+            >
+              <X size={16} />
+            </button>
 
             {/* Suspended Banner */}
             {selectedMember.is_suspended && (
               <div style={{
-                background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.35)',
-                borderRadius: 12, padding: '12px 16px', marginBottom: 20,
+                background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.35)',
+                borderRadius: 14, padding: '12px 18px', marginBottom: 22,
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap'
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -8146,143 +8222,243 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               </div>
             )}
 
-            {/* ── HEADER ── */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 24 }}>
+            {/* ── HEADER & IDENTITY ── */}
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: isMobile ? 14 : 20,
+              marginBottom: 24, paddingBottom: 22, borderBottom: '1px solid rgba(255,255,255,0.08)'
+            }}>
               {selectedMember.avatar_url ? (
                 <img src={selectedMember.avatar_url} alt={selectedMember.full_name} style={{
-                  width: 60, height: 60, borderRadius: '50%', objectFit: 'cover', flexShrink: 0,
-                  border: `2px solid ${selectedMember.is_suspended ? '#EF4444' : RF_LEAF_GREEN}40`
+                  width: isMobile ? 60 : 72, height: isMobile ? 60 : 72, borderRadius: '50%', objectFit: 'cover', flexShrink: 0,
+                  border: `2px solid ${selectedMember.is_suspended ? '#EF4444' : RF_MINT_ACCENT}`,
+                  boxShadow: `0 0 16px ${selectedMember.is_suspended ? 'rgba(239,68,68,0.3)' : 'rgba(24,252,92,0.25)'}`
                 }} />
               ) : (
                 <div style={{
-                  width: 60, height: 60, borderRadius: '50%', flexShrink: 0,
+                  width: isMobile ? 60 : 72, height: isMobile ? 60 : 72, borderRadius: '50%', flexShrink: 0,
                   background: selectedMember.is_suspended ? 'rgba(239,68,68,0.15)' : `${RF_LEAF_GREEN}20`,
-                  border: `2px solid ${selectedMember.is_suspended ? '#EF4444' : RF_LEAF_GREEN}40`,
+                  border: `2px solid ${selectedMember.is_suspended ? '#EF4444' : RF_MINT_ACCENT}`,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   color: selectedMember.is_suspended ? '#FCA5A5' : RF_MINT_ACCENT,
-                  fontSize: 22, fontWeight: 700
+                  fontSize: isMobile ? 20 : 24, fontWeight: 800,
+                  boxShadow: `0 0 16px ${selectedMember.is_suspended ? 'rgba(239,68,68,0.3)' : 'rgba(24,252,92,0.25)'}`
                 }}>
                   {selectedMember.full_name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()}
                 </div>
               )}
               <div style={{ minWidth: 0, flex: 1 }}>
-                <h2 style={{ fontSize: isMobile ? 18 : 21, fontWeight: 700, color: '#FFFFFF', margin: '0 0 6px', lineHeight: 1.2 }}>
-                  {selectedMember.full_name}
-                </h2>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 4 }}>
+                  <h2 style={{ fontSize: isMobile ? 18 : 22, fontWeight: 700, color: '#FFFFFF', margin: 0, lineHeight: 1.2 }}>
+                    {selectedMember.full_name}
+                  </h2>
+                  {selectedMember.is_founding_100 && (
+                    <span style={{
+                      fontSize: 10, fontWeight: 800, color: RF_GOLD_YELLOW, background: 'rgba(246,178,26,0.14)',
+                      border: '1px solid rgba(246,178,26,0.35)', padding: '2px 8px', borderRadius: 100,
+                      textTransform: 'uppercase', letterSpacing: '0.05em', display: 'inline-flex', alignItems: 'center', gap: 4
+                    }}>
+                      <Star size={10} fill={RF_GOLD_YELLOW} /> Founding 100
+                    </span>
+                  )}
+                </div>
+
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
                   {selectedMember.pioneer_id && (
-                    <span style={{ fontFamily: 'monospace', fontSize: 11.5, color: RF_MINT_ACCENT, background: `${RF_LEAF_GREEN}18`, border: `1px solid ${RF_LEAF_GREEN}30`, padding: '2px 8px', borderRadius: 5 }}>
+                    <span style={{
+                      fontFamily: 'monospace', fontSize: 11.5, fontWeight: 700, color: RF_MINT_ACCENT,
+                      background: 'rgba(24,252,92,0.1)', border: '1px solid rgba(24,252,92,0.25)',
+                      padding: '3px 9px', borderRadius: 6
+                    }}>
                       {selectedMember.pioneer_id}
                     </span>
                   )}
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', background: 'rgba(255,255,255,0.05)', padding: '2px 8px', borderRadius: 5 }}>
+                  <span style={{
+                    fontSize: 11, fontWeight: 700, color: RF_GOLD_YELLOW,
+                    background: 'rgba(246,178,26,0.1)', border: '1px solid rgba(246,178,26,0.25)',
+                    padding: '3px 9px', borderRadius: 6
+                  }}>
                     {(selectedMember.contributor_level || 'LEVEL_1').replace('_', ' ')}
                   </span>
                   <span style={{
-                    fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 5,
-                    background: selectedMember.is_suspended ? 'rgba(239,68,68,0.12)' : 'rgba(24,252,92,0.1)',
-                    color: selectedMember.is_suspended ? '#FCA5A5' : RF_MINT_ACCENT
+                    fontSize: 11, fontWeight: 700, padding: '3px 9px', borderRadius: 6,
+                    background: selectedMember.is_suspended ? 'rgba(239,68,68,0.15)' : 'rgba(24,252,92,0.12)',
+                    color: selectedMember.is_suspended ? '#FCA5A5' : RF_MINT_ACCENT,
+                    border: `1px solid ${selectedMember.is_suspended ? 'rgba(239,68,68,0.3)' : 'rgba(24,252,92,0.25)'}`
                   }}>
-                    {selectedMember.is_suspended ? 'SUSPENDED' : 'ACTIVE'}
+                    {selectedMember.is_suspended ? 'SUSPENDED' : 'ACTIVE MEMBER'}
+                  </span>
+                  {selectedMember.application_number && (
+                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontFamily: 'monospace' }}>
+                      App #{selectedMember.application_number}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* ── 2-COLUMN RESPONSIVE DATA GRID ── */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+              gap: 16,
+              marginBottom: 20
+            }}>
+              {/* Card A: Identity & Contact Channels */}
+              <div style={{
+                background: 'rgba(255,255,255,0.025)',
+                border: '1px solid rgba(255,255,255,0.07)',
+                borderRadius: 16,
+                overflow: 'hidden'
+              }}>
+                <div style={{
+                  padding: '10px 16px',
+                  background: 'rgba(24,252,92,0.06)',
+                  borderBottom: '1px solid rgba(255,255,255,0.06)',
+                  display: 'flex', alignItems: 'center', gap: 6
+                }}>
+                  <Shield size={12} color={RF_MINT_ACCENT} />
+                  <span style={{ fontSize: 10.5, fontWeight: 800, color: RF_MINT_ACCENT, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                    Identity &amp; Channels
                   </span>
                 </div>
-              </div>
-            </div>
 
-            {/* ── INFO ROWS ── */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 1, marginBottom: 20, borderRadius: 14, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.07)' }}>
-              {/* Squad */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '11px 16px', background: 'rgba(255,255,255,0.02)' }}>
-                <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.4)' }}>Squad</span>
-                <span style={{ fontSize: 13, fontWeight: 600, color: '#FFFFFF' }}>{selectedMember.division || '—'}</span>
-              </div>
-              {/* DOB */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '11px 16px', background: 'rgba(255,255,255,0.01)' }}>
-                <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.4)' }}>Date of Birth</span>
-                <span style={{ fontSize: 13, fontWeight: 600, color: '#FFFFFF', fontFamily: 'monospace' }}>{selectedMember.date_of_birth || '—'}</span>
-              </div>
-              {/* Email */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '11px 16px', background: 'rgba(255,255,255,0.02)' }}>
-                <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.4)' }}>Email</span>
-                <a href={`mailto:${selectedMember.email}`} style={{ fontSize: 12.5, color: RF_MINT_ACCENT, textDecoration: 'none', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '60%' }}>
-                  {selectedMember.email}
-                </a>
-              </div>
-              {/* WhatsApp */}
-              {selectedMember.whatsapp_number && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '11px 16px', background: 'rgba(255,255,255,0.01)' }}>
-                  <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.4)' }}>WhatsApp</span>
-                  <a href={`https://wa.me/${selectedMember.whatsapp_number.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: '#25D366', textDecoration: 'none' }}>
-                    {selectedMember.whatsapp_number}
-                  </a>
-                </div>
-              )}
-              {/* Telegram */}
-              {selectedMember.telegram_handle && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '11px 16px', background: 'rgba(255,255,255,0.02)' }}>
-                  <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.4)' }}>Telegram</span>
-                  <span style={{ fontSize: 13, color: '#0088cc' }}>{selectedMember.telegram_handle}</span>
-                </div>
-              )}
-              {/* Location */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '11px 16px', background: 'rgba(255,255,255,0.01)' }}>
-                <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.4)' }}>Location</span>
-                <span style={{ fontSize: 13, color: '#FFFFFF' }}>{selectedMember.city ? `${selectedMember.city}, ` : ''}{selectedMember.country || '—'}</span>
-              </div>
-              {/* Institution */}
-              {selectedMember.institution && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '11px 16px', background: 'rgba(255,255,255,0.02)' }}>
-                  <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.4)' }}>Institution</span>
-                  <span style={{ fontSize: 13, color: '#FFFFFF', textAlign: 'right', maxWidth: '60%' }}>{selectedMember.institution}</span>
-                </div>
-              )}
-            </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                  {/* Squad */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 16px', background: 'rgba(255,255,255,0.015)' }}>
+                    <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.45)' }}>Assigned Squad</span>
+                    <span style={{ fontSize: 12.5, fontWeight: 700, color: '#FFFFFF' }}>{selectedMember.division || '—'}</span>
+                  </div>
 
-            {/* ── BANKING ── */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 1, marginBottom: 20, borderRadius: 14, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.07)' }}>
-              <div style={{ padding: '10px 16px', background: 'rgba(255,209,102,0.05)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                <span style={{ fontSize: 10.5, fontWeight: 700, color: 'rgba(255,209,102,0.7)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Settlement & Banking</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '11px 16px', background: 'rgba(255,255,255,0.02)' }}>
-                <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.4)' }}>Payout Method</span>
-                <span style={{ fontSize: 13, color: '#FFFFFF' }}>{selectedMember.payout_preference ? selectedMember.payout_preference.replace('_', ' ') : 'Bank Transfer'}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '11px 16px', background: 'rgba(255,255,255,0.01)' }}>
-                <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.4)' }}>Bank</span>
-                <span style={{ fontSize: 13, color: '#FFFFFF' }}>{selectedMember.bank_name || '—'}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '11px 16px', background: 'rgba(255,255,255,0.02)' }}>
-                <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.4)' }}>Account No.</span>
-                <span style={{ fontSize: 13, fontFamily: 'monospace', color: RF_MINT_ACCENT }}>{selectedMember.account_number || '••••••••••'}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '11px 16px', background: 'rgba(255,255,255,0.01)' }}>
-                <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.4)' }}>Account Name</span>
-                <span style={{ fontSize: 13, color: '#FFFFFF' }}>{selectedMember.account_name || '—'}</span>
-              </div>
-              {/* Social links */}
-              {(selectedMember.github_url || selectedMember.linkedin_url || selectedMember.twitter_handle || selectedMember.portfolio_url) && (
-                <div style={{ padding: '10px 16px', background: 'rgba(255,255,255,0.02)', display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginRight: 2 }}>Links</span>
-                  {selectedMember.github_url && <a href={selectedMember.github_url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.7)', textDecoration: 'none', background: 'rgba(255,255,255,0.06)', padding: '3px 9px', borderRadius: 6 }}>GitHub</a>}
-                  {selectedMember.linkedin_url && <a href={selectedMember.linkedin_url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 11.5, color: '#0077B5', textDecoration: 'none', background: 'rgba(255,255,255,0.06)', padding: '3px 9px', borderRadius: 6 }}>LinkedIn</a>}
-                  {selectedMember.twitter_handle && <a href={`https://twitter.com/${selectedMember.twitter_handle.replace('@','')}`} target="_blank" rel="noopener noreferrer" style={{ fontSize: 11.5, color: '#1DA1F2', textDecoration: 'none', background: 'rgba(255,255,255,0.06)', padding: '3px 9px', borderRadius: 6 }}>X / Twitter</a>}
-                  {selectedMember.portfolio_url && <a href={selectedMember.portfolio_url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 11.5, color: RF_MINT_ACCENT, textDecoration: 'none', background: 'rgba(255,255,255,0.06)', padding: '3px 9px', borderRadius: 6 }}>Portfolio</a>}
+                  {/* DOB */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 16px', background: 'rgba(255,255,255,0.01)' }}>
+                    <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.45)' }}>Date of Birth</span>
+                    <span style={{ fontSize: 12.5, fontWeight: 700, color: '#FFFFFF', fontFamily: 'monospace' }}>{selectedMember.date_of_birth || '—'}</span>
+                  </div>
+
+                  {/* Email */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 16px', background: 'rgba(255,255,255,0.015)' }}>
+                    <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.45)' }}>Email</span>
+                    <a href={`mailto:${selectedMember.email}`} style={{ fontSize: 12, color: RF_MINT_ACCENT, textDecoration: 'none', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '65%' }}>
+                      {selectedMember.email}
+                    </a>
+                  </div>
+
+                  {/* WhatsApp */}
+                  {selectedMember.whatsapp_number && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 16px', background: 'rgba(255,255,255,0.01)' }}>
+                      <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.45)' }}>WhatsApp</span>
+                      <a href={`https://wa.me/${selectedMember.whatsapp_number.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12.5, color: '#25D366', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <Phone size={11} /> {selectedMember.whatsapp_number}
+                      </a>
+                    </div>
+                  )}
+
+                  {/* Telegram */}
+                  {selectedMember.telegram_handle && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 16px', background: 'rgba(255,255,255,0.015)' }}>
+                      <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.45)' }}>Telegram</span>
+                      <span style={{ fontSize: 12.5, color: '#0088cc' }}>{selectedMember.telegram_handle}</span>
+                    </div>
+                  )}
+
+                  {/* Location */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 16px', background: 'rgba(255,255,255,0.01)' }}>
+                    <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.45)' }}>Location</span>
+                    <span style={{ fontSize: 12.5, color: '#FFFFFF' }}>{selectedMember.city ? `${selectedMember.city}, ` : ''}{selectedMember.country || '—'}</span>
+                  </div>
+
+                  {/* Institution */}
+                  {selectedMember.institution && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 16px', background: 'rgba(255,255,255,0.015)' }}>
+                      <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.45)' }}>Institution</span>
+                      <span style={{ fontSize: 12, color: '#FFFFFF', textAlign: 'right', maxWidth: '60%' }}>{selectedMember.institution}</span>
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
+
+              {/* Card B: Settlement, Banking & Rails */}
+              <div style={{
+                background: 'rgba(255,255,255,0.025)',
+                border: '1px solid rgba(255,255,255,0.07)',
+                borderRadius: 16,
+                overflow: 'hidden'
+              }}>
+                <div style={{
+                  padding: '10px 16px',
+                  background: 'rgba(246,178,26,0.06)',
+                  borderBottom: '1px solid rgba(255,255,255,0.06)',
+                  display: 'flex', alignItems: 'center', gap: 6
+                }}>
+                  <DollarSign size={12} color={RF_GOLD_YELLOW} />
+                  <span style={{ fontSize: 10.5, fontWeight: 800, color: RF_GOLD_YELLOW, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                    Settlement &amp; Rails
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                  {/* Payout Method */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 16px', background: 'rgba(255,255,255,0.015)' }}>
+                    <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.45)' }}>Payout Preference</span>
+                    <span style={{ fontSize: 12.5, fontWeight: 600, color: '#FFFFFF' }}>{selectedMember.payout_preference ? selectedMember.payout_preference.replace('_', ' ') : 'Bank Settlement'}</span>
+                  </div>
+
+                  {/* Bank Name */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 16px', background: 'rgba(255,255,255,0.01)' }}>
+                    <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.45)' }}>Bank / Platform</span>
+                    <span style={{ fontSize: 12.5, color: '#FFFFFF' }}>{selectedMember.bank_name || '—'}</span>
+                  </div>
+
+                  {/* Account No */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 16px', background: 'rgba(255,255,255,0.015)' }}>
+                    <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.45)' }}>Account No.</span>
+                    <span style={{ fontSize: 13, fontFamily: 'monospace', fontWeight: 700, color: RF_MINT_ACCENT }}>
+                      {selectedMember.account_number || '••••••••••'}
+                    </span>
+                  </div>
+
+                  {/* Account Name */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 16px', background: 'rgba(255,255,255,0.01)' }}>
+                    <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.45)' }}>Account Name</span>
+                    <span style={{ fontSize: 12.5, color: '#FFFFFF' }}>{selectedMember.account_name || '—'}</span>
+                  </div>
+
+                  {/* External Links */}
+                  <div style={{ padding: '10px 16px', background: 'rgba(255,255,255,0.015)', display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
+                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginRight: 2 }}>Web:</span>
+                    {selectedMember.github_url && <a href={selectedMember.github_url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, color: 'rgba(255,255,255,0.8)', textDecoration: 'none', background: 'rgba(255,255,255,0.06)', padding: '3px 8px', borderRadius: 6 }}>GitHub</a>}
+                    {selectedMember.linkedin_url && <a href={selectedMember.linkedin_url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, color: '#0077B5', textDecoration: 'none', background: 'rgba(255,255,255,0.06)', padding: '3px 8px', borderRadius: 6 }}>LinkedIn</a>}
+                    {selectedMember.twitter_handle && <a href={`https://twitter.com/${selectedMember.twitter_handle.replace('@','')}`} target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, color: '#1DA1F2', textDecoration: 'none', background: 'rgba(255,255,255,0.06)', padding: '3px 8px', borderRadius: 6 }}>X / Twitter</a>}
+                    {selectedMember.portfolio_url && <a href={selectedMember.portfolio_url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, color: RF_MINT_ACCENT, textDecoration: 'none', background: 'rgba(24,252,92,0.08)', border: '1px solid rgba(24,252,92,0.2)', padding: '3px 8px', borderRadius: 6 }}>Portfolio</a>}
+                    {!selectedMember.github_url && !selectedMember.linkedin_url && !selectedMember.twitter_handle && !selectedMember.portfolio_url && (
+                      <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.3)' }}>No external links provided</span>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* ── BIO & SKILLS ── */}
             {(selectedMember.bio || (selectedMember.skills && selectedMember.skills.length > 0)) && (
-              <div style={{ marginBottom: 20 }}>
+              <div style={{
+                background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)',
+                borderRadius: 16, padding: '14px 18px', marginBottom: 20
+              }}>
                 {selectedMember.bio && (
-                  <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, margin: '0 0 12px' }}>
-                    {selectedMember.bio}
+                  <p style={{
+                    fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.6, margin: '0 0 12px',
+                    fontStyle: 'italic', borderLeft: `2px solid ${RF_MINT_ACCENT}55`, paddingLeft: 12
+                  }}>
+                    "{selectedMember.bio}"
                   </p>
                 )}
                 {selectedMember.skills && selectedMember.skills.length > 0 && (
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                     {selectedMember.skills.map((skill, i) => (
-                      <span key={i} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.75)', padding: '3px 10px', borderRadius: 100, fontSize: 11.5 }}>
+                      <span key={i} style={{
+                        background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)',
+                        color: 'rgba(255,255,255,0.8)', padding: '4px 11px', borderRadius: 100, fontSize: 11.5
+                      }}>
                         {skill}
                       </span>
                     ))}
@@ -8291,80 +8467,219 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               </div>
             )}
 
-            {/* ── REASONING SURVEY ── */}
-            <div style={{ marginBottom: 20 }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-                <span style={{ fontSize: 11.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Reasoning Survey</span>
-                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>{selectedMember.survey_responses?.length || 0} / 10</span>
-              </div>
-              {selectedMember.survey_responses && selectedMember.survey_responses.length > 0 ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 300, overflowY: 'auto' }}>
-                  {selectedMember.survey_responses.map((resp, idx) => (
-                    <div key={idx} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10, padding: '12px 14px' }}>
-                      <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', marginBottom: 4 }}>Q{resp.question_id || idx + 1} — {(resp as any).question_text || resp.question}</div>
-                      <div style={{ fontSize: 12.5, fontWeight: 600, color: RF_MINT_ACCENT }}>{resp.selected_option}</div>
-                      {resp.reasoning_notes && (
-                        <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.55)', fontStyle: 'italic', marginTop: 4 }}>"{resp.reasoning_notes}"</div>
+            {/* ── COLLAPSIBLE CULTURE & REASONING SURVEY ── */}
+            <div style={{
+              marginBottom: 22,
+              background: 'rgba(255,255,255,0.02)',
+              border: `1px solid ${surveyExpanded ? 'rgba(24,252,92,0.3)' : 'rgba(255,255,255,0.07)'}`,
+              borderRadius: 16,
+              overflow: 'hidden',
+              transition: 'border-color 0.2s ease'
+            }}>
+              {/* Accordion Trigger Header */}
+              <div
+                onClick={() => setSurveyExpanded(prev => !prev)}
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  padding: '14px 18px', cursor: 'pointer',
+                  background: surveyExpanded ? 'rgba(24,252,92,0.05)' : 'rgba(255,255,255,0.015)',
+                  userSelect: 'none', transition: 'background 0.2s ease'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <div style={{
+                    width: 28, height: 28, borderRadius: 8,
+                    background: 'rgba(24,252,92,0.12)', border: '1px solid rgba(24,252,92,0.25)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', color: RF_MINT_ACCENT
+                  }}>
+                    <Brain size={15} />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: 8 }}>
+                      Culture &amp; Reasoning Survey
+                      {selectedMember.survey_responses && selectedMember.survey_responses.length > 0 ? (
+                        <span style={{
+                          fontSize: 10.5, fontWeight: 700, color: RF_MINT_ACCENT,
+                          background: 'rgba(24,252,92,0.12)', padding: '2px 7px', borderRadius: 100
+                        }}>
+                          {selectedMember.survey_responses.length} / 10 Completed
+                        </span>
+                      ) : (
+                        <span style={{
+                          fontSize: 10.5, fontWeight: 700, color: 'rgba(255,255,255,0.4)',
+                          background: 'rgba(255,255,255,0.06)', padding: '2px 7px', borderRadius: 100
+                        }}>
+                          Pending
+                        </span>
                       )}
                     </div>
-                  ))}
+                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', marginTop: 2 }}>
+                      {surveyExpanded ? 'Click header to collapse survey questions' : 'Click to expand cognitive responses and mindset reflections'}
+                    </div>
+                  </div>
                 </div>
-              ) : (
-                <div style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.35)', padding: '14px 0' }}>
-                  Survey not yet completed.
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{
+                    fontSize: 11.5, fontWeight: 700,
+                    color: surveyExpanded ? RF_MINT_ACCENT : 'rgba(255,255,255,0.6)',
+                    background: surveyExpanded ? 'rgba(24,252,92,0.1)' : 'rgba(255,255,255,0.06)',
+                    border: `1px solid ${surveyExpanded ? 'rgba(24,252,92,0.25)' : 'rgba(255,255,255,0.1)'}`,
+                    padding: '4px 10px', borderRadius: 100, display: 'flex', alignItems: 'center', gap: 4
+                  }}>
+                    {surveyExpanded ? 'Hide' : 'View Answers'}
+                    {surveyExpanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+                  </span>
+                </div>
+              </div>
+
+              {/* Collapsed Preview Strip */}
+              {!surveyExpanded && selectedMember.survey_responses && selectedMember.survey_responses.length > 0 && (
+                <div style={{
+                  padding: '9px 18px 11px',
+                  background: 'rgba(0,0,0,0.2)',
+                  borderTop: '1px solid rgba(255,255,255,0.04)',
+                  fontSize: 11.5, color: 'rgba(255,255,255,0.4)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between'
+                }}>
+                  <span>✓ 10-question situational judgment &amp; work ethic evaluation verified</span>
+                  <span style={{ color: RF_MINT_ACCENT, fontWeight: 600, fontSize: 11, cursor: 'pointer' }} onClick={() => setSurveyExpanded(true)}>
+                    Expand to read →
+                  </span>
+                </div>
+              )}
+
+              {/* Expanded Survey Content */}
+              {surveyExpanded && (
+                <div style={{
+                  padding: '14px 18px 18px',
+                  borderTop: '1px solid rgba(255,255,255,0.06)',
+                  background: 'rgba(0,0,0,0.25)'
+                }}>
+                  {selectedMember.survey_responses && selectedMember.survey_responses.length > 0 ? (
+                    <div className="rp-sleek-scroll" style={{ display: 'flex', flexDirection: 'column', gap: 10, maxHeight: 380, overflowY: 'auto', paddingRight: 4 }}>
+                      {selectedMember.survey_responses.map((resp, idx) => (
+                        <div
+                          key={idx}
+                          style={{
+                            background: 'rgba(255,255,255,0.03)',
+                            border: '1px solid rgba(255,255,255,0.06)',
+                            borderRadius: 12, padding: '12px 14px'
+                          }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                            <span style={{
+                              fontSize: 10, fontWeight: 800, color: RF_MINT_ACCENT,
+                              background: 'rgba(24,252,92,0.1)', padding: '2px 6px', borderRadius: 4, fontFamily: 'monospace'
+                            }}>
+                              Q{resp.question_id || idx + 1}
+                            </span>
+                            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', fontWeight: 500 }}>
+                              {(resp as any).question_text || resp.question || `Scenario Question ${idx + 1}`}
+                            </span>
+                          </div>
+
+                          <div style={{
+                            fontSize: 12.5, fontWeight: 700, color: '#FFFFFF',
+                            background: 'rgba(24,252,92,0.06)', borderLeft: `2px solid ${RF_MINT_ACCENT}`,
+                            padding: '6px 10px', borderRadius: '0 6px 6px 0', marginBottom: resp.reasoning_notes ? 6 : 0
+                          }}>
+                            {resp.selected_option}
+                          </div>
+
+                          {resp.reasoning_notes && (
+                            <div style={{
+                              fontSize: 11.5, color: 'rgba(255,255,255,0.6)', fontStyle: 'italic',
+                              paddingLeft: 10, marginTop: 4, lineHeight: 1.4
+                            }}>
+                              "{resp.reasoning_notes}"
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.35)', padding: '16px 0', textAlign: 'center' }}>
+                      Reasoning survey responses have not been recorded for this profile yet.
+                    </div>
+                  )}
                 </div>
               )}
             </div>
 
-            {/* ── CERTIFICATES ── */}
+            {/* ── CERTIFICATES & ACCREDITATIONS ── */}
             <div style={{ marginBottom: 24 }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-                <span style={{ fontSize: 11.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Certificates</span>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <Award size={14} color={RF_GOLD_YELLOW} />
+                  <span style={{ fontSize: 11.5, fontWeight: 800, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                    Certificates &amp; Accreditations
+                  </span>
+                </div>
                 <button
                   type="button"
                   onClick={() => handleOpenIssueCertModal(selectedMember.email, selectedMember.contributor_level)}
                   style={{
-                    background: 'transparent', border: `1px solid ${RF_GOLD_YELLOW}50`,
-                    color: RF_GOLD_YELLOW, padding: '4px 12px', borderRadius: 100, fontSize: 11.5,
-                    fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4
+                    background: 'rgba(246,178,26,0.1)', border: `1px solid ${RF_GOLD_YELLOW}60`,
+                    color: RF_GOLD_YELLOW, padding: '5px 14px', borderRadius: 100, fontSize: 11.5,
+                    fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 5,
+                    transition: 'all 0.15s ease'
                   }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(246,178,26,0.2)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(246,178,26,0.1)'; }}
                 >
-                  <Award size={11} /> Issue
+                  <Award size={12} /> Issue Certificate
                 </button>
               </div>
+
               {(() => {
                 const memberCerts = getCertificatesByEmail(selectedMember.email);
                 if (memberCerts.length === 0) {
-                  return <div style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.35)', padding: '14px 0' }}>No certificates issued yet.</div>;
+                  return (
+                    <div style={{
+                      fontSize: 12.5, color: 'rgba(255,255,255,0.35)', padding: '16px 0',
+                      background: 'rgba(255,255,255,0.015)', border: '1px solid rgba(255,255,255,0.05)',
+                      borderRadius: 12, textAlign: 'center'
+                    }}>
+                      No certificates issued yet for this member.
+                    </div>
+                  );
                 }
                 return (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                     {memberCerts.map(cert => (
                       <div key={cert.id} style={{
                         display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12,
-                        background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)',
-                        borderRadius: 10, padding: '12px 14px'
+                        background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.07)',
+                        borderRadius: 12, padding: '12px 16px'
                       }}>
                         <div style={{ minWidth: 0 }}>
-                          <div style={{ fontSize: 12.5, fontWeight: 700, color: '#FFFFFF', marginBottom: 2 }}>{cert.level_title}</div>
-                          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>
-                            {new Date(cert.issued_at).toLocaleDateString()} · {cert.verified_jobs_count > 0 ? `${cert.verified_jobs_count} jobs` : 'Orientation'}
+                          <div style={{ fontSize: 13, fontWeight: 700, color: '#FFFFFF', marginBottom: 2 }}>
+                            {cert.level_title}
+                          </div>
+                          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)' }}>
+                            Issued {new Date(cert.issued_at).toLocaleDateString()} · {cert.verified_jobs_count > 0 ? `${cert.verified_jobs_count} verified jobs` : 'Founding Induction'}
                           </div>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-                          <span style={{ fontSize: 10.5, fontWeight: 700, color: cert.status === 'ISSUED' ? RF_MINT_ACCENT : '#FCA5A5' }}>
+                          <span style={{
+                            fontSize: 10.5, fontWeight: 800, padding: '3px 8px', borderRadius: 5,
+                            background: cert.status === 'ISSUED' ? 'rgba(24,252,92,0.12)' : 'rgba(239,68,68,0.12)',
+                            color: cert.status === 'ISSUED' ? RF_MINT_ACCENT : '#FCA5A5',
+                            border: `1px solid ${cert.status === 'ISSUED' ? 'rgba(24,252,92,0.25)' : 'rgba(239,68,68,0.25)'}`
+                          }}>
                             {cert.status}
                           </span>
                           <button
                             type="button"
                             onClick={() => handleViewCertificate(cert)}
                             style={{
-                              background: 'rgba(255,255,255,0.06)', border: 'none',
-                              color: 'rgba(255,255,255,0.7)', padding: '4px 11px', borderRadius: 8, fontSize: 11.5,
+                              background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)',
+                              color: 'rgba(255,255,255,0.85)', padding: '5px 12px', borderRadius: 8, fontSize: 11.5,
                               fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4
                             }}
                           >
-                            <Eye size={11} /> View
+                            <Eye size={12} /> View
                           </button>
                         </div>
                       </div>
@@ -8377,16 +8692,16 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             {/* ── FOOTER ACTIONS ── */}
             <div style={{
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              gap: 10, flexWrap: 'wrap', paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.07)'
+              gap: 12, flexWrap: 'wrap', paddingTop: 18, borderTop: '1px solid rgba(255,255,255,0.08)'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.45)' }}>Rank</span>
+                <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.5)', fontWeight: 600 }}>Rank Promotion:</span>
                 <select
                   value={selectedMember.contributor_level || 'LEVEL_1'}
                   onChange={e => handlePromoteMemberLevel(selectedMember.email, e.target.value as any)}
                   style={{
-                    background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(255,255,255,0.15)',
-                    color: RF_GOLD_YELLOW, padding: '6px 30px 6px 10px', borderRadius: 8, fontSize: 12,
+                    background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.15)',
+                    color: RF_GOLD_YELLOW, padding: '7px 28px 7px 12px', borderRadius: 8, fontSize: 12,
                     fontWeight: 700, outline: 'none', cursor: 'pointer'
                   }}
                 >
@@ -8403,7 +8718,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                   <button
                     onClick={() => handleReactivateMember(selectedMember)}
                     style={{
-                      background: `${RF_LEAF_GREEN}20`, border: `1px solid ${RF_LEAF_GREEN}55`,
+                      background: 'rgba(24,252,92,0.15)', border: `1px solid ${RF_LEAF_GREEN}`,
                       color: RF_MINT_ACCENT, padding: '8px 16px', borderRadius: 100, fontSize: 12,
                       fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 5
                     }}
@@ -8419,15 +8734,15 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                       fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 5
                     }}
                   >
-                    <Ban size={13} /> Suspend
+                    <Ban size={13} /> Suspend Member
                   </button>
                 )}
                 <button
                   onClick={() => setMemberModalOpen(false)}
                   style={{
-                    background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.15)',
-                    color: 'rgba(255,255,255,0.75)', padding: '8px 18px', borderRadius: 100, fontSize: 12,
-                    fontWeight: 600, cursor: 'pointer'
+                    background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)',
+                    color: '#FFFFFF', padding: '8px 20px', borderRadius: 100, fontSize: 12,
+                    fontWeight: 700, cursor: 'pointer'
                   }}
                 >
                   Done
