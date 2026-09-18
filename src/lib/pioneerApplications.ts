@@ -1,5 +1,4 @@
-import { db, isFirebaseConfigured } from './firebase';
-import { collection, doc, getDocs, setDoc, query, orderBy } from 'firebase/firestore';
+import { api } from './api';
 
 export type PioneerReviewStatus = 'PENDING' | 'REVIEWING' | 'ACCEPTED' | 'WAITLISTED' | 'REJECTED';
 export type ContributorTier = 'LEVEL_1' | 'LEVEL_2' | 'LEVEL_3' | 'LEVEL_4' | 'LEVEL_5';
@@ -147,54 +146,53 @@ export const generateApplicationNumber = (): string => {
   return `RP-2026-${timestamp}${random}`.slice(0, 15);
 };
 
-export const generateAcceptanceCode = (appNumber: string): string => {
-  const clean = appNumber.replace(/[^0-9]/g, '');
-  const prefix = clean.slice(-4) || '9041';
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let rand = '';
-  for (let i = 0; i < 4; i++) {
-    rand += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return `ACC-${prefix}-${rand}`;
-};
-
 export const getStoredApplications = (): PioneerApplicationRecord[] => {
-  const raw = localStorage.getItem(APPS_STORAGE_KEY);
-  if (raw) {
+  const data = localStorage.getItem(APPS_STORAGE_KEY);
+  if (data) {
     try {
-      const parsed = JSON.parse(raw);
+      const parsed = JSON.parse(data);
       if (Array.isArray(parsed) && parsed.length > 0) {
         return parsed;
       }
     } catch {
-      // fallback
+      // ignore
     }
   }
   localStorage.setItem(APPS_STORAGE_KEY, JSON.stringify(INITIAL_DEMO_APPLICATIONS));
   return INITIAL_DEMO_APPLICATIONS;
 };
 
-export const saveStoredApplications = (apps: PioneerApplicationRecord[]): void => {
+export const saveStoredApplications = (apps: PioneerApplicationRecord[]) => {
   localStorage.setItem(APPS_STORAGE_KEY, JSON.stringify(apps));
-  window.dispatchEvent(new Event('refeir-applications-change'));
 };
 
-export const addStoredApplication = (app: Omit<PioneerApplicationRecord, 'id' | 'created_at'>): PioneerApplicationRecord => {
+export const addStoredApplication = (record: Omit<PioneerApplicationRecord, 'id' | 'created_at'> & { id?: string; created_at?: string }) => {
   const apps = getStoredApplications();
-  const newApp: PioneerApplicationRecord = {
-    ...app,
-    id: `app-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-    created_at: new Date().toISOString()
+  const fullRecord: PioneerApplicationRecord = {
+    ...record,
+    id: record.id || `app-${Date.now()}-${Math.floor(100 + Math.random() * 900)}`,
+    created_at: record.created_at || new Date().toISOString()
   };
-  apps.unshift(newApp);
+  const existingIndex = apps.findIndex(
+    a => a.application_number.toUpperCase() === fullRecord.application_number.toUpperCase()
+  );
+  if (existingIndex >= 0) {
+    apps[existingIndex] = { ...apps[existingIndex], ...fullRecord };
+  } else {
+    apps.unshift(fullRecord);
+  }
   saveStoredApplications(apps);
 
-  if (isFirebaseConfigured) {
-    setDoc(doc(db, 'pioneer_applications', newApp.application_number), newApp, { merge: true })
-      .catch(err => console.warn('Firestore application insert warning:', err?.message));
-  }
+  // Send to custom backend API
+  api.applications.submit(fullRecord).catch((err: any) => {
+    console.warn('Backend API application submit notice:', err);
+  });
+};
 
-  return newApp;
+export const generateAcceptanceCode = (_appNumber?: string): string => {
+  const p1 = Math.floor(1000 + Math.random() * 9000);
+  const p2 = Math.floor(1000 + Math.random() * 9000);
+  return `ACC-${p1}-${p2}`;
 };
 
 export const updateStoredApplication = (
@@ -205,18 +203,19 @@ export const updateStoredApplication = (
   let updatedApp: PioneerApplicationRecord | null = null;
 
   const modified = apps.map(app => {
-    if (app.id === idOrAppNumber || app.application_number.toUpperCase() === idOrAppNumber.toUpperCase()) {
-      // If updating status to ACCEPTED and no acceptance code exists, auto-generate one
-      let accCode = updates.acceptance_code !== undefined ? updates.acceptance_code : app.acceptance_code;
+    if (
+      app.id === idOrAppNumber ||
+      app.application_number.toUpperCase() === idOrAppNumber.toUpperCase()
+    ) {
+      let accCode = app.acceptance_code;
       if (updates.status === 'ACCEPTED' && !accCode) {
-        accCode = generateAcceptanceCode(app.application_number);
+        accCode = generateAcceptanceCode();
       }
 
-      // If status is ACCEPTED and no pioneer_id exists, auto-assign next available seat
-      let pId = updates.pioneer_id !== undefined ? updates.pioneer_id : app.pioneer_id;
+      let pId = app.pioneer_id;
       if (updates.status === 'ACCEPTED' && !pId) {
-        const existingSeats = apps.map(a => a.pioneer_id).filter(Boolean) as string[];
-        const numbers = existingSeats.map(s => {
+        const numbers = apps.map(a => {
+          const s = a.pioneer_id || '';
           const match = s.match(/RP-(\d+)/i);
           return match ? parseInt(match[1], 10) : 0;
         });
@@ -238,10 +237,10 @@ export const updateStoredApplication = (
   if (updatedApp) {
     saveStoredApplications(modified);
 
-    if (isFirebaseConfigured) {
-      setDoc(doc(db, 'pioneer_applications', (updatedApp as PioneerApplicationRecord).application_number), updatedApp, { merge: true })
-        .catch(err => console.warn('Firestore application update warning:', err?.message));
-    }
+    // Sync to custom backend API
+    api.applications.updateStatus(idOrAppNumber, updates).catch((err: any) => {
+      console.warn('Backend API updateStatus notice:', err);
+    });
   }
   return updatedApp;
 };
@@ -314,46 +313,32 @@ export const generateNextPioneerId = (): string => {
 };
 
 /**
- * Fetches applications from Firebase Firestore if configured, and updates local cache.
+ * Fetches applications from Custom Backend API and updates local cache.
  */
 export const fetchApplicationsFromDatabase = async (): Promise<PioneerApplicationRecord[]> => {
-  if (!isFirebaseConfigured) {
-    return getStoredApplications();
-  }
-
   try {
-    const q = query(collection(db, 'pioneer_applications'), orderBy('created_at', 'desc'));
-    const snapshot = await getDocs(q);
-    if (!snapshot.empty) {
-      const records = snapshot.docs.map(d => d.data() as PioneerApplicationRecord);
-      saveStoredApplications(records);
-      return records;
+    const res = await api.applications.getAll();
+    if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+      saveStoredApplications(res.data);
+      return res.data;
     }
   } catch (err) {
-    console.warn('Could not query Firestore pioneer_applications, falling back to local storage:', err);
+    console.warn('Could not query applications from custom backend:', err);
   }
 
   return getStoredApplications();
 };
 
-/**
- * Pushes all locally stored applications to Firebase Firestore.
- */
-export const syncApplicationsToSupabase = async (): Promise<{ success: boolean; count: number; error?: string }> => {
-  if (!isFirebaseConfigured) {
-    return { success: false, count: 0, error: 'Firebase is not configured. Add credentials to .env' };
-  }
-
+export const syncApplicationsToFirebase = async (): Promise<{ success: boolean; count: number; error?: string }> => {
   const apps = getStoredApplications();
   try {
-    const promises = apps.map(app =>
-      setDoc(doc(db, 'pioneer_applications', app.application_number), app, { merge: true })
-    );
-    await Promise.all(promises);
+    for (const app of apps) {
+      await api.applications.submit(app);
+    }
     return { success: true, count: apps.length };
   } catch (err: any) {
     return { success: false, count: 0, error: err?.message || 'Sync failed' };
   }
 };
 
-export const syncApplicationsToFirebase = syncApplicationsToSupabase;
+export const syncApplicationsToSupabase = syncApplicationsToFirebase;

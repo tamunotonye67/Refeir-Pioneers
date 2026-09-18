@@ -1,6 +1,5 @@
 import { ContributorProfile } from './contributorAuth';
-import { db, isFirebaseConfigured } from './firebase';
-import { collection, doc, getDocs, setDoc, updateDoc, query, orderBy } from 'firebase/firestore';
+import { api } from './api';
 
 export type ContributorTier = 'LEVEL_1' | 'LEVEL_2' | 'LEVEL_3' | 'LEVEL_4' | 'LEVEL_5';
 
@@ -100,7 +99,7 @@ const INITIAL_DEMO_CERTIFICATES: PioneerCertificate[] = [
     level_title: 'Level 1: Pioneer Associate',
     division: 'TECHNOLOGY',
     verified_jobs_count: 0,
-    issued_at: new Date(Date.now() - 86400000 * 20).toISOString(),
+    issued_at: new Date(Date.now() - 86400000 * 14).toISOString(),
     issued_by: 'Refeir Admissions Committee',
     special_distinction: 'Founding Cohort Orientation & Sovereign Identity Accreditation',
     verification_hash: '0x1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b',
@@ -109,104 +108,48 @@ const INITIAL_DEMO_CERTIFICATES: PioneerCertificate[] = [
 ];
 
 export function getAllCertificates(): PioneerCertificate[] {
-  try {
-    const raw = localStorage.getItem(CERTIFICATES_STORAGE_KEY);
-    if (!raw) {
-      localStorage.setItem(CERTIFICATES_STORAGE_KEY, JSON.stringify(INITIAL_DEMO_CERTIFICATES));
-      return INITIAL_DEMO_CERTIFICATES;
+  const data = localStorage.getItem(CERTIFICATES_STORAGE_KEY);
+  if (data) {
+    try {
+      const parsed: PioneerCertificate[] = JSON.parse(data);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    } catch {
+      // ignore
     }
-    return JSON.parse(raw);
-  } catch (e) {
-    console.error('Error fetching certificates:', e);
-    return INITIAL_DEMO_CERTIFICATES;
   }
+  localStorage.setItem(CERTIFICATES_STORAGE_KEY, JSON.stringify(INITIAL_DEMO_CERTIFICATES));
+  return INITIAL_DEMO_CERTIFICATES;
 }
 
-/**
- * Fetches certificates from Supabase if configured,
- * updates local storage cache, and returns them.
- */
 export async function fetchCertificatesFromDatabase(): Promise<PioneerCertificate[]> {
-  if (!isFirebaseConfigured) {
-    return getAllCertificates();
-  }
-
   try {
-    const q = query(collection(db, 'pioneer_certificates'), orderBy('issued_at', 'desc'));
-    const snapshot = await getDocs(q);
-
-    if (!snapshot.empty) {
-      const mapped: PioneerCertificate[] = snapshot.docs.map(docSnap => {
-        const item = docSnap.data();
-        return {
-          id: item.credential_id || item.id || docSnap.id,
-          pioneer_id: item.pioneer_id,
-          application_number: item.application_number || '',
-          recipient_name: item.recipient_name,
-          recipient_email: item.recipient_email,
-          level: (item.level as ContributorTier) || 'LEVEL_1',
-          level_title: item.title || item.level_title || LEVEL_NAMES[item.level as ContributorTier] || 'Level 1: Pioneer Associate',
-          division: item.division || 'GENERAL',
-          verified_jobs_count: item.verified_jobs_count || 0,
-          issued_at: item.issued_at,
-          issued_by: item.issued_by || 'Refeir Admissions Committee & Protocol Stewards',
-          special_distinction: item.special_distinction || item.description || '',
-          verification_hash: item.verification_hash,
-          status: (item.is_revoked || item.status === 'REVOKED') ? 'REVOKED' : 'ISSUED',
-          revocation_reason: item.revoked_reason || item.revocation_reason || undefined
-        };
-      });
-
-      localStorage.setItem(CERTIFICATES_STORAGE_KEY, JSON.stringify(mapped));
-      return mapped;
+    const res = await api.certificates.getAll();
+    if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+      localStorage.setItem(CERTIFICATES_STORAGE_KEY, JSON.stringify(res.data));
+      return res.data;
     }
-
-    return getAllCertificates();
   } catch (err) {
-    console.error('Failed to fetch certificates from Firestore:', err);
-    return getAllCertificates();
+    console.warn('Backend API certificates fetch notice:', err);
   }
+
+  return getAllCertificates();
 }
 
-/**
- * Synchronizes local cached certificates to Firebase Firestore database.
- */
-export async function syncCertificatesToSupabase(): Promise<{ synced: number; error: string | null }> {
-  if (!isFirebaseConfigured) {
-    return { synced: 0, error: 'Firebase credentials not configured' };
-  }
-
+export async function syncCertificatesToFirebase(): Promise<{ synced: number; error: string | null }> {
   try {
     const localCerts = getAllCertificates();
-    const promises = localCerts.map(c =>
-      setDoc(doc(db, 'pioneer_certificates', c.id), {
-        credential_id: c.id,
-        pioneer_id: c.pioneer_id,
-        application_number: c.application_number,
-        recipient_name: c.recipient_name,
-        recipient_email: c.recipient_email,
-        division: c.division,
-        level: c.level,
-        title: c.level_title,
-        description: c.special_distinction || '',
-        verified_jobs_count: c.verified_jobs_count,
-        issued_at: c.issued_at,
-        issued_by: c.issued_by,
-        special_distinction: c.special_distinction,
-        is_revoked: c.status === 'REVOKED',
-        revoked_reason: c.revocation_reason || null,
-        verification_hash: c.verification_hash
-      }, { merge: true })
-    );
-
-    await Promise.all(promises);
+    for (const c of localCerts) {
+      await api.certificates.issue(c);
+    }
     return { synced: localCerts.length, error: null };
   } catch (err: any) {
     return { synced: 0, error: err?.message || 'Sync failed' };
   }
 }
 
-export const syncCertificatesToFirebase = syncCertificatesToSupabase;
+export const syncCertificatesToSupabase = syncCertificatesToFirebase;
 
 export function getCertificatesByEmail(email: string): PioneerCertificate[] {
   if (!email) return [];
@@ -273,28 +216,10 @@ export function issueCertificate(params: {
   const updated = [newCert, ...all];
   localStorage.setItem(CERTIFICATES_STORAGE_KEY, JSON.stringify(updated));
 
-  // Asynchronously sync to Firestore if configured
-  if (isFirebaseConfigured) {
-    setDoc(doc(db, 'pioneer_certificates', newCert.id), {
-      credential_id: newCert.id,
-      pioneer_id: newCert.pioneer_id,
-      application_number: newCert.application_number,
-      recipient_name: newCert.recipient_name,
-      recipient_email: newCert.recipient_email,
-      division: newCert.division,
-      level: newCert.level,
-      title: newCert.level_title,
-      description: newCert.special_distinction,
-      verified_jobs_count: newCert.verified_jobs_count,
-      issued_at: newCert.issued_at,
-      issued_by: newCert.issued_by,
-      special_distinction: newCert.special_distinction,
-      is_revoked: false,
-      verification_hash: newCert.verification_hash
-    }, { merge: true }).catch(err => {
-      console.warn('Firestore certificate insert error:', err?.message);
-    });
-  }
+  // Sync to custom backend API
+  api.certificates.issue(newCert).catch(err => {
+    console.warn('Backend API certificate issue notice:', err);
+  });
 
   return newCert;
 }
@@ -317,16 +242,9 @@ export function revokeCertificate(id: string, reason: string): PioneerCertificat
 
   localStorage.setItem(CERTIFICATES_STORAGE_KEY, JSON.stringify(updated));
 
-  if (isFirebaseConfigured && targetCert) {
-    updateDoc(doc(db, 'pioneer_certificates', id), {
-      is_revoked: true,
-      status: 'REVOKED',
-      revoked_reason: reason || 'Administrative decision',
-      revoked_at: new Date().toISOString()
-    }).catch(err => {
-      console.warn('Firestore certificate revoke error:', err?.message);
-    });
-  }
+  api.certificates.revoke(id).catch(err => {
+    console.warn('Backend API certificate revoke notice:', err);
+  });
 
   return targetCert;
 }

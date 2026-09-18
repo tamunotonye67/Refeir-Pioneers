@@ -1,5 +1,4 @@
-import { db, isFirebaseConfigured } from './firebase';
-import { collection, doc, getDocs, setDoc, updateDoc, query, orderBy } from 'firebase/firestore';
+import { api } from './api';
 import { issueCertificate } from './certificates';
 import { touchContributorActivity } from './contributorAuth';
 
@@ -97,19 +96,14 @@ const INITIAL_DEMO_TASKS: TaskSubmissionRecord[] = [
 ];
 
 export const getTaskSubmissions = async (): Promise<TaskSubmissionRecord[]> => {
-  if (isFirebaseConfigured) {
-    try {
-      const q = query(collection(db, 'pioneer_proof_of_work'), orderBy('created_at', 'desc'));
-      const snapshot = await getDocs(q);
-
-      if (!snapshot.empty) {
-        const records = snapshot.docs.map(d => d.data() as TaskSubmissionRecord);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
-        return records;
-      }
-    } catch (err) {
-      console.warn('Firestore proof_of_work fetch error, falling back to local storage:', err);
+  try {
+    const res = await api.proofs.getAll();
+    if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(res.data));
+      return res.data;
     }
+  } catch (err) {
+    console.warn('Backend API proof_of_work fetch notice:', err);
   }
 
   // Check localStorage
@@ -144,17 +138,10 @@ export const saveTaskSubmission = async (
     touchContributorActivity(record.email);
   } catch {}
 
-  // Try Firestore first if configured
-  if (isFirebaseConfigured) {
-    try {
-      await setDoc(doc(db, 'pioneer_proof_of_work', record.reference_id), record, { merge: true });
-      const current = await getTaskSubmissions();
-      localStorage.setItem(STORAGE_KEY, JSON.stringify([record, ...current]));
-      return record;
-    } catch (err) {
-      console.warn('Firestore insert failed, caching locally:', err);
-    }
-  }
+  // Save to backend API
+  api.proofs.submit(record).catch(err => {
+    console.warn('Backend API submission notice:', err);
+  });
 
   // Local storage save
   const current = await getTaskSubmissions();
@@ -163,50 +150,36 @@ export const saveTaskSubmission = async (
   return record;
 };
 
-/**
- * Synchronizes local cached proof-of-work submissions to Firebase Firestore.
- */
-export const syncTaskSubmissionsToSupabase = async (): Promise<{ synced: number; error: string | null }> => {
-  if (!isFirebaseConfigured) {
-    return { synced: 0, error: 'Firebase credentials not configured' };
-  }
-
+export const syncTaskSubmissionsToFirebase = async (): Promise<{ synced: number; error: string | null }> => {
   try {
     const local = await getTaskSubmissions();
-    const promises = local.map(item =>
-      setDoc(doc(db, 'pioneer_proof_of_work', item.reference_id), item, { merge: true })
-    );
-    await Promise.all(promises);
+    for (const item of local) {
+      await api.proofs.submit(item);
+    }
     return { synced: local.length, error: null };
   } catch (err: any) {
     return { synced: 0, error: err?.message || 'Sync failed' };
   }
 };
 
-export const syncTaskSubmissionsToFirebase = syncTaskSubmissionsToSupabase;
+export const syncTaskSubmissionsToSupabase = syncTaskSubmissionsToFirebase;
 
 export const updateTaskSubmissionStatus = async (
   id: string,
   status: 'VERIFIED' | 'NEEDS_REVISION' | 'REJECTED',
   admin_feedback?: string
 ): Promise<void> => {
-  if (isFirebaseConfigured) {
-    try {
-      await updateDoc(doc(db, 'pioneer_proof_of_work', id), {
-        status,
-        admin_feedback: admin_feedback || null
-      });
-    } catch (err) {
-      console.warn('Firestore update failed:', err);
-    }
-  }
+  // Update in backend API
+  api.proofs.review(id, { status, admin_feedback }).catch(err => {
+    console.warn('Backend API review notice:', err);
+  });
 
   // Update in localStorage
   const current = await getTaskSubmissions();
   let affectedRecord: TaskSubmissionRecord | undefined;
 
   const updated = current.map(item => {
-    if (item.id === id) {
+    if (item.id === id || item.reference_id === id) {
       affectedRecord = { ...item, status, admin_feedback: admin_feedback ?? item.admin_feedback };
       return affectedRecord;
     }
@@ -256,3 +229,4 @@ export const updateTaskSubmissionStatus = async (
     }
   }
 };
+

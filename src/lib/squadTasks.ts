@@ -1,5 +1,4 @@
-import { db, isFirebaseConfigured } from './firebase';
-import { collection, doc, getDocs, setDoc, deleteDoc, updateDoc, query, orderBy } from 'firebase/firestore';
+import { api } from './api';
 
 export type SquadDivision =
   | 'GENERAL'
@@ -214,66 +213,35 @@ export function getAllSquadTasks(): SquadTask[] {
 }
 
 /**
- * Fetches squad tasks directly from Supabase if configured,
+ * Fetches squad tasks from backend API (or localStorage fallback),
  * updates local storage cache, and returns the records.
  */
 export async function fetchSquadTasksFromDatabase(): Promise<SquadTask[]> {
-  if (!isFirebaseConfigured) {
-    return getAllSquadTasks();
-  }
-
   try {
-    const q = query(collection(db, 'squad_tasks'), orderBy('created_at', 'desc'));
-    const snapshot = await getDocs(q);
-
-    if (!snapshot.empty) {
-      const mapped: SquadTask[] = snapshot.docs.map(docSnap => {
-        const item = docSnap.data();
-        return {
-          id: item.id || docSnap.id,
-          title: item.title,
-          squad: item.squad,
-          frequency: item.frequency,
-          category: item.category,
-          description: item.description,
-          requirements: item.requirements || [],
-          submission_format: item.submission_format,
-          bounty_type: item.bounty_type,
-          bounty_reward: item.bounty_reward || undefined,
-          bounty_slots: item.bounty_slots || undefined,
-          bounty_instructions: item.bounty_instructions || undefined,
-          deadline: item.deadline,
-          status: item.status,
-          announced_by: item.announced_by,
-          created_at: item.created_at
-        };
-      });
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(mapped));
-      return mapped;
+    const res = await api.tasks.getAll();
+    if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(res.data));
+      return res.data;
     }
-
     return getAllSquadTasks();
   } catch (err) {
-    console.error('Failed to fetch squad tasks from Firestore:', err);
+    console.error('Failed to fetch squad tasks from backend API:', err);
     return getAllSquadTasks();
   }
 }
 
 /**
- * Synchronizes local cached squad tasks up to Firebase Firestore database.
+ * Synchronizes local cached squad tasks to backend database.
  */
 export async function syncSquadTasksToSupabase(): Promise<{ synced: number; error: string | null }> {
-  if (!isFirebaseConfigured) {
-    return { synced: 0, error: 'Firebase credentials not configured' };
-  }
-
   try {
     const localTasks = getAllSquadTasks();
-    const promises = localTasks.map(t =>
-      setDoc(doc(db, 'squad_tasks', t.id), t, { merge: true })
-    );
-    await Promise.all(promises);
-    return { synced: localTasks.length, error: null };
+    let count = 0;
+    for (const t of localTasks) {
+      await api.tasks.create(t);
+      count++;
+    }
+    return { synced: count, error: null };
   } catch (err: any) {
     return { synced: 0, error: err?.message || 'Sync failed' };
   }
@@ -300,11 +268,9 @@ export function createSquadTask(task: Omit<SquadTask, 'id' | 'created_at'>): Squ
   const updated = [newTask, ...all];
   localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
 
-  // Async sync to Firestore if configured
-  if (isFirebaseConfigured) {
-    setDoc(doc(db, 'squad_tasks', newTask.id), newTask, { merge: true })
-      .catch(err => console.warn('Firestore task insert error:', err?.message));
-  }
+  // Async sync to backend
+  api.tasks.create(newTask)
+    .catch(err => console.warn('Backend task insert error:', err?.message));
 
   return newTask;
 }
@@ -321,9 +287,10 @@ export function updateSquadTask(id: string, updates: Partial<SquadTask>): SquadT
   });
   localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
 
-  if (isFirebaseConfigured && updatedTask) {
-    setDoc(doc(db, 'squad_tasks', id), updatedTask, { merge: true })
-      .catch(err => console.warn('Firestore task update error:', err?.message));
+  // If status is being toggled, backend provides toggle
+  if (updates.status !== undefined) {
+    api.tasks.toggle(id)
+      .catch(err => console.warn('Backend task update error:', err?.message));
   }
 
   return updatedTask;
@@ -334,10 +301,8 @@ export function deleteSquadTask(id: string): boolean {
   const filtered = all.filter(t => t.id !== id);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
 
-  if (isFirebaseConfigured) {
-    deleteDoc(doc(db, 'squad_tasks', id))
-      .catch(err => console.warn('Firestore task delete error:', err?.message));
-  }
+  api.tasks.delete(id)
+    .catch(err => console.warn('Backend task delete error:', err?.message));
 
   return true;
 }
@@ -355,10 +320,8 @@ export function toggleTaskStatus(id: string): SquadTask | undefined {
   });
   localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
 
-  if (isFirebaseConfigured && updatedTask) {
-    updateDoc(doc(db, 'squad_tasks', id), { status: updatedTask.status })
-      .catch(err => console.warn('Firestore task toggle status error:', err?.message));
-  }
+  api.tasks.toggle(id)
+    .catch(err => console.warn('Backend task toggle status error:', err?.message));
 
   return updatedTask;
 }

@@ -1,5 +1,4 @@
-import { db, isFirebaseConfigured } from './firebase';
-import { collection, doc, getDocs, setDoc, deleteDoc } from 'firebase/firestore';
+import { api } from './api';
 
 export type StaffRole = 'SUPER_ADMIN' | 'MANAGER' | 'SQUAD_LEAD' | 'TASK_VIEWER' | 'ADMISSIONS_REVIEWER' | 'TASK_VERIFIER';
 
@@ -84,29 +83,17 @@ const DEFAULT_STAFF: StaffMember[] = [
 ];
 
 export interface StaffPermissions {
-  /** Can access staff directory, add/delete/suspend workers, change passcodes */
   canManageStaff: boolean;
-  /** Can review, accept, waitlist, and reject candidate applications */
   canReviewApplications: boolean;
-  /** Can delete candidate applications */
   canDeleteApplications: boolean;
-  /** Can verify task proofs and award milestone progression */
   canVerifyTasks: boolean;
-  /** Can create and announce squad missions */
   canAnnounceTasks: boolean;
-  /** Can delete squad missions */
   canDeleteTasks: boolean;
-  /** Can issue official completion certificates */
   canIssueCertificates: boolean;
-  /** Can revoke issued certificates */
   canRevokeCertificates: boolean;
-  /** Can manually edit member tiers / levels */
   canModifyMemberTier: boolean;
-  /** Can suspend or reinstate members */
   canSuspendMembers: boolean;
-  /** Can view platform analytics and intelligence */
   canViewAnalytics: boolean;
-  /** Whether this role is strictly read-only */
   isReadOnly: boolean;
 }
 
@@ -220,22 +207,16 @@ export const getStaffPermissions = (role: StaffRole): StaffPermissions => {
   }
 };
 
-/**
- * Returns whether a given staff role is authorized to view a specific admin tab
- */
 export const isTabAuthorized = (role: StaffRole, tab: string): boolean => {
   switch (role) {
     case 'SUPER_ADMIN':
-      return true; // Super Admin has access to all tabs
+      return true;
     case 'MANAGER':
-      // Manager has access to all operations except Staff Review Team management
       return ['applications', 'proofs', 'members', 'certificates', 'tasks', 'analytics'].includes(tab);
     case 'SQUAD_LEAD':
-      // Squad Lead accesses missions, task proofs, and member directory for their squad
       return ['tasks', 'proofs', 'members'].includes(tab);
     case 'TASK_VIEWER':
     case 'TASK_VERIFIER':
-      // Task Viewer strictly accesses task submissions / proofs and squad missions
       return ['proofs', 'tasks'].includes(tab);
     case 'ADMISSIONS_REVIEWER':
       return ['applications', 'members'].includes(tab);
@@ -249,7 +230,6 @@ export const getStaffMembers = (): StaffMember[] => {
   if (data) {
     try {
       const parsed: StaffMember[] = JSON.parse(data);
-      // Back-fill default passwords for legacy records that don't have one
       const defaults = DEFAULT_STAFF;
       const patched = parsed.map(s => {
         if (!s.password) {
@@ -282,11 +262,9 @@ export const addStaffMember = (input: Omit<StaffMember, 'id' | 'reviews_count' |
   all.push(newMember);
   saveStaffMembers(all);
 
-  if (isFirebaseConfigured) {
-    setDoc(doc(db, 'staff_members', newMember.id), newMember, { merge: true }).catch(err => {
-      console.warn('Firestore staff insert error:', err);
-    });
-  }
+  api.staff.add(newMember).catch(err => {
+    console.warn('Backend API addStaffMember notice:', err);
+  });
 
   return newMember;
 };
@@ -303,9 +281,9 @@ export const toggleStaffStatus = (id: string): void => {
   });
   saveStaffMembers(updated);
 
-  if (isFirebaseConfigured && updatedMember) {
-    setDoc(doc(db, 'staff_members', id), { status: updatedMember.status }, { merge: true }).catch(err => {
-      console.warn('Firestore staff status update error:', err);
+  if (updatedMember) {
+    api.staff.update(id, { status: updatedMember.status }).catch(err => {
+      console.warn('Backend API toggleStaffStatus notice:', err);
     });
   }
 };
@@ -314,19 +292,13 @@ export const deleteStaffMember = (id: string): void => {
   const all = getStaffMembers().filter(s => s.id !== id);
   saveStaffMembers(all);
 
-  if (isFirebaseConfigured) {
-    deleteDoc(doc(db, 'staff_members', id)).catch(err => {
-      console.warn('Firestore staff delete error:', err);
-    });
-  }
+  api.staff.delete(id).catch(err => {
+    console.warn('Backend API deleteStaffMember notice:', err);
+  });
 };
 
-/**
- * Legacy: verify by passcode (still works as fallback / master key)
- */
 export const verifyStaffPasscode = (passcode: string): StaffMember | null => {
   const cleanPasscode = passcode.trim();
-  // Master passcode refeir2026 always succeeds
   if (cleanPasscode === 'refeir2026') {
     const superAdmin = getStaffMembers().find(s => s.passcode === 'refeir2026');
     if (superAdmin) return superAdmin;
@@ -338,9 +310,6 @@ export const verifyStaffPasscode = (passcode: string): StaffMember | null => {
   return found || null;
 };
 
-/**
- * Verify staff by email + password. Returns the matched StaffMember or null.
- */
 export const verifyStaffEmailPassword = (email: string, password: string): StaffMember | null => {
   const cleanEmail = email.trim().toLowerCase();
   const cleanPassword = password.trim();
@@ -356,9 +325,6 @@ export const verifyStaffEmailPassword = (email: string, password: string): Staff
   return found || null;
 };
 
-/**
- * Update a staff member's details, role, division, passcode, or password (Super Admin only).
- */
 export const updateStaffMember = (
   id: string,
   updates: Partial<Omit<StaffMember, 'id' | 'added_at' | 'reviews_count'>>
@@ -377,28 +343,21 @@ export const updateStaffMember = (
   });
   if (updatedMember) {
     saveStaffMembers(updated);
-    if (isFirebaseConfigured) {
-      setDoc(doc(db, 'staff_members', id), updates, { merge: true }).catch(err => {
-        console.warn('Firestore staff update error:', err);
-      });
-    }
+    api.staff.update(id, updates).catch(err => {
+      console.warn('Backend API updateStaffMember notice:', err);
+    });
   }
   return updatedMember;
 };
 
-/**
- * Update a staff member's password (Super Admin only).
- */
 export const updateStaffPassword = (id: string, newPassword: string): void => {
   const all = getStaffMembers();
   const updated = all.map(s => s.id === id ? { ...s, password: newPassword } : s);
   saveStaffMembers(updated);
 
-  if (isFirebaseConfigured) {
-    setDoc(doc(db, 'staff_members', id), { password: newPassword }, { merge: true }).catch(err => {
-      console.warn('Firestore staff password update error:', err);
-    });
-  }
+  api.staff.update(id, { password: newPassword }).catch(err => {
+    console.warn('Backend API updateStaffPassword notice:', err);
+  });
 };
 
 export const getActiveStaffSession = (): StaffMember | null => {
@@ -419,40 +378,25 @@ export const setActiveStaffSession = (staff: StaffMember | null): void => {
   }
 };
 
-/**
- * Fetches staff members from Firebase Firestore if configured.
- */
 export const fetchStaffMembersFromDatabase = async (): Promise<StaffMember[]> => {
-  if (!isFirebaseConfigured) {
-    return getStaffMembers();
-  }
-
   try {
-    const snap = await getDocs(collection(db, 'staff_members'));
-    if (!snap.empty) {
-      const items = snap.docs.map(d => d.data() as StaffMember);
-      saveStaffMembers(items);
-      return items;
+    const res = await api.staff.getAll();
+    if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+      saveStaffMembers(res.data);
+      return res.data;
     }
   } catch (err) {
-    console.warn('Could not query Firestore staff_members:', err);
+    console.warn('Could not query custom backend staff_members:', err);
   }
 
   return getStaffMembers();
 };
 
-/**
- * Syncs all staff members to Firebase Firestore.
- */
 export const syncStaffMembersToFirebase = async (): Promise<{ success: boolean; count: number; error?: string }> => {
-  if (!isFirebaseConfigured) {
-    return { success: false, count: 0, error: 'Firebase is not configured in .env' };
-  }
-
   const staff = getStaffMembers();
   try {
     for (const member of staff) {
-      await setDoc(doc(db, 'staff_members', member.id), member, { merge: true });
+      await api.staff.add(member);
     }
     return { success: true, count: staff.length };
   } catch (err: any) {
@@ -461,3 +405,4 @@ export const syncStaffMembersToFirebase = async (): Promise<{ success: boolean; 
 };
 
 export const syncStaffMembersToSupabase = syncStaffMembersToFirebase;
+
