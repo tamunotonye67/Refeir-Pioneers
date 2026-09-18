@@ -2242,38 +2242,40 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               </div>
             )}
 
-            {/* Return to Website Button */}
-            <button
-              onClick={() => onNavigate('/')}
-              title="Return to Main Website"
-              style={{
-                background: 'rgba(24, 252, 92, 0.08)',
-                border: '1px solid rgba(24, 252, 92, 0.22)',
-                color: RF_MINT_ACCENT,
-                height: 32,
-                padding: isMobile ? '0 10px' : '0 13px',
-                borderRadius: 8,
-                fontSize: 12,
-                fontWeight: 600,
-                cursor: 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 5,
-                transition: 'all 0.15s ease',
-                flexShrink: 0
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.background = 'rgba(24, 252, 92, 0.16)';
-                e.currentTarget.style.borderColor = RF_MINT_ACCENT;
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.background = 'rgba(24, 252, 92, 0.08)';
-                e.currentTarget.style.borderColor = 'rgba(24, 252, 92, 0.22)';
-              }}
-            >
-              <ArrowLeft size={13} />
-              <span>{isMobile ? 'Website' : 'Return to Website'}</span>
-            </button>
+            {/* Desktop Return to Website Button */}
+            {!isMobile && (
+              <button
+                onClick={() => onNavigate('/')}
+                title="Return to Main Website"
+                style={{
+                  background: 'rgba(24, 252, 92, 0.08)',
+                  border: '1px solid rgba(24, 252, 92, 0.22)',
+                  color: RF_MINT_ACCENT,
+                  height: 32,
+                  padding: '0 13px',
+                  borderRadius: 8,
+                  fontSize: 12,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 5,
+                  transition: 'all 0.15s ease',
+                  flexShrink: 0
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.background = 'rgba(24, 252, 92, 0.16)';
+                  e.currentTarget.style.borderColor = RF_MINT_ACCENT;
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.background = 'rgba(24, 252, 92, 0.08)';
+                  e.currentTarget.style.borderColor = 'rgba(24, 252, 92, 0.22)';
+                }}
+              >
+                <ArrowLeft size={13} />
+                <span>Return to Website</span>
+              </button>
+            )}
 
             {/* Desktop Exit / Sign Out */}
             {!isMobile && (
@@ -3030,93 +3032,88 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 { id: 'certificates', label: 'Pioneer Certifications', icon: Award, count: certificatesList.length, desc: 'Issue & inspect sovereign completion credentials', onClick: refreshCertificates },
                 { id: 'tasks', label: 'Squad Missions & Bounties', icon: Megaphone, count: tasksList.filter(t => t.status === 'ACTIVE').length, desc: 'Broadcast daily missions with airtime & cash', onClick: refreshTasks },
                 { id: 'analytics', label: 'Analytics Dashboard', icon: BarChart3, count: 0, desc: 'Platform telemetry, growth trends & live charts' },
-              ].map(item => {
-                const isActive = adminTab === item.id;
-                const Icon = item.icon;
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => {
-                      setAdminTab(item.id as any);
-                      if (item.onClick) item.onClick();
-                      setAdminMobileNavOpen(false);
-                    }}
-                    style={{
-                      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                      padding: '12px 14px', borderRadius: 12,
-                      background: isActive ? 'rgba(24, 252, 92, 0.12)' : 'rgba(255,255,255,0.03)',
-                      border: isActive ? '1px solid rgba(24, 252, 92, 0.35)' : '1px solid rgba(255,255,255,0.06)',
-                      cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s ease',
-                      boxShadow: isActive ? '0 4px 14px rgba(24, 252, 92, 0.15)' : 'none'
-                    }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                      <div style={{
-                        width: 36, height: 36, borderRadius: 10,
-                        background: isActive ? 'rgba(24, 252, 92, 0.22)' : 'rgba(255,255,255,0.05)',
-                        border: `1px solid ${isActive ? RF_MINT_ACCENT : 'rgba(255,255,255,0.1)'}`,
-                        color: isActive ? RF_MINT_ACCENT : 'rgba(255,255,255,0.6)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+              ]
+                .filter(item => isTabAuthorized(loggedInStaff?.role || 'SUPER_ADMIN', item.id))
+                .map(item => {
+                  const isActive = adminTab === item.id;
+                  const Icon = item.icon;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => {
+                        setAdminTab(item.id as any);
+                        if (item.onClick) item.onClick();
+                        setAdminMobileNavOpen(false);
+                      }}
+                      style={{
+                        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                        padding: '12px 14px', borderRadius: 12,
+                        background: isActive ? 'rgba(24, 252, 92, 0.12)' : 'rgba(255,255,255,0.03)',
+                        border: isActive ? '1px solid rgba(24, 252, 92, 0.35)' : '1px solid rgba(255,255,255,0.06)',
+                        cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s ease',
+                        boxShadow: isActive ? '0 4px 14px rgba(24, 252, 92, 0.15)' : 'none'
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                        <div style={{
+                          width: 36, height: 36, borderRadius: 10,
+                          background: isActive ? 'rgba(24, 252, 92, 0.22)' : 'rgba(255,255,255,0.05)',
+                          border: `1px solid ${isActive ? RF_MINT_ACCENT : 'rgba(255,255,255,0.1)'}`,
+                          color: isActive ? RF_MINT_ACCENT : 'rgba(255,255,255,0.6)',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+                        }}>
+                          <Icon size={17} />
+                        </div>
+                        <div>
+                          <div style={{ fontSize: 13.5, fontWeight: isActive ? 700 : 600, color: isActive ? '#FFFFFF' : 'rgba(255,255,255,0.85)' }}>
+                            {item.label}
+                          </div>
+                          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', marginTop: 2 }}>
+                            {item.desc}
+                          </div>
+                        </div>
+                      </div>
+                      <span style={{
+                        fontSize: 11, fontWeight: 700, padding: '3px 8px', borderRadius: 100,
+                        background: isActive ? 'rgba(24, 252, 92, 0.2)' : 'rgba(255,255,255,0.07)',
+                        color: isActive ? RF_MINT_ACCENT : 'rgba(255,255,255,0.55)', flexShrink: 0
                       }}>
-                        <Icon size={17} />
-                      </div>
-                      <div>
-                        <div style={{ fontSize: 13.5, fontWeight: isActive ? 700 : 600, color: isActive ? '#FFFFFF' : 'rgba(255,255,255,0.85)' }}>
-                          {item.label}
-                        </div>
-                        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', marginTop: 2 }}>
-                          {item.desc}
-                        </div>
-                      </div>
-                    </div>
-                    <span style={{
-                      fontSize: 11, fontWeight: 700, padding: '3px 8px', borderRadius: 100,
-                      background: isActive ? 'rgba(24, 252, 92, 0.2)' : 'rgba(255,255,255,0.07)',
-                      color: isActive ? RF_MINT_ACCENT : 'rgba(255,255,255,0.55)', flexShrink: 0
-                    }}>
-                      {item.count}
-                    </span>
-                  </button>
-                );
-              })}
+                        {item.count}
+                      </span>
+                    </button>
+                  );
+                })}
             </div>
 
             {/* Quick action bar */}
             <div style={{
-              display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8,
+              display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10,
               paddingTop: 14,
               paddingBottom: 'calc(10px + env(safe-area-inset-bottom, 14px))',
               borderTop: '1px solid rgba(255,255,255,0.07)', marginTop: 'auto'
             }}>
               <button
-                onClick={() => { handleRefreshData(); setAdminMobileNavOpen(false); }}
+                onClick={() => {
+                  setAdminMobileNavOpen(false);
+                  onNavigate('/');
+                }}
                 style={{
-                  background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)',
-                  color: '#FFFFFF', padding: '10px 8px', borderRadius: 10, fontSize: 12, fontWeight: 600,
+                  background: 'rgba(24, 252, 92, 0.12)', border: '1px solid rgba(24, 252, 92, 0.3)',
+                  color: RF_MINT_ACCENT, padding: '12px 10px', borderRadius: 12, fontSize: 13, fontWeight: 700,
                   cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6
                 }}
               >
-                <RefreshCw size={13} className={loading ? 'rp-spin' : ''} /> Refresh
-              </button>
-              <button
-                onClick={() => { handleExportCSV(); setAdminMobileNavOpen(false); }}
-                style={{
-                  background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)',
-                  color: '#FFFFFF', padding: '10px 8px', borderRadius: 10, fontSize: 12, fontWeight: 600,
-                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6
-                }}
-              >
-                <Download size={13} /> Export
+                <ArrowLeft size={14} /> Back to Website
               </button>
               <button
                 onClick={() => { handleLogout(); setAdminMobileNavOpen(false); }}
                 style={{
                   background: 'rgba(239, 68, 68, 0.12)', border: '1px solid rgba(239, 68, 68, 0.3)',
-                  color: '#FCA5A5', padding: '10px 8px', borderRadius: 100, fontSize: 12, fontWeight: 600,
+                  color: '#FCA5A5', padding: '12px 10px', borderRadius: 12, fontSize: 13, fontWeight: 700,
                   cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6
                 }}
               >
-                <LogOut size={13} /> Exit
+                <LogOut size={14} /> Exit Portal
               </button>
             </div>
           </div>
@@ -3413,78 +3410,131 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
       )}
 
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: isMobile ? '16px 14px calc(90px + env(safe-area-inset-bottom, 24px))' : '26px 24px 80px' }}>
-        {/* Unified Responsive Navigation Tabs (Filtered by Role Permissions) */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 6,
-          marginBottom: isMobile ? 18 : 26,
-          padding: '5px',
-          background: 'rgba(255, 255, 255, 0.03)',
-          border: '1px solid rgba(255, 255, 255, 0.07)',
-          borderRadius: 12,
-          overflowX: 'auto',
-          WebkitOverflowScrolling: 'touch',
-          scrollbarWidth: 'none',
-          msOverflowStyle: 'none'
-        }}>
-          {[
-            { id: 'applications', label: isMobile ? 'Admissions' : 'Applications', icon: UserCheck, count: stats.total },
-            { id: 'proofs', label: isMobile ? 'Task Proofs' : 'Task Proofs', icon: FileCheck, count: taskStats.total },
-            { id: 'members', label: isMobile ? 'Pioneers' : 'Pioneer Profiles', icon: Users, count: membersList.length, onClick: refreshMembers },
-            { id: 'workers', label: isMobile ? 'Review Team' : 'Review Team', icon: Briefcase, count: staffList.length },
-            { id: 'certificates', label: isMobile ? 'Certs' : 'Certifications', icon: Award, count: certificatesList.length, onClick: refreshCertificates },
-            { id: 'tasks', label: isMobile ? 'Missions' : 'Squad Missions', icon: Megaphone, count: tasksList.filter(t => t.status === 'ACTIVE').length, onClick: refreshTasks },
-            { id: 'analytics', label: 'Analytics', icon: BarChart3, count: 0 },
-          ]
-            .filter(tab => isTabAuthorized(loggedInStaff?.role || 'SUPER_ADMIN', tab.id))
-            .map(tab => {
-              const isActive = adminTab === tab.id;
-              const Icon = tab.icon;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => {
-                    setAdminTab(tab.id as any);
-                    if (tab.onClick) tab.onClick();
-                  }}
-                  style={{
-                    flexShrink: 0,
-                    whiteSpace: 'nowrap',
-                    height: isMobile ? 36 : 38,
-                    padding: isMobile ? '0 12px' : '0 16px',
-                    borderRadius: 8,
-                    fontSize: isMobile ? 12 : 12.5,
-                    fontWeight: isActive ? 700 : 500,
-                    color: isActive ? RF_MINT_ACCENT : 'rgba(255, 255, 255, 0.65)',
-                    background: isActive ? 'rgba(24, 252, 92, 0.12)' : 'transparent',
-                    border: isActive ? '1px solid rgba(24, 252, 92, 0.28)' : '1px solid transparent',
-                    boxShadow: isActive ? '0 2px 8px rgba(0,0,0,0.2)' : 'none',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    transition: 'all 0.16s ease'
-                  }}
-                >
-                  <Icon size={14} style={{ opacity: isActive ? 1 : 0.7 }} />
-                  <span>{tab.label}</span>
-                  {tab.id !== 'analytics' && (
-                    <span style={{
-                      background: isActive ? 'rgba(24, 252, 92, 0.2)' : 'rgba(255, 255, 255, 0.08)',
-                      color: isActive ? RF_MINT_ACCENT : 'rgba(255, 255, 255, 0.55)',
-                      padding: '1px 6px',
-                      borderRadius: 6,
-                      fontSize: 10.5,
-                      fontWeight: 700
-                    }}>
-                      {tab.count}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-        </div>
+        {/* Mobile Active Section Breadcrumb & Switcher Trigger */}
+        {isMobile && (
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            marginBottom: 20, padding: '10px 14px',
+            background: 'rgba(255, 255, 255, 0.03)',
+            border: '1px solid rgba(255, 255, 255, 0.07)',
+            borderRadius: 12
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{
+                width: 28, height: 28, borderRadius: 8,
+                background: 'rgba(24, 252, 92, 0.15)', color: RF_MINT_ACCENT,
+                display: 'flex', alignItems: 'center', justifyContent: 'center'
+              }}>
+                {adminTab === 'applications' && <UserCheck size={15} />}
+                {adminTab === 'proofs' && <FileCheck size={15} />}
+                {adminTab === 'members' && <Users size={15} />}
+                {adminTab === 'workers' && <Briefcase size={15} />}
+                {adminTab === 'certificates' && <Award size={15} />}
+                {adminTab === 'tasks' && <Megaphone size={15} />}
+                {adminTab === 'analytics' && <BarChart3 size={15} />}
+              </div>
+              <div>
+                <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block' }}>
+                  Current Section
+                </span>
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#FFFFFF' }}>
+                  {adminTab === 'applications' && 'Candidate Applications'}
+                  {adminTab === 'proofs' && 'Task Proofs of Work'}
+                  {adminTab === 'members' && 'Pioneer Profiles Registry'}
+                  {adminTab === 'workers' && 'Review Staff Team'}
+                  {adminTab === 'certificates' && 'Pioneer Certifications'}
+                  {adminTab === 'tasks' && 'Squad Missions & Bounties'}
+                  {adminTab === 'analytics' && 'Analytics Dashboard'}
+                </div>
+              </div>
+            </div>
+            <button
+              onClick={() => setAdminMobileNavOpen(true)}
+              style={{
+                background: 'rgba(24, 252, 92, 0.12)', border: '1px solid rgba(24, 252, 92, 0.28)',
+                color: RF_MINT_ACCENT, padding: '6px 12px', borderRadius: 100, fontSize: 11.5,
+                fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 5
+              }}
+            >
+              <Menu size={12} /> Switch
+            </button>
+          </div>
+        )}
+
+        {/* Desktop Navigation Tabs (Hidden on mobile) */}
+        {!isMobile && (
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+            marginBottom: 26,
+            padding: '4px',
+            background: 'rgba(255, 255, 255, 0.03)',
+            border: '1px solid rgba(255, 255, 255, 0.07)',
+            borderRadius: 12,
+            overflowX: 'auto',
+            WebkitOverflowScrolling: 'touch',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none'
+          }}>
+            {[
+              { id: 'applications', label: 'Applications', icon: UserCheck, count: stats.total },
+              { id: 'proofs', label: 'Task Proofs', icon: FileCheck, count: taskStats.total },
+              { id: 'members', label: 'Pioneer Profiles', icon: Users, count: membersList.length, onClick: refreshMembers },
+              { id: 'workers', label: 'Review Team', icon: Briefcase, count: staffList.length },
+              { id: 'certificates', label: 'Certifications', icon: Award, count: certificatesList.length, onClick: refreshCertificates },
+              { id: 'tasks', label: 'Squad Missions', icon: Megaphone, count: tasksList.filter(t => t.status === 'ACTIVE').length, onClick: refreshTasks },
+              { id: 'analytics', label: 'Analytics', icon: BarChart3, count: 0 },
+            ]
+              .filter(tab => isTabAuthorized(loggedInStaff?.role || 'SUPER_ADMIN', tab.id))
+              .map(tab => {
+                const isActive = adminTab === tab.id;
+                const Icon = tab.icon;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => {
+                      setAdminTab(tab.id as any);
+                      if (tab.onClick) tab.onClick();
+                    }}
+                    style={{
+                      flexShrink: 0,
+                      whiteSpace: 'nowrap',
+                      height: 36,
+                      padding: '0 16px',
+                      borderRadius: 8,
+                      fontSize: 12.5,
+                      fontWeight: isActive ? 700 : 500,
+                      color: isActive ? RF_MINT_ACCENT : 'rgba(255, 255, 255, 0.65)',
+                      background: isActive ? 'rgba(24, 252, 92, 0.12)' : 'transparent',
+                      border: isActive ? '1px solid rgba(24, 252, 92, 0.28)' : '1px solid transparent',
+                      boxShadow: isActive ? '0 2px 8px rgba(0,0,0,0.2)' : 'none',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 7,
+                      transition: 'all 0.16s ease'
+                    }}
+                  >
+                    <Icon size={14} style={{ opacity: isActive ? 1 : 0.7 }} />
+                    <span>{tab.label}</span>
+                    {tab.id !== 'analytics' && (
+                      <span style={{
+                        background: isActive ? 'rgba(24, 252, 92, 0.2)' : 'rgba(255, 255, 255, 0.08)',
+                        color: isActive ? RF_MINT_ACCENT : 'rgba(255, 255, 255, 0.55)',
+                        padding: '1px 6px',
+                        borderRadius: 6,
+                        fontSize: 10.5,
+                        fontWeight: 700
+                      }}>
+                        {tab.count}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+          </div>
+        )}
 
         {adminTab === 'applications' && (
           <div>
