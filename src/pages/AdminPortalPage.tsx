@@ -2665,285 +2665,340 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
         </div>
       </header>
 
-      {/* ─── MOBILE NOTIFICATION DOCKER (Bottom Sheet) ─── */}
-      {isMobile && notificationOpen && (
+      {/* ─── FULL-VIEWPORT MOBILE NOTIFICATIONS DOCKER ─── */}
+      {notificationOpen && isMobile && (
         <div
           onClick={() => setNotificationOpen(false)}
           style={{
             position: 'fixed',
-            inset: 0,
-            zIndex: 10000,
-            background: 'rgba(3, 10, 6, 0.75)',
-            backdropFilter: 'blur(12px)',
-            WebkitBackdropFilter: 'blur(12px)',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            width: '100%',
+            height: '100%',
+            minHeight: '100dvh',
+            maxHeight: '100dvh',
+            zIndex: 999999,
+            background: 'rgba(4, 15, 9, 0.98)',
+            backdropFilter: 'blur(28px)',
+            WebkitBackdropFilter: 'blur(28px)',
             display: 'flex',
             flexDirection: 'column',
-            justifyContent: 'flex-end',
-            animation: 'fadeIn 0.2s ease-out'
+            overflow: 'hidden',
+            overscrollBehavior: 'none',
+            touchAction: 'none'
           }}
         >
+          {/* Top Docker Header Bar */}
           <div
             onClick={e => e.stopPropagation()}
             style={{
-              background: '#081C12',
-              borderTop: `1.5px solid ${RF_MINT_ACCENT}55`,
-              borderRadius: '24px 24px 0 0',
-              padding: '16px 18px calc(24px + env(safe-area-inset-bottom, 20px))',
-              boxShadow: '0 -10px 40px rgba(0,0,0,0.7)',
-              maxHeight: '85dvh',
+              padding: '16px 18px 14px',
+              borderBottom: '1px solid rgba(255, 255, 255, 0.07)',
               display: 'flex',
-              flexDirection: 'column',
-              gap: 12,
-              overflow: 'hidden'
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              background: 'rgba(8, 25, 16, 0.95)',
+              flexShrink: 0,
+              touchAction: 'none'
             }}
           >
-            {/* Drag Handle */}
-            <div
-              style={{
-                width: 40,
-                height: 4,
-                borderRadius: 2,
-                background: 'rgba(255,255,255,0.2)',
-                margin: '0 auto 2px',
-                cursor: 'pointer'
-              }}
-              onClick={() => setNotificationOpen(false)}
-            />
-
-            {/* Header */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 6, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            {/* Left: Icon + Title + Status Subtitle */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0 }}>
+              <div style={{
+                background: 'rgba(24, 252, 92, 0.12)',
+                border: '1px solid rgba(24, 252, 92, 0.28)',
+                width: 36,
+                height: 36,
+                borderRadius: 10,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: RF_MINT_ACCENT,
+                flexShrink: 0
+              }}>
+                <Bell size={18} />
+              </div>
+              <div style={{ minWidth: 0 }}>
+                <h2 style={{
+                  fontSize: 16,
+                  fontWeight: 700,
+                  color: '#FFFFFF',
+                  letterSpacing: '-0.02em',
+                  margin: 0,
+                  lineHeight: 1.2
+                }}>
+                  Notifications
+                </h2>
                 <div style={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: 8,
-                  background: 'rgba(24, 252, 92, 0.15)',
-                  border: '1px solid rgba(24, 252, 92, 0.3)',
+                  fontSize: 11.5,
+                  color: unreadNotifCount > 0 ? RF_MINT_ACCENT : 'rgba(255, 255, 255, 0.5)',
+                  marginTop: 2,
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center',
-                  color: RF_MINT_ACCENT
+                  gap: 5
                 }}>
-                  <Bell size={16} />
-                </div>
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <h3 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: '#FFFFFF' }}>
-                      Notifications
-                    </h3>
-                    {unreadNotifCount > 0 && (
-                      <span style={{
-                        fontSize: 10,
-                        fontWeight: 700,
-                        padding: '1px 6px',
-                        borderRadius: 100,
-                        background: 'rgba(24, 252, 92, 0.15)',
-                        color: RF_MINT_ACCENT,
-                        border: '1px solid rgba(24, 252, 92, 0.3)'
-                      }}>
-                        {unreadNotifCount} new
-                      </span>
-                    )}
-                  </div>
-                  <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.45)' }}>
-                    Live Activity &amp; Admissions Feed
+                  {unreadNotifCount > 0 && (
+                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: RF_MINT_ACCENT }} />
+                  )}
+                  <span>
+                    {unreadNotifCount > 0 ? `${unreadNotifCount} unread alert${unreadNotifCount > 1 ? 's' : ''}` : 'All caught up'}
                   </span>
                 </div>
               </div>
+            </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                {unreadNotifCount > 0 && (
-                  <button
-                    onClick={handleMarkAllNotificationsRead}
-                    style={{
-                      background: 'rgba(24, 252, 92, 0.1)',
-                      border: '1px solid rgba(24, 252, 92, 0.25)',
-                      color: RF_MINT_ACCENT,
-                      fontSize: 11,
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                      padding: '4px 8px',
-                      borderRadius: 100,
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: 4
-                    }}
-                  >
-                    <CheckCheck size={12} />
-                    <span>Mark read</span>
-                  </button>
-                )}
+            {/* Right: Exactly 2 balanced controls - "Mark read" (if unread) + Close Button */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
+              {unreadNotifCount > 0 && (
                 <button
-                  onClick={() => setNotificationOpen(false)}
+                  onClick={handleMarkAllNotificationsRead}
                   style={{
-                    width: 30,
-                    height: 30,
-                    borderRadius: '50%',
-                    background: 'rgba(255,255,255,0.06)',
-                    border: '1px solid rgba(255,255,255,0.12)',
-                    color: 'rgba(255,255,255,0.7)',
-                    display: 'flex',
+                    background: 'rgba(24, 252, 92, 0.1)',
+                    border: '1px solid rgba(24, 252, 92, 0.25)',
+                    color: RF_MINT_ACCENT,
+                    fontSize: 12,
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    display: 'inline-flex',
                     alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer'
+                    gap: 5,
+                    padding: '6px 12px',
+                    borderRadius: 100,
+                    transition: 'all 0.15s ease'
                   }}
                 >
-                  <X size={15} />
+                  <CheckCheck size={13} />
+                  <span>Mark read</span>
                 </button>
-              </div>
-            </div>
-
-            {/* Filter Tabs */}
-            <div style={{ display: 'flex', gap: 6, padding: '2px 0' }}>
+              )}
               <button
-                onClick={() => setNotifFilter('all')}
+                onClick={() => setNotificationOpen(false)}
+                aria-label="Close notification center"
                 style={{
-                  background: notifFilter === 'all' ? 'rgba(255, 255, 255, 0.12)' : 'rgba(255, 255, 255, 0.04)',
-                  border: notifFilter === 'all' ? '1px solid rgba(255, 255, 255, 0.2)' : '1px solid rgba(255, 255, 255, 0.06)',
-                  color: notifFilter === 'all' ? '#FFFFFF' : 'rgba(255, 255, 255, 0.55)',
-                  padding: '5px 12px',
-                  borderRadius: 8,
-                  fontSize: 12,
-                  fontWeight: 600,
-                  cursor: 'pointer'
+                  width: 36,
+                  height: 36,
+                  borderRadius: '50%',
+                  background: 'rgba(255, 255, 255, 0.06)',
+                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                  color: '#FFFFFF',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease'
                 }}
               >
-                All ({notificationsList.length})
-              </button>
-              <button
-                onClick={() => setNotifFilter('action')}
-                style={{
-                  background: notifFilter === 'action' ? 'rgba(251, 191, 36, 0.18)' : 'rgba(255, 255, 255, 0.04)',
-                  border: notifFilter === 'action' ? '1px solid rgba(251, 191, 36, 0.35)' : '1px solid rgba(255, 255, 255, 0.06)',
-                  color: notifFilter === 'action' ? RF_GOLD_YELLOW : 'rgba(255, 255, 255, 0.55)',
-                  padding: '5px 12px',
-                  borderRadius: 8,
-                  fontSize: 12,
-                  fontWeight: 600,
-                  cursor: 'pointer'
-                }}
-              >
-                Action Needed ({notificationsList.filter(n => n.type === 'action').length})
+                <X size={17} />
               </button>
             </div>
+          </div>
 
-            {/* Notifications Scrollable List */}
-            <div
-              className="rp-sleek-scroll"
+          {/* Filter Chips Bar */}
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              display: 'flex',
+              gap: 8,
+              padding: '12px 18px',
+              borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+              background: 'rgba(0, 0, 0, 0.2)',
+              flexShrink: 0,
+              touchAction: 'none'
+            }}
+          >
+            <button
+              onClick={() => setNotifFilter('all')}
               style={{
-                flex: 1,
-                minHeight: 0,
-                maxHeight: 'calc(65dvh - 120px)',
-                overflowY: 'auto',
-                WebkitOverflowScrolling: 'touch',
-                overscrollBehavior: 'contain',
-                touchAction: 'pan-y',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 6
+                background: notifFilter === 'all' ? 'rgba(255, 255, 255, 0.12)' : 'rgba(255, 255, 255, 0.03)',
+                border: notifFilter === 'all' ? '1px solid rgba(255, 255, 255, 0.18)' : '1px solid rgba(255, 255, 255, 0.07)',
+                color: notifFilter === 'all' ? '#FFFFFF' : 'rgba(255, 255, 255, 0.6)',
+                padding: '6px 14px',
+                borderRadius: 100,
+                fontSize: 12,
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.15s ease'
               }}
             >
-              {notificationsList
-                .filter(n => notifFilter === 'all' || n.type === 'action')
-                .map(n => {
-                  const isUnread = n.unread;
-                  return (
-                    <div
-                      key={n.id}
-                      onClick={() => handleNotificationClick(n)}
-                      style={{
-                        padding: '11px 13px',
-                        borderRadius: 12,
-                        background: isUnread ? 'rgba(24, 252, 92, 0.04)' : 'rgba(255, 255, 255, 0.02)',
-                        border: isUnread ? '1px solid rgba(24, 252, 92, 0.18)' : '1px solid rgba(255, 255, 255, 0.05)',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        gap: 12,
-                        alignItems: 'flex-start'
-                      }}
-                    >
-                      <div style={{
-                        width: 32,
-                        height: 32,
-                        borderRadius: 9,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        flexShrink: 0,
-                        marginTop: 1,
-                        background:
-                          n.type === 'action' ? 'rgba(251, 191, 36, 0.12)' :
-                          n.type === 'success' ? 'rgba(24, 252, 92, 0.12)' :
-                          n.type === 'alert' ? 'rgba(239, 68, 68, 0.12)' :
-                          'rgba(56, 189, 248, 0.12)',
-                        color:
-                          n.type === 'action' ? RF_GOLD_YELLOW :
-                          n.type === 'success' ? RF_MINT_ACCENT :
-                          n.type === 'alert' ? '#FCA5A5' :
-                          '#38BDF8'
-                      }}>
-                        {n.type === 'action' ? <AlertCircle size={15} /> :
-                         n.type === 'success' ? <CheckCircle2 size={15} /> :
-                         n.type === 'alert' ? <AlertTriangle size={15} /> :
-                         <Shield size={15} />}
+              All ({notificationsList.length})
+            </button>
+            <button
+              onClick={() => setNotifFilter('action')}
+              style={{
+                background: notifFilter === 'action' ? 'rgba(251, 191, 36, 0.15)' : 'rgba(255, 255, 255, 0.03)',
+                border: notifFilter === 'action' ? '1px solid rgba(251, 191, 36, 0.3)' : '1px solid rgba(255, 255, 255, 0.07)',
+                color: notifFilter === 'action' ? RF_GOLD_YELLOW : 'rgba(255, 255, 255, 0.6)',
+                padding: '6px 14px',
+                borderRadius: 100,
+                fontSize: 12,
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.15s ease'
+              }}
+            >
+              Action Needed ({notificationsList.filter(n => n.type === 'action').length})
+            </button>
+          </div>
+
+          {/* Scrollable Notifications List */}
+          <div
+            onClick={e => e.stopPropagation()}
+            className="rp-sleek-scroll"
+            style={{
+              flex: 1,
+              minHeight: 0,
+              overflowY: 'auto',
+              WebkitOverflowScrolling: 'touch',
+              overscrollBehavior: 'contain',
+              touchAction: 'pan-y',
+              padding: '16px 18px 24px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 12
+            }}
+          >
+            {notificationsList
+              .filter(n => notifFilter === 'all' || n.type === 'action')
+              .map(n => {
+                const isUnread = n.unread;
+                return (
+                  <div
+                    key={n.id}
+                    onClick={() => handleNotificationClick(n)}
+                    style={{
+                      padding: '15px 16px',
+                      borderRadius: 16,
+                      background: isUnread ? 'rgba(24, 252, 92, 0.03)' : 'rgba(255, 255, 255, 0.02)',
+                      border: isUnread ? '1px solid rgba(24, 252, 92, 0.18)' : '1px solid rgba(255, 255, 255, 0.06)',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'flex-start',
+                      gap: 13,
+                      transition: 'all 0.15s ease'
+                    }}
+                  >
+                    <div style={{
+                      width: 36,
+                      height: 36,
+                      borderRadius: 10,
+                      background:
+                        n.type === 'action' ? 'rgba(251, 191, 36, 0.12)' :
+                        n.type === 'alert' ? 'rgba(239, 68, 68, 0.12)' :
+                        n.type === 'success' ? 'rgba(24, 252, 92, 0.12)' : 'rgba(56, 189, 248, 0.12)',
+                      border: `1px solid ${
+                        n.type === 'action' ? 'rgba(251, 191, 36, 0.25)' :
+                        n.type === 'alert' ? 'rgba(239, 68, 68, 0.25)' :
+                        n.type === 'success' ? 'rgba(24, 252, 92, 0.25)' : 'rgba(56, 189, 248, 0.25)'
+                      }`,
+                      color:
+                        n.type === 'action' ? RF_GOLD_YELLOW :
+                        n.type === 'alert' ? '#FCA5A5' :
+                        n.type === 'success' ? RF_MINT_ACCENT : '#38BDF8',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                      marginTop: 1
+                    }}>
+                      {n.type === 'action' && <AlertCircle size={17} />}
+                      {n.type === 'alert' && <AlertTriangle size={17} />}
+                      {n.type === 'success' && <CheckCircle2 size={17} />}
+                      {n.type === 'info' && <Shield size={17} />}
+                    </div>
+
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6, marginBottom: 4 }}>
+                        <span style={{
+                          fontSize: 10,
+                          fontWeight: 700,
+                          padding: '2px 7px',
+                          borderRadius: 4,
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.04em',
+                          background:
+                            n.type === 'action' ? 'rgba(251, 191, 36, 0.14)' :
+                            n.type === 'alert' ? 'rgba(239, 68, 68, 0.14)' :
+                            n.type === 'success' ? 'rgba(24, 252, 92, 0.12)' :
+                            'rgba(56, 189, 248, 0.12)',
+                          color:
+                            n.type === 'action' ? RF_GOLD_YELLOW :
+                            n.type === 'alert' ? '#FCA5A5' :
+                            n.type === 'success' ? RF_MINT_ACCENT :
+                            '#38BDF8'
+                        }}>
+                          {n.time}
+                        </span>
+                        {isUnread && (
+                          <span style={{
+                            width: 7,
+                            height: 7,
+                            borderRadius: '50%',
+                            background: RF_MINT_ACCENT,
+                            boxShadow: '0 0 8px rgba(24, 252, 92, 0.8)'
+                          }} />
+                        )}
                       </div>
 
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6, marginBottom: 2 }}>
-                          <span style={{
-                            fontSize: 9.5,
-                            fontWeight: 700,
-                            padding: '1px 6px',
-                            borderRadius: 4,
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.04em',
-                            background:
-                              n.type === 'action' ? 'rgba(251, 191, 36, 0.14)' :
-                              n.type === 'success' ? 'rgba(24, 252, 92, 0.12)' :
-                              n.type === 'alert' ? 'rgba(239, 68, 68, 0.12)' :
-                              'rgba(56, 189, 248, 0.12)',
-                            color:
-                              n.type === 'action' ? RF_GOLD_YELLOW :
-                              n.type === 'success' ? RF_MINT_ACCENT :
-                              n.type === 'alert' ? '#FCA5A5' :
-                              '#38BDF8'
-                          }}>
-                            {n.time}
-                          </span>
-                          {isUnread && (
-                            <span style={{
-                              width: 6,
-                              height: 6,
-                              borderRadius: '50%',
-                              background: RF_MINT_ACCENT,
-                              boxShadow: '0 0 6px rgba(24, 252, 92, 0.8)'
-                            }} />
-                          )}
-                        </div>
-                        <h4 style={{
-                          fontSize: 12.5,
-                          fontWeight: isUnread ? 700 : 600,
-                          color: '#FFFFFF',
-                          margin: '2px 0 0',
-                          lineHeight: 1.35,
-                          whiteSpace: 'normal',
-                          wordBreak: 'break-word'
-                        }}>
-                          {n.title}
-                        </h4>
-                        <p style={{
-                          fontSize: 11.5,
-                          color: 'rgba(255, 255, 255, 0.62)',
-                          margin: '3px 0 0',
-                          lineHeight: 1.4
-                        }}>
-                          {n.desc}
-                        </p>
+                      <h4 style={{
+                        fontSize: 14,
+                        fontWeight: isUnread ? 700 : 600,
+                        color: isUnread ? '#FFFFFF' : 'rgba(255, 255, 255, 0.9)',
+                        margin: 0,
+                        lineHeight: 1.35
+                      }}>
+                        {n.title}
+                      </h4>
+
+                      <p style={{
+                        fontSize: 12.5,
+                        color: 'rgba(255, 255, 255, 0.65)',
+                        margin: '4px 0 0',
+                        lineHeight: 1.45
+                      }}>
+                        {n.desc}
+                      </p>
+
+                      <div style={{
+                        fontSize: 11,
+                        color: RF_MINT_ACCENT,
+                        marginTop: 7,
+                        fontWeight: 600,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 3,
+                        opacity: 0.85
+                      }}>
+                        Tap to open section →
                       </div>
                     </div>
-                  );
-                })}
-            </div>
+                  </div>
+                );
+              })}
+          </div>
+
+          {/* Docker Footer */}
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              padding: '14px 18px calc(14px + env(safe-area-inset-bottom, 16px))',
+              borderTop: '1px solid rgba(255, 255, 255, 0.07)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              background: 'rgba(4, 16, 10, 0.98)',
+              flexShrink: 0,
+              touchAction: 'none'
+            }}
+          >
+            <span style={{ fontSize: 11, color: 'rgba(255, 255, 255, 0.45)', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: RF_MINT_ACCENT, boxShadow: '0 0 6px rgba(24,252,92,0.6)' }} />
+              Live Activity Feed
+            </span>
+            <span style={{ fontSize: 11, color: 'rgba(255, 255, 255, 0.45)' }}>
+              Refeir Admissions Suite
+            </span>
           </div>
         </div>
       )}
