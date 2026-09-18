@@ -3558,7 +3558,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                   </span>
                 </div>
                 <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', margin: 0, maxWidth: 820, lineHeight: 1.5 }}>
-                  Review incoming applications across all 6 squads. Inspect candidate GitHub profiles, portfolios, motivation letters, learning goals, and issue acceptance or waitlist decisions.
+                  Review candidate applications, verify portfolios, and manage squad admissions.
                 </p>
               </div>
 
@@ -4051,7 +4051,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               </span>
             </div>
             <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', margin: 0, maxWidth: 820, lineHeight: 1.5 }}>
-              Audit and verify deliverables submitted by active contributors against published squad directives. Approve proofs to award advancement points, or request actionable revisions.
+              Audit deliverable proofs, award contribution points, and request revisions.
             </p>
           </div>
 
@@ -4494,7 +4494,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 </span>
               </div>
               <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', margin: 0, maxWidth: 760, lineHeight: 1.5 }}>
-                Comprehensive directory of verified pioneer community members. Review full legal identities, permanent Date of Birth records, banking settlements, survey reasoning submissions, and enforce account suspension.
+                Directory of verified pioneers, contributor identities, and rank records.
               </p>
             </div>
 
@@ -5056,7 +5056,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 )}
               </div>
               <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', margin: 0, maxWidth: 820, lineHeight: 1.5 }}>
-                Delegate admissions evaluation, task verification, and squad level reviews to verified workers. Suspending, modifying, and adding new workers is exclusively reserved for Super Admin.
+                Manage staff reviewers, assign squad leads, and oversee permissions.
               </p>
             </div>
 
@@ -5469,7 +5469,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 </span>
               </div>
               <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', margin: 0, maxWidth: 780, lineHeight: 1.5 }}>
-                Official sovereign credential registry. Issue, monitor, print, and inspect cryptographic Certificates of Level Completion awarded to contributors who successfully complete verified proof-of-work quotas.
+                Issue, verify, and inspect official pioneer completion certificates.
               </p>
             </div>
 
@@ -5956,7 +5956,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               </div>
               {!isMobile && (
                 <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', margin: 0, maxWidth: 820, lineHeight: 1.5 }}>
-                  Announce daily and weekly tasks for each squad or the General community. Squad leads can distribute tasks directly to their official WhatsApp groups with pre-formatted broadcasts, incentivized by Airtime giveaways, Data subscriptions, Monetary cash bounties, and verified deliverable credits.
+                  Broadcast squad missions, manage bounties, and distribute tasks.
                 </p>
               )}
             </div>
@@ -6833,7 +6833,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                   </span>
                 </div>
                 <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', margin: 0, maxWidth: 820, lineHeight: 1.5 }}>
-                  Operational metrics covering admissions conversion rates, deliverable verification velocity, contributor tier distribution, and bounty pool economics.
+                  Track admissions conversion, task velocity, contributor tiers, and bounties.
                 </p>
               </div>
 
