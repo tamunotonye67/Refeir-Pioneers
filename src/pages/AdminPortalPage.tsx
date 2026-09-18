@@ -3595,20 +3595,20 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 </p>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, width: isMobile ? '100%' : 'auto' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: isMobile ? '100%' : 'auto' }}>
                 <button
                   onClick={handleExportCSV}
                   style={{
                     background: RF_LEAF_GREEN, color: RF_DEEP_GREEN, border: 'none',
-                    padding: isMobile ? '10px 16px' : '10px 20px', borderRadius: 100, fontSize: 13, fontWeight: 700,
-                    cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
-                    boxShadow: `0 4px 14px ${RF_LEAF_GREEN}44`, transition: 'all 0.2s',
+                    padding: isMobile ? '7px 12px' : '8px 18px', borderRadius: 100, fontSize: isMobile ? 11.5 : 12.5, fontWeight: 700,
+                    cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5,
+                    boxShadow: `0 3px 12px ${RF_LEAF_GREEN}33`, transition: 'all 0.2s',
                     flex: isMobile ? 1 : 'initial', justifyContent: 'center'
                   }}
                   onMouseEnter={e => (e.currentTarget.style.background = RF_MINT_ACCENT)}
                   onMouseLeave={e => (e.currentTarget.style.background = RF_LEAF_GREEN)}
                 >
-                  <Download size={14} /> Export CSV
+                  <Download size={13} /> Export CSV
                 </button>
 
                 <button
@@ -3616,11 +3616,11 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                   disabled={loading}
                   style={{
                     background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.18)',
-                    color: '#FFFFFF', padding: isMobile ? '10px 14px' : '10px 18px', borderRadius: 100, fontSize: 13,
-                    fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6
+                    color: '#FFFFFF', padding: isMobile ? '7px 12px' : '8px 16px', borderRadius: 100, fontSize: isMobile ? 11.5 : 12.5,
+                    fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5
                   }}
                 >
-                  <RefreshCw size={14} className={loading ? 'rp-spin' : ''} /> {loading ? 'Syncing...' : 'Refresh'}
+                  <RefreshCw size={13} className={loading ? 'rp-spin' : ''} /> {loading ? 'Syncing...' : 'Refresh'}
                 </button>
               </div>
             </div>
@@ -3628,32 +3628,32 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             {/* KPI & Metrics Bar */}
         <div style={{
           display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: isMobile ? 10 : 16, marginBottom: isMobile ? 20 : 32
+          gap: isMobile ? 10 : 14, marginBottom: isMobile ? 18 : 26
         }}>
-          <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: isMobile ? 14 : 16, padding: isMobile ? '14px 14px' : '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
-            <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Total Applications</span>
-            <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: '#FFFFFF', marginTop: 4 }}>{stats.total}</div>
-            <span style={{ fontSize: isMobile ? 11 : 12, color: RF_MINT_ACCENT }}>All time received</span>
+          <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: isMobile ? 12 : 16, padding: isMobile ? '12px 14px' : '16px 20px', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Total Applications</span>
+            <div style={{ fontSize: isMobile ? 22 : 28, fontWeight: 700, color: '#FFFFFF', marginTop: 3 }}>{stats.total}</div>
+            <span style={{ fontSize: isMobile ? 10.5 : 11.5, color: RF_MINT_ACCENT }}>All time received</span>
           </div>
 
-          <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: isMobile ? 14 : 16, padding: isMobile ? '14px 14px' : '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
-            <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Pending Review</span>
-            <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: RF_GOLD_YELLOW, marginTop: 4 }}>{stats.pending}</div>
-            <span style={{ fontSize: isMobile ? 11 : 12, color: 'rgba(255,255,255,0.5)' }}>Requires decision</span>
+          <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: isMobile ? 12 : 16, padding: isMobile ? '12px 14px' : '16px 20px', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Pending Review</span>
+            <div style={{ fontSize: isMobile ? 22 : 28, fontWeight: 700, color: RF_GOLD_YELLOW, marginTop: 3 }}>{stats.pending}</div>
+            <span style={{ fontSize: isMobile ? 10.5 : 11.5, color: 'rgba(255,255,255,0.5)' }}>Requires decision</span>
           </div>
 
-          <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: isMobile ? 14 : 16, padding: isMobile ? '14px 14px' : '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
-            <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Accepted Pioneers</span>
-            <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: RF_MINT_ACCENT, marginTop: 4 }}>{stats.accepted}</div>
-            <span style={{ fontSize: isMobile ? 11 : 12, color: 'rgba(255,255,255,0.5)' }}>Approved candidates</span>
+          <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: isMobile ? 12 : 16, padding: isMobile ? '12px 14px' : '16px 20px', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Accepted Pioneers</span>
+            <div style={{ fontSize: isMobile ? 22 : 28, fontWeight: 700, color: RF_MINT_ACCENT, marginTop: 3 }}>{stats.accepted}</div>
+            <span style={{ fontSize: isMobile ? 10.5 : 11.5, color: 'rgba(255,255,255,0.5)' }}>Approved candidates</span>
           </div>
 
-          <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: isMobile ? 14 : 16, padding: isMobile ? '14px 14px' : '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
-            <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Founding 100 Seats</span>
-            <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: '#FFFFFF', marginTop: 4 }}>
-              {stats.founding} <span style={{ fontSize: isMobile ? 14 : 18, color: 'rgba(255,255,255,0.4)' }}>/ 100</span>
+          <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: isMobile ? 12 : 16, padding: isMobile ? '12px 14px' : '16px 20px', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Founding 100 Seats</span>
+            <div style={{ fontSize: isMobile ? 22 : 28, fontWeight: 700, color: '#FFFFFF', marginTop: 3 }}>
+              {stats.founding} <span style={{ fontSize: isMobile ? 13 : 16, color: 'rgba(255,255,255,0.4)' }}>/ 100</span>
             </div>
-            <div style={{ width: '100%', height: 4, borderRadius: 100, background: 'rgba(255,255,255,0.1)', marginTop: 8 }}>
+            <div style={{ width: '100%', height: 4, borderRadius: 100, background: 'rgba(255,255,255,0.1)', marginTop: 6 }}>
               <div style={{ width: `${Math.min(100, stats.founding)}%`, height: '100%', borderRadius: 100, background: RF_MINT_ACCENT }} />
             </div>
           </div>
@@ -3663,40 +3663,40 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
         <div style={{
           background: 'rgba(255, 255, 255, 0.025)',
           border: '1px solid rgba(24, 252, 92, 0.16)',
-          borderRadius: isMobile ? 14 : 18,
-          padding: isMobile ? '14px 14px' : '20px 24px',
-          marginBottom: isMobile ? 18 : 28,
+          borderRadius: isMobile ? 12 : 16,
+          padding: isMobile ? '12px 14px' : '16px 20px',
+          marginBottom: isMobile ? 16 : 24,
           overflow: 'hidden',
           width: '100%',
           maxWidth: '100%',
           boxSizing: 'border-box'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14, flexWrap: 'wrap', gap: 10 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, flexWrap: 'wrap', gap: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
               <div style={{
-                width: 28, height: 28, borderRadius: 8,
+                width: 26, height: 26, borderRadius: 7,
                 background: 'rgba(24, 252, 92, 0.12)', color: RF_MINT_ACCENT,
                 display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
               }}>
-                <Activity size={15} />
+                <Activity size={14} />
               </div>
-              <span style={{ fontSize: isMobile ? 13.5 : 15, fontWeight: 700, color: '#FFFFFF' }}>
+              <span style={{ fontSize: isMobile ? 12.5 : 14, fontWeight: 700, color: '#FFFFFF' }}>
                 {isMobile ? 'Admissions Telemetry' : 'Admissions Funnel & Capacity Telemetry'}
               </span>
             </div>
             <span style={{
-              fontSize: 11, color: RF_MINT_ACCENT, background: 'rgba(24, 252, 92, 0.1)',
-              padding: '3px 10px', borderRadius: 100, fontWeight: 600, border: '1px solid rgba(24, 252, 92, 0.2)',
+              fontSize: 10.5, color: RF_MINT_ACCENT, background: 'rgba(24, 252, 92, 0.1)',
+              padding: '2.5px 8px', borderRadius: 100, fontWeight: 600, border: '1px solid rgba(24, 252, 92, 0.2)',
               whiteSpace: 'nowrap'
             }}>
-              Founding 100 Quota: {analytics.foundingCapPct}% Fulfilled
+              Founding 100: {analytics.foundingCapPct}% Fulfilled
             </span>
           </div>
 
           <div style={{
             display: 'grid',
             gridTemplateColumns: isMobile ? 'minmax(0, 1fr)' : 'repeat(3, minmax(0, 1fr))',
-            gap: isMobile ? 12 : 20,
+            gap: isMobile ? 10 : 16,
             width: '100%',
             maxWidth: '100%',
             minWidth: 0,
@@ -3705,29 +3705,29 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             {/* Founding 100 Quota Bar */}
             <div style={{
               background: 'rgba(255, 255, 255, 0.02)',
-              borderRadius: 12,
-              padding: isMobile ? '12px 14px' : '14px 16px',
+              borderRadius: 10,
+              padding: isMobile ? '10px 12px' : '12px 14px',
               border: '1px solid rgba(255, 255, 255, 0.06)',
               minWidth: 0,
               width: '100%',
               maxWidth: '100%',
               boxSizing: 'border-box'
             }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8, gap: 8 }}>
-                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Founding Quota Cap</span>
-                <span style={{ fontSize: 13, fontWeight: 700, color: RF_MINT_ACCENT, whiteSpace: 'nowrap' }}>{analytics.foundingApps} / 100</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6, gap: 8 }}>
+                <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Founding Quota Cap</span>
+                <span style={{ fontSize: 12, fontWeight: 700, color: RF_MINT_ACCENT, whiteSpace: 'nowrap' }}>{analytics.foundingApps} / 100</span>
               </div>
-              <div style={{ width: '100%', maxWidth: '100%', height: 8, borderRadius: 100, background: 'rgba(255,255,255,0.08)', overflow: 'hidden', boxSizing: 'border-box' }}>
+              <div style={{ width: '100%', maxWidth: '100%', height: 6, borderRadius: 100, background: 'rgba(255,255,255,0.08)', overflow: 'hidden', boxSizing: 'border-box' }}>
                 <div style={{
                   width: `${Math.min(100, Math.max(0, analytics.foundingCapPct))}%`,
                   height: '100%',
                   borderRadius: 100,
                   background: `linear-gradient(90deg, ${RF_LEAF_GREEN}, ${RF_MINT_ACCENT})`,
-                  boxShadow: `0 0 10px ${RF_MINT_ACCENT}55`
+                  boxShadow: `0 0 8px ${RF_MINT_ACCENT}55`
                 }} />
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, fontSize: 11, color: 'rgba(255,255,255,0.45)', flexWrap: 'wrap', gap: 4 }}>
-                <span>{100 - analytics.foundingApps > 0 ? `${100 - analytics.foundingApps} slots remaining` : 'Full capacity reached'}</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6, fontSize: 10.5, color: 'rgba(255,255,255,0.45)', flexWrap: 'wrap', gap: 4 }}>
+                <span>{100 - analytics.foundingApps > 0 ? `${100 - analytics.foundingApps} slots left` : 'Capacity reached'}</span>
                 <span>Max 100 seats</span>
               </div>
             </div>
@@ -3735,15 +3735,15 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             {/* Funnel Conversion Rates */}
             <div style={{
               background: 'rgba(255, 255, 255, 0.02)',
-              borderRadius: 12,
-              padding: isMobile ? '12px 14px' : '14px 16px',
+              borderRadius: 10,
+              padding: isMobile ? '10px 12px' : '12px 14px',
               border: '1px solid rgba(255, 255, 255, 0.06)',
               minWidth: 0,
               width: '100%',
               maxWidth: '100%',
               boxSizing: 'border-box'
             }}>
-              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 10 }}>
+              <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginBottom: 6 }}>
                 Conversion Velocity
               </span>
               <div style={{
@@ -3755,21 +3755,21 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 maxWidth: '100%',
                 boxSizing: 'border-box'
               }}>
-                <div style={{ minWidth: 0, textAlign: 'left', paddingRight: 12 }}>
-                  <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 800, color: RF_MINT_ACCENT }}>{analytics.acceptanceRate}%</div>
-                  <span style={{ fontSize: isMobile ? 10 : 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                <div style={{ minWidth: 0, textAlign: 'left', paddingRight: 8 }}>
+                  <div style={{ fontSize: isMobile ? 15 : 17, fontWeight: 800, color: RF_MINT_ACCENT }}>{analytics.acceptanceRate}%</div>
+                  <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     Accept ({analytics.acceptedApps})
                   </span>
                 </div>
-                <div style={{ borderLeft: '1px solid rgba(255,255,255,0.1)', borderRight: '1px solid rgba(255,255,255,0.1)', padding: '0 12px', minWidth: 0, textAlign: 'left' }}>
-                  <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 800, color: RF_GOLD_YELLOW }}>{analytics.pendingRate}%</div>
-                  <span style={{ fontSize: isMobile ? 10 : 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                <div style={{ borderLeft: '1px solid rgba(255,255,255,0.1)', borderRight: '1px solid rgba(255,255,255,0.1)', padding: '0 8px', minWidth: 0, textAlign: 'left' }}>
+                  <div style={{ fontSize: isMobile ? 15 : 17, fontWeight: 800, color: RF_GOLD_YELLOW }}>{analytics.pendingRate}%</div>
+                  <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     Pending ({analytics.pendingApps})
                   </span>
                 </div>
-                <div style={{ minWidth: 0, textAlign: 'left', paddingLeft: 12 }}>
-                  <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 800, color: '#38BDF8' }}>{analytics.waitlistedApps}</div>
-                  <span style={{ fontSize: isMobile ? 10 : 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                <div style={{ minWidth: 0, textAlign: 'left', paddingLeft: 8 }}>
+                  <div style={{ fontSize: isMobile ? 15 : 17, fontWeight: 800, color: '#38BDF8' }}>{analytics.waitlistedApps}</div>
+                  <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     Waitlisted
                   </span>
                 </div>
@@ -3779,15 +3779,15 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             {/* Division Talent Pipeline */}
             <div style={{
               background: 'rgba(255, 255, 255, 0.02)',
-              borderRadius: 12,
-              padding: isMobile ? '12px 14px' : '14px 16px',
+              borderRadius: 10,
+              padding: isMobile ? '10px 12px' : '12px 14px',
               border: '1px solid rgba(255, 255, 255, 0.06)',
               minWidth: 0,
               width: '100%',
               maxWidth: '100%',
               boxSizing: 'border-box'
             }}>
-              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 8 }}>
+              <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginBottom: 6 }}>
                 Squad Division Pipeline
               </span>
               <div style={{
@@ -3796,15 +3796,15 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 overflowX: 'auto',
                 WebkitOverflowScrolling: 'touch',
                 scrollbarWidth: 'none',
-                gap: 6,
-                paddingBottom: isMobile ? 4 : 0,
+                gap: 5,
+                paddingBottom: isMobile ? 2 : 0,
                 width: '100%',
                 maxWidth: '100%',
                 minWidth: 0,
                 boxSizing: 'border-box'
               }} className="rp-sleek-scroll">
                 {Object.keys(analytics.appsByDivision).length === 0 ? (
-                  <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.4)', whiteSpace: 'nowrap' }}>No division data yet</span>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', whiteSpace: 'nowrap' }}>No division data yet</span>
                 ) : (
                   Object.entries(analytics.appsByDivision).map(([div, count]) => (
                     <span
@@ -3812,13 +3812,13 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                       style={{
                         background: 'rgba(255,255,255,0.05)',
                         border: '1px solid rgba(255,255,255,0.09)',
-                        padding: '3px 8px',
-                        borderRadius: 6,
-                        fontSize: 11,
+                        padding: '2.5px 7px',
+                        borderRadius: 5,
+                        fontSize: 10.5,
                         color: '#FFFFFF',
                         display: 'inline-flex',
                         alignItems: 'center',
-                        gap: 5,
+                        gap: 4,
                         flexShrink: 0,
                         whiteSpace: 'nowrap'
                       }}
@@ -3835,34 +3835,34 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
         {/* Filters & Search Controls */}
         <div style={{
-          background: 'rgba(255,255,255,0.02)', borderRadius: isMobile ? 14 : 18, padding: isMobile ? '14px' : '20px 22px',
-          border: '1px solid rgba(255,255,255,0.08)', marginBottom: isMobile ? 16 : 24,
-          display: 'flex', flexWrap: 'wrap', gap: isMobile ? 10 : 14, alignItems: 'center', justifyContent: 'space-between'
+          background: 'rgba(255,255,255,0.02)', borderRadius: isMobile ? 12 : 16, padding: isMobile ? '12px' : '16px 20px',
+          border: '1px solid rgba(255,255,255,0.08)', marginBottom: isMobile ? 14 : 20,
+          display: 'flex', flexWrap: 'wrap', gap: isMobile ? 8 : 12, alignItems: 'center', justifyContent: 'space-between'
         }}>
           {/* Search Bar */}
           <div style={{ position: 'relative', flex: isMobile ? '1 1 100%' : '1 1 280px', maxWidth: isMobile ? '100%' : 420 }}>
-            <Search size={16} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)' }} />
+            <Search size={14} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)' }} />
             <input
               type="text"
               placeholder="Search candidate, email, ID..."
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
               style={{
-                width: '100%', padding: '10px 16px 10px 42px', borderRadius: 100,
+                width: '100%', padding: isMobile ? '8px 14px 8px 36px' : '9px 16px 9px 40px', borderRadius: 100,
                 background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)',
-                color: '#FFFFFF', fontSize: 13, outline: 'none'
+                color: '#FFFFFF', fontSize: isMobile ? 12 : 12.5, outline: 'none'
               }}
             />
           </div>
 
           {/* Filter Dropdowns */}
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', width: isMobile ? '100%' : 'auto' }}>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center', width: isMobile ? '100%' : 'auto' }}>
             <select
               value={statusFilter}
               onChange={e => setStatusFilter(e.target.value)}
               style={{
-                background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)',
-                color: '#FFFFFF', padding: isMobile ? '7px 38px 7px 14px' : '9px 42px 9px 16px', borderRadius: 100, fontSize: 12, outline: 'none',
+                background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.12)',
+                color: '#FFFFFF', padding: isMobile ? '6px 32px 6px 12px' : '8px 36px 8px 14px', borderRadius: 100, fontSize: isMobile ? 11.5 : 12, outline: 'none',
                 flex: isMobile ? 1 : 'none', cursor: 'pointer'
               }}
             >
@@ -3878,8 +3878,8 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               value={divisionFilter}
               onChange={e => setDivisionFilter(e.target.value)}
               style={{
-                background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)',
-                color: '#FFFFFF', padding: isMobile ? '7px 38px 7px 14px' : '9px 42px 9px 16px', borderRadius: 100, fontSize: 12, outline: 'none',
+                background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.12)',
+                color: '#FFFFFF', padding: isMobile ? '6px 32px 6px 12px' : '8px 36px 8px 14px', borderRadius: 100, fontSize: isMobile ? 11.5 : 12, outline: 'none',
                 flex: isMobile ? 1 : 'none', cursor: 'pointer'
               }}
             >
@@ -3893,7 +3893,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             </select>
 
             <label style={{
-              display: 'flex', alignItems: 'center', gap: 6, fontSize: 12,
+              display: 'flex', alignItems: 'center', gap: 5, fontSize: isMobile ? 11 : 12,
               color: 'rgba(255,255,255,0.75)', cursor: 'pointer', userSelect: 'none'
             }}>
               <input
@@ -3909,19 +3909,19 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
         {/* Applications Data Table */}
         <div style={{
-          background: 'rgba(255,255,255,0.02)', borderRadius: 18, border: '1px solid rgba(255,255,255,0.08)',
+          background: 'rgba(255,255,255,0.02)', borderRadius: isMobile ? 14 : 18, border: '1px solid rgba(255,255,255,0.08)',
           overflow: 'hidden', width: '100%', maxWidth: '100%', boxSizing: 'border-box'
         }}>
           <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }} className="rp-sleek-scroll">
-            <table style={{ width: '100%', minWidth: isMobile ? 960 : 780, borderCollapse: 'collapse', textAlign: 'left', fontSize: 13 }}>
+            <table style={{ width: '100%', minWidth: isMobile ? 880 : 780, borderCollapse: 'collapse', textAlign: 'left', fontSize: isMobile ? 12 : 13 }}>
               <thead>
                 <tr style={{ background: 'rgba(255,255,255,0.04)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                  <th style={{ padding: '14px 18px', fontWeight: 600, color: 'rgba(255,255,255,0.6)', whiteSpace: 'nowrap', minWidth: 210, width: 220 }}>Application ID</th>
-                  <th style={{ padding: '14px 18px', fontWeight: 600, color: 'rgba(255,255,255,0.6)', whiteSpace: 'nowrap', minWidth: 230 }}>Candidate</th>
-                  <th style={{ padding: '14px 18px', fontWeight: 600, color: 'rgba(255,255,255,0.6)', whiteSpace: 'nowrap', minWidth: 190 }}>Division &amp; Roles</th>
-                  <th style={{ padding: '14px 18px', fontWeight: 600, color: 'rgba(255,255,255,0.6)', whiteSpace: 'nowrap', minWidth: 140 }}>Status</th>
-                  <th style={{ padding: '14px 18px', fontWeight: 600, color: 'rgba(255,255,255,0.6)', whiteSpace: 'nowrap', minWidth: 100 }}>Submitted</th>
-                  <th style={{ padding: '14px 18px', fontWeight: 600, color: 'rgba(255,255,255,0.6)', textAlign: 'right', whiteSpace: 'nowrap', minWidth: 90 }}>Actions</th>
+                  <th style={{ padding: isMobile ? '10px 14px' : '13px 18px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap', minWidth: 190 }}>Application ID</th>
+                  <th style={{ padding: isMobile ? '10px 14px' : '13px 18px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap', minWidth: 210 }}>Candidate</th>
+                  <th style={{ padding: isMobile ? '10px 14px' : '13px 18px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap', minWidth: 170 }}>Division &amp; Roles</th>
+                  <th style={{ padding: isMobile ? '10px 14px' : '13px 18px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap', minWidth: 130 }}>Status</th>
+                  <th style={{ padding: isMobile ? '10px 14px' : '13px 18px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap', minWidth: 90 }}>Submitted</th>
+                  <th style={{ padding: isMobile ? '10px 14px' : '13px 18px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em', textAlign: 'right', whiteSpace: 'nowrap', minWidth: 80 }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -3944,30 +3944,30 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                     >
                       {/* ID & Founding & Acceptance Code */}
-                      <td style={{ padding: '16px 18px', minWidth: 210, width: 220, verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
-                        <div style={{ fontFamily: 'monospace', fontSize: 13, fontWeight: 700, color: RF_MINT_ACCENT, whiteSpace: 'nowrap', letterSpacing: '0.02em' }}>
+                      <td style={{ padding: isMobile ? '12px 14px' : '14px 18px', minWidth: 190, verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
+                        <div style={{ fontFamily: 'monospace', fontSize: isMobile ? 12 : 13, fontWeight: 700, color: RF_MINT_ACCENT, whiteSpace: 'nowrap', letterSpacing: '0.02em' }}>
                           {app.application_number}
                         </div>
                         {app.is_founding_100 && (
-                          <div style={{ marginTop: 4 }}>
+                          <div style={{ marginTop: 3 }}>
                             <span style={{
-                              display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 10.5, fontWeight: 700, color: RF_GOLD_YELLOW,
+                              display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 10, fontWeight: 700, color: RF_GOLD_YELLOW,
                               background: 'rgba(246, 178, 26, 0.12)', border: '1px solid rgba(246, 178, 26, 0.3)',
-                              padding: '2px 8px', borderRadius: 6, whiteSpace: 'nowrap', letterSpacing: '0.04em'
+                              padding: '1.5px 6px', borderRadius: 4, whiteSpace: 'nowrap', letterSpacing: '0.03em'
                             }}>
                               ⭐ {app.pioneer_id || 'FOUNDING 100'}
                             </span>
                           </div>
                         )}
                         {app.status === 'ACCEPTED' && (
-                          <div style={{ marginTop: 5, display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
+                          <div style={{ marginTop: 4, display: 'inline-flex', alignItems: 'center', gap: 5, whiteSpace: 'nowrap' }}>
                             <span style={{
-                              fontSize: 10.5, fontFamily: 'monospace', color: RF_MINT_ACCENT,
-                              background: 'rgba(24, 252, 92, 0.1)', padding: '3px 8px', borderRadius: 6,
-                              border: `1px solid ${RF_LEAF_GREEN}55`, fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 4,
+                              fontSize: 10, fontFamily: 'monospace', color: RF_MINT_ACCENT,
+                              background: 'rgba(24, 252, 92, 0.1)', padding: '2px 6px', borderRadius: 4,
+                              border: `1px solid ${RF_LEAF_GREEN}55`, fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 3,
                               whiteSpace: 'nowrap'
                             }}>
-                              <Key size={10} style={{ flexShrink: 0 }} />
+                              <Key size={9} style={{ flexShrink: 0 }} />
                               {app.acceptance_code || 'ACC-PENDING'}
                             </span>
                             {app.acceptance_code && (
@@ -3981,12 +3981,12 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                                 }}
                                 style={{
                                   background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)',
-                                  borderRadius: 6, color: copiedCodeAppId === app.id ? RF_MINT_ACCENT : 'rgba(255,255,255,0.6)',
-                                  cursor: 'pointer', padding: '3px 7px', display: 'inline-flex', alignItems: 'center', gap: 3,
-                                  fontSize: 10.5, fontWeight: 600, transition: 'all 0.15s ease', whiteSpace: 'nowrap'
+                                  borderRadius: 4, color: copiedCodeAppId === app.id ? RF_MINT_ACCENT : 'rgba(255,255,255,0.6)',
+                                  cursor: 'pointer', padding: '2px 6px', display: 'inline-flex', alignItems: 'center', gap: 3,
+                                  fontSize: 10, fontWeight: 600, transition: 'all 0.15s ease', whiteSpace: 'nowrap'
                                 }}
                               >
-                                {copiedCodeAppId === app.id ? <Check size={11} strokeWidth={3} /> : <Copy size={11} />}
+                                {copiedCodeAppId === app.id ? <Check size={10} strokeWidth={3} /> : <Copy size={10} />}
                                 <span>{copiedCodeAppId === app.id ? 'Copied' : 'Copy'}</span>
                               </button>
                             )}
@@ -3995,37 +3995,37 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                       </td>
 
                       {/* Candidate Name & Location */}
-                      <td style={{ padding: '16px 18px', minWidth: 230, verticalAlign: 'middle' }}>
-                        <div style={{ fontWeight: 600, color: '#FFFFFF', fontSize: 13.5 }}>{app.full_name}</div>
-                        <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.5)', marginTop: 2 }}>
+                      <td style={{ padding: isMobile ? '12px 14px' : '14px 18px', minWidth: 210, verticalAlign: 'middle' }}>
+                        <div style={{ fontWeight: 600, color: '#FFFFFF', fontSize: isMobile ? 13 : 13.5 }}>{app.full_name}</div>
+                        <div style={{ fontSize: isMobile ? 11 : 11.5, color: 'rgba(255,255,255,0.5)', marginTop: 2 }}>
                           {app.city ? `${app.city}, ` : ''}{app.country} • {app.email}
                         </div>
                       </td>
 
                       {/* Division & Roles */}
-                      <td style={{ padding: '16px 18px', minWidth: 190, verticalAlign: 'middle' }}>
-                        <div style={{ fontSize: 12.5, fontWeight: 600, color: '#FFFFFF' }}>
+                      <td style={{ padding: isMobile ? '12px 14px' : '14px 18px', minWidth: 170, verticalAlign: 'middle' }}>
+                        <div style={{ fontSize: isMobile ? 12 : 12.5, fontWeight: 600, color: '#FFFFFF' }}>
                           {app.primary_division?.replace('_', ' ') || 'General'}
                         </div>
-                        <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.5)', maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: 2 }}>
+                        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: 2 }}>
                           {(app.roles || []).join(', ')}
                         </div>
                       </td>
 
                       {/* Review Status & Contributor Level */}
-                      <td style={{ padding: '16px 18px', minWidth: 140, verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
+                      <td style={{ padding: isMobile ? '12px 14px' : '14px 18px', minWidth: 130, verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
                         <div>{renderStatusBadge(app.status)}</div>
-                        <div style={{ marginTop: 4 }}>
+                        <div style={{ marginTop: 3 }}>
                           <span style={{
-                            fontSize: 10, fontWeight: 700,
+                            fontSize: 9.5, fontWeight: 700,
                             color: app.contributor_level === 'LEVEL_5' ? '#38BDF8'
                               : app.contributor_level === 'LEVEL_4' ? RF_GOLD_YELLOW
                               : app.contributor_level === 'LEVEL_3' ? RF_MINT_ACCENT
                               : app.contributor_level === 'LEVEL_2' ? RF_LEAF_GREEN
                               : '#94A3B8',
-                            letterSpacing: '0.04em'
+                            letterSpacing: '0.03em'
                           }}>
-                            {app.contributor_level === 'LEVEL_5' ? '★ L5: Core Team'
+                            {app.contributor_level === 'LEVEL_5' ? '★ L5: Core'
                               : app.contributor_level === 'LEVEL_4' ? '🎖️ L4: Lead'
                               : app.contributor_level === 'LEVEL_3' ? '⚡ L3: Builder'
                               : app.contributor_level === 'LEVEL_2' ? '🌱 L2: Pioneer'
@@ -4035,18 +4035,18 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                       </td>
 
                       {/* Date */}
-                      <td style={{ padding: '16px 18px', minWidth: 100, verticalAlign: 'middle', color: 'rgba(255,255,255,0.5)', fontSize: 12, whiteSpace: 'nowrap' }}>
+                      <td style={{ padding: isMobile ? '12px 14px' : '14px 18px', minWidth: 90, verticalAlign: 'middle', color: 'rgba(255,255,255,0.5)', fontSize: isMobile ? 11 : 12, whiteSpace: 'nowrap' }}>
                         {new Date(app.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                       </td>
 
                       {/* Action Button */}
-                      <td style={{ padding: '16px 18px', minWidth: 90, textAlign: 'right', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
+                      <td style={{ padding: isMobile ? '12px 14px' : '14px 18px', minWidth: 80, textAlign: 'right', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
                         <button
                           onClick={e => { e.stopPropagation(); openReviewModal(app); }}
                           style={{
                             background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.18)',
-                            color: '#FFFFFF', padding: '6px 14px', borderRadius: 100, fontSize: 12,
-                            fontWeight: 500, cursor: 'pointer'
+                            color: '#FFFFFF', padding: isMobile ? '4px 10px' : '5px 14px', borderRadius: 6, fontSize: isMobile ? 11 : 12,
+                            fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s'
                           }}
                         >
                           Review
@@ -4088,20 +4088,20 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             </p>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, width: isMobile ? '100%' : 'auto' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: isMobile ? '100%' : 'auto' }}>
             <button
               onClick={handleExportCSV}
               style={{
                 background: RF_LEAF_GREEN, color: RF_DEEP_GREEN, border: 'none',
-                padding: isMobile ? '10px 16px' : '10px 20px', borderRadius: 100, fontSize: 13, fontWeight: 700,
-                cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
-                boxShadow: `0 4px 14px ${RF_LEAF_GREEN}44`, transition: 'all 0.2s',
+                padding: isMobile ? '7px 12px' : '8px 18px', borderRadius: 100, fontSize: isMobile ? 11.5 : 12.5, fontWeight: 700,
+                cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5,
+                boxShadow: `0 3px 12px ${RF_LEAF_GREEN}33`, transition: 'all 0.2s',
                 flex: isMobile ? 1 : 'initial', justifyContent: 'center'
               }}
               onMouseEnter={e => (e.currentTarget.style.background = RF_MINT_ACCENT)}
               onMouseLeave={e => (e.currentTarget.style.background = RF_LEAF_GREEN)}
             >
-              <Download size={14} /> Export Proofs
+              <Download size={13} /> Export Proofs
             </button>
 
             <button
@@ -4109,11 +4109,11 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               disabled={loading}
               style={{
                 background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.18)',
-                color: '#FFFFFF', padding: isMobile ? '10px 14px' : '10px 18px', borderRadius: 100, fontSize: 13,
-                fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6
+                color: '#FFFFFF', padding: isMobile ? '7px 12px' : '8px 16px', borderRadius: 100, fontSize: isMobile ? 11.5 : 12.5,
+                fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5
               }}
             >
-              <RefreshCw size={14} className={loading ? 'rp-spin' : ''} /> {loading ? 'Syncing...' : 'Refresh'}
+              <RefreshCw size={13} className={loading ? 'rp-spin' : ''} /> {loading ? 'Syncing...' : 'Refresh'}
             </button>
           </div>
         </div>
@@ -4121,30 +4121,30 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
         {/* KPI Bar for Task Submissions */}
         <div style={{
           display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: isMobile ? 10 : 16, marginBottom: isMobile ? 20 : 32
+          gap: isMobile ? 10 : 14, marginBottom: isMobile ? 18 : 26
         }}>
-          <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: isMobile ? 14 : 16, padding: isMobile ? '14px 16px' : '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
-            <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Total Mission Submissions</span>
-            <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: '#FFFFFF', marginTop: 4 }}>{taskStats.total}</div>
-            <span style={{ fontSize: isMobile ? 11 : 12, color: RF_MINT_ACCENT }}>All time reported</span>
+          <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: isMobile ? 12 : 16, padding: isMobile ? '12px 14px' : '16px 20px', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Total Submissions</span>
+            <div style={{ fontSize: isMobile ? 22 : 28, fontWeight: 700, color: '#FFFFFF', marginTop: 3 }}>{taskStats.total}</div>
+            <span style={{ fontSize: isMobile ? 10.5 : 11.5, color: RF_MINT_ACCENT }}>All time reported</span>
           </div>
 
-          <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: isMobile ? 14 : 16, padding: isMobile ? '14px 16px' : '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
-            <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Pending Verification</span>
-            <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: RF_GOLD_YELLOW, marginTop: 4 }}>{taskStats.pending}</div>
-            <span style={{ fontSize: isMobile ? 11 : 12, color: 'rgba(255,255,255,0.5)' }}>Requires squad review</span>
+          <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: isMobile ? 12 : 16, padding: isMobile ? '12px 14px' : '16px 20px', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Pending Review</span>
+            <div style={{ fontSize: isMobile ? 22 : 28, fontWeight: 700, color: RF_GOLD_YELLOW, marginTop: 3 }}>{taskStats.pending}</div>
+            <span style={{ fontSize: isMobile ? 10.5 : 11.5, color: 'rgba(255,255,255,0.5)' }}>Requires squad review</span>
           </div>
 
-          <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: isMobile ? 14 : 16, padding: isMobile ? '14px 16px' : '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
-            <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Verified &amp; Promoted</span>
-            <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: RF_MINT_ACCENT, marginTop: 4 }}>{taskStats.verified}</div>
-            <span style={{ fontSize: isMobile ? 11 : 12, color: 'rgba(255,255,255,0.5)' }}>Ladder rank upgraded</span>
+          <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: isMobile ? 12 : 16, padding: isMobile ? '12px 14px' : '16px 20px', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Verified &amp; Promoted</span>
+            <div style={{ fontSize: isMobile ? 22 : 28, fontWeight: 700, color: RF_MINT_ACCENT, marginTop: 3 }}>{taskStats.verified}</div>
+            <span style={{ fontSize: isMobile ? 10.5 : 11.5, color: 'rgba(255,255,255,0.5)' }}>Ladder rank upgraded</span>
           </div>
 
-          <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: isMobile ? 14 : 16, padding: isMobile ? '14px 16px' : '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
-            <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Needs Revision</span>
-            <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: '#FFB27D', marginTop: 4 }}>{taskStats.needsRevision}</div>
-            <span style={{ fontSize: isMobile ? 11 : 12, color: 'rgba(255,255,255,0.5)' }}>Actionable notes sent</span>
+          <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: isMobile ? 12 : 16, padding: isMobile ? '12px 14px' : '16px 20px', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Needs Revision</span>
+            <div style={{ fontSize: isMobile ? 22 : 28, fontWeight: 700, color: '#FFB27D', marginTop: 3 }}>{taskStats.needsRevision}</div>
+            <span style={{ fontSize: isMobile ? 10.5 : 11.5, color: 'rgba(255,255,255,0.5)' }}>Actionable notes sent</span>
           </div>
         </div>
 
@@ -4152,31 +4152,31 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
         <div style={{
           background: 'rgba(255, 255, 255, 0.025)',
           border: '1px solid rgba(24, 252, 92, 0.16)',
-          borderRadius: isMobile ? 14 : 18,
-          padding: isMobile ? '16px' : '20px 24px',
-          marginBottom: isMobile ? 18 : 28,
+          borderRadius: isMobile ? 12 : 16,
+          padding: isMobile ? '12px 14px' : '16px 20px',
+          marginBottom: isMobile ? 16 : 24,
           overflow: 'hidden',
           width: '100%',
           maxWidth: '100%',
           boxSizing: 'border-box'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 10, minWidth: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14, flexWrap: 'wrap', gap: 10, minWidth: 0 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
               <div style={{
-                width: 28, height: 28, borderRadius: 8,
+                width: 26, height: 26, borderRadius: 6,
                 background: 'rgba(24, 252, 92, 0.12)', color: RF_MINT_ACCENT,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 flexShrink: 0
               }}>
-                <TrendingUp size={15} />
+                <TrendingUp size={14} />
               </div>
-              <span style={{ fontSize: isMobile ? 13.5 : 15, fontWeight: 700, color: '#FFFFFF' }}>
+              <span style={{ fontSize: isMobile ? 13 : 14.5, fontWeight: 700, color: '#FFFFFF' }}>
                 {isMobile ? 'Throughput Analytics' : 'Deliverable Verification & Throughput Analytics'}
               </span>
             </div>
             <span style={{
-              fontSize: 11, color: RF_MINT_ACCENT, background: 'rgba(24, 252, 92, 0.1)',
-              padding: '3px 10px', borderRadius: 100, fontWeight: 600, border: '1px solid rgba(24, 252, 92, 0.2)',
+              fontSize: 10.5, color: RF_MINT_ACCENT, background: 'rgba(24, 252, 92, 0.1)',
+              padding: '2.5px 9px', borderRadius: 100, fontWeight: 600, border: '1px solid rgba(24, 252, 92, 0.2)',
               flexShrink: 0
             }}>
               Throughput Rate: {analytics.verificationRate}% Verified
@@ -4186,24 +4186,24 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           <div style={{
             display: 'grid',
             gridTemplateColumns: isMobile ? 'minmax(0, 1fr)' : 'repeat(3, minmax(0, 1fr))',
-            gap: isMobile ? 14 : 20
+            gap: isMobile ? 10 : 14
           }}>
             {/* Verification Velocity Bar */}
             <div style={{
               background: 'rgba(255, 255, 255, 0.02)',
-              borderRadius: 12,
-              padding: '14px 16px',
+              borderRadius: 10,
+              padding: isMobile ? '10px 12px' : '12px 14px',
               border: '1px solid rgba(255, 255, 255, 0.06)',
               minWidth: 0,
               overflow: 'hidden',
               width: '100%',
               boxSizing: 'border-box'
             }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Verification Ratio</span>
-                <span style={{ fontSize: 13, fontWeight: 700, color: RF_MINT_ACCENT }}>{analytics.verificationRate}%</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Verification Ratio</span>
+                <span style={{ fontSize: 12, fontWeight: 700, color: RF_MINT_ACCENT }}>{analytics.verificationRate}%</span>
               </div>
-              <div style={{ width: '100%', height: 8, borderRadius: 100, background: 'rgba(255,255,255,0.08)', overflow: 'hidden', display: 'flex' }}>
+              <div style={{ width: '100%', height: 6, borderRadius: 100, background: 'rgba(255,255,255,0.08)', overflow: 'hidden', display: 'flex' }}>
                 <div style={{
                   width: `${analytics.verificationRate}%`,
                   height: '100%',
@@ -4215,7 +4215,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                   background: '#FFB27D'
                 }} />
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 4, marginTop: 8, fontSize: 11, color: 'rgba(255,255,255,0.45)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 4, marginTop: 6, fontSize: 10.5, color: 'rgba(255,255,255,0.45)' }}>
                 <span style={{ whiteSpace: 'nowrap' }}>{analytics.verifiedProofs} Verified</span>
                 <span style={{ whiteSpace: 'nowrap' }}>{analytics.revisionProofs} Revisions ({analytics.revisionRate}%)</span>
               </div>
@@ -4224,15 +4224,15 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             {/* Audits Pipeline Velocity */}
             <div style={{
               background: 'rgba(255, 255, 255, 0.02)',
-              borderRadius: 12,
-              padding: isMobile ? '12px 14px' : '14px 16px',
+              borderRadius: 10,
+              padding: isMobile ? '10px 12px' : '12px 14px',
               border: '1px solid rgba(255, 255, 255, 0.06)',
               minWidth: 0,
               width: '100%',
               maxWidth: '100%',
               boxSizing: 'border-box'
             }}>
-              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 10 }}>
+              <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 8 }}>
                 Audit Pipeline State
               </span>
               <div style={{
@@ -4244,17 +4244,17 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 maxWidth: '100%',
                 boxSizing: 'border-box'
               }}>
-                <div style={{ minWidth: 0, textAlign: 'left', paddingRight: 12 }}>
-                  <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 800, color: RF_GOLD_YELLOW }}>{analytics.pendingProofs}</div>
-                  <span style={{ fontSize: isMobile ? 10 : 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>Pending Audit</span>
+                <div style={{ minWidth: 0, textAlign: 'left', paddingRight: 8 }}>
+                  <div style={{ fontSize: isMobile ? 15 : 17, fontWeight: 800, color: RF_GOLD_YELLOW }}>{analytics.pendingProofs}</div>
+                  <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>Pending</span>
                 </div>
-                <div style={{ borderLeft: '1px solid rgba(255,255,255,0.1)', borderRight: '1px solid rgba(255,255,255,0.1)', padding: '0 12px', minWidth: 0, textAlign: 'left' }}>
-                  <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 800, color: RF_MINT_ACCENT }}>{analytics.verifiedProofs}</div>
-                  <span style={{ fontSize: isMobile ? 10 : 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>Promoted Pass</span>
+                <div style={{ borderLeft: '1px solid rgba(255,255,255,0.1)', borderRight: '1px solid rgba(255,255,255,0.1)', padding: '0 8px', minWidth: 0, textAlign: 'left' }}>
+                  <div style={{ fontSize: isMobile ? 15 : 17, fontWeight: 800, color: RF_MINT_ACCENT }}>{analytics.verifiedProofs}</div>
+                  <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>Promoted</span>
                 </div>
-                <div style={{ minWidth: 0, textAlign: 'left', paddingLeft: 12 }}>
-                  <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 800, color: '#FFB27D' }}>{analytics.revisionProofs}</div>
-                  <span style={{ fontSize: isMobile ? 10 : 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>Revision Loop</span>
+                <div style={{ minWidth: 0, textAlign: 'left', paddingLeft: 8 }}>
+                  <div style={{ fontSize: isMobile ? 15 : 17, fontWeight: 800, color: '#FFB27D' }}>{analytics.revisionProofs}</div>
+                  <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>Revisions</span>
                 </div>
               </div>
             </div>
@@ -4262,16 +4262,16 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             {/* Division Submissions */}
             <div style={{
               background: 'rgba(255, 255, 255, 0.02)',
-              borderRadius: 12,
-              padding: '14px 16px',
+              borderRadius: 10,
+              padding: isMobile ? '10px 12px' : '12px 14px',
               border: '1px solid rgba(255, 255, 255, 0.06)',
               minWidth: 0,
               overflow: 'hidden',
               width: '100%',
               boxSizing: 'border-box'
             }}>
-              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 8 }}>
-                Squad Deliverables Output
+              <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 6 }}>
+                Squad Output
               </span>
               <div style={{
                 display: 'flex',
@@ -4279,11 +4279,11 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 overflowX: isMobile ? 'auto' : 'visible',
                 WebkitOverflowScrolling: 'touch',
                 scrollbarWidth: 'none',
-                gap: 6,
-                paddingBottom: isMobile ? 4 : 0
+                gap: 5,
+                paddingBottom: isMobile ? 2 : 0
               }}>
                 {Object.keys(analytics.proofsByDivision).length === 0 ? (
-                  <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.4)', whiteSpace: 'nowrap' }}>No squad submissions yet</span>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', whiteSpace: 'nowrap' }}>No submissions yet</span>
                 ) : (
                   Object.entries(analytics.proofsByDivision).map(([div, count]) => (
                     <span
@@ -4291,13 +4291,13 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                       style={{
                         background: 'rgba(255,255,255,0.05)',
                         border: '1px solid rgba(255,255,255,0.09)',
-                        padding: '3px 8px',
-                        borderRadius: 6,
-                        fontSize: 11,
+                        padding: '2.5px 7px',
+                        borderRadius: 5,
+                        fontSize: 10.5,
                         color: '#FFFFFF',
                         display: 'inline-flex',
                         alignItems: 'center',
-                        gap: 5,
+                        gap: 4,
                         flexShrink: 0,
                         whiteSpace: 'nowrap'
                       }}
@@ -4314,22 +4314,22 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
         {/* Proofs Filter Bar */}
         <div style={{
-          background: 'rgba(255,255,255,0.02)', borderRadius: isMobile ? 14 : 18, padding: isMobile ? '14px 16px' : '18px 22px',
-          border: '1px solid rgba(255,255,255,0.08)', marginBottom: 24,
-          display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center', justifyContent: 'space-between'
+          background: 'rgba(255,255,255,0.02)', borderRadius: isMobile ? 12 : 16, padding: isMobile ? '12px' : '16px 20px',
+          border: '1px solid rgba(255,255,255,0.08)', marginBottom: isMobile ? 16 : 24,
+          display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center', justifyContent: 'space-between'
         }}>
           {/* Search */}
           <div style={{ position: 'relative', flex: isMobile ? '1 1 100%' : '1 1 280px', maxWidth: isMobile ? '100%' : 420 }}>
-            <Search size={16} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)' }} />
+            <Search size={15} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)' }} />
             <input
               type="text"
               placeholder="Search by contributor, title, email, POW..."
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
               style={{
-                width: '100%', padding: '10px 16px 10px 42px', borderRadius: 100,
+                width: '100%', padding: isMobile ? '8px 14px 8px 36px' : '9px 16px 9px 40px', borderRadius: 100,
                 background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)',
-                color: '#FFFFFF', fontSize: 13, outline: 'none'
+                color: '#FFFFFF', fontSize: isMobile ? 12 : 12.5, outline: 'none'
               }}
             />
           </div>
@@ -4340,8 +4340,8 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               value={taskFilterStatus}
               onChange={e => setTaskFilterStatus(e.target.value)}
               style={{
-                background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)',
-                color: '#FFFFFF', padding: isMobile ? '7px 38px 7px 14px' : '9px 42px 9px 16px', borderRadius: 100, fontSize: 12, outline: 'none',
+                background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.12)',
+                color: '#FFFFFF', padding: isMobile ? '6px 32px 6px 12px' : '8px 36px 8px 14px', borderRadius: 100, fontSize: isMobile ? 11.5 : 12, outline: 'none',
                 flex: isMobile ? 1 : 'none', cursor: 'pointer'
               }}
             >
@@ -4356,8 +4356,8 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               value={divisionFilter}
               onChange={e => setDivisionFilter(e.target.value)}
               style={{
-                background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)',
-                color: '#FFFFFF', padding: isMobile ? '7px 38px 7px 14px' : '9px 42px 9px 16px', borderRadius: 100, fontSize: 12, outline: 'none',
+                background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.12)',
+                color: '#FFFFFF', padding: isMobile ? '6px 32px 6px 12px' : '8px 36px 8px 14px', borderRadius: 100, fontSize: isMobile ? 11.5 : 12, outline: 'none',
                 flex: isMobile ? 1 : 'none', cursor: 'pointer'
               }}
             >
@@ -4374,26 +4374,26 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
           {/* Proofs Table */}
           <div style={{
-            background: 'rgba(255,255,255,0.02)', borderRadius: 18,
+            background: 'rgba(255,255,255,0.02)', borderRadius: isMobile ? 12 : 16,
             border: '1px solid rgba(255,255,255,0.08)', overflow: 'hidden'
           }}>
             <div className="rp-sleek-scroll" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', width: '100%' }}>
-              <table style={{ width: '100%', minWidth: 1100, borderCollapse: 'collapse', textAlign: 'left' }}>
+              <table style={{ width: '100%', minWidth: 980, borderCollapse: 'collapse', textAlign: 'left' }}>
               <thead>
                 <tr style={{ background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                  <th style={{ padding: '15px 18px', minWidth: 150, fontSize: 11.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Reference / Date</th>
-                  <th style={{ padding: '15px 18px', minWidth: 230, fontSize: 11.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Contributor</th>
-                  <th style={{ padding: '15px 18px', minWidth: 120, fontSize: 11.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Target Rank</th>
-                  <th style={{ padding: '15px 18px', minWidth: 260, fontSize: 11.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Mission &amp; Category</th>
-                  <th style={{ padding: '15px 18px', minWidth: 140, fontSize: 11.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Evidence</th>
-                  <th style={{ padding: '15px 18px', minWidth: 160, fontSize: 11.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Status</th>
-                  <th style={{ padding: '15px 18px', minWidth: 140, fontSize: 11.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', textAlign: 'right', whiteSpace: 'nowrap' }}>Action</th>
+                  <th style={{ padding: isMobile ? '10px 14px' : '13px 18px', minWidth: 140, fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap' }}>Reference / Date</th>
+                  <th style={{ padding: isMobile ? '10px 14px' : '13px 18px', minWidth: 200, fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap' }}>Contributor</th>
+                  <th style={{ padding: isMobile ? '10px 14px' : '13px 18px', minWidth: 110, fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap' }}>Target Rank</th>
+                  <th style={{ padding: isMobile ? '10px 14px' : '13px 18px', minWidth: 230, fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap' }}>Mission &amp; Category</th>
+                  <th style={{ padding: isMobile ? '10px 14px' : '13px 18px', minWidth: 120, fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap' }}>Evidence</th>
+                  <th style={{ padding: isMobile ? '10px 14px' : '13px 18px', minWidth: 140, fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap' }}>Status</th>
+                  <th style={{ padding: isMobile ? '10px 14px' : '13px 18px', minWidth: 120, fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em', textAlign: 'right', whiteSpace: 'nowrap' }}>Action</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredTasks.length === 0 ? (
                   <tr>
-                    <td colSpan={7} style={{ padding: '48px 24px', textAlign: 'center', color: 'rgba(255,255,255,0.5)' }}>
+                    <td colSpan={7} style={{ padding: '40px 20px', textAlign: 'center', color: 'rgba(255,255,255,0.5)', fontSize: 12.5 }}>
                       No task completion proofs found matching your search.
                     </td>
                   </tr>
@@ -4409,37 +4409,37 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                       onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.03)')}
                       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                     >
-                      <td style={{ padding: '16px 18px', minWidth: 150, whiteSpace: 'nowrap' }}>
-                        <span style={{ fontSize: 12, fontWeight: 700, fontFamily: 'monospace', color: RF_MINT_ACCENT, display: 'block' }}>
+                      <td style={{ padding: isMobile ? '12px 14px' : '14px 18px', minWidth: 140, whiteSpace: 'nowrap' }}>
+                        <span style={{ fontSize: 11.5, fontWeight: 700, fontFamily: 'monospace', color: RF_MINT_ACCENT, display: 'block' }}>
                           {task.reference_id}
                         </span>
-                        <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', marginTop: 3, display: 'block' }}>
+                        <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.45)', marginTop: 2, display: 'block' }}>
                           {new Date(task.created_at).toLocaleDateString()}
                         </span>
                       </td>
-                      <td style={{ padding: '16px 18px', minWidth: 230 }}>
-                        <span style={{ fontSize: 13.5, fontWeight: 600, color: '#FFFFFF', display: 'block' }}>
+                      <td style={{ padding: isMobile ? '12px 14px' : '14px 18px', minWidth: 200 }}>
+                        <span style={{ fontSize: isMobile ? 12.5 : 13, fontWeight: 600, color: '#FFFFFF', display: 'block' }}>
                           {task.full_name}
                         </span>
-                        <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.5)', display: 'block', marginTop: 2 }}>
+                        <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', display: 'block', marginTop: 2 }}>
                           {task.email}
                         </span>
-                        <div style={{ display: 'flex', gap: 6, marginTop: 5, flexWrap: 'wrap', alignItems: 'center' }}>
+                        <div style={{ display: 'flex', gap: 5, marginTop: 4, flexWrap: 'wrap', alignItems: 'center' }}>
                           {task.application_number && (
-                            <span style={{ fontSize: 10.5, fontFamily: 'monospace', color: RF_MINT_ACCENT, background: 'rgba(24, 252, 92, 0.08)', padding: '2px 7px', borderRadius: 4, whiteSpace: 'nowrap' }}>
+                            <span style={{ fontSize: 10, fontFamily: 'monospace', color: RF_MINT_ACCENT, background: 'rgba(24, 252, 92, 0.08)', padding: '1.5px 6px', borderRadius: 4, whiteSpace: 'nowrap' }}>
                               {task.application_number}
                             </span>
                           )}
                           {task.pioneer_id && (
-                            <span style={{ fontSize: 10.5, fontFamily: 'monospace', fontWeight: 700, color: RF_GOLD_YELLOW, background: 'rgba(246, 178, 26, 0.1)', padding: '2px 7px', borderRadius: 4, whiteSpace: 'nowrap' }}>
+                            <span style={{ fontSize: 10, fontFamily: 'monospace', fontWeight: 700, color: RF_GOLD_YELLOW, background: 'rgba(246, 178, 26, 0.1)', padding: '1.5px 6px', borderRadius: 4, whiteSpace: 'nowrap' }}>
                               {task.pioneer_id}
                             </span>
                           )}
                         </div>
                       </td>
-                      <td style={{ padding: '16px 18px', minWidth: 120, whiteSpace: 'nowrap' }}>
+                      <td style={{ padding: isMobile ? '12px 14px' : '14px 18px', minWidth: 110, whiteSpace: 'nowrap' }}>
                         <span style={{
-                          padding: '4px 10px', borderRadius: 100, fontSize: 11, fontWeight: 700,
+                          padding: '2.5px 8px', borderRadius: 100, fontSize: 10.5, fontWeight: 700,
                           background: task.target_level === 'LEVEL_2' ? `${RF_MINT_ACCENT}15` : `${RF_GOLD_YELLOW}15`,
                           border: `1px solid ${task.target_level === 'LEVEL_2' ? RF_MINT_ACCENT : RF_GOLD_YELLOW}55`,
                           color: task.target_level === 'LEVEL_2' ? RF_MINT_ACCENT : RF_GOLD_YELLOW,
@@ -4448,31 +4448,31 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                           {task.target_level.replace('_', ' ')}
                         </span>
                       </td>
-                      <td style={{ padding: '16px 18px', minWidth: 260 }}>
-                        <span style={{ fontSize: 13, fontWeight: 600, color: '#FFFFFF', display: 'block', maxWidth: 300, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <td style={{ padding: isMobile ? '12px 14px' : '14px 18px', minWidth: 230 }}>
+                        <span style={{ fontSize: isMobile ? 12 : 12.5, fontWeight: 600, color: '#FFFFFF', display: 'block', maxWidth: 280, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {task.task_title}
                         </span>
-                        <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', marginTop: 3, display: 'block' }}>
+                        <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)', marginTop: 2, display: 'block' }}>
                           {task.task_category}
                         </span>
                       </td>
-                      <td style={{ padding: '16px 18px', minWidth: 140, whiteSpace: 'nowrap' }}>
-                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
-                          <ImageIcon size={14} color={task.screenshots.length > 0 ? RF_MINT_ACCENT : 'rgba(255,255,255,0.4)'} />
-                          <span style={{ fontSize: 12, fontWeight: 600, color: task.screenshots.length > 0 ? '#FFFFFF' : 'rgba(255,255,255,0.4)', whiteSpace: 'nowrap' }}>
-                            {task.screenshots.length} Screenshot{task.screenshots.length === 1 ? '' : 's'}
+                      <td style={{ padding: isMobile ? '12px 14px' : '14px 18px', minWidth: 120, whiteSpace: 'nowrap' }}>
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, whiteSpace: 'nowrap' }}>
+                          <ImageIcon size={13} color={task.screenshots.length > 0 ? RF_MINT_ACCENT : 'rgba(255,255,255,0.4)'} />
+                          <span style={{ fontSize: 11.5, fontWeight: 600, color: task.screenshots.length > 0 ? '#FFFFFF' : 'rgba(255,255,255,0.4)', whiteSpace: 'nowrap' }}>
+                            {task.screenshots.length} Shot{task.screenshots.length === 1 ? '' : 's'}
                           </span>
                         </div>
                       </td>
-                      <td style={{ padding: '16px 18px', minWidth: 160, whiteSpace: 'nowrap' }}>
+                      <td style={{ padding: isMobile ? '12px 14px' : '14px 18px', minWidth: 140, whiteSpace: 'nowrap' }}>
                         {renderTaskStatusBadge(task.status)}
                       </td>
-                      <td style={{ padding: '16px 18px', minWidth: 140, textAlign: 'right', whiteSpace: 'nowrap' }}>
+                      <td style={{ padding: isMobile ? '12px 14px' : '14px 18px', minWidth: 120, textAlign: 'right', whiteSpace: 'nowrap' }}>
                         <button
                           onClick={e => { e.stopPropagation(); handleOpenTaskModal(task); }}
                           style={{
                             background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.18)',
-                            color: '#FFFFFF', padding: '7px 16px', borderRadius: 100, fontSize: 12,
+                            color: '#FFFFFF', height: isMobile ? 28 : 30, padding: isMobile ? '0 10px' : '0 14px', borderRadius: 6, fontSize: isMobile ? 11 : 12,
                             fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap', display: 'inline-flex',
                             alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s ease'
                           }}
@@ -4499,10 +4499,10 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           {memberActionFeedback && (
             <div style={{
               background: 'rgba(24, 252, 92, 0.12)', border: `1px solid ${RF_LEAF_GREEN}66`,
-              padding: '12px 18px', borderRadius: 12, marginBottom: 20, display: 'flex',
-              alignItems: 'center', gap: 10, color: '#FFFFFF', fontSize: 13.5
+              padding: '10px 16px', borderRadius: 10, marginBottom: 16, display: 'flex',
+              alignItems: 'center', gap: 8, color: '#FFFFFF', fontSize: 13
             }}>
-              <CheckCircle2 size={18} color={RF_MINT_ACCENT} />
+              <CheckCircle2 size={16} color={RF_MINT_ACCENT} />
               <span>{memberActionFeedback}</span>
             </div>
           )}
@@ -4515,7 +4515,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '0 0 6px', flexWrap: 'wrap' }}>
                 <h2 style={{ fontSize: isMobile ? 20 : 24, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
-                  Pioneer Members &amp; Contributor Profiles
+                  {isMobile ? 'Pioneers Directory' : 'Pioneer Members & Contributor Profiles'}
                 </h2>
                 <span style={{
                   fontSize: 10.5, fontWeight: 700, background: 'rgba(24, 252, 92, 0.12)',
@@ -4536,46 +4536,46 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               disabled={loading}
               style={{
                 background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.18)',
-                color: '#FFFFFF', padding: isMobile ? '10px 14px' : '10px 18px', borderRadius: 100, fontSize: 13,
-                fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
+                color: '#FFFFFF', padding: isMobile ? '7px 12px' : '8px 16px', borderRadius: 100, fontSize: isMobile ? 11.5 : 12.5,
+                fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5,
                 transition: 'all 0.2s', width: isMobile ? '100%' : 'auto', justifyContent: 'center'
               }}
               onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.12)')}
               onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
             >
-              <RefreshCw size={14} className={loading ? 'rp-spin' : ''} /> {loading ? 'Syncing...' : 'Refresh Directory'}
+              <RefreshCw size={13} className={loading ? 'rp-spin' : ''} /> {loading ? 'Syncing...' : 'Refresh Directory'}
             </button>
           </div>
 
           {/* Members KPI Cards */}
           <div style={{
             display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: isMobile ? 10 : 16, marginBottom: isMobile ? 20 : 32
+            gap: isMobile ? 10 : 14, marginBottom: isMobile ? 18 : 26
           }}>
-            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: isMobile ? '14px 16px' : '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Total Pioneers</span>
-              <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: '#FFFFFF', marginTop: 4 }}>{memberStats.total}</div>
-              <span style={{ fontSize: isMobile ? 11 : 12, color: 'rgba(255,255,255,0.5)' }}>Enrolled in network</span>
+            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: isMobile ? 12 : 16, padding: isMobile ? '12px 14px' : '16px 20px', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Total Pioneers</span>
+              <div style={{ fontSize: isMobile ? 22 : 28, fontWeight: 700, color: '#FFFFFF', marginTop: 3 }}>{memberStats.total}</div>
+              <span style={{ fontSize: isMobile ? 10.5 : 11.5, color: 'rgba(255,255,255,0.5)' }}>Enrolled in network</span>
             </div>
 
-            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: isMobile ? '14px 16px' : '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Active Pioneers</span>
-              <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: RF_MINT_ACCENT, marginTop: 4 }}>{memberStats.active}</div>
-              <span style={{ fontSize: isMobile ? 11 : 12, color: 'rgba(255,255,255,0.5)' }}>Good standing &amp; active</span>
+            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: isMobile ? 12 : 16, padding: isMobile ? '12px 14px' : '16px 20px', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Active Pioneers</span>
+              <div style={{ fontSize: isMobile ? 22 : 28, fontWeight: 700, color: RF_MINT_ACCENT, marginTop: 3 }}>{memberStats.active}</div>
+              <span style={{ fontSize: isMobile ? 10.5 : 11.5, color: 'rgba(255,255,255,0.5)' }}>Good standing &amp; active</span>
             </div>
 
-            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: isMobile ? '14px 16px' : '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Suspended Accounts</span>
-              <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: memberStats.suspended > 0 ? '#EF4444' : 'rgba(255,255,255,0.4)', marginTop: 4 }}>
+            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: isMobile ? 12 : 16, padding: isMobile ? '12px 14px' : '16px 20px', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Suspended Accounts</span>
+              <div style={{ fontSize: isMobile ? 22 : 28, fontWeight: 700, color: memberStats.suspended > 0 ? '#EF4444' : 'rgba(255,255,255,0.4)', marginTop: 3 }}>
                 {memberStats.suspended}
               </div>
-              <span style={{ fontSize: isMobile ? 11 : 12, color: memberStats.suspended > 0 ? '#FCA5A5' : 'rgba(255,255,255,0.5)' }}>Access restricted</span>
+              <span style={{ fontSize: isMobile ? 10.5 : 11.5, color: memberStats.suspended > 0 ? '#FCA5A5' : 'rgba(255,255,255,0.5)' }}>Access restricted</span>
             </div>
 
-            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: isMobile ? '14px 16px' : '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Completed Profiles</span>
-              <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: RF_GOLD_YELLOW, marginTop: 4 }}>{memberStats.completed}</div>
-              <span style={{ fontSize: isMobile ? 11 : 12, color: 'rgba(255,255,255,0.5)' }}>With permanent DOB &amp; details</span>
+            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: isMobile ? 12 : 16, padding: isMobile ? '12px 14px' : '16px 20px', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Completed Profiles</span>
+              <div style={{ fontSize: isMobile ? 22 : 28, fontWeight: 700, color: RF_GOLD_YELLOW, marginTop: 3 }}>{memberStats.completed}</div>
+              <span style={{ fontSize: isMobile ? 10.5 : 11.5, color: 'rgba(255,255,255,0.5)' }}>With permanent DOB</span>
             </div>
           </div>
 
@@ -4583,31 +4583,31 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           <div style={{
             background: 'rgba(255, 255, 255, 0.025)',
             border: '1px solid rgba(24, 252, 92, 0.16)',
-            borderRadius: isMobile ? 14 : 18,
-            padding: isMobile ? '16px' : '20px 24px',
-            marginBottom: isMobile ? 18 : 28,
+            borderRadius: isMobile ? 12 : 16,
+            padding: isMobile ? '12px 14px' : '16px 20px',
+            marginBottom: isMobile ? 16 : 24,
             overflow: 'hidden',
             width: '100%',
             maxWidth: '100%',
             boxSizing: 'border-box'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 10, minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14, flexWrap: 'wrap', gap: 10, minWidth: 0 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
                 <div style={{
-                  width: 28, height: 28, borderRadius: 8,
+                  width: 26, height: 26, borderRadius: 6,
                   background: 'rgba(24, 252, 92, 0.12)', color: RF_MINT_ACCENT,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   flexShrink: 0
                 }}>
-                  <Users size={15} />
+                  <Users size={14} />
                 </div>
-                <span style={{ fontSize: isMobile ? 13.5 : 15, fontWeight: 700, color: '#FFFFFF' }}>
-                  Community Health &amp; Contributor Tier Ladder
+                <span style={{ fontSize: isMobile ? 13 : 14.5, fontWeight: 700, color: '#FFFFFF' }}>
+                  {isMobile ? 'Community Vitality' : 'Community Health & Contributor Tier Ladder'}
                 </span>
               </div>
               <span style={{
-                fontSize: 11, color: RF_MINT_ACCENT, background: 'rgba(24, 252, 92, 0.1)',
-                padding: '3px 10px', borderRadius: 100, fontWeight: 600, border: '1px solid rgba(24, 252, 92, 0.2)',
+                fontSize: 10.5, color: RF_MINT_ACCENT, background: 'rgba(24, 252, 92, 0.1)',
+                padding: '2.5px 9px', borderRadius: 100, fontWeight: 600, border: '1px solid rgba(24, 252, 92, 0.2)',
                 flexShrink: 0
               }}>
                 Network Vitality: {analytics.activeRate}% Active
@@ -4617,20 +4617,20 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             <div style={{
               display: 'grid',
               gridTemplateColumns: isMobile ? 'minmax(0, 1fr)' : 'repeat(3, minmax(0, 1fr))',
-              gap: isMobile ? 14 : 20
+              gap: isMobile ? 10 : 14
             }}>
               {/* Profile Completion Ratio */}
               <div style={{
                 background: 'rgba(255, 255, 255, 0.02)',
-                borderRadius: 12,
-                padding: '14px 16px',
+                borderRadius: 10,
+                padding: isMobile ? '10px 12px' : '12px 14px',
                 border: '1px solid rgba(255, 255, 255, 0.06)'
               }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Permanent DOB &amp; Settlement</span>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: RF_GOLD_YELLOW }}>{analytics.profileCompRate}%</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                  <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>DOB &amp; Settlement</span>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: RF_GOLD_YELLOW }}>{analytics.profileCompRate}%</span>
                 </div>
-                <div style={{ width: '100%', height: 8, borderRadius: 100, background: 'rgba(255,255,255,0.08)', overflow: 'hidden' }}>
+                <div style={{ width: '100%', height: 6, borderRadius: 100, background: 'rgba(255,255,255,0.08)', overflow: 'hidden' }}>
                   <div style={{
                     width: `${analytics.profileCompRate}%`,
                     height: '100%',
@@ -4638,7 +4638,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                     background: `linear-gradient(90deg, ${RF_GOLD_YELLOW}, ${RF_MINT_ACCENT})`
                   }} />
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, fontSize: 11, color: 'rgba(255,255,255,0.45)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6, fontSize: 10.5, color: 'rgba(255,255,255,0.45)' }}>
                   <span>{analytics.completedMembers} of {analytics.totalMembers} Completed</span>
                   <span>KYC Verified</span>
                 </div>
@@ -4647,15 +4647,15 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               {/* Account Standing Ratios */}
               <div style={{
                 background: 'rgba(255, 255, 255, 0.02)',
-                borderRadius: 12,
-                padding: isMobile ? '12px 14px' : '14px 16px',
+                borderRadius: 10,
+                padding: isMobile ? '10px 12px' : '12px 14px',
                 border: '1px solid rgba(255, 255, 255, 0.06)',
                 minWidth: 0,
                 width: '100%',
                 maxWidth: '100%',
                 boxSizing: 'border-box'
               }}>
-                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 10 }}>
+                <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 8 }}>
                   Account Health Standing
                 </span>
                 <div style={{
@@ -4667,19 +4667,19 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                   maxWidth: '100%',
                   boxSizing: 'border-box'
                 }}>
-                  <div style={{ minWidth: 0, textAlign: 'left', paddingRight: 12 }}>
-                    <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 800, color: RF_MINT_ACCENT }}>{analytics.activeMembers}</div>
-                    <span style={{ fontSize: isMobile ? 10 : 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>Active Standing</span>
+                  <div style={{ minWidth: 0, textAlign: 'left', paddingRight: 8 }}>
+                    <div style={{ fontSize: isMobile ? 15 : 17, fontWeight: 800, color: RF_MINT_ACCENT }}>{analytics.activeMembers}</div>
+                    <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>Active</span>
                   </div>
-                  <div style={{ borderLeft: '1px solid rgba(255,255,255,0.1)', borderRight: '1px solid rgba(255,255,255,0.1)', padding: '0 12px', minWidth: 0, textAlign: 'left' }}>
-                    <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 800, color: analytics.suspendedMembers > 0 ? '#EF4444' : 'rgba(255,255,255,0.4)' }}>
+                  <div style={{ borderLeft: '1px solid rgba(255,255,255,0.1)', borderRight: '1px solid rgba(255,255,255,0.1)', padding: '0 8px', minWidth: 0, textAlign: 'left' }}>
+                    <div style={{ fontSize: isMobile ? 15 : 17, fontWeight: 800, color: analytics.suspendedMembers > 0 ? '#EF4444' : 'rgba(255,255,255,0.4)' }}>
                       {analytics.suspendedMembers}
                     </div>
-                    <span style={{ fontSize: isMobile ? 10 : 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>Suspended</span>
+                    <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>Suspended</span>
                   </div>
-                  <div style={{ minWidth: 0, textAlign: 'left', paddingLeft: 12 }}>
-                    <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 800, color: '#38BDF8' }}>{analytics.totalMembers}</div>
-                    <span style={{ fontSize: isMobile ? 10 : 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>Total Network</span>
+                  <div style={{ minWidth: 0, textAlign: 'left', paddingLeft: 8 }}>
+                    <div style={{ fontSize: isMobile ? 15 : 17, fontWeight: 800, color: '#38BDF8' }}>{analytics.totalMembers}</div>
+                    <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>Total</span>
                   </div>
                 </div>
               </div>
@@ -4687,27 +4687,27 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               {/* Contributor Tier Ladder */}
               <div style={{
                 background: 'rgba(255, 255, 255, 0.02)',
-                borderRadius: 12,
-                padding: '14px 16px',
+                borderRadius: 10,
+                padding: isMobile ? '10px 12px' : '12px 14px',
                 border: '1px solid rgba(255, 255, 255, 0.06)'
               }}>
-                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 8 }}>
-                  Contributor Rank Ladder
+                <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 6 }}>
+                  Rank Ladder
                 </span>
-                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
                   {(['LEVEL_1', 'LEVEL_2', 'LEVEL_3', 'LEVEL_4', 'LEVEL_5'] as const).map(lvl => (
                     <span
                       key={lvl}
                       style={{
                         background: 'rgba(255,255,255,0.05)',
                         border: '1px solid rgba(255,255,255,0.09)',
-                        padding: '3px 8px',
-                        borderRadius: 6,
-                        fontSize: 11,
+                        padding: '2.5px 7px',
+                        borderRadius: 5,
+                        fontSize: 10.5,
                         color: '#FFFFFF',
                         display: 'inline-flex',
                         alignItems: 'center',
-                        gap: 5
+                        gap: 4
                       }}
                     >
                       <span style={{ color: 'rgba(255,255,255,0.6)' }}>{lvl.replace('LEVEL_', 'L')}</span>
@@ -4721,46 +4721,35 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
           {/* Members Search & Filter Controls */}
           <div style={{
-            background: 'rgba(255,255,255,0.02)', borderRadius: 18, padding: isMobile ? '14px 16px' : '18px 22px',
-            border: '1px solid rgba(255,255,255,0.08)', marginBottom: 24,
-            display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center', justifyContent: 'space-between'
+            background: 'rgba(255,255,255,0.02)', borderRadius: isMobile ? 12 : 16, padding: isMobile ? '12px' : '16px 20px',
+            border: '1px solid rgba(255,255,255,0.08)', marginBottom: isMobile ? 16 : 24,
+            display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center', justifyContent: 'space-between'
           }}>
             {/* Search */}
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: 10, flex: isMobile ? '1 1 100%' : '1 1 300px',
-              background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.12)',
-              borderRadius: 100, padding: '10px 18px'
-            }}>
-              <Search size={16} color="rgba(255,255,255,0.4)" style={{ flexShrink: 0 }} />
+            <div style={{ position: 'relative', flex: isMobile ? '1 1 100%' : '1 1 280px', maxWidth: isMobile ? '100%' : 420 }}>
+              <Search size={15} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)' }} />
               <input
                 type="text"
-                placeholder="Search by name, email, Pioneer ID, App #, country..."
+                placeholder="Search by name, email, Pioneer ID, App #..."
                 value={memberSearchTerm}
                 onChange={e => setMemberSearchTerm(e.target.value)}
                 style={{
-                  background: 'none', border: 'none', color: '#FFFFFF', fontSize: 13,
-                  width: '100%', outline: 'none'
+                  width: '100%', padding: isMobile ? '8px 14px 8px 36px' : '9px 16px 9px 40px', borderRadius: 100,
+                  background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)',
+                  color: '#FFFFFF', fontSize: isMobile ? 12 : 12.5, outline: 'none'
                 }}
               />
-              {memberSearchTerm && (
-                <button
-                  onClick={() => setMemberSearchTerm('')}
-                  style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', fontSize: 12 }}
-                >
-                  ✕
-                </button>
-              )}
             </div>
 
-            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center', width: isMobile ? '100%' : 'auto' }}>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', width: isMobile ? '100%' : 'auto' }}>
               {/* Account Status Filter */}
               <select
                 value={memberStatusFilter}
                 onChange={e => setMemberStatusFilter(e.target.value as any)}
                 style={{
-                  background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.15)',
-                  color: '#FFFFFF', padding: '10px 42px 10px 16px', borderRadius: 100, fontSize: 13, outline: 'none',
-                  flex: isMobile ? '1 1 calc(50% - 6px)' : 'initial', cursor: 'pointer'
+                  background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.12)',
+                  color: '#FFFFFF', padding: isMobile ? '6px 32px 6px 12px' : '8px 36px 8px 14px', borderRadius: 100, fontSize: isMobile ? 11.5 : 12, outline: 'none',
+                  flex: isMobile ? '1 1 calc(50% - 4px)' : 'initial', cursor: 'pointer'
                 }}
               >
                 <option value="ALL">All Statuses</option>
@@ -4773,9 +4762,9 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 value={memberDivisionFilter}
                 onChange={e => setMemberDivisionFilter(e.target.value)}
                 style={{
-                  background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.15)',
-                  color: '#FFFFFF', padding: '10px 42px 10px 16px', borderRadius: 100, fontSize: 13, outline: 'none',
-                  flex: isMobile ? '1 1 calc(50% - 6px)' : 'initial', cursor: 'pointer'
+                  background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.12)',
+                  color: '#FFFFFF', padding: isMobile ? '6px 32px 6px 12px' : '8px 36px 8px 14px', borderRadius: 100, fontSize: isMobile ? 11.5 : 12, outline: 'none',
+                  flex: isMobile ? '1 1 calc(50% - 4px)' : 'initial', cursor: 'pointer'
                 }}
               >
                 <option value="ALL">All Squads</option>
@@ -4793,8 +4782,8 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 value={memberLevelFilter}
                 onChange={e => setMemberLevelFilter(e.target.value)}
                 style={{
-                  background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.15)',
-                  color: '#FFFFFF', padding: '10px 42px 10px 16px', borderRadius: 100, fontSize: 13, outline: 'none',
+                  background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.12)',
+                  color: '#FFFFFF', padding: isMobile ? '6px 32px 6px 12px' : '8px 36px 8px 14px', borderRadius: 100, fontSize: isMobile ? 11.5 : 12, outline: 'none',
                   flex: isMobile ? '1 1 100%' : 'initial', cursor: 'pointer'
                 }}
               >
@@ -4810,26 +4799,26 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
           {/* Members Table */}
           <div style={{
-            background: 'rgba(255,255,255,0.02)', borderRadius: 20, border: '1px solid rgba(255,255,255,0.08)',
+            background: 'rgba(255,255,255,0.02)', borderRadius: isMobile ? 12 : 16, border: '1px solid rgba(255,255,255,0.08)',
             overflow: 'hidden'
           }}>
             <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-              <table style={{ width: '100%', minWidth: 960, borderCollapse: 'collapse', textAlign: 'left', fontSize: 13 }}>
+              <table style={{ width: '100%', minWidth: 920, borderCollapse: 'collapse', textAlign: 'left' }}>
               <thead>
                 <tr style={{ background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                  <th style={{ padding: '14px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Member / Pioneer</th>
-                  <th style={{ padding: '14px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Pioneer ID &amp; App #</th>
-                  <th style={{ padding: '14px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Squad &amp; Rank</th>
-                  <th style={{ padding: '14px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Date of Birth</th>
-                  <th style={{ padding: '14px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Location</th>
-                  <th style={{ padding: '14px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Account Status</th>
-                  <th style={{ padding: '14px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: 'right' }}>Actions</th>
+                  <th style={{ padding: isMobile ? '10px 14px' : '13px 18px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap' }}>Member / Pioneer</th>
+                  <th style={{ padding: isMobile ? '10px 14px' : '13px 18px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap' }}>Pioneer ID &amp; App #</th>
+                  <th style={{ padding: isMobile ? '10px 14px' : '13px 18px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap' }}>Squad &amp; Rank</th>
+                  <th style={{ padding: isMobile ? '10px 14px' : '13px 18px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap' }}>Date of Birth</th>
+                  <th style={{ padding: isMobile ? '10px 14px' : '13px 18px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap' }}>Location</th>
+                  <th style={{ padding: isMobile ? '10px 14px' : '13px 18px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap' }}>Account Status</th>
+                  <th style={{ padding: isMobile ? '10px 14px' : '13px 18px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em', textAlign: 'right', whiteSpace: 'nowrap' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredMembers.length === 0 ? (
                   <tr>
-                    <td colSpan={7} style={{ padding: '48px 24px', textAlign: 'center', color: 'rgba(255,255,255,0.5)' }}>
+                    <td colSpan={7} style={{ padding: '40px 20px', textAlign: 'center', color: 'rgba(255,255,255,0.5)', fontSize: 12.5 }}>
                       No pioneer members found matching your search and filter criteria.
                     </td>
                   </tr>
@@ -4858,41 +4847,41 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                         onMouseLeave={e => (e.currentTarget.style.background = member.is_suspended ? 'rgba(239, 68, 68, 0.04)' : 'transparent')}
                       >
                         {/* Member Identity */}
-                        <td style={{ padding: '16px 20px', verticalAlign: 'middle', maxWidth: 240 }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                        <td style={{ padding: isMobile ? '12px 14px' : '14px 18px', verticalAlign: 'middle', maxWidth: 220 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                             {member.avatar_url ? (
                               <img
                                 src={member.avatar_url}
                                 alt={member.full_name}
                                 style={{
-                                  width: 38, height: 38, borderRadius: '50%', objectFit: 'cover', flexShrink: 0,
+                                  width: isMobile ? 32 : 36, height: isMobile ? 32 : 36, borderRadius: '50%', objectFit: 'cover', flexShrink: 0,
                                   border: `2px solid ${member.is_suspended ? '#EF4444' : RF_LEAF_GREEN}`
                                 }}
                               />
                             ) : (
                               <div style={{
-                                width: 38, height: 38, borderRadius: '50%', flexShrink: 0,
+                                width: isMobile ? 32 : 36, height: isMobile ? 32 : 36, borderRadius: '50%', flexShrink: 0,
                                 background: member.is_suspended ? 'rgba(239, 68, 68, 0.2)' : `${RF_LEAF_GREEN}25`,
                                 border: `1px solid ${member.is_suspended ? '#EF4444' : RF_LEAF_GREEN}66`,
                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                                 color: member.is_suspended ? '#FCA5A5' : RF_MINT_ACCENT,
-                                fontSize: 13, fontWeight: 700
+                                fontSize: isMobile ? 12 : 13, fontWeight: 700
                               }}>
                                 {initials || 'RP'}
                               </div>
                             )}
-                            <div>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                                <span style={{ fontSize: 14, fontWeight: 700, color: '#FFFFFF', lineHeight: 1.3 }}>
+                            <div style={{ minWidth: 0 }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                                <span style={{ fontSize: isMobile ? 12.5 : 13.5, fontWeight: 700, color: '#FFFFFF', lineHeight: 1.3 }}>
                                   {member.full_name}
                                 </span>
                                 {member.is_profile_completed && (
                                   <span title="Profile Completed" style={{ display: 'inline-flex', flexShrink: 0 }}>
-                                    <CheckCircle2 size={13} color={RF_MINT_ACCENT} />
+                                    <CheckCircle2 size={12} color={RF_MINT_ACCENT} />
                                   </span>
                                 )}
                               </div>
-                              <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.5)', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 180 }}>
+                              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 160 }}>
                                 {member.email}
                               </div>
                             </div>
@@ -4900,117 +4889,119 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                         </td>
 
                         {/* Pioneer ID & Application Number */}
-                        <td style={{ padding: '16px 20px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
-                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(24, 252, 92, 0.1)', border: `1px solid ${RF_LEAF_GREEN}44`, padding: '3px 8px', borderRadius: 6 }}>
-                            <Award size={12} color={RF_MINT_ACCENT} style={{ flexShrink: 0 }} />
-                            <span style={{ fontFamily: 'monospace', fontSize: 11.5, fontWeight: 700, color: RF_MINT_ACCENT }}>
+                        <td style={{ padding: isMobile ? '12px 14px' : '14px 18px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
+                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'rgba(24, 252, 92, 0.1)', border: `1px solid ${RF_LEAF_GREEN}44`, padding: '2px 7px', borderRadius: 5 }}>
+                            <Award size={11} color={RF_MINT_ACCENT} style={{ flexShrink: 0 }} />
+                            <span style={{ fontFamily: 'monospace', fontSize: 11, fontWeight: 700, color: RF_MINT_ACCENT }}>
                               {member.pioneer_id || 'PENDING'}
                             </span>
                           </div>
                           {member.application_number && (
-                            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', marginTop: 4, fontFamily: 'monospace' }}>
+                            <div style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.45)', marginTop: 3, fontFamily: 'monospace' }}>
                               {member.application_number}
                             </div>
                           )}
                         </td>
 
                         {/* Squad & Rank */}
-                        <td style={{ padding: '16px 20px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
-                          <div style={{ marginBottom: 5 }}>
+                        <td style={{ padding: isMobile ? '12px 14px' : '14px 18px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
+                          <div style={{ marginBottom: 4 }}>
                             <span style={{
-                              fontSize: 11, fontWeight: 700, color: squadInfo.color,
+                              fontSize: 10.5, fontWeight: 700, color: squadInfo.color,
                               background: `${squadInfo.color}18`, border: `1px solid ${squadInfo.color}44`,
-                              padding: '2px 7px', borderRadius: 6, letterSpacing: '0.02em'
+                              padding: '2px 6px', borderRadius: 5, letterSpacing: '0.02em'
                             }}>
                               {member.division || 'Unassigned'}
                             </span>
                           </div>
                           <span style={{
-                            fontSize: 10.5, fontWeight: 700,
+                            fontSize: 10, fontWeight: 700,
                             color: RF_GOLD_YELLOW, background: 'rgba(255, 209, 102, 0.1)',
                             border: '1px solid rgba(255, 209, 102, 0.3)',
-                            padding: '2px 7px', borderRadius: 6, textTransform: 'uppercase'
+                            padding: '1.5px 6px', borderRadius: 5, textTransform: 'uppercase'
                           }}>
                             {(member.contributor_level || 'LEVEL_1').replace('_', ' ')}
                           </span>
                         </td>
 
                         {/* Date of Birth */}
-                        <td style={{ padding: '16px 20px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
+                        <td style={{ padding: isMobile ? '12px 14px' : '14px 18px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
                           {member.date_of_birth ? (
-                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                              <Calendar size={13} color={RF_MINT_ACCENT} style={{ flexShrink: 0 }} />
-                              <span style={{ fontSize: 12.5, fontWeight: 600, color: '#FFFFFF', whiteSpace: 'nowrap' }}>
+                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+                              <Calendar size={12} color={RF_MINT_ACCENT} style={{ flexShrink: 0 }} />
+                              <span style={{ fontSize: 12, fontWeight: 600, color: '#FFFFFF', whiteSpace: 'nowrap' }}>
                                 {formatDOB(member.date_of_birth)}
                               </span>
                               <span title="Permanent Record" style={{ display: 'inline-flex', alignItems: 'center', opacity: 0.5, flexShrink: 0 }}>
-                                <Lock size={10} />
+                                <Lock size={9} />
                               </span>
                             </div>
                           ) : (
-                            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', fontStyle: 'italic' }}>
+                            <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.35)', fontStyle: 'italic' }}>
                               Not provided
                             </span>
                           )}
                         </td>
 
                         {/* Location */}
-                        <td style={{ padding: '16px 20px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
-                          <div style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.85)' }}>
+                        <td style={{ padding: isMobile ? '12px 14px' : '14px 18px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
+                          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.85)' }}>
                             {member.city ? `${member.city}, ` : ''}{member.country || 'Global'}
                           </div>
                           {member.institution && (
-                            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', marginTop: 2, maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            <div style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.45)', marginTop: 2, maxWidth: 140, overflow: 'hidden', textOverflow: 'ellipsis' }}>
                               {member.institution}
                             </div>
                           )}
                         </td>
 
                         {/* Status Badge */}
-                        <td style={{ padding: '16px 20px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
+                        <td style={{ padding: isMobile ? '12px 14px' : '14px 18px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
                           {member.is_suspended ? (
                             <div>
                               <span style={{
-                                padding: '4px 9px', borderRadius: 8, fontSize: 11.5, fontWeight: 700,
+                                padding: '2.5px 7px', borderRadius: 100, fontSize: 10, fontWeight: 700,
                                 background: 'rgba(239, 68, 68, 0.12)', color: '#FCA5A5',
-                                border: '1px solid rgba(239, 68, 68, 0.35)', display: 'inline-flex', alignItems: 'center', gap: 5
+                                border: '1px solid rgba(239, 68, 68, 0.35)', display: 'inline-flex', alignItems: 'center', gap: 4,
+                                flexShrink: 0, whiteSpace: 'nowrap'
                               }}>
-                                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#EF4444', display: 'inline-block' }} />
+                                <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#EF4444', display: 'inline-block' }} />
                                 SUSPENDED
                               </span>
                               {member.suspension_reason && (
-                                <div style={{ fontSize: 11, color: '#FCA5A5', marginTop: 4, maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis' }} title={member.suspension_reason}>
+                                <div style={{ fontSize: 10.5, color: '#FCA5A5', marginTop: 3, maxWidth: 140, overflow: 'hidden', textOverflow: 'ellipsis' }} title={member.suspension_reason}>
                                   {member.suspension_reason}
                                 </div>
                               )}
                             </div>
                           ) : (
                             <span style={{
-                              padding: '4px 9px', borderRadius: 8, fontSize: 11.5, fontWeight: 700,
+                              padding: '2.5px 7px', borderRadius: 100, fontSize: 10, fontWeight: 700,
                               background: 'rgba(24, 252, 92, 0.12)', color: RF_MINT_ACCENT,
-                              border: `1px solid ${RF_LEAF_GREEN}55`, display: 'inline-flex', alignItems: 'center', gap: 5
+                              border: `1px solid ${RF_LEAF_GREEN}55`, display: 'inline-flex', alignItems: 'center', gap: 4,
+                              flexShrink: 0, whiteSpace: 'nowrap'
                             }}>
-                              <span style={{ width: 6, height: 6, borderRadius: '50%', background: RF_MINT_ACCENT, display: 'inline-block' }} />
+                              <span style={{ width: 5, height: 5, borderRadius: '50%', background: RF_MINT_ACCENT, display: 'inline-block' }} />
                               ACTIVE
                             </span>
                           )}
                         </td>
 
                         {/* Actions */}
-                        <td style={{ padding: '16px 20px', verticalAlign: 'middle', textAlign: 'right' }}>
-                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, justifyContent: 'flex-end' }}>
+                        <td style={{ padding: isMobile ? '12px 14px' : '14px 18px', verticalAlign: 'middle', textAlign: 'right', whiteSpace: 'nowrap' }}>
+                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, justifyContent: 'flex-end' }}>
                             <button
                               onClick={() => handleOpenMemberModal(member)}
                               style={{
                                 background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)',
-                                color: '#FFFFFF', height: 32, padding: '0 12px', borderRadius: 8, fontSize: 12,
-                                fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 5,
+                                color: '#FFFFFF', height: isMobile ? 28 : 30, padding: isMobile ? '0 9px' : '0 12px', borderRadius: 6, fontSize: isMobile ? 11 : 12,
+                                fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4,
                                 transition: 'all 0.15s', whiteSpace: 'nowrap'
                               }}
                               onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.12)')}
                               onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
                             >
-                              <Eye size={13} style={{ flexShrink: 0 }} /> View Profile
+                              <Eye size={12} style={{ flexShrink: 0 }} /> View Profile
                             </button>
 
                             {member.is_suspended ? (
@@ -5018,28 +5009,28 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                                 onClick={() => handleReactivateMember(member)}
                                 style={{
                                   background: 'rgba(24, 252, 92, 0.12)', border: `1px solid ${RF_LEAF_GREEN}66`,
-                                  color: RF_MINT_ACCENT, height: 32, padding: '0 11px', borderRadius: 8, fontSize: 12,
-                                  fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 5,
+                                  color: RF_MINT_ACCENT, height: isMobile ? 28 : 30, padding: isMobile ? '0 9px' : '0 11px', borderRadius: 6, fontSize: isMobile ? 11 : 12,
+                                  fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4,
                                   transition: 'all 0.15s', whiteSpace: 'nowrap'
                                 }}
                                 onMouseEnter={e => (e.currentTarget.style.background = 'rgba(24, 252, 92, 0.22)')}
                                 onMouseLeave={e => (e.currentTarget.style.background = 'rgba(24, 252, 92, 0.12)')}
                               >
-                                <CheckCircle2 size={13} style={{ flexShrink: 0 }} /> Reactivate
+                                <CheckCircle2 size={12} style={{ flexShrink: 0 }} /> Reactivate
                               </button>
                             ) : (
                               <button
                                 onClick={() => handleOpenSuspendModal(member)}
                                 style={{
                                   background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.25)',
-                                  color: '#FCA5A5', height: 32, padding: '0 11px', borderRadius: 8, fontSize: 12,
-                                  fontWeight: 500, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4,
+                                  color: '#FCA5A5', height: isMobile ? 28 : 30, padding: isMobile ? '0 9px' : '0 11px', borderRadius: 6, fontSize: isMobile ? 11 : 12,
+                                  fontWeight: 500, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 3,
                                   transition: 'all 0.15s', whiteSpace: 'nowrap'
                                 }}
                                 onMouseEnter={e => (e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)')}
                                 onMouseLeave={e => (e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)')}
                               >
-                                <Ban size={12} style={{ flexShrink: 0 }} /> Suspend
+                                <Ban size={11} style={{ flexShrink: 0 }} /> Suspend
                               </button>
                             )}
                           </div>
@@ -5192,70 +5183,59 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           {/* Workers KPI Metrics */}
           <div style={{
             display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: isMobile ? 10 : 16, marginBottom: isMobile ? 20 : 32
+            gap: isMobile ? 10 : 14, marginBottom: isMobile ? 18 : 26
           }}>
-            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: isMobile ? '14px 16px' : '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Total Review Staff</span>
-              <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: '#FFFFFF', marginTop: 4 }}>{staffList.length}</div>
-              <span style={{ fontSize: isMobile ? 11 : 12, color: RF_MINT_ACCENT }}>Provisioned accounts</span>
+            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: isMobile ? 12 : 16, padding: isMobile ? '12px 14px' : '16px 20px', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Total Review Staff</span>
+              <div style={{ fontSize: isMobile ? 22 : 28, fontWeight: 700, color: '#FFFFFF', marginTop: 3 }}>{staffList.length}</div>
+              <span style={{ fontSize: isMobile ? 10.5 : 11.5, color: RF_MINT_ACCENT }}>Provisioned accounts</span>
             </div>
 
-            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: isMobile ? '14px 16px' : '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Active Reviewers</span>
-              <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: RF_MINT_ACCENT, marginTop: 4 }}>
+            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: isMobile ? 12 : 16, padding: isMobile ? '12px 14px' : '16px 20px', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Active Reviewers</span>
+              <div style={{ fontSize: isMobile ? 22 : 28, fontWeight: 700, color: RF_MINT_ACCENT, marginTop: 3 }}>
                 {staffList.filter(s => s.status === 'ACTIVE').length}
               </div>
-              <span style={{ fontSize: isMobile ? 11 : 12, color: 'rgba(255,255,255,0.5)' }}>Authorized to verify</span>
+              <span style={{ fontSize: isMobile ? 10.5 : 11.5, color: 'rgba(255,255,255,0.5)' }}>Authorized to verify</span>
             </div>
 
-            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: isMobile ? '14px 16px' : '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Suspended Staff</span>
-              <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: staffList.filter(s => s.status === 'SUSPENDED').length > 0 ? '#EF4444' : 'rgba(255,255,255,0.4)', marginTop: 4 }}>
+            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: isMobile ? 12 : 16, padding: isMobile ? '12px 14px' : '16px 20px', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Suspended Staff</span>
+              <div style={{ fontSize: isMobile ? 22 : 28, fontWeight: 700, color: staffList.filter(s => s.status === 'SUSPENDED').length > 0 ? '#EF4444' : 'rgba(255,255,255,0.4)', marginTop: 3 }}>
                 {staffList.filter(s => s.status === 'SUSPENDED').length}
               </div>
-              <span style={{ fontSize: isMobile ? 11 : 12, color: 'rgba(255,255,255,0.5)' }}>Revoked credentials</span>
+              <span style={{ fontSize: isMobile ? 10.5 : 11.5, color: 'rgba(255,255,255,0.5)' }}>Revoked credentials</span>
             </div>
 
-            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: isMobile ? '14px 16px' : '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Super Admins</span>
-              <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: RF_GOLD_YELLOW, marginTop: 4 }}>
+            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: isMobile ? 12 : 16, padding: isMobile ? '12px 14px' : '16px 20px', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Super Admins</span>
+              <div style={{ fontSize: isMobile ? 22 : 28, fontWeight: 700, color: RF_GOLD_YELLOW, marginTop: 3 }}>
                 {staffList.filter(s => s.role === 'SUPER_ADMIN').length}
               </div>
-              <span style={{ fontSize: isMobile ? 11 : 12, color: 'rgba(255,255,255,0.5)' }}>Full root authority</span>
+              <span style={{ fontSize: isMobile ? 10.5 : 11.5, color: 'rgba(255,255,255,0.5)' }}>Full root authority</span>
             </div>
           </div>
 
           {/* Workers Filter & Search Bar */}
           <div style={{
-            background: 'rgba(255,255,255,0.02)', borderRadius: 18, padding: isMobile ? '14px 16px' : '18px 22px',
-            border: '1px solid rgba(255,255,255,0.08)', marginBottom: 24,
-            display: 'flex', flexWrap: 'wrap', gap: 14, alignItems: 'center', justifyContent: 'space-between'
+            background: 'rgba(255,255,255,0.02)', borderRadius: isMobile ? 12 : 16, padding: isMobile ? '12px' : '16px 20px',
+            border: '1px solid rgba(255,255,255,0.08)', marginBottom: isMobile ? 16 : 24,
+            display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center', justifyContent: 'space-between'
           }}>
             {/* Search */}
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: 10, flex: isMobile ? '1 1 100%' : '1 1 300px',
-              background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.12)',
-              borderRadius: 100, padding: '10px 18px'
-            }}>
-              <Search size={16} color="rgba(255,255,255,0.4)" style={{ flexShrink: 0 }} />
+            <div style={{ position: 'relative', flex: isMobile ? '1 1 100%' : '1 1 280px', maxWidth: isMobile ? '100%' : 420 }}>
+              <Search size={15} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)' }} />
               <input
                 type="text"
                 placeholder="Search worker by name, email, or division..."
                 value={staffSearchTerm}
                 onChange={e => setStaffSearchTerm(e.target.value)}
                 style={{
-                  background: 'none', border: 'none', color: '#FFFFFF', fontSize: 13,
-                  width: '100%', outline: 'none'
+                  width: '100%', padding: isMobile ? '8px 14px 8px 36px' : '9px 16px 9px 40px', borderRadius: 100,
+                  background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)',
+                  color: '#FFFFFF', fontSize: isMobile ? 12 : 12.5, outline: 'none'
                 }}
               />
-              {staffSearchTerm && (
-                <button
-                  onClick={() => setStaffSearchTerm('')}
-                  style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', fontSize: 12 }}
-                >
-                  ✕
-                </button>
-              )}
             </div>
 
             {/* Role Filter */}
@@ -5264,9 +5244,9 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 value={staffRoleFilter}
                 onChange={e => setStaffRoleFilter(e.target.value)}
                 style={{
-                  background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.15)',
-                  color: '#FFFFFF', padding: '10px 42px 10px 16px', borderRadius: 100, fontSize: 13, outline: 'none',
-                  flex: isMobile ? '1 1 100%' : 'initial', cursor: 'pointer'
+                  background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.12)',
+                  color: '#FFFFFF', padding: isMobile ? '6px 32px 6px 12px' : '8px 36px 8px 14px', borderRadius: 100, fontSize: isMobile ? 11.5 : 12, outline: 'none',
+                  flex: isMobile ? 1 : 'none', cursor: 'pointer'
                 }}
               >
                 <option value="ALL">All Roles</option>
@@ -5280,7 +5260,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
           {/* Workers Table */}
           <div style={{
-            background: 'rgba(255,255,255,0.02)', borderRadius: 20, border: '1px solid rgba(255,255,255,0.08)',
+            background: 'rgba(255,255,255,0.02)', borderRadius: isMobile ? 12 : 16, border: '1px solid rgba(255,255,255,0.08)',
             overflow: 'hidden'
           }}>
             <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
@@ -5483,10 +5463,10 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           {certFeedbackMsg && (
             <div style={{
               background: 'rgba(24, 252, 92, 0.12)', border: `1px solid ${RF_LEAF_GREEN}66`,
-              padding: '12px 18px', borderRadius: 12, marginBottom: 20, display: 'flex',
-              alignItems: 'center', gap: 10, color: '#FFFFFF', fontSize: 13.5
+              padding: '10px 16px', borderRadius: 10, marginBottom: 16, display: 'flex',
+              alignItems: 'center', gap: 8, color: '#FFFFFF', fontSize: 13
             }}>
-              <CheckCircle2 size={18} color={RF_MINT_ACCENT} />
+              <CheckCircle2 size={16} color={RF_MINT_ACCENT} />
               <span>{certFeedbackMsg}</span>
             </div>
           )}
@@ -5499,7 +5479,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '0 0 6px', flexWrap: 'wrap' }}>
                 <h2 style={{ fontSize: isMobile ? 20 : 24, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
-                  Pioneer Certificates &amp; Level Accreditations
+                  {isMobile ? 'Certificates' : 'Pioneer Certificates & Level Accreditations'}
                 </h2>
                 <span style={{
                   fontSize: 10.5, fontWeight: 700, background: 'rgba(255, 209, 102, 0.12)',
@@ -5507,7 +5487,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                   padding: '3px 10px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 4,
                   textTransform: 'uppercase'
                 }}>
-                  <Award size={11} /> {certificatesList.length} Accreditations Minted
+                  <Award size={11} /> {certificatesList.length} Minted
                 </span>
               </div>
               <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', margin: 0, maxWidth: 780, lineHeight: 1.5 }}>
@@ -5515,20 +5495,20 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               </p>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, width: isMobile ? '100%' : 'auto' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: isMobile ? '100%' : 'auto' }}>
               <button
                 onClick={() => handleOpenIssueCertModal()}
                 style={{
                   background: RF_LEAF_GREEN, color: RF_DEEP_GREEN, border: 'none',
-                  padding: isMobile ? '10px 16px' : '10px 20px', borderRadius: 100, fontSize: 13, fontWeight: 700,
-                  cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
-                  boxShadow: `0 4px 14px ${RF_LEAF_GREEN}44`, transition: 'all 0.2s',
+                  padding: isMobile ? '7px 12px' : '8px 18px', borderRadius: 100, fontSize: isMobile ? 11.5 : 12.5, fontWeight: 700,
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5,
+                  boxShadow: `0 3px 12px ${RF_LEAF_GREEN}33`, transition: 'all 0.2s',
                   flex: isMobile ? 1 : 'initial', justifyContent: 'center'
                 }}
                 onMouseEnter={e => (e.currentTarget.style.background = RF_MINT_ACCENT)}
                 onMouseLeave={e => (e.currentTarget.style.background = RF_LEAF_GREEN)}
               >
-                <Award size={15} /> Issue Certificate
+                <Award size={13} /> Issue Certificate
               </button>
 
               <button
@@ -5536,11 +5516,11 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 disabled={loading}
                 style={{
                   background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.18)',
-                  color: '#FFFFFF', padding: isMobile ? '10px 14px' : '10px 18px', borderRadius: 100, fontSize: 13,
-                  fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6
+                  color: '#FFFFFF', padding: isMobile ? '7px 12px' : '8px 16px', borderRadius: 100, fontSize: isMobile ? 11.5 : 12.5,
+                  fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5
                 }}
               >
-                <RefreshCw size={14} className={loading ? 'rp-spin' : ''} /> {loading ? 'Syncing...' : 'Refresh'}
+                <RefreshCw size={13} className={loading ? 'rp-spin' : ''} /> {loading ? 'Syncing...' : 'Refresh'}
               </button>
             </div>
           </div>
@@ -5548,32 +5528,32 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           {/* Certificate KPI Metrics */}
           <div style={{
             display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: isMobile ? 10 : 16, marginBottom: isMobile ? 20 : 32
+            gap: isMobile ? 10 : 14, marginBottom: isMobile ? 18 : 26
           }}>
-            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: isMobile ? '14px 16px' : '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Total Certificates</span>
-              <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: '#FFFFFF', marginTop: 4 }}>{certificateStats.total}</div>
-              <span style={{ fontSize: isMobile ? 11 : 12, color: 'rgba(255,255,255,0.5)' }}>All minted credentials</span>
+            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: isMobile ? 12 : 16, padding: isMobile ? '12px 14px' : '16px 20px', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Total Certificates</span>
+              <div style={{ fontSize: isMobile ? 22 : 28, fontWeight: 700, color: '#FFFFFF', marginTop: 3 }}>{certificateStats.total}</div>
+              <span style={{ fontSize: isMobile ? 10.5 : 11.5, color: 'rgba(255,255,255,0.5)' }}>All minted credentials</span>
             </div>
 
-            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: isMobile ? '14px 16px' : '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Level 1 Passes</span>
-              <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: RF_MINT_ACCENT, marginTop: 4 }}>{certificateStats.level1}</div>
-              <span style={{ fontSize: isMobile ? 11 : 12, color: 'rgba(255,255,255,0.5)' }}>Orientation &amp; onboarding</span>
+            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: isMobile ? 12 : 16, padding: isMobile ? '12px 14px' : '16px 20px', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Level 1 Passes</span>
+              <div style={{ fontSize: isMobile ? 22 : 28, fontWeight: 700, color: RF_MINT_ACCENT, marginTop: 3 }}>{certificateStats.level1}</div>
+              <span style={{ fontSize: isMobile ? 10.5 : 11.5, color: 'rgba(255,255,255,0.5)' }}>Orientation &amp; onboarding</span>
             </div>
 
-            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: isMobile ? '14px 16px' : '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Advanced Tier Awards</span>
-              <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: RF_GOLD_YELLOW, marginTop: 4 }}>{certificateStats.advanced}</div>
-              <span style={{ fontSize: isMobile ? 11 : 12, color: 'rgba(255,255,255,0.5)' }}>Level 2 through Level 5</span>
+            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: isMobile ? 12 : 16, padding: isMobile ? '12px 14px' : '16px 20px', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Advanced Tier Awards</span>
+              <div style={{ fontSize: isMobile ? 22 : 28, fontWeight: 700, color: RF_GOLD_YELLOW, marginTop: 3 }}>{certificateStats.advanced}</div>
+              <span style={{ fontSize: isMobile ? 10.5 : 11.5, color: 'rgba(255,255,255,0.5)' }}>Level 2 through 5</span>
             </div>
 
-            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: isMobile ? '14px 16px' : '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Active Verifiable</span>
-              <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: '#38BDF8', marginTop: 4 }}>
+            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: isMobile ? 12 : 16, padding: isMobile ? '12px 14px' : '16px 20px', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Active Verifiable</span>
+              <div style={{ fontSize: isMobile ? 22 : 28, fontWeight: 700, color: '#38BDF8', marginTop: 3 }}>
                 {certificateStats.total - certificateStats.revoked}
               </div>
-              <span style={{ fontSize: isMobile ? 11 : 12, color: 'rgba(255,255,255,0.5)' }}>Tamper-evident status</span>
+              <span style={{ fontSize: isMobile ? 10.5 : 11.5, color: 'rgba(255,255,255,0.5)' }}>Tamper-evident status</span>
             </div>
           </div>
 
@@ -5581,56 +5561,56 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           <div style={{
             background: 'rgba(255, 255, 255, 0.025)',
             border: '1px solid rgba(24, 252, 92, 0.16)',
-            borderRadius: isMobile ? 14 : 18,
-            padding: isMobile ? '16px' : '20px 24px',
-            marginBottom: isMobile ? 18 : 28,
+            borderRadius: isMobile ? 12 : 16,
+            padding: isMobile ? '12px 14px' : '16px 20px',
+            marginBottom: isMobile ? 16 : 24,
             overflow: 'hidden',
             width: '100%',
             maxWidth: '100%',
             boxSizing: 'border-box'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 10, minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14, flexWrap: 'wrap', gap: 10, minWidth: 0 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
                 <div style={{
-                  width: 28, height: 28, borderRadius: 8,
+                  width: 26, height: 26, borderRadius: 6,
                   background: 'rgba(24, 252, 92, 0.12)', color: RF_MINT_ACCENT,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   flexShrink: 0
                 }}>
-                  <Award size={15} />
+                  <Award size={14} />
                 </div>
-                <span style={{ fontSize: isMobile ? 13.5 : 15, fontWeight: 700, color: '#FFFFFF' }}>
-                  Sovereign Credential Minting &amp; Integrity Telemetry
+                <span style={{ fontSize: isMobile ? 13 : 14.5, fontWeight: 700, color: '#FFFFFF' }}>
+                  {isMobile ? 'Integrity Telemetry' : 'Sovereign Credential Minting & Integrity Telemetry'}
                 </span>
               </div>
               <span style={{
-                fontSize: 11, color: RF_MINT_ACCENT, background: 'rgba(24, 252, 92, 0.1)',
-                padding: '3px 10px', borderRadius: 100, fontWeight: 600, border: '1px solid rgba(24, 252, 92, 0.2)',
+                fontSize: 10.5, color: RF_MINT_ACCENT, background: 'rgba(24, 252, 92, 0.1)',
+                padding: '2.5px 9px', borderRadius: 100, fontWeight: 600, border: '1px solid rgba(24, 252, 92, 0.2)',
                 flexShrink: 0
               }}>
-                Integrity Rate: {analytics.activeCertRate}% Valid
+                Integrity: {analytics.activeCertRate}% Valid
               </span>
             </div>
 
             <div style={{
               display: 'grid',
               gridTemplateColumns: isMobile ? 'minmax(0, 1fr)' : 'repeat(3, minmax(0, 1fr))',
-              gap: isMobile ? 14 : 20
+              gap: isMobile ? 10 : 14
             }}>
               {/* Level 1 vs Advanced Tier Minting */}
               <div style={{
                 background: 'rgba(255, 255, 255, 0.02)',
-                borderRadius: 12,
-                padding: '14px 16px',
+                borderRadius: 10,
+                padding: isMobile ? '10px 12px' : '12px 14px',
                 border: '1px solid rgba(255, 255, 255, 0.06)'
               }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Level 1 Ratio</span>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: RF_MINT_ACCENT }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                  <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Level 1 Ratio</span>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: RF_MINT_ACCENT }}>
                     {analytics.totalCerts > 0 ? Math.round((analytics.level1Certs / analytics.totalCerts) * 100) : 0}%
                   </span>
                 </div>
-                <div style={{ width: '100%', height: 8, borderRadius: 100, background: 'rgba(255,255,255,0.08)', overflow: 'hidden' }}>
+                <div style={{ width: '100%', height: 6, borderRadius: 100, background: 'rgba(255,255,255,0.08)', overflow: 'hidden' }}>
                   <div style={{
                     width: `${analytics.totalCerts > 0 ? Math.round((analytics.level1Certs / analytics.totalCerts) * 100) : 0}%`,
                     height: '100%',
@@ -5638,24 +5618,24 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                     background: `linear-gradient(90deg, ${RF_LEAF_GREEN}, ${RF_MINT_ACCENT})`
                   }} />
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, fontSize: 11, color: 'rgba(255,255,255,0.45)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6, fontSize: 10.5, color: 'rgba(255,255,255,0.45)' }}>
                   <span>{analytics.level1Certs} Level 1</span>
-                  <span>{analytics.advancedCerts} Advanced Tiers</span>
+                  <span>{analytics.advancedCerts} Advanced</span>
                 </div>
               </div>
 
               {/* Cryptographic Validity Status */}
               <div style={{
                 background: 'rgba(255, 255, 255, 0.02)',
-                borderRadius: 12,
-                padding: isMobile ? '12px 14px' : '14px 16px',
+                borderRadius: 10,
+                padding: isMobile ? '10px 12px' : '12px 14px',
                 border: '1px solid rgba(255, 255, 255, 0.06)',
                 minWidth: 0,
                 width: '100%',
                 maxWidth: '100%',
                 boxSizing: 'border-box'
               }}>
-                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 10 }}>
+                <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 8 }}>
                   Cryptographic Authenticity
                 </span>
                 <div style={{
@@ -5667,19 +5647,19 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                   maxWidth: '100%',
                   boxSizing: 'border-box'
                 }}>
-                  <div style={{ minWidth: 0, textAlign: 'left', paddingRight: 12 }}>
-                    <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 800, color: RF_MINT_ACCENT }}>{analytics.activeCerts}</div>
-                    <span style={{ fontSize: isMobile ? 10 : 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>Active Sovereign</span>
+                  <div style={{ minWidth: 0, textAlign: 'left', paddingRight: 8 }}>
+                    <div style={{ fontSize: isMobile ? 15 : 17, fontWeight: 800, color: RF_MINT_ACCENT }}>{analytics.activeCerts}</div>
+                    <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>Active</span>
                   </div>
-                  <div style={{ borderLeft: '1px solid rgba(255,255,255,0.1)', borderRight: '1px solid rgba(255,255,255,0.1)', padding: '0 12px', minWidth: 0, textAlign: 'left' }}>
-                    <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 800, color: analytics.revokedCerts > 0 ? '#EF4444' : 'rgba(255,255,255,0.4)' }}>
+                  <div style={{ borderLeft: '1px solid rgba(255,255,255,0.1)', borderRight: '1px solid rgba(255,255,255,0.1)', padding: '0 8px', minWidth: 0, textAlign: 'left' }}>
+                    <div style={{ fontSize: isMobile ? 15 : 17, fontWeight: 800, color: analytics.revokedCerts > 0 ? '#EF4444' : 'rgba(255,255,255,0.4)' }}>
                       {analytics.revokedCerts}
                     </div>
-                    <span style={{ fontSize: isMobile ? 10 : 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>Revoked</span>
+                    <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>Revoked</span>
                   </div>
-                  <div style={{ minWidth: 0, textAlign: 'left', paddingLeft: 12 }}>
-                    <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 800, color: '#38BDF8' }}>{analytics.totalCerts}</div>
-                    <span style={{ fontSize: isMobile ? 10 : 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>Total Minted</span>
+                  <div style={{ minWidth: 0, textAlign: 'left', paddingLeft: 8 }}>
+                    <div style={{ fontSize: isMobile ? 15 : 17, fontWeight: 800, color: '#38BDF8' }}>{analytics.totalCerts}</div>
+                    <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>Total</span>
                   </div>
                 </div>
               </div>
@@ -5687,18 +5667,18 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               {/* Security Audit Badge */}
               <div style={{
                 background: 'rgba(255, 255, 255, 0.02)',
-                borderRadius: 12,
-                padding: '14px 16px',
+                borderRadius: 10,
+                padding: isMobile ? '10px 12px' : '12px 14px',
                 border: '1px solid rgba(255, 255, 255, 0.06)',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'center'
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                  <Shield size={16} color={RF_MINT_ACCENT} />
-                  <span style={{ fontSize: 12, fontWeight: 700, color: '#FFFFFF' }}>SHA-256 Verifiable Proof</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+                  <Shield size={14} color={RF_MINT_ACCENT} />
+                  <span style={{ fontSize: 11.5, fontWeight: 700, color: '#FFFFFF' }}>SHA-256 Verifiable Proof</span>
                 </div>
-                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', margin: 0, lineHeight: 1.4 }}>
+                <p style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)', margin: 0, lineHeight: 1.4 }}>
                   Every minted certificate carries an immutable public verification URL and cryptographic checksum.
                 </p>
               </div>
@@ -5707,54 +5687,43 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
           {/* Certificate Filter & Search Bar */}
           <div style={{
-            background: 'rgba(255,255,255,0.02)', borderRadius: 18, padding: isMobile ? '14px 16px' : '18px 22px',
-            border: '1px solid rgba(255,255,255,0.08)', marginBottom: 24,
-            display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center', justifyContent: 'space-between'
+            background: 'rgba(255,255,255,0.02)', borderRadius: isMobile ? 12 : 16, padding: isMobile ? '12px' : '16px 20px',
+            border: '1px solid rgba(255,255,255,0.08)', marginBottom: isMobile ? 16 : 24,
+            display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center', justifyContent: 'space-between'
           }}>
             {/* Search */}
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: 10, flex: isMobile ? '1 1 100%' : '1 1 300px',
-              background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.12)',
-              borderRadius: 100, padding: '10px 18px'
-            }}>
-              <Search size={16} color="rgba(255,255,255,0.4)" style={{ flexShrink: 0 }} />
+            <div style={{ position: 'relative', flex: isMobile ? '1 1 100%' : '1 1 280px', maxWidth: isMobile ? '100%' : 420 }}>
+              <Search size={15} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)' }} />
               <input
                 type="text"
                 placeholder="Search by recipient, email, Pioneer ID, serial..."
                 value={certSearchTerm}
                 onChange={e => setCertSearchTerm(e.target.value)}
                 style={{
-                  background: 'none', border: 'none', color: '#FFFFFF', fontSize: 13,
-                  width: '100%', outline: 'none'
+                  width: '100%', padding: isMobile ? '8px 14px 8px 36px' : '9px 16px 9px 40px', borderRadius: 100,
+                  background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)',
+                  color: '#FFFFFF', fontSize: isMobile ? 12 : 12.5, outline: 'none'
                 }}
               />
-              {certSearchTerm && (
-                <button
-                  onClick={() => setCertSearchTerm('')}
-                  style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', fontSize: 12 }}
-                >
-                  ✕
-                </button>
-              )}
             </div>
 
-            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center', width: isMobile ? '100%' : 'auto' }}>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', width: isMobile ? '100%' : 'auto' }}>
               {/* Level Filter */}
               <select
                 value={certLevelFilter}
                 onChange={e => setCertLevelFilter(e.target.value)}
                 style={{
-                  background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.15)',
-                  color: '#FFFFFF', padding: '10px 42px 10px 16px', borderRadius: 100, fontSize: 13, outline: 'none',
-                  flex: isMobile ? '1 1 calc(50% - 6px)' : 'initial', cursor: 'pointer'
+                  background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.12)',
+                  color: '#FFFFFF', padding: isMobile ? '6px 32px 6px 12px' : '8px 36px 8px 14px', borderRadius: 100, fontSize: isMobile ? 11.5 : 12, outline: 'none',
+                  flex: isMobile ? '1 1 calc(50% - 4px)' : 'initial', cursor: 'pointer'
                 }}
               >
                 <option value="ALL">All Tier Levels</option>
                 <option value="LEVEL_1">Level 1: Pioneer Associate</option>
-                <option value="LEVEL_2">Level 2: Refeir Pioneer (15+ jobs)</option>
-                <option value="LEVEL_3">Level 3: Refeir Builder (40+ jobs)</option>
-                <option value="LEVEL_4">Level 4: Refeir Lead (75+ jobs)</option>
-                <option value="LEVEL_5">Level 5: Refeir Core Team (125+ jobs)</option>
+                <option value="LEVEL_2">Level 2: Refeir Pioneer</option>
+                <option value="LEVEL_3">Level 3: Refeir Builder</option>
+                <option value="LEVEL_4">Level 4: Refeir Lead</option>
+                <option value="LEVEL_5">Level 5: Refeir Core Team</option>
               </select>
 
               {/* Status Filter */}
@@ -5762,9 +5731,9 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 value={certStatusFilter}
                 onChange={e => setCertStatusFilter(e.target.value as any)}
                 style={{
-                  background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.15)',
-                  color: '#FFFFFF', padding: '10px 42px 10px 16px', borderRadius: 100, fontSize: 13, outline: 'none',
-                  flex: isMobile ? '1 1 calc(50% - 6px)' : 'initial', cursor: 'pointer'
+                  background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.12)',
+                  color: '#FFFFFF', padding: isMobile ? '6px 32px 6px 12px' : '8px 36px 8px 14px', borderRadius: 100, fontSize: isMobile ? 11.5 : 12, outline: 'none',
+                  flex: isMobile ? '1 1 calc(50% - 4px)' : 'initial', cursor: 'pointer'
                 }}
               >
                 <option value="ALL">All Statuses</option>
@@ -5776,27 +5745,27 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
           {/* Certificates Table */}
           <div style={{
-            background: 'rgba(255,255,255,0.02)', borderRadius: 20, border: '1px solid rgba(255,255,255,0.08)',
+            background: 'rgba(255,255,255,0.02)', borderRadius: isMobile ? 12 : 16, border: '1px solid rgba(255,255,255,0.08)',
             overflow: 'hidden'
           }}>
             <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-              <table style={{ width: '100%', minWidth: 980, borderCollapse: 'collapse', textAlign: 'left', fontSize: 13 }}>
+              <table style={{ width: '100%', minWidth: 920, borderCollapse: 'collapse', textAlign: 'left' }}>
               <thead>
                 <tr style={{ background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                  <th style={{ padding: '14px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Certificate Serial &amp; Hash</th>
-                  <th style={{ padding: '14px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Recipient Pioneer</th>
-                  <th style={{ padding: '14px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Certified Level</th>
-                  <th style={{ padding: '14px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Squad</th>
-                  <th style={{ padding: '14px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Verified Tasks</th>
-                  <th style={{ padding: '14px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Issued At</th>
-                  <th style={{ padding: '14px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Status</th>
-                  <th style={{ padding: '14px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: 'right' }}>Actions</th>
+                  <th style={{ padding: isMobile ? '10px 14px' : '13px 18px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap' }}>Certificate Serial &amp; Hash</th>
+                  <th style={{ padding: isMobile ? '10px 14px' : '13px 18px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap' }}>Recipient Pioneer</th>
+                  <th style={{ padding: isMobile ? '10px 14px' : '13px 18px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap' }}>Certified Level</th>
+                  <th style={{ padding: isMobile ? '10px 14px' : '13px 18px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap' }}>Squad</th>
+                  <th style={{ padding: isMobile ? '10px 14px' : '13px 18px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap' }}>Verified Tasks</th>
+                  <th style={{ padding: isMobile ? '10px 14px' : '13px 18px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap' }}>Issued At</th>
+                  <th style={{ padding: isMobile ? '10px 14px' : '13px 18px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap' }}>Status</th>
+                  <th style={{ padding: isMobile ? '10px 14px' : '13px 18px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em', textAlign: 'right', whiteSpace: 'nowrap' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredCertificates.length === 0 ? (
                   <tr>
-                    <td colSpan={8} style={{ padding: '48px 24px', textAlign: 'center', color: 'rgba(255,255,255,0.5)' }}>
+                    <td colSpan={8} style={{ padding: '40px 20px', textAlign: 'center', color: 'rgba(255,255,255,0.5)', fontSize: 12.5 }}>
                       No certificates found matching your search. Click "+ Issue Certificate" to mint one.
                     </td>
                   </tr>
@@ -5817,25 +5786,25 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                         onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                       >
                         {/* Certificate Serial */}
-                        <td style={{ padding: '16px 20px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
-                          <div style={{ fontFamily: 'monospace', fontSize: 13, fontWeight: 700, color: RF_GOLD_YELLOW, letterSpacing: '0.02em' }}>
+                        <td style={{ padding: isMobile ? '12px 14px' : '14px 18px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
+                          <div style={{ fontFamily: 'monospace', fontSize: isMobile ? 12 : 12.5, fontWeight: 700, color: RF_GOLD_YELLOW, letterSpacing: '0.02em' }}>
                             {cert.id}
                           </div>
-                          <div style={{ fontSize: 10.5, fontFamily: 'monospace', color: 'rgba(255,255,255,0.4)', marginTop: 3 }}>
-                            {cert.verification_hash.slice(0, 16)}...
+                          <div style={{ fontSize: 10, fontFamily: 'monospace', color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>
+                            {cert.verification_hash.slice(0, 14)}...
                           </div>
                         </td>
 
                         {/* Recipient Pioneer */}
-                        <td style={{ padding: '16px 20px', verticalAlign: 'middle', maxWidth: 240 }}>
-                          <div style={{ fontSize: 13.5, fontWeight: 700, color: '#FFFFFF', lineHeight: 1.3 }}>
+                        <td style={{ padding: isMobile ? '12px 14px' : '14px 18px', verticalAlign: 'middle', maxWidth: 220 }}>
+                          <div style={{ fontSize: isMobile ? 12.5 : 13.5, fontWeight: 700, color: '#FFFFFF', lineHeight: 1.3 }}>
                             {cert.recipient_name}
                           </div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 3 }}>
                             <span style={{
-                              fontFamily: 'monospace', fontSize: 11, fontWeight: 700, color: RF_MINT_ACCENT,
+                              fontFamily: 'monospace', fontSize: 10.5, fontWeight: 700, color: RF_MINT_ACCENT,
                               background: 'rgba(24, 252, 92, 0.1)', border: `1px solid ${RF_LEAF_GREEN}44`,
-                              padding: '1px 6px', borderRadius: 4, whiteSpace: 'nowrap', flexShrink: 0
+                              padding: '1px 5px', borderRadius: 4, whiteSpace: 'nowrap', flexShrink: 0
                             }}>
                               {cert.pioneer_id}
                             </span>
@@ -5846,90 +5815,90 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                         </td>
 
                         {/* Certified Level */}
-                        <td style={{ padding: '16px 20px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
+                        <td style={{ padding: isMobile ? '12px 14px' : '14px 18px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
                           <div style={{
-                            display: 'inline-flex', alignItems: 'center', gap: 6,
+                            display: 'inline-flex', alignItems: 'center', gap: 4,
                             background: 'rgba(255, 209, 102, 0.12)', color: RF_GOLD_YELLOW,
-                            border: `1px solid ${RF_GOLD_YELLOW}44`, padding: '4px 10px',
-                            borderRadius: 8, fontSize: 12, fontWeight: 700
+                            border: `1px solid ${RF_GOLD_YELLOW}44`, padding: '2.5px 8px',
+                            borderRadius: 6, fontSize: 11, fontWeight: 700
                           }}>
-                            <Award size={13} style={{ flexShrink: 0 }} />
+                            <Award size={11} style={{ flexShrink: 0 }} />
                             <span>{cert.level_title}</span>
                           </div>
                         </td>
 
                         {/* Squad Division */}
-                        <td style={{ padding: '16px 20px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
+                        <td style={{ padding: isMobile ? '12px 14px' : '14px 18px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
                           <span style={{
-                            fontSize: 11, fontWeight: 700, color: squadInfo.color,
+                            fontSize: 10.5, fontWeight: 700, color: squadInfo.color,
                             background: `${squadInfo.color}18`, border: `1px solid ${squadInfo.color}44`,
-                            padding: '3px 8px', borderRadius: 6, letterSpacing: '0.03em'
+                            padding: '2px 7px', borderRadius: 5, letterSpacing: '0.02em'
                           }}>
                             {cert.division}
                           </span>
                         </td>
 
                         {/* Verified Deliverables */}
-                        <td style={{ padding: '16px 20px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
-                          <div style={{ fontSize: 13, fontWeight: 600, color: '#FFFFFF' }}>
+                        <td style={{ padding: isMobile ? '12px 14px' : '14px 18px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
+                          <div style={{ fontSize: isMobile ? 12 : 12.5, fontWeight: 600, color: '#FFFFFF' }}>
                             {cert.verified_jobs_count > 0 ? `${cert.verified_jobs_count} verified jobs` : 'Orientation Pass'}
                           </div>
-                          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', marginTop: 2 }}>
+                          <div style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.45)', marginTop: 1 }}>
                             Approved deliverable quota
                           </div>
                         </td>
 
                         {/* Issued Date & Authority */}
-                        <td style={{ padding: '16px 20px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
-                          <div style={{ fontSize: 12.5, fontWeight: 500, color: '#FFFFFF' }}>
+                        <td style={{ padding: isMobile ? '12px 14px' : '14px 18px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
+                          <div style={{ fontSize: 12, fontWeight: 500, color: '#FFFFFF' }}>
                             {new Date(cert.issued_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                           </div>
-                          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', marginTop: 2, maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={cert.issued_by}>
+                          <div style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.45)', marginTop: 1, maxWidth: 140, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={cert.issued_by}>
                             {cert.issued_by}
                           </div>
                         </td>
 
                         {/* Status */}
-                        <td style={{ padding: '16px 20px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
+                        <td style={{ padding: isMobile ? '12px 14px' : '14px 18px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
                           {cert.status === 'ISSUED' ? (
                             <span style={{
-                              padding: '4px 9px', borderRadius: 8, fontSize: 11.5, fontWeight: 700,
+                              padding: '2.5px 7px', borderRadius: 100, fontSize: 10, fontWeight: 700,
                               background: 'rgba(24, 252, 92, 0.12)', color: RF_MINT_ACCENT,
                               border: `1px solid ${RF_LEAF_GREEN}55`,
-                              display: 'inline-flex', alignItems: 'center', gap: 5
+                              display: 'inline-flex', alignItems: 'center', gap: 4, flexShrink: 0, whiteSpace: 'nowrap'
                             }}>
-                              <span style={{ width: 6, height: 6, borderRadius: '50%', background: RF_MINT_ACCENT, display: 'inline-block' }} />
+                              <span style={{ width: 5, height: 5, borderRadius: '50%', background: RF_MINT_ACCENT, display: 'inline-block' }} />
                               ACTIVE
                             </span>
                           ) : (
                             <span style={{
-                              padding: '4px 9px', borderRadius: 8, fontSize: 11.5, fontWeight: 700,
+                              padding: '2.5px 7px', borderRadius: 100, fontSize: 10, fontWeight: 700,
                               background: 'rgba(239, 68, 68, 0.12)', color: '#FCA5A5',
                               border: '1px solid rgba(239, 68, 68, 0.35)',
-                              display: 'inline-flex', alignItems: 'center', gap: 5
+                              display: 'inline-flex', alignItems: 'center', gap: 4, flexShrink: 0, whiteSpace: 'nowrap'
                             }}>
-                              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#EF4444', display: 'inline-block' }} />
+                              <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#EF4444', display: 'inline-block' }} />
                               REVOKED
                             </span>
                           )}
                         </td>
 
                         {/* Actions */}
-                        <td style={{ padding: '16px 20px', verticalAlign: 'middle', textAlign: 'right' }}>
-                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, justifyContent: 'flex-end' }}>
+                        <td style={{ padding: isMobile ? '12px 14px' : '14px 18px', verticalAlign: 'middle', textAlign: 'right', whiteSpace: 'nowrap' }}>
+                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, justifyContent: 'flex-end' }}>
                             <button
                               onClick={() => handleViewCertificate(cert)}
                               style={{
                                 background: 'rgba(255, 209, 102, 0.12)', border: `1px solid ${RF_GOLD_YELLOW}55`,
-                                color: RF_GOLD_YELLOW, height: 32, padding: '0 12px', borderRadius: 8, fontSize: 12,
-                                fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 5,
+                                color: RF_GOLD_YELLOW, height: isMobile ? 28 : 30, padding: isMobile ? '0 9px' : '0 12px', borderRadius: 6, fontSize: isMobile ? 11 : 12,
+                                fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4,
                                 transition: 'all 0.15s', whiteSpace: 'nowrap'
                               }}
                               onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255, 209, 102, 0.22)')}
                               onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255, 209, 102, 0.12)')}
                               title="Inspect & Download Credential"
                             >
-                              <Eye size={13} style={{ flexShrink: 0 }} /> Inspect
+                              <Eye size={12} style={{ flexShrink: 0 }} /> Inspect
                             </button>
 
                             {cert.status === 'ISSUED' && (
@@ -5937,15 +5906,15 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                                 onClick={() => handleRevokeCertificate(cert.id)}
                                 style={{
                                   background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.25)',
-                                  color: '#FCA5A5', height: 32, padding: '0 10px', borderRadius: 8, fontSize: 12,
-                                  fontWeight: 500, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4,
+                                  color: '#FCA5A5', height: isMobile ? 28 : 30, padding: isMobile ? '0 9px' : '0 11px', borderRadius: 6, fontSize: isMobile ? 11 : 12,
+                                  fontWeight: 500, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 3,
                                   transition: 'all 0.15s', whiteSpace: 'nowrap'
                                 }}
                                 onMouseEnter={e => (e.currentTarget.style.background = 'rgba(239, 68, 68, 0.22)')}
                                 onMouseLeave={e => (e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)')}
                                 title="Revoke Accreditation"
                               >
-                                <Ban size={12} style={{ flexShrink: 0 }} /> Revoke
+                                <Ban size={11} style={{ flexShrink: 0 }} /> Revoke
                               </button>
                             )}
                           </div>
@@ -5979,21 +5948,21 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           {/* Header with Title, "+ Announce Daily/Weekly Task" CTA & Refresh */}
           <div style={{
             display: 'flex', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center',
-            marginBottom: isMobile ? 20 : 28, flexWrap: 'wrap', gap: isMobile ? 12 : 16,
+            marginBottom: isMobile ? 16 : 24, flexWrap: 'wrap', gap: isMobile ? 10 : 16,
             overflow: 'hidden', width: '100%', boxSizing: 'border-box'
           }}>
             <div style={{ minWidth: 0, flex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '0 0 6px', flexWrap: 'wrap', minWidth: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '0 0 4px', flexWrap: 'wrap', minWidth: 0 }}>
                 <h2 style={{ fontSize: isMobile ? 18 : 24, fontWeight: 700, color: '#FFFFFF', margin: 0, whiteSpace: isMobile ? 'nowrap' : 'normal', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 }}>
                   {isMobile ? 'Squad Missions' : 'Daily Squad Tasks & Bounties Management'}
                 </h2>
                 <span style={{
-                  fontSize: 10.5, fontWeight: 700, background: 'rgba(24, 252, 92, 0.12)',
+                  fontSize: 10, fontWeight: 700, background: 'rgba(24, 252, 92, 0.12)',
                   color: RF_MINT_ACCENT, border: `1px solid ${RF_MINT_ACCENT}55`,
-                  padding: '3px 10px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 4,
+                  padding: '2.5px 7px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 4,
                   textTransform: 'uppercase', flexShrink: 0, whiteSpace: 'nowrap'
                 }}>
-                  <Radio size={11} /> {squadTaskStats.active} Active
+                  <Radio size={10} /> {squadTaskStats.active} Active
                 </span>
               </div>
               {!isMobile && (
@@ -6003,20 +5972,20 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               )}
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, width: isMobile ? '100%' : 'auto' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: isMobile ? '100%' : 'auto' }}>
               <button
                 onClick={() => setNewTaskModalOpen(true)}
                 style={{
                   background: RF_LEAF_GREEN, color: RF_DEEP_GREEN, border: 'none',
-                  padding: isMobile ? '10px 16px' : '10px 20px', borderRadius: 100, fontSize: 13, fontWeight: 700,
-                  cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
+                  padding: isMobile ? '7px 12px' : '8px 18px', borderRadius: 100, fontSize: isMobile ? 11.5 : 12.5, fontWeight: 700,
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5,
                   boxShadow: `0 4px 14px ${RF_LEAF_GREEN}44`, transition: 'all 0.2s',
                   flex: isMobile ? 1 : 'initial', justifyContent: 'center'
                 }}
                 onMouseEnter={e => (e.currentTarget.style.background = RF_MINT_ACCENT)}
                 onMouseLeave={e => (e.currentTarget.style.background = RF_LEAF_GREEN)}
               >
-                <Radio size={14} /> Announce Task
+                <Radio size={13} /> Announce Task
               </button>
 
               <button
@@ -6024,11 +5993,12 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 disabled={loading}
                 style={{
                   background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.18)',
-                  color: '#FFFFFF', padding: isMobile ? '10px 14px' : '10px 18px', borderRadius: 100, fontSize: 13,
-                  fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6
+                  color: '#FFFFFF', padding: isMobile ? '7px 12px' : '8px 18px', borderRadius: 100, fontSize: isMobile ? 11.5 : 12.5,
+                  fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5,
+                  flexShrink: 0
                 }}
               >
-                <RefreshCw size={14} className={loading ? 'rp-spin' : ''} /> {loading ? 'Syncing...' : 'Refresh'}
+                <RefreshCw size={13} className={loading ? 'rp-spin' : ''} /> {loading ? 'Syncing...' : 'Refresh'}
               </button>
             </div>
           </div>
@@ -6036,32 +6006,32 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           {/* KPI Metrics */}
           <div style={{
             display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: isMobile ? 10 : 16, marginBottom: isMobile ? 20 : 32
+            gap: isMobile ? 10 : 14, marginBottom: isMobile ? 18 : 26
           }}>
-            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: isMobile ? '14px 16px' : '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Active Squad Missions</span>
-              <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: '#FFFFFF', marginTop: 4 }}>{squadTaskStats.active}</div>
-              <span style={{ fontSize: isMobile ? 11 : 12, color: 'rgba(255,255,255,0.5)' }}>Across 6 squads &amp; general</span>
+            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: isMobile ? 12 : 16, padding: isMobile ? '12px 14px' : '16px 20px', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Active Missions</span>
+              <div style={{ fontSize: isMobile ? 22 : 28, fontWeight: 700, color: '#FFFFFF', marginTop: 4 }}>{squadTaskStats.active}</div>
+              <span style={{ fontSize: isMobile ? 10.5 : 11.5, color: 'rgba(255,255,255,0.5)' }}>Across 6 squads &amp; general</span>
             </div>
 
-            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: isMobile ? '14px 16px' : '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Incentivized Bounties</span>
-              <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: RF_MINT_ACCENT, marginTop: 4 }}>{squadTaskStats.bounties}</div>
-              <span style={{ fontSize: isMobile ? 11 : 12, color: 'rgba(255,255,255,0.5)' }}>
+            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: isMobile ? 12 : 16, padding: isMobile ? '12px 14px' : '16px 20px', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Bounties</span>
+              <div style={{ fontSize: isMobile ? 22 : 28, fontWeight: 700, color: RF_MINT_ACCENT, marginTop: 4 }}>{squadTaskStats.bounties}</div>
+              <span style={{ fontSize: isMobile ? 10.5 : 11.5, color: 'rgba(255,255,255,0.5)' }}>
                 {squadTaskStats.airtime} Airtime • {squadTaskStats.data} Data • {squadTaskStats.cash} Cash
               </span>
             </div>
 
-            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: isMobile ? '14px 16px' : '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Daily Tasks Today</span>
-              <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: RF_GOLD_YELLOW, marginTop: 4 }}>{squadTaskStats.daily}</div>
-              <span style={{ fontSize: isMobile ? 11 : 12, color: 'rgba(255,255,255,0.5)' }}>24-hour fast sprints</span>
+            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: isMobile ? 12 : 16, padding: isMobile ? '12px 14px' : '16px 20px', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Daily Tasks</span>
+              <div style={{ fontSize: isMobile ? 22 : 28, fontWeight: 700, color: RF_GOLD_YELLOW, marginTop: 4 }}>{squadTaskStats.daily}</div>
+              <span style={{ fontSize: isMobile ? 10.5 : 11.5, color: 'rgba(255,255,255,0.5)' }}>24-hour fast sprints</span>
             </div>
 
-            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: isMobile ? '14px 16px' : '20px 22px', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Total Announcements</span>
-              <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: '#38BDF8', marginTop: 4 }}>{squadTaskStats.total}</div>
-              <span style={{ fontSize: isMobile ? 11 : 12, color: 'rgba(255,255,255,0.5)' }}>Lifetime missions cataloged</span>
+            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: isMobile ? 12 : 16, padding: isMobile ? '12px 14px' : '16px 20px', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Announcements</span>
+              <div style={{ fontSize: isMobile ? 22 : 28, fontWeight: 700, color: '#38BDF8', marginTop: 4 }}>{squadTaskStats.total}</div>
+              <span style={{ fontSize: isMobile ? 10.5 : 11.5, color: 'rgba(255,255,255,0.5)' }}>Lifetime cataloged</span>
             </div>
           </div>
 
@@ -6069,31 +6039,31 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           <div style={{
             background: 'rgba(255, 255, 255, 0.025)',
             border: '1px solid rgba(24, 252, 92, 0.16)',
-            borderRadius: isMobile ? 14 : 18,
-            padding: isMobile ? '16px' : '20px 24px',
-            marginBottom: isMobile ? 18 : 28,
+            borderRadius: isMobile ? 12 : 16,
+            padding: isMobile ? '12px 14px' : '16px 20px',
+            marginBottom: isMobile ? 18 : 26,
             overflow: 'hidden',
             width: '100%',
             maxWidth: '100%',
             boxSizing: 'border-box'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 10, minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, flexWrap: 'wrap', gap: 8, minWidth: 0 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
                 <div style={{
-                  width: 28, height: 28, borderRadius: 8,
+                  width: 26, height: 26, borderRadius: 6,
                   background: 'rgba(24, 252, 92, 0.12)', color: RF_MINT_ACCENT,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   flexShrink: 0
                 }}>
-                  <Zap size={15} />
+                  <Zap size={14} />
                 </div>
-                <span style={{ fontSize: isMobile ? 13.5 : 15, fontWeight: 700, color: '#FFFFFF' }}>
+                <span style={{ fontSize: isMobile ? 13 : 14.5, fontWeight: 700, color: '#FFFFFF' }}>
                   {isMobile ? 'Bounty Economics' : 'Bounty Pool Valuation & Mission Economics'}
                 </span>
               </div>
               <span style={{
-                fontSize: 11, color: RF_MINT_ACCENT, background: 'rgba(24, 252, 92, 0.1)',
-                padding: '3px 10px', borderRadius: 100, fontWeight: 600, border: '1px solid rgba(24, 252, 92, 0.2)',
+                fontSize: 10.5, color: RF_MINT_ACCENT, background: 'rgba(24, 252, 92, 0.1)',
+                padding: '2.5px 8px', borderRadius: 100, fontWeight: 600, border: '1px solid rgba(24, 252, 92, 0.2)',
                 flexShrink: 0
               }}>
                 Active Pool: ₦{analytics.totalCashBountyVal.toLocaleString()} Cash Value
@@ -6103,38 +6073,38 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             <div style={{
               display: 'grid',
               gridTemplateColumns: isMobile ? 'minmax(0, 1fr)' : 'repeat(3, minmax(0, 1fr))',
-              gap: isMobile ? 14 : 20
+              gap: isMobile ? 10 : 16
             }}>
               {/* Monetary Bounty Valuation */}
               <div style={{
                 background: 'rgba(255, 255, 255, 0.02)',
-                borderRadius: 12,
-                padding: '14px 16px',
+                borderRadius: 10,
+                padding: isMobile ? '10px 12px' : '12px 14px',
                 border: '1px solid rgba(255, 255, 255, 0.06)'
               }}>
-                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 6 }}>
+                <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 4 }}>
                   Cash Bounty Reserve
                 </span>
-                <div style={{ fontSize: 22, fontWeight: 800, color: RF_MINT_ACCENT }}>
+                <div style={{ fontSize: isMobile ? 18 : 22, fontWeight: 800, color: RF_MINT_ACCENT }}>
                   ₦{analytics.totalCashBountyVal.toLocaleString()}
                 </div>
-                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', marginTop: 4, display: 'block' }}>
-                  Allocated across active cash prize challenges
+                <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)', marginTop: 2, display: 'block' }}>
+                  Allocated across cash challenges
                 </span>
               </div>
 
               {/* Utility Bounties */}
               <div style={{
                 background: 'rgba(255, 255, 255, 0.02)',
-                borderRadius: 12,
-                padding: isMobile ? '12px 14px' : '14px 16px',
+                borderRadius: 10,
+                padding: isMobile ? '10px 12px' : '12px 14px',
                 border: '1px solid rgba(255, 255, 255, 0.06)',
                 minWidth: 0,
                 width: '100%',
                 maxWidth: '100%',
                 boxSizing: 'border-box'
               }}>
-                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 10 }}>
+                <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 6 }}>
                   Network Utility Bounties
                 </span>
                 <div style={{
@@ -6146,17 +6116,17 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                   maxWidth: '100%',
                   boxSizing: 'border-box'
                 }}>
-                  <div style={{ minWidth: 0, textAlign: 'left', paddingRight: 12 }}>
-                    <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 800, color: RF_GOLD_YELLOW }}>{analytics.airtimeBounties}</div>
-                    <span style={{ fontSize: isMobile ? 10 : 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>Airtime Top-ups</span>
+                  <div style={{ minWidth: 0, textAlign: 'left', paddingRight: 8 }}>
+                    <div style={{ fontSize: isMobile ? 15 : 17, fontWeight: 800, color: RF_GOLD_YELLOW }}>{analytics.airtimeBounties}</div>
+                    <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>Airtime</span>
                   </div>
-                  <div style={{ borderLeft: '1px solid rgba(255,255,255,0.1)', borderRight: '1px solid rgba(255,255,255,0.1)', padding: '0 12px', minWidth: 0, textAlign: 'left' }}>
-                    <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 800, color: '#38BDF8' }}>{analytics.dataBounties}</div>
-                    <span style={{ fontSize: isMobile ? 10 : 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>Data Subscriptions</span>
+                  <div style={{ borderLeft: '1px solid rgba(255,255,255,0.1)', borderRight: '1px solid rgba(255,255,255,0.1)', padding: '0 8px', minWidth: 0, textAlign: 'left' }}>
+                    <div style={{ fontSize: isMobile ? 15 : 17, fontWeight: 800, color: '#38BDF8' }}>{analytics.dataBounties}</div>
+                    <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>Data</span>
                   </div>
-                  <div style={{ minWidth: 0, textAlign: 'left', paddingLeft: 12 }}>
-                    <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 800, color: '#FFFFFF' }}>{analytics.activeTasksCount}</div>
-                    <span style={{ fontSize: isMobile ? 10 : 10.5, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>Total Active</span>
+                  <div style={{ minWidth: 0, textAlign: 'left', paddingLeft: 8 }}>
+                    <div style={{ fontSize: isMobile ? 15 : 17, fontWeight: 800, color: '#FFFFFF' }}>{analytics.activeTasksCount}</div>
+                    <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>Active</span>
                   </div>
                 </div>
               </div>
@@ -6164,19 +6134,19 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               {/* Broadcast & Reach */}
               <div style={{
                 background: 'rgba(255, 255, 255, 0.02)',
-                borderRadius: 12,
-                padding: '14px 16px',
+                borderRadius: 10,
+                padding: isMobile ? '10px 12px' : '12px 14px',
                 border: '1px solid rgba(255, 255, 255, 0.06)',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'center'
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                  <Share2 size={16} color={RF_MINT_ACCENT} />
-                  <span style={{ fontSize: 12, fontWeight: 700, color: '#FFFFFF' }}>Squad WhatsApp Broadcast</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
+                  <Share2 size={14} color={RF_MINT_ACCENT} />
+                  <span style={{ fontSize: 11.5, fontWeight: 700, color: '#FFFFFF' }}>WhatsApp Broadcast</span>
                 </div>
-                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', margin: 0, lineHeight: 1.4 }}>
-                  1-click sharing formats missions with guidelines and submission format for community WhatsApp channels.
+                <p style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)', margin: 0, lineHeight: 1.35 }}>
+                  1-click sharing formats missions for community WhatsApp channels.
                 </p>
               </div>
             </div>
@@ -6184,24 +6154,24 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
           {/* Search and Filters */}
           <div style={{
-            background: 'rgba(255,255,255,0.02)', borderRadius: 18, padding: isMobile ? '14px 16px' : '18px 22px',
-            border: '1px solid rgba(255,255,255,0.08)', marginBottom: 24, display: 'flex',
-            flexWrap: 'wrap', gap: 12, alignItems: 'center', justifyContent: 'space-between'
+            background: 'rgba(255,255,255,0.02)', borderRadius: isMobile ? 12 : 16, padding: isMobile ? '12px' : '16px 20px',
+            border: '1px solid rgba(255,255,255,0.08)', marginBottom: isMobile ? 18 : 24, display: 'flex',
+            flexWrap: 'wrap', gap: 10, alignItems: 'center', justifyContent: 'space-between'
           }}>
             <div style={{
-              display: 'flex', alignItems: 'center', gap: 10, flex: isMobile ? '1 1 100%' : '1 1 260px',
+              display: 'flex', alignItems: 'center', gap: 8, flex: isMobile ? '1 1 100%' : '1 1 240px',
               background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.12)',
-              borderRadius: 10, padding: '8px 14px'
+              borderRadius: 8, padding: isMobile ? '7px 12px' : '8px 14px'
             }}>
-              <Search size={16} color="rgba(255,255,255,0.4)" style={{ flexShrink: 0 }} />
+              <Search size={14} color="rgba(255,255,255,0.4)" style={{ flexShrink: 0 }} />
               <input
                 type="text"
                 value={taskSearchTerm}
                 onChange={e => setTaskSearchTerm(e.target.value)}
-                placeholder="Search missions, rewards, descriptions..."
+                placeholder="Search missions, rewards..."
                 style={{
                   background: 'transparent', border: 'none', outline: 'none',
-                  color: '#FFFFFF', fontSize: 13, width: '100%'
+                  color: '#FFFFFF', fontSize: isMobile ? 12 : 12.5, width: '100%'
                 }}
               />
               {taskSearchTerm && (
@@ -6214,15 +6184,15 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               )}
             </div>
 
-            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center', width: isMobile ? '100%' : 'auto' }}>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', width: isMobile ? '100%' : 'auto' }}>
               {/* Squad Filter */}
               <select
                 value={taskSquadFilter}
                 onChange={e => setTaskSquadFilter(e.target.value)}
                 style={{
-                  background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.15)',
-                  color: '#FFFFFF', borderRadius: 10, padding: '9px 38px 9px 14px', fontSize: 12.5, outline: 'none',
-                  flex: isMobile ? '1 1 calc(50% - 6px)' : 'initial', cursor: 'pointer'
+                  background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.15)',
+                  color: '#FFFFFF', borderRadius: 8, padding: isMobile ? '6px 30px 6px 10px' : '8px 34px 8px 12px', fontSize: isMobile ? 11.5 : 12, outline: 'none',
+                  flex: isMobile ? '1 1 calc(50% - 4px)' : 'initial', cursor: 'pointer'
                 }}
               >
                 <option value="ALL">All Squads &amp; Divisions</option>
@@ -6240,9 +6210,9 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 value={taskBountyFilter}
                 onChange={e => setTaskBountyFilter(e.target.value)}
                 style={{
-                  background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.15)',
-                  color: '#FFFFFF', borderRadius: 10, padding: '9px 38px 9px 14px', fontSize: 12.5, outline: 'none',
-                  flex: isMobile ? '1 1 calc(50% - 6px)' : 'initial', cursor: 'pointer'
+                  background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.15)',
+                  color: '#FFFFFF', borderRadius: 8, padding: isMobile ? '6px 30px 6px 10px' : '8px 34px 8px 12px', fontSize: isMobile ? 11.5 : 12, outline: 'none',
+                  flex: isMobile ? '1 1 calc(50% - 4px)' : 'initial', cursor: 'pointer'
                 }}
               >
                 <option value="ALL">All Bounty Types</option>
@@ -6257,9 +6227,9 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 value={taskFrequencyFilter}
                 onChange={e => setTaskFrequencyFilter(e.target.value)}
                 style={{
-                  background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.15)',
-                  color: '#FFFFFF', borderRadius: 10, padding: '9px 38px 9px 14px', fontSize: 12.5, outline: 'none',
-                  flex: isMobile ? '1 1 calc(50% - 6px)' : 'initial', cursor: 'pointer'
+                  background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.15)',
+                  color: '#FFFFFF', borderRadius: 8, padding: isMobile ? '6px 30px 6px 10px' : '8px 34px 8px 12px', fontSize: isMobile ? 11.5 : 12, outline: 'none',
+                  flex: isMobile ? '1 1 calc(50% - 4px)' : 'initial', cursor: 'pointer'
                 }}
               >
                 <option value="ALL">All Cycles</option>
@@ -6273,9 +6243,9 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 value={taskStatusFilter}
                 onChange={e => setTaskStatusFilter(e.target.value as any)}
                 style={{
-                  background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.15)',
-                  color: '#FFFFFF', borderRadius: 10, padding: '9px 38px 9px 14px', fontSize: 12.5, outline: 'none',
-                  flex: isMobile ? '1 1 calc(50% - 6px)' : 'initial', cursor: 'pointer'
+                  background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.15)',
+                  color: '#FFFFFF', borderRadius: 8, padding: isMobile ? '6px 30px 6px 10px' : '8px 34px 8px 12px', fontSize: isMobile ? 11.5 : 12, outline: 'none',
+                  flex: isMobile ? '1 1 calc(50% - 4px)' : 'initial', cursor: 'pointer'
                 }}
               >
                 <option value="ALL">All Status</option>
@@ -6287,7 +6257,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
           {/* Tasks List — card stack on mobile, table on desktop */}
           <div style={{
-            background: 'rgba(255,255,255,0.02)', borderRadius: 20,
+            background: 'rgba(255,255,255,0.02)', borderRadius: isMobile ? 12 : 16,
             border: '1px solid rgba(255,255,255,0.08)', overflow: 'hidden',
             width: '100%', maxWidth: '100%', boxSizing: 'border-box'
           }}>
@@ -6295,7 +6265,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               /* ─── MOBILE CARD STACK ─── */
               <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
                 {filteredSquadTasks.length === 0 ? (
-                  <div style={{ padding: '48px 20px', textAlign: 'center', color: 'rgba(255,255,255,0.5)', fontSize: 13 }}>
+                  <div style={{ padding: '36px 16px', textAlign: 'center', color: 'rgba(255,255,255,0.5)', fontSize: 12 }}>
                     No tasks found. Tap &ldquo;Announce Task&rdquo; to create one.
                   </div>
                 ) : (
@@ -6314,17 +6284,17 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                       <div
                         key={task.id}
                         style={{
-                          padding: '14px 16px',
+                          padding: '12px 14px',
                           borderBottom: idx < filteredSquadTasks.length - 1 ? '1px solid rgba(255,255,255,0.06)' : 'none',
                           width: '100%', boxSizing: 'border-box', overflow: 'hidden'
                         }}
                       >
                         {/* Row 1: Squad badge + cycle pill + status */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginBottom: 8, width: '100%' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginBottom: 6, width: '100%' }}>
                           <span style={{
                             background: `${squadInfo.color}18`, color: squadInfo.color,
-                            border: `1px solid ${squadInfo.color}44`, padding: '2px 8px',
-                            borderRadius: 6, fontSize: 10.5, fontWeight: 700, letterSpacing: '0.03em',
+                            border: `1px solid ${squadInfo.color}44`, padding: '2px 7px',
+                            borderRadius: 4, fontSize: 10, fontWeight: 700, letterSpacing: '0.03em',
                             whiteSpace: 'nowrap', flexShrink: 0
                           }}>
                             {squadInfo.name}
@@ -6333,7 +6303,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                             background: task.frequency === 'DAILY' ? 'rgba(255,209,102,0.12)' : task.frequency === 'WEEKLY' ? 'rgba(56,189,248,0.12)' : 'rgba(167,139,250,0.12)',
                             color: task.frequency === 'DAILY' ? RF_GOLD_YELLOW : task.frequency === 'WEEKLY' ? '#38BDF8' : '#C084FC',
                             border: `1px solid ${task.frequency === 'DAILY' ? RF_GOLD_YELLOW + '44' : task.frequency === 'WEEKLY' ? '#38BDF844' : '#C084FC44'}`,
-                            padding: '2px 8px', borderRadius: 6, fontSize: 10.5, fontWeight: 700,
+                            padding: '2px 7px', borderRadius: 4, fontSize: 10, fontWeight: 700,
                             whiteSpace: 'nowrap', flexShrink: 0
                           }}>
                             {task.frequency.replace('_', ' ')}
@@ -6343,8 +6313,8 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                             background: task.status === 'ACTIVE' ? 'rgba(24,252,92,0.12)' : 'rgba(255,255,255,0.06)',
                             color: task.status === 'ACTIVE' ? RF_MINT_ACCENT : 'rgba(255,255,255,0.45)',
                             border: `1px solid ${task.status === 'ACTIVE' ? RF_MINT_ACCENT + '55' : 'rgba(255,255,255,0.15)'}`,
-                            padding: '2px 9px', borderRadius: 6, fontSize: 10.5, fontWeight: 700,
-                            cursor: 'pointer'
+                            padding: '2px 7px', borderRadius: 4, fontSize: 10, fontWeight: 700,
+                            cursor: 'pointer', whiteSpace: 'nowrap'
                           }}
                             onClick={() => handleToggleTaskStatus(task.id)}
                           >
@@ -6354,48 +6324,48 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
                         {/* Row 2: Title */}
                         <div style={{
-                          fontWeight: 700, color: '#FFFFFF', fontSize: 13.5, lineHeight: 1.35,
-                          marginBottom: 6, width: '100%', wordBreak: 'break-word', overflow: 'hidden'
+                          fontWeight: 700, color: '#FFFFFF', fontSize: 13, lineHeight: 1.35,
+                          marginBottom: 4, width: '100%', wordBreak: 'break-word', overflow: 'hidden'
                         }}>
                           {task.title}
                         </div>
 
                         {/* Row 3: Category + deadline */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 8 }}>
-                          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>{task.category}</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginBottom: 6 }}>
+                          <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.4)' }}>{task.category}</span>
                           {formattedDeadline && (
-                            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', gap: 4 }}>
-                              <Clock size={11} style={{ flexShrink: 0 }} /> {formattedDeadline}
+                            <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', gap: 3 }}>
+                              <Clock size={10} style={{ flexShrink: 0 }} /> {formattedDeadline}
                             </span>
                           )}
                         </div>
 
                         {/* Row 4: Bounty pill */}
                         <div style={{
-                          display: 'inline-flex', alignItems: 'center', gap: 5,
+                          display: 'inline-flex', alignItems: 'center', gap: 4,
                           background: bounty.bg, color: bounty.color, border: bounty.border,
-                          padding: '4px 10px', borderRadius: 8, fontSize: 11.5, fontWeight: 700,
-                          marginBottom: 12, maxWidth: '100%', overflow: 'hidden'
+                          padding: '3px 8px', borderRadius: 6, fontSize: 11, fontWeight: 700,
+                          marginBottom: 10, maxWidth: '100%', overflow: 'hidden'
                         }}>
-                          <Award size={12} style={{ flexShrink: 0 }} />
+                          <Award size={11} style={{ flexShrink: 0 }} />
                           <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                             {bounty.label}
                           </span>
                         </div>
 
                         {/* Row 5: Actions */}
-                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                        <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
                           <button
                             onClick={() => openWhatsAppShare(task)}
                             style={{
                               background: '#25D366', color: '#FFFFFF', border: 'none',
-                              height: 34, padding: '0 14px', borderRadius: 8, fontSize: 12,
+                              height: 28, padding: '0 10px', borderRadius: 6, fontSize: 11,
                               fontWeight: 600, cursor: 'pointer', display: 'inline-flex',
-                              alignItems: 'center', gap: 5, flex: 1, justifyContent: 'center',
-                              boxShadow: '0 2px 8px rgba(37,211,102,0.25)'
+                              alignItems: 'center', gap: 4, flex: 1, justifyContent: 'center',
+                              boxShadow: '0 2px 8px rgba(37,211,102,0.25)', whiteSpace: 'nowrap'
                             }}
                           >
-                            <MessageSquare size={13} style={{ flexShrink: 0 }} /> Broadcast
+                            <MessageSquare size={12} style={{ flexShrink: 0 }} /> Broadcast
                           </button>
                           <button
                             onClick={() => handleCopyBroadcast(task)}
@@ -6403,24 +6373,25 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                               background: isCopied ? 'rgba(24,252,92,0.15)' : 'rgba(255,255,255,0.07)',
                               border: `1px solid ${isCopied ? RF_MINT_ACCENT + '66' : 'rgba(255,255,255,0.15)'}`,
                               color: isCopied ? RF_MINT_ACCENT : '#FFFFFF',
-                              height: 34, padding: '0 14px', borderRadius: 8, fontSize: 12,
+                              height: 28, padding: '0 10px', borderRadius: 6, fontSize: 11,
                               fontWeight: 500, cursor: 'pointer', display: 'inline-flex',
-                              alignItems: 'center', gap: 5, flex: 1, justifyContent: 'center'
+                              alignItems: 'center', gap: 4, flex: 1, justifyContent: 'center',
+                              whiteSpace: 'nowrap'
                             }}
                           >
-                            {isCopied ? <CheckCircle2 size={13} style={{ flexShrink: 0 }} /> : <Copy size={13} style={{ flexShrink: 0 }} />}
+                            {isCopied ? <CheckCircle2 size={12} style={{ flexShrink: 0 }} /> : <Copy size={12} style={{ flexShrink: 0 }} />}
                             {isCopied ? 'Copied' : 'Copy'}
                           </button>
                           <button
                             onClick={() => handleDeleteTask(task.id, task.title)}
                             style={{
                               background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)',
-                              color: '#FCA5A5', width: 34, height: 34, borderRadius: 8,
+                              color: '#FCA5A5', width: 28, height: 28, borderRadius: 6,
                               cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
                               justifyContent: 'center', flexShrink: 0
                             }}
                           >
-                            <Trash2 size={13} />
+                            <Trash2 size={12} />
                           </button>
                         </div>
                       </div>
@@ -6431,20 +6402,20 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             ) : (
               /* ─── DESKTOP TABLE ─── */
               <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-                <table style={{ width: '100%', minWidth: 880, borderCollapse: 'collapse', textAlign: 'left', fontSize: 13 }}>
+                <table style={{ width: '100%', minWidth: 880, borderCollapse: 'collapse', textAlign: 'left', fontSize: 12.5 }}>
                 <thead>
                   <tr style={{ background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                    <th style={{ padding: '14px 20px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>Target Squad &amp; Mission</th>
-                    <th style={{ padding: '14px 20px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>Cycle &amp; Deadline</th>
-                    <th style={{ padding: '14px 20px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>Special Bounty Incentive</th>
-                    <th style={{ padding: '14px 20px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>Status</th>
-                    <th style={{ padding: '14px 20px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: 'right', whiteSpace: 'nowrap' }}>Broadcast &amp; Actions</th>
+                    <th style={{ padding: '10px 14px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap' }}>Target Squad &amp; Mission</th>
+                    <th style={{ padding: '10px 14px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap' }}>Cycle &amp; Deadline</th>
+                    <th style={{ padding: '10px 14px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap' }}>Special Bounty Incentive</th>
+                    <th style={{ padding: '10px 14px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap' }}>Status</th>
+                    <th style={{ padding: '10px 14px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', textAlign: 'right', whiteSpace: 'nowrap' }}>Broadcast &amp; Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredSquadTasks.length === 0 ? (
                     <tr>
-                      <td colSpan={5} style={{ padding: '48px 24px', textAlign: 'center', color: 'rgba(255,255,255,0.5)' }}>
+                      <td colSpan={5} style={{ padding: '36px 20px', textAlign: 'center', color: 'rgba(255,255,255,0.5)' }}>
                         No tasks found matching current filters. Click &ldquo;+ Announce Task&rdquo; to create one.
                       </td>
                     </tr>
@@ -6455,26 +6426,26 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                       const formattedDeadline = formatTaskDeadline(task.deadline);
 
                       const getBountyPill = () => {
-                        let icon = <Award size={13} style={{ flexShrink: 0 }} />;
+                        let icon = <Award size={12} style={{ flexShrink: 0 }} />;
                         let bg = 'rgba(167, 139, 250, 0.12)';
                         let color = '#C084FC';
                         let border = '1px solid rgba(167, 139, 250, 0.3)';
                         let label = task.bounty_reward || 'Deliverable XP';
 
                         if (task.bounty_type === 'AIRTIME') {
-                          icon = <Gift size={13} style={{ flexShrink: 0 }} />;
+                          icon = <Gift size={12} style={{ flexShrink: 0 }} />;
                           bg = 'rgba(255, 209, 102, 0.12)';
                           color = RF_GOLD_YELLOW;
                           border = `1px solid ${RF_GOLD_YELLOW}55`;
                           label = task.bounty_reward || 'Airtime Giveaway';
                         } else if (task.bounty_type === 'DATA') {
-                          icon = <Zap size={13} style={{ flexShrink: 0 }} />;
+                          icon = <Zap size={12} style={{ flexShrink: 0 }} />;
                           bg = 'rgba(56, 189, 248, 0.12)';
                           color = '#38BDF8';
                           border = '1px solid rgba(56, 189, 248, 0.4)';
                           label = task.bounty_reward || 'Data Subscription';
                         } else if (task.bounty_type === 'CASH') {
-                          icon = <DollarSign size={13} style={{ flexShrink: 0 }} />;
+                          icon = <DollarSign size={12} style={{ flexShrink: 0 }} />;
                           bg = 'rgba(24, 252, 92, 0.12)';
                           color = RF_MINT_ACCENT;
                           border = `1px solid ${RF_MINT_ACCENT}55`;
@@ -6485,13 +6456,13 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                           <div style={{
                             display: 'inline-flex',
                             alignItems: 'center',
-                            gap: 6,
+                            gap: 5,
                             background: bg,
                             color,
                             border,
-                            padding: '4px 10px',
-                            borderRadius: 8,
-                            fontSize: 12,
+                            padding: '3px 8px',
+                            borderRadius: 6,
+                            fontSize: 11.5,
                             fontWeight: 700,
                             lineHeight: 1.3,
                             maxWidth: '100%'
@@ -6510,22 +6481,22 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                           onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                         >
                           {/* Squad & Mission */}
-                          <td style={{ padding: '16px 20px', verticalAlign: 'middle', maxWidth: 320 }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                          <td style={{ padding: '12px 14px', verticalAlign: 'middle', maxWidth: 320 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
                               <span style={{
                                 background: `${squadInfo.color}18`, color: squadInfo.color,
-                                border: `1px solid ${squadInfo.color}44`, padding: '2px 8px',
-                                borderRadius: 6, fontSize: 10.5, fontWeight: 700, letterSpacing: '0.03em'
+                                border: `1px solid ${squadInfo.color}44`, padding: '2px 7px',
+                                borderRadius: 4, fontSize: 10, fontWeight: 700, letterSpacing: '0.03em'
                               }}>
                                 {squadInfo.name}
                               </span>
-                              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontWeight: 500 }}>• {task.category}</span>
+                              <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.4)', fontWeight: 500 }}>• {task.category}</span>
                             </div>
-                            <div style={{ fontWeight: 600, color: '#FFFFFF', fontSize: 14, lineHeight: 1.35 }}>
+                            <div style={{ fontWeight: 600, color: '#FFFFFF', fontSize: 13, lineHeight: 1.35 }}>
                               {task.title}
                             </div>
                             <div style={{
-                              fontSize: 12, color: 'rgba(255,255,255,0.55)', marginTop: 4, lineHeight: 1.4,
+                              fontSize: 11.5, color: 'rgba(255,255,255,0.55)', marginTop: 2, lineHeight: 1.4,
                               display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden'
                             }}>
                               {task.description}
@@ -6533,51 +6504,51 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                           </td>
 
                           {/* Frequency & Deadline */}
-                          <td style={{ padding: '16px 20px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
+                          <td style={{ padding: '12px 14px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
                             <span style={{
                               background: task.frequency === 'DAILY' ? 'rgba(255, 209, 102, 0.12)' : task.frequency === 'WEEKLY' ? 'rgba(56, 189, 248, 0.12)' : 'rgba(167, 139, 250, 0.12)',
                               color: task.frequency === 'DAILY' ? RF_GOLD_YELLOW : task.frequency === 'WEEKLY' ? '#38BDF8' : '#C084FC',
                               border: `1px solid ${task.frequency === 'DAILY' ? RF_GOLD_YELLOW + '44' : task.frequency === 'WEEKLY' ? '#38BDF844' : '#C084FC44'}`,
-                              padding: '3px 8px', borderRadius: 6, fontSize: 11, fontWeight: 700, letterSpacing: '0.02em'
+                              padding: '2.5px 7px', borderRadius: 4, fontSize: 10.5, fontWeight: 700, letterSpacing: '0.02em'
                             }}>
                               {task.frequency.replace('_', ' ')}
                             </span>
                             {formattedDeadline && (
-                              <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.5)', marginTop: 6, display: 'flex', alignItems: 'center', gap: 5 }}>
-                                <Clock size={12} style={{ flexShrink: 0, opacity: 0.7 }} />
+                              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', marginTop: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
+                                <Clock size={11} style={{ flexShrink: 0, opacity: 0.7 }} />
                                 <span>{formattedDeadline}</span>
                               </div>
                             )}
                           </td>
 
                           {/* Bounty & Value */}
-                          <td style={{ padding: '16px 20px', verticalAlign: 'middle', minWidth: 180 }}>
-                            <div style={{ marginBottom: 4 }}>
+                          <td style={{ padding: '12px 14px', verticalAlign: 'middle', minWidth: 160 }}>
+                            <div style={{ marginBottom: 2 }}>
                               {getBountyPill()}
                             </div>
-                            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', marginTop: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
+                            <div style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.45)', marginTop: 2, display: 'flex', alignItems: 'center', gap: 3 }}>
                               <span>{task.bounty_slots || 'Verified Submissions'}</span>
                             </div>
                           </td>
 
                           {/* Status */}
-                          <td style={{ padding: '16px 20px', verticalAlign: 'middle' }}>
+                          <td style={{ padding: '12px 14px', verticalAlign: 'middle' }}>
                             <button
                               onClick={() => handleToggleTaskStatus(task.id)}
                               style={{
                                 background: task.status === 'ACTIVE' ? 'rgba(24, 252, 92, 0.12)' : 'rgba(255,255,255,0.06)',
                                 color: task.status === 'ACTIVE' ? RF_MINT_ACCENT : 'rgba(255,255,255,0.45)',
                                 border: `1px solid ${task.status === 'ACTIVE' ? RF_MINT_ACCENT + '55' : 'rgba(255,255,255,0.15)'}`,
-                                padding: '5px 11px', borderRadius: 8, fontSize: 11.5, fontWeight: 700,
-                                cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 5,
-                                transition: 'all 0.15s'
+                                padding: '3px 8px', borderRadius: 6, fontSize: 11, fontWeight: 700,
+                                cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4,
+                                transition: 'all 0.15s', whiteSpace: 'nowrap'
                               }}
                               onMouseEnter={e => { e.currentTarget.style.background = task.status === 'ACTIVE' ? 'rgba(24, 252, 92, 0.2)' : 'rgba(255,255,255,0.12)'; }}
                               onMouseLeave={e => { e.currentTarget.style.background = task.status === 'ACTIVE' ? 'rgba(24, 252, 92, 0.12)' : 'rgba(255,255,255,0.06)'; }}
                               title="Click to toggle Active / Archived"
                             >
                               <span style={{
-                                width: 6, height: 6, borderRadius: '50%',
+                                width: 5, height: 5, borderRadius: '50%',
                                 background: task.status === 'ACTIVE' ? RF_MINT_ACCENT : 'rgba(255,255,255,0.4)',
                                 display: 'inline-block'
                               }} />
@@ -6586,22 +6557,22 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                           </td>
 
                           {/* Broadcast & Actions */}
-                          <td style={{ padding: '16px 20px', verticalAlign: 'middle', textAlign: 'right' }}>
-                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, justifyContent: 'flex-end' }}>
+                          <td style={{ padding: '12px 14px', verticalAlign: 'middle', textAlign: 'right' }}>
+                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, justifyContent: 'flex-end' }}>
                               <button
                                 onClick={() => openWhatsAppShare(task)}
                                 style={{
                                   background: '#25D366', color: '#FFFFFF', border: 'none',
-                                  height: 32, padding: '0 12px', borderRadius: 8, fontSize: 12,
+                                  height: 28, padding: '0 10px', borderRadius: 6, fontSize: 11,
                                   fontWeight: 600, cursor: 'pointer', display: 'inline-flex',
-                                  alignItems: 'center', gap: 5, boxShadow: '0 2px 8px rgba(37, 211, 102, 0.25)',
+                                  alignItems: 'center', gap: 4, boxShadow: '0 2px 8px rgba(37, 211, 102, 0.25)',
                                   transition: 'all 0.15s', whiteSpace: 'nowrap'
                                 }}
                                 onMouseEnter={e => (e.currentTarget.style.filter = 'brightness(1.1)')}
                                 onMouseLeave={e => (e.currentTarget.style.filter = 'none')}
                                 title="Broadcast task directly to WhatsApp group"
                               >
-                                <MessageSquare size={13} style={{ flexShrink: 0 }} /> Broadcast
+                                <MessageSquare size={12} style={{ flexShrink: 0 }} /> Broadcast
                               </button>
                               <button
                                 onClick={() => handleCopyBroadcast(task)}
@@ -6609,22 +6580,22 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                                   background: isCopied ? 'rgba(24, 252, 92, 0.15)' : 'rgba(255,255,255,0.06)',
                                   border: `1px solid ${isCopied ? RF_MINT_ACCENT + '66' : 'rgba(255,255,255,0.15)'}`,
                                   color: isCopied ? RF_MINT_ACCENT : '#FFFFFF',
-                                  height: 32, padding: '0 11px', borderRadius: 8, fontSize: 12,
-                                  fontWeight: 500, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 5,
+                                  height: 28, padding: '0 10px', borderRadius: 6, fontSize: 11,
+                                  fontWeight: 500, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4,
                                   transition: 'all 0.15s', whiteSpace: 'nowrap'
                                 }}
                                 onMouseEnter={e => { if (!isCopied) e.currentTarget.style.background = 'rgba(255,255,255,0.12)'; }}
                                 onMouseLeave={e => { if (!isCopied) e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; }}
                                 title="Copy preformatted announcement text"
                               >
-                                {isCopied ? <CheckCircle2 size={13} style={{ flexShrink: 0 }} /> : <Copy size={13} style={{ flexShrink: 0 }} />}
+                                {isCopied ? <CheckCircle2 size={12} style={{ flexShrink: 0 }} /> : <Copy size={12} style={{ flexShrink: 0 }} />}
                                 {isCopied ? 'Copied' : 'Copy'}
                               </button>
                               <button
                                 onClick={() => handleDeleteTask(task.id, task.title)}
                                 style={{
                                   background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.25)',
-                                  color: '#FCA5A5', width: 32, height: 32, borderRadius: 8,
+                                  color: '#FCA5A5', width: 28, height: 28, borderRadius: 6,
                                   cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                                   transition: 'all 0.15s', flexShrink: 0
                                 }}
@@ -6632,7 +6603,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                                 onMouseLeave={e => (e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)')}
                                 title="Delete task"
                               >
-                                <Trash2 size={13} />
+                                <Trash2 size={12} />
                               </button>
                             </div>
                           </td>
@@ -6835,8 +6806,8 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
         // ── Card Style Tokens Matching All Other Admin Tabs ──────────
         const cardStyle: React.CSSProperties = {
           background: 'rgba(255, 255, 255, 0.03)',
-          borderRadius: isMobile ? 14 : 16,
-          padding: isMobile ? '16px 14px' : '20px 22px',
+          borderRadius: isMobile ? 12 : 16,
+          padding: isMobile ? '12px 14px' : '16px 20px',
           border: '1px solid rgba(255, 255, 255, 0.08)'
         };
 
@@ -6844,42 +6815,44 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          marginBottom: 16,
+          marginBottom: 12,
           flexWrap: 'wrap',
           gap: 8
         };
 
         return (
-          <div style={{ paddingBottom: 40 }}>
+          <div style={{ paddingBottom: 32 }}>
             {/* ── Section Header ───────────────────────────────────── */}
             <div style={{
               display: 'flex',
               justifyContent: 'space-between',
-              alignItems: 'center',
-              marginBottom: isMobile ? 20 : 28,
+              alignItems: isMobile ? 'flex-start' : 'center',
+              marginBottom: isMobile ? 16 : 24,
               flexWrap: 'wrap',
-              gap: 14
+              gap: isMobile ? 10 : 14
             }}>
               <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '0 0 6px', flexWrap: 'wrap' }}>
-                  <h2 style={{ fontSize: isMobile ? 20 : 24, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '0 0 4px', flexWrap: 'wrap' }}>
+                  <h2 style={{ fontSize: isMobile ? 18 : 24, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
                     Platform Analytics &amp; Intelligence
                   </h2>
                   <span style={{
-                    fontSize: 10.5, fontWeight: 700, background: 'rgba(24, 252, 92, 0.12)',
+                    fontSize: 10, fontWeight: 700, background: 'rgba(24, 252, 92, 0.12)',
                     color: RF_MINT_ACCENT, border: `1px solid ${RF_MINT_ACCENT}55`,
-                    padding: '3px 10px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 4,
+                    padding: '2.5px 7px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 4,
                     textTransform: 'uppercase'
                   }}>
-                    <Activity size={11} /> Real-Time Telemetry
+                    <Activity size={10} /> Real-Time Telemetry
                   </span>
                 </div>
-                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', margin: 0, maxWidth: 820, lineHeight: 1.5 }}>
-                  Track admissions conversion, task velocity, contributor tiers, and bounties.
-                </p>
+                {!isMobile && (
+                  <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', margin: 0, maxWidth: 820, lineHeight: 1.5 }}>
+                    Track admissions conversion, task velocity, contributor tiers, and bounties.
+                  </p>
+                )}
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, width: isMobile ? '100%' : 'auto' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: isMobile ? '100%' : 'auto' }}>
                 <button
                   onClick={handleRefreshData}
                   disabled={loading}
@@ -6887,20 +6860,20 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                     background: 'rgba(255,255,255,0.06)',
                     border: '1px solid rgba(255,255,255,0.18)',
                     color: '#FFFFFF',
-                    padding: isMobile ? '10px 16px' : '10px 18px',
+                    padding: isMobile ? '7px 12px' : '8px 18px',
                     borderRadius: 100,
-                    fontSize: 13,
+                    fontSize: isMobile ? 11.5 : 12.5,
                     fontWeight: 600,
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 6,
+                    gap: 5,
                     flex: isMobile ? 1 : 'initial',
                     justifyContent: 'center',
                     transition: 'all 0.2s'
                   }}
                 >
-                  <RefreshCw size={14} className={loading ? 'rp-spin' : ''} /> {loading ? 'Syncing...' : 'Refresh Data'}
+                  <RefreshCw size={13} className={loading ? 'rp-spin' : ''} /> {loading ? 'Syncing...' : 'Refresh Data'}
                 </button>
               </div>
             </div>
@@ -6909,17 +6882,17 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             <div style={{
               display: 'grid',
               gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fit, minmax(200px, 1fr))',
-              gap: isMobile ? 10 : 16,
-              marginBottom: isMobile ? 20 : 32
+              gap: isMobile ? 10 : 14,
+              marginBottom: isMobile ? 18 : 26
             }}>
               <div style={cardStyle}>
                 <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                   Total Applicants
                 </span>
-                <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: '#FFFFFF', marginTop: 4 }}>
+                <div style={{ fontSize: isMobile ? 22 : 28, fontWeight: 700, color: '#FFFFFF', marginTop: 4 }}>
                   {analytics.totalApps}
                 </div>
-                <span style={{ fontSize: isMobile ? 11 : 12, color: RF_MINT_ACCENT }}>
+                <span style={{ fontSize: isMobile ? 10.5 : 11.5, color: RF_MINT_ACCENT }}>
                   {analytics.acceptanceRate}% acceptance rate
                 </span>
               </div>
@@ -6928,10 +6901,10 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                   Deliverable Proofs
                 </span>
-                <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: RF_MINT_ACCENT, marginTop: 4 }}>
+                <div style={{ fontSize: isMobile ? 22 : 28, fontWeight: 700, color: RF_MINT_ACCENT, marginTop: 4 }}>
                   {analytics.totalProofs}
                 </div>
-                <span style={{ fontSize: isMobile ? 11 : 12, color: 'rgba(255,255,255,0.5)' }}>
+                <span style={{ fontSize: isMobile ? 10.5 : 11.5, color: 'rgba(255,255,255,0.5)' }}>
                   {analytics.verificationRate}% verified rate
                 </span>
               </div>
@@ -6940,10 +6913,10 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                   Pioneer Community
                 </span>
-                <div style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: '#FFFFFF', marginTop: 4 }}>
+                <div style={{ fontSize: isMobile ? 22 : 28, fontWeight: 700, color: '#FFFFFF', marginTop: 4 }}>
                   {analytics.totalMembers}
                 </div>
-                <span style={{ fontSize: isMobile ? 11 : 12, color: RF_GOLD_YELLOW }}>
+                <span style={{ fontSize: isMobile ? 10.5 : 11.5, color: RF_GOLD_YELLOW }}>
                   {analytics.activeMembers} active ({analytics.activeRate}%)
                 </span>
               </div>
@@ -6952,11 +6925,11 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 <span style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                   Active Bounty Pool
                 </span>
-                <div style={{ fontSize: isMobile ? 20 : 28, fontWeight: 700, color: RF_GOLD_YELLOW, marginTop: 4 }}>
+                <div style={{ fontSize: isMobile ? 18 : 24, fontWeight: 700, color: RF_GOLD_YELLOW, marginTop: 4 }}>
                   ₦{analytics.totalCashBountyVal.toLocaleString()}
                 </div>
-                <span style={{ fontSize: isMobile ? 11 : 12, color: 'rgba(255,255,255,0.5)' }}>
-                  Across {analytics.activeTasksCount} squad missions
+                <span style={{ fontSize: isMobile ? 10.5 : 11.5, color: 'rgba(255,255,255,0.5)' }}>
+                  Across {analytics.activeTasksCount} missions
                 </span>
               </div>
             </div>
@@ -6965,37 +6938,37 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             <div style={{
               display: 'grid',
               gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
-              gap: isMobile ? 14 : 20,
-              marginBottom: isMobile ? 20 : 28
+              gap: isMobile ? 10 : 16,
+              marginBottom: isMobile ? 18 : 26
             }}>
               {/* Applications Velocity Line Chart */}
               <div style={cardStyle}>
                 <div style={cardHeaderStyle}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <div style={{
-                      width: 28, height: 28, borderRadius: 8,
+                      width: 26, height: 26, borderRadius: 6,
                       background: 'rgba(24, 252, 92, 0.12)', color: RF_MINT_ACCENT,
                       display: 'flex', alignItems: 'center', justifyContent: 'center'
                     }}>
-                      <TrendingUp size={15} />
+                      <TrendingUp size={14} />
                     </div>
                     <div>
-                      <div style={{ fontSize: isMobile ? 13.5 : 14.5, fontWeight: 700, color: '#FFFFFF' }}>
-                        Candidate Admissions Trajectory
+                      <div style={{ fontSize: isMobile ? 13 : 14.5, fontWeight: 700, color: '#FFFFFF' }}>
+                        Admissions Trajectory
                       </div>
-                      <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)' }}>
-                        Applications received over the last 7 days
+                      <div style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.45)' }}>
+                        Applications over last 7 days
                       </div>
                     </div>
                   </div>
                   <span style={{
-                    fontSize: 11, color: RF_MINT_ACCENT, background: 'rgba(24, 252, 92, 0.1)',
-                    padding: '3px 10px', borderRadius: 100, fontWeight: 600, border: '1px solid rgba(24, 252, 92, 0.2)'
+                    fontSize: 10.5, color: RF_MINT_ACCENT, background: 'rgba(24, 252, 92, 0.1)',
+                    padding: '2.5px 8px', borderRadius: 100, fontWeight: 600, border: '1px solid rgba(24, 252, 92, 0.2)'
                   }}>
                     {analytics.totalApps} Total
                   </span>
                 </div>
-                <div style={{ padding: '8px 0 2px' }}>
+                <div style={{ padding: '6px 0 2px' }}>
                   <LineChart
                     data={days7.map(d => ({ label: d.label, value: d.appCount }))}
                     color={RF_MINT_ACCENT}
@@ -7007,31 +6980,31 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               {/* Task Proofs Throughput Line Chart */}
               <div style={cardStyle}>
                 <div style={cardHeaderStyle}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <div style={{
-                      width: 28, height: 28, borderRadius: 8,
+                      width: 26, height: 26, borderRadius: 6,
                       background: 'rgba(246, 178, 26, 0.12)', color: RF_GOLD_YELLOW,
                       display: 'flex', alignItems: 'center', justifyContent: 'center'
                     }}>
-                      <Activity size={15} />
+                      <Activity size={14} />
                     </div>
                     <div>
-                      <div style={{ fontSize: isMobile ? 13.5 : 14.5, fontWeight: 700, color: '#FFFFFF' }}>
-                        Proof-of-Work Deliverable Flow
+                      <div style={{ fontSize: isMobile ? 13 : 14.5, fontWeight: 700, color: '#FFFFFF' }}>
+                        Deliverable Flow
                       </div>
-                      <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)' }}>
-                        Mission submissions verified over the last 7 days
+                      <div style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.45)' }}>
+                        Proofs verified over last 7 days
                       </div>
                     </div>
                   </div>
                   <span style={{
-                    fontSize: 11, color: RF_GOLD_YELLOW, background: 'rgba(246, 178, 26, 0.1)',
-                    padding: '3px 10px', borderRadius: 100, fontWeight: 600, border: '1px solid rgba(246, 178, 26, 0.2)'
+                    fontSize: 10.5, color: RF_GOLD_YELLOW, background: 'rgba(246, 178, 26, 0.1)',
+                    padding: '2.5px 8px', borderRadius: 100, fontWeight: 600, border: '1px solid rgba(246, 178, 26, 0.2)'
                   }}>
-                    {analytics.totalProofs} Submissions
+                    {analytics.totalProofs} Proofs
                   </span>
                 </div>
-                <div style={{ padding: '8px 0 2px' }}>
+                <div style={{ padding: '6px 0 2px' }}>
                   <LineChart
                     data={days7.map(d => ({ label: d.label, value: d.proofCount }))}
                     color={RF_GOLD_YELLOW}
@@ -7045,30 +7018,30 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             <div style={{
               display: 'grid',
               gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
-              gap: isMobile ? 14 : 20,
-              marginBottom: isMobile ? 20 : 28
+              gap: isMobile ? 10 : 16,
+              marginBottom: isMobile ? 18 : 26
             }}>
               {/* Admissions Funnel */}
               <div style={cardStyle}>
                 <div style={cardHeaderStyle}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <div style={{
-                      width: 28, height: 28, borderRadius: 8,
+                      width: 26, height: 26, borderRadius: 6,
                       background: 'rgba(24, 252, 92, 0.12)', color: RF_MINT_ACCENT,
                       display: 'flex', alignItems: 'center', justifyContent: 'center'
                     }}>
-                      <UserCheck size={15} />
+                      <UserCheck size={14} />
                     </div>
-                    <span style={{ fontSize: isMobile ? 13.5 : 14.5, fontWeight: 700, color: '#FFFFFF' }}>
+                    <span style={{ fontSize: isMobile ? 13 : 14.5, fontWeight: 700, color: '#FFFFFF' }}>
                       Admissions Pipeline Funnel
                     </span>
                   </div>
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', fontWeight: 600 }}>
+                  <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.45)', fontWeight: 600 }}>
                     {analytics.totalApps} Candidates
                   </span>
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                   {[
                     { label: 'Accepted Pioneers', count: analytics.acceptedApps, color: RF_MINT_ACCENT },
                     { label: 'Under Review', count: analytics.reviewingApps, color: 'rgba(255, 255, 255, 0.7)' },
@@ -7079,11 +7052,11 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                     const pct = analytics.totalApps > 0 ? Math.round((item.count / analytics.totalApps) * 100) : 0;
                     return (
                       <div key={item.label}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 12.5 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 11.5 }}>
                           <span style={{ color: 'rgba(255,255,255,0.7)', fontWeight: 500 }}>{item.label}</span>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.4)' }}>{pct}%</span>
-                            <span style={{ fontWeight: 700, color: '#FFFFFF', minWidth: 26, textAlign: 'right' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.4)' }}>{pct}%</span>
+                            <span style={{ fontWeight: 700, color: '#FFFFFF', minWidth: 24, textAlign: 'right', fontSize: 12 }}>
                               {item.count}
                             </span>
                           </div>
@@ -7098,39 +7071,39 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               {/* Deliverables & Credential Verification */}
               <div style={cardStyle}>
                 <div style={cardHeaderStyle}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <div style={{
-                      width: 28, height: 28, borderRadius: 8,
+                      width: 26, height: 26, borderRadius: 6,
                       background: 'rgba(24, 252, 92, 0.12)', color: RF_MINT_ACCENT,
                       display: 'flex', alignItems: 'center', justifyContent: 'center'
                     }}>
-                      <FileCheck size={15} />
+                      <FileCheck size={14} />
                     </div>
-                    <span style={{ fontSize: isMobile ? 13.5 : 14.5, fontWeight: 700, color: '#FFFFFF' }}>
-                      Deliverable Verification &amp; Credentials
+                    <span style={{ fontSize: isMobile ? 13 : 14.5, fontWeight: 700, color: '#FFFFFF' }}>
+                      Deliverable &amp; Credential Flow
                     </span>
                   </div>
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', fontWeight: 600 }}>
+                  <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.45)', fontWeight: 600 }}>
                     {analytics.totalProofs} Proofs
                   </span>
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                   {[
                     { label: 'Verified Proofs', count: analytics.verifiedProofs, total: analytics.totalProofs, color: RF_MINT_ACCENT },
                     { label: 'Pending Review', count: analytics.pendingProofs, total: analytics.totalProofs, color: RF_GOLD_YELLOW },
                     { label: 'Needs Revision', count: analytics.revisionProofs, total: analytics.totalProofs, color: RF_ORANGE },
-                    { label: 'Active Sovereign Credentials', count: analytics.activeCerts, total: analytics.totalCerts, color: RF_MINT_ACCENT },
+                    { label: 'Active Credentials', count: analytics.activeCerts, total: analytics.totalCerts, color: RF_MINT_ACCENT },
                     { label: 'Revoked Credentials', count: analytics.revokedCerts, total: analytics.totalCerts, color: 'rgba(239, 68, 68, 0.85)' }
                   ].map(item => {
                     const pct = item.total > 0 ? Math.round((item.count / item.total) * 100) : 0;
                     return (
                       <div key={item.label}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 12.5 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 11.5 }}>
                           <span style={{ color: 'rgba(255,255,255,0.7)', fontWeight: 500 }}>{item.label}</span>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.4)' }}>{pct}%</span>
-                            <span style={{ fontWeight: 700, color: '#FFFFFF', minWidth: 26, textAlign: 'right' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.4)' }}>{pct}%</span>
+                            <span style={{ fontWeight: 700, color: '#FFFFFF', minWidth: 24, textAlign: 'right', fontSize: 12 }}>
                               {item.count}
                             </span>
                           </div>
@@ -7147,30 +7120,30 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             <div style={{
               display: 'grid',
               gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
-              gap: isMobile ? 14 : 20,
-              marginBottom: isMobile ? 20 : 28
+              gap: isMobile ? 10 : 16,
+              marginBottom: isMobile ? 18 : 26
             }}>
               {/* Pioneer Tier Ladder */}
               <div style={cardStyle}>
                 <div style={cardHeaderStyle}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <div style={{
-                      width: 28, height: 28, borderRadius: 8,
+                      width: 26, height: 26, borderRadius: 6,
                       background: 'rgba(24, 252, 92, 0.12)', color: RF_MINT_ACCENT,
                       display: 'flex', alignItems: 'center', justifyContent: 'center'
                     }}>
-                      <Users size={15} />
+                      <Users size={14} />
                     </div>
-                    <span style={{ fontSize: isMobile ? 13.5 : 14.5, fontWeight: 700, color: '#FFFFFF' }}>
-                      Pioneer Contributor Tier Ladder
+                    <span style={{ fontSize: isMobile ? 13 : 14.5, fontWeight: 700, color: '#FFFFFF' }}>
+                      Pioneer Tier Ladder
                     </span>
                   </div>
-                  <span style={{ fontSize: 11, color: RF_MINT_ACCENT, fontWeight: 600 }}>
+                  <span style={{ fontSize: 10.5, color: RF_MINT_ACCENT, fontWeight: 600 }}>
                     {analytics.totalMembers} Members
                   </span>
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                   {[
                     { label: 'Level 1 — Contributor', count: analytics.levelCounts.LEVEL_1 },
                     { label: 'Level 2 — Pioneer', count: analytics.levelCounts.LEVEL_2 },
@@ -7181,11 +7154,11 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                     const pct = analytics.totalMembers > 0 ? Math.round((item.count / analytics.totalMembers) * 100) : 0;
                     return (
                       <div key={item.label}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 12.5 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 11.5 }}>
                           <span style={{ color: 'rgba(255,255,255,0.7)', fontWeight: 500 }}>{item.label}</span>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.4)' }}>{pct}%</span>
-                            <span style={{ fontWeight: 700, color: '#FFFFFF', minWidth: 26, textAlign: 'right' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.4)' }}>{pct}%</span>
+                            <span style={{ fontWeight: 700, color: '#FFFFFF', minWidth: 24, textAlign: 'right', fontSize: 12 }}>
                               {item.count}
                             </span>
                           </div>
@@ -7198,10 +7171,10 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
-                    paddingTop: 10,
-                    marginTop: 4,
+                    paddingTop: 8,
+                    marginTop: 2,
                     borderTop: '1px solid rgba(255,255,255,0.06)',
-                    fontSize: 11.5,
+                    fontSize: 11,
                     color: 'rgba(255,255,255,0.45)'
                   }}>
                     <span>Active Contributors</span>
@@ -7213,39 +7186,39 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               </div>
 
               {/* Founding 100 Quota & Mission Bounty Economics */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? 14 : 20 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? 10 : 16 }}>
                 {/* Founding 100 Seats Quota */}
                 <div style={cardStyle}>
                   <div style={cardHeaderStyle}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <div style={{
-                        width: 28, height: 28, borderRadius: 8,
+                        width: 26, height: 26, borderRadius: 6,
                         background: 'rgba(246, 178, 26, 0.12)', color: RF_GOLD_YELLOW,
                         display: 'flex', alignItems: 'center', justifyContent: 'center'
                       }}>
-                        <Award size={15} />
+                        <Award size={14} />
                       </div>
-                      <span style={{ fontSize: isMobile ? 13.5 : 14.5, fontWeight: 700, color: '#FFFFFF' }}>
-                        Founding 100 Seat Capacity
+                      <span style={{ fontSize: isMobile ? 13 : 14.5, fontWeight: 700, color: '#FFFFFF' }}>
+                        Founding 100 Capacity
                       </span>
                     </div>
                     <span style={{
-                      fontSize: 11, color: RF_GOLD_YELLOW, background: 'rgba(246, 178, 26, 0.1)',
-                      padding: '2px 8px', borderRadius: 100, fontWeight: 600, border: '1px solid rgba(246, 178, 26, 0.2)'
+                      fontSize: 10.5, color: RF_GOLD_YELLOW, background: 'rgba(246, 178, 26, 0.1)',
+                      padding: '2px 7px', borderRadius: 100, fontWeight: 600, border: '1px solid rgba(246, 178, 26, 0.2)'
                     }}>
                       {analytics.foundingCapPct}% Filled
                     </span>
                   </div>
 
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 10 }}>
-                    <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>Seats Allocated</span>
-                    <span style={{ fontSize: isMobile ? 22 : 26, fontWeight: 700, color: RF_GOLD_YELLOW }}>
-                      {analytics.foundingApps} <span style={{ fontSize: 14, fontWeight: 400, color: 'rgba(255,255,255,0.35)' }}>/ 100</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8 }}>
+                    <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)' }}>Seats Allocated</span>
+                    <span style={{ fontSize: isMobile ? 20 : 24, fontWeight: 700, color: RF_GOLD_YELLOW }}>
+                      {analytics.foundingApps} <span style={{ fontSize: 13, fontWeight: 400, color: 'rgba(255,255,255,0.35)' }}>/ 100</span>
                     </span>
                   </div>
 
                   <div style={{
-                    width: '100%', height: 6, borderRadius: 100,
+                    width: '100%', height: 5, borderRadius: 100,
                     background: 'rgba(255, 255, 255, 0.08)', overflow: 'hidden'
                   }}>
                     <div style={{
@@ -7255,7 +7228,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                     }} />
                   </div>
 
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6, fontSize: 10.5, color: 'rgba(255,255,255,0.4)' }}>
                     <span>0 Reserved</span>
                     <span>100 Maximum Cohort Limit</span>
                   </div>
@@ -7264,31 +7237,31 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 {/* Active Bounty Pool Breakdown */}
                 <div style={cardStyle}>
                   <div style={cardHeaderStyle}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <div style={{
-                        width: 28, height: 28, borderRadius: 8,
+                        width: 26, height: 26, borderRadius: 6,
                         background: 'rgba(24, 252, 92, 0.12)', color: RF_MINT_ACCENT,
                         display: 'flex', alignItems: 'center', justifyContent: 'center'
                       }}>
-                        <DollarSign size={15} />
+                        <DollarSign size={14} />
                       </div>
-                      <span style={{ fontSize: isMobile ? 13.5 : 14.5, fontWeight: 700, color: '#FFFFFF' }}>
+                      <span style={{ fontSize: isMobile ? 13 : 14.5, fontWeight: 700, color: '#FFFFFF' }}>
                         Mission Bounty Valuation
                       </span>
                     </div>
-                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', fontWeight: 600 }}>
-                      {analytics.activeTasksCount} Active Tasks
+                    <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.45)', fontWeight: 600 }}>
+                      {analytics.activeTasksCount} Active
                     </span>
                   </div>
 
-                  <div style={{ fontSize: isMobile ? 24 : 30, fontWeight: 700, color: '#FFFFFF', marginBottom: 2 }}>
+                  <div style={{ fontSize: isMobile ? 20 : 26, fontWeight: 700, color: '#FFFFFF', marginBottom: 2 }}>
                     ₦{analytics.totalCashBountyVal.toLocaleString()}
                   </div>
-                  <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>
-                    Total active escrow-ready reward pool
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)' }}>
+                    Active escrow-ready reward pool
                   </span>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 8, marginTop: 14 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 6, marginTop: 10 }}>
                     {[
                       { label: 'Cash', value: analytics.totalCashBountyVal > 0 ? `₦${(analytics.totalCashBountyVal / 1000).toFixed(0)}k` : '—', color: RF_MINT_ACCENT },
                       { label: 'Airtime', value: `${analytics.airtimeBounties} tasks`, color: RF_GOLD_YELLOW },
@@ -7297,12 +7270,12 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                       <div key={b.label} style={{
                         background: 'rgba(255, 255, 255, 0.02)',
                         border: '1px solid rgba(255, 255, 255, 0.06)',
-                        borderRadius: 10,
-                        padding: '10px 8px',
+                        borderRadius: 8,
+                        padding: '8px 6px',
                         textAlign: 'center'
                       }}>
-                        <div style={{ fontSize: 13.5, fontWeight: 700, color: b.color }}>{b.value}</div>
-                        <div style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.4)', marginTop: 2, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                        <div style={{ fontSize: 12.5, fontWeight: 700, color: b.color }}>{b.value}</div>
+                        <div style={{ fontSize: 9.5, color: 'rgba(255,255,255,0.4)', marginTop: 2, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                           {b.label}
                         </div>
                       </div>
@@ -7315,27 +7288,27 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             {/* ── Review Team Composition Overview ──────────────────── */}
             <div style={cardStyle}>
               <div style={cardHeaderStyle}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <div style={{
-                    width: 28, height: 28, borderRadius: 8,
+                    width: 26, height: 26, borderRadius: 6,
                     background: 'rgba(24, 252, 92, 0.12)', color: RF_MINT_ACCENT,
                     display: 'flex', alignItems: 'center', justifyContent: 'center'
                   }}>
-                    <Briefcase size={15} />
+                    <Briefcase size={14} />
                   </div>
-                  <span style={{ fontSize: isMobile ? 13.5 : 14.5, fontWeight: 700, color: '#FFFFFF' }}>
-                    Admissions Review Staff Registry
+                  <span style={{ fontSize: isMobile ? 13 : 14.5, fontWeight: 700, color: '#FFFFFF' }}>
+                    Staff Registry Breakdown
                   </span>
                 </div>
-                <span style={{ fontSize: 11, color: RF_MINT_ACCENT, fontWeight: 600 }}>
-                  {staffList.length} Active Workers
+                <span style={{ fontSize: 10.5, color: RF_MINT_ACCENT, fontWeight: 600 }}>
+                  {staffList.length} Active Staff
                 </span>
               </div>
 
               <div style={{
                 display: 'grid',
                 gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)',
-                gap: isMobile ? 10 : 14
+                gap: isMobile ? 8 : 12
               }}>
                 {([
                   { role: 'SUPER_ADMIN', label: 'Super Admin', color: RF_GOLD_YELLOW },
@@ -7348,20 +7321,20 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                   return (
                     <div key={role} style={{
                       background: 'rgba(255, 255, 255, 0.02)',
-                      borderRadius: 12,
+                      borderRadius: 10,
                       border: '1px solid rgba(255, 255, 255, 0.06)',
-                      padding: '14px 14px'
+                      padding: isMobile ? '10px 12px' : '12px 14px'
                     }}>
-                      <div style={{ fontSize: isMobile ? 22 : 26, fontWeight: 700, color }}>
+                      <div style={{ fontSize: isMobile ? 18 : 22, fontWeight: 700, color }}>
                         {total}
                       </div>
-                      <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', marginTop: 2 }}>
+                      <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', marginTop: 2 }}>
                         {label}
                       </div>
                       <div style={{
-                        fontSize: 11,
+                        fontSize: 10,
                         color: active === total && total > 0 ? RF_MINT_ACCENT : 'rgba(255,255,255,0.35)',
-                        marginTop: 6
+                        marginTop: 4
                       }}>
                         {total > 0 ? `${active}/${total} active` : '0 assigned'}
                       </div>
