@@ -5060,26 +5060,39 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               </p>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, width: isMobile ? '100%' : 'auto', flexWrap: 'wrap' }}>
+            <div style={{
+              display: isMobile ? 'grid' : 'flex',
+              gridTemplateColumns: isMobile ? '1fr 1fr' : undefined,
+              alignItems: 'center',
+              gap: isMobile ? 8 : 10,
+              width: isMobile ? '100%' : 'auto'
+            }}>
               {isSuperAdmin && (
                 <>
                   <button
                     onClick={() => handleOpenAppointSquadLead()}
                     style={{
-                      background: 'rgba(251, 191, 36, 0.15)',
-                      border: '1px solid rgba(251, 191, 36, 0.4)',
+                      background: 'rgba(251, 191, 36, 0.14)',
+                      border: '1px solid rgba(251, 191, 36, 0.35)',
                       color: RF_GOLD_YELLOW,
-                      padding: isMobile ? '10px 14px' : '10px 18px',
-                      borderRadius: 100, fontSize: 13, fontWeight: 700,
-                      cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
+                      height: isMobile ? 38 : 40,
+                      padding: isMobile ? '0 10px' : '0 18px',
+                      borderRadius: isMobile ? 10 : 100,
+                      fontSize: isMobile ? 12 : 13,
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 6,
                       transition: 'all 0.2s',
-                      flex: isMobile ? 1 : 'initial', justifyContent: 'center'
+                      whiteSpace: 'nowrap'
                     }}
                     onMouseEnter={e => {
                       e.currentTarget.style.background = 'rgba(251, 191, 36, 0.25)';
                     }}
                     onMouseLeave={e => {
-                      e.currentTarget.style.background = 'rgba(251, 191, 36, 0.15)';
+                      e.currentTarget.style.background = 'rgba(251, 191, 36, 0.14)';
                     }}
                   >
                     <Star size={14} /> Appoint Squad Lead
@@ -5092,11 +5105,22 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                       setAddWorkerModalOpen(true);
                     }}
                     style={{
-                      background: RF_LEAF_GREEN, color: RF_DEEP_GREEN, border: 'none',
-                      padding: isMobile ? '10px 16px' : '10px 20px', borderRadius: 100, fontSize: 13, fontWeight: 700,
-                      cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
-                      boxShadow: `0 4px 14px ${RF_LEAF_GREEN}44`, transition: 'all 0.2s',
-                      flex: isMobile ? 1 : 'initial', justifyContent: 'center'
+                      background: RF_LEAF_GREEN,
+                      color: RF_DEEP_GREEN,
+                      border: 'none',
+                      height: isMobile ? 38 : 40,
+                      padding: isMobile ? '0 12px' : '0 20px',
+                      borderRadius: isMobile ? 10 : 100,
+                      fontSize: isMobile ? 12 : 13,
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 6,
+                      boxShadow: `0 4px 14px ${RF_LEAF_GREEN}44`,
+                      transition: 'all 0.2s',
+                      whiteSpace: 'nowrap'
                     }}
                     onMouseEnter={e => (e.currentTarget.style.background = RF_MINT_ACCENT)}
                     onMouseLeave={e => (e.currentTarget.style.background = RF_LEAF_GREEN)}
@@ -5110,9 +5134,21 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 onClick={handleRefreshData}
                 disabled={loading}
                 style={{
-                  background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.18)',
-                  color: '#FFFFFF', padding: isMobile ? '10px 14px' : '10px 18px', borderRadius: 100, fontSize: 13,
-                  fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6
+                  background: 'rgba(255,255,255,0.06)',
+                  border: '1px solid rgba(255,255,255,0.18)',
+                  color: '#FFFFFF',
+                  height: isMobile ? 38 : 40,
+                  padding: isMobile ? '0 12px' : '0 18px',
+                  borderRadius: isMobile ? 10 : 100,
+                  fontSize: isMobile ? 12 : 13,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 6,
+                  gridColumn: isMobile ? (isSuperAdmin ? 'span 2' : undefined) : undefined,
+                  whiteSpace: 'nowrap'
                 }}
               >
                 <RefreshCw size={14} className={loading ? 'rp-spin' : ''} /> {loading ? 'Syncing...' : 'Refresh'}
