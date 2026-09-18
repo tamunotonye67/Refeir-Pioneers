@@ -7569,27 +7569,28 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           }} onClick={e => e.stopPropagation()}>
             {/* Modal Header */}
             <div style={{
-              padding: isMobile ? '16px 18px' : '24px 28px', borderBottom: '1px solid rgba(255,255,255,0.08)',
-              display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+              padding: isMobile ? '14px 16px' : '20px 24px', borderBottom: '1px solid rgba(255,255,255,0.08)',
+              display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12
             }}>
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}>
                   <span style={{ fontSize: 11, fontWeight: 700, fontFamily: 'monospace', color: RF_MINT_ACCENT }}>
                     {activeTask.reference_id}
                   </span>
                   {renderTaskStatusBadge(activeTask.status)}
                 </div>
-                <h3 style={{ fontSize: isMobile ? 18 : 20, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
+                <h3 style={{ fontSize: isMobile ? 15 : 18, fontWeight: 700, color: '#FFFFFF', margin: 0, lineHeight: 1.35, wordBreak: 'break-word' }}>
                   {activeTask.task_title}
                 </h3>
               </div>
 
               <button
                 onClick={() => setTaskModalOpen(false)}
+                aria-label="Close"
                 style={{
                   background: 'rgba(255,255,255,0.06)', border: 'none', color: 'rgba(255,255,255,0.6)',
                   width: 32, height: 32, borderRadius: '50%', cursor: 'pointer', display: 'flex',
-                  alignItems: 'center', justifyContent: 'center'
+                  alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: -2
                 }}
               >
                 ✕
@@ -7600,35 +7601,36 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             <div className="rp-sleek-scroll" style={{
               flex: 1,
               minHeight: 0,
-              padding: isMobile ? '16px 14px' : '24px 28px',
+              padding: isMobile ? '14px 14px' : '20px 24px',
               overflowY: 'auto',
               WebkitOverflowScrolling: 'touch',
               overscrollBehavior: 'contain',
               display: 'flex',
               flexDirection: 'column',
-              gap: 20
+              gap: 14
             }}>
               {/* Contributor Card */}
               <div style={{
-                background: 'rgba(255,255,255,0.04)', borderRadius: 14, padding: '14px 18px',
-                border: '1px solid rgba(255,255,255,0.08)', display: 'flex', flexWrap: 'wrap', gap: 14,
+                background: 'rgba(255,255,255,0.03)', borderRadius: 12, padding: '10px 14px',
+                border: '1px solid rgba(255,255,255,0.07)', display: 'flex', flexWrap: 'wrap', gap: 10,
                 alignItems: 'center', justifyContent: 'space-between'
               }}>
-                <div>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: '#FFFFFF' }}>{activeTask.full_name}</div>
-                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', marginTop: 2 }}>
-                    {activeTask.email} {activeTask.application_number ? `• App ID: ${activeTask.application_number}` : ''} {activeTask.pioneer_id ? `• Pioneer ID: ${activeTask.pioneer_id}` : ''}
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontSize: 13.5, fontWeight: 700, color: '#FFFFFF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {activeTask.full_name}
+                  </div>
+                  <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.55)', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {activeTask.email} {activeTask.application_number ? `• App: ${activeTask.application_number}` : ''}
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span style={{
-                    padding: '4px 10px', borderRadius: 100, fontSize: 12, fontWeight: 700,
-                    background: `${RF_LEAF_GREEN}20`, color: RF_MINT_ACCENT, border: `1px solid ${RF_LEAF_GREEN}44`
-                  }}>
-                    Targeting {activeTask.target_level.replace('_', ' ')}
-                  </span>
-                </div>
+                <span style={{
+                  padding: '3px 9px', borderRadius: 100, fontSize: 11, fontWeight: 700,
+                  background: `${RF_LEAF_GREEN}18`, color: RF_MINT_ACCENT, border: `1px solid ${RF_LEAF_GREEN}38`,
+                  whiteSpace: 'nowrap'
+                }}>
+                  Target: {activeTask.target_level.replace('_', ' ')}
+                </span>
               </div>
 
               {/* Promotion Qualification & Completed Jobs Progress Meter */}
@@ -7642,63 +7644,64 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
                 return (
                   <div style={{
-                    background: qualifies ? 'rgba(24, 252, 92, 0.08)' : 'rgba(255, 209, 102, 0.08)',
-                    border: `1px solid ${qualifies ? RF_LEAF_GREEN : RF_GOLD_YELLOW}44`,
-                    borderRadius: 14, padding: '14px 18px'
+                    background: qualifies ? 'rgba(24, 252, 92, 0.06)' : 'rgba(255, 209, 102, 0.06)',
+                    border: `1px solid ${qualifies ? RF_LEAF_GREEN : RF_GOLD_YELLOW}38`,
+                    borderRadius: 12, padding: '10px 14px'
                   }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6, flexWrap: 'wrap', gap: 8 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4, gap: 8 }}>
                       <span style={{
-                        fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase',
+                        fontSize: 10.5, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase',
                         color: qualifies ? RF_MINT_ACCENT : RF_GOLD_YELLOW
                       }}>
-                        {qualifies ? '✓ Promotion Threshold Reached' : '⏳ Promotion Threshold In Progress'}
+                        {qualifies ? '✓ Promotion Ready' : 'Promotion Progress'}
                       </span>
-                      <span style={{ fontSize: 12, fontWeight: 700, color: '#FFFFFF' }}>
-                        {totalAfterVerify} of {requiredJobs} Verified Jobs Delivered
+                      <span style={{ fontSize: 11.5, fontWeight: 700, color: '#FFFFFF' }}>
+                        {totalAfterVerify} / {requiredJobs} Jobs
                       </span>
                     </div>
 
                     <div style={{
-                      width: '100%', height: 6, background: 'rgba(255,255,255,0.1)',
-                      borderRadius: 10, overflow: 'hidden', margin: '8px 0'
+                      width: '100%', height: 4, background: 'rgba(255,255,255,0.08)',
+                      borderRadius: 6, overflow: 'hidden', margin: '6px 0'
                     }}>
                       <div style={{
                         width: `${Math.min(100, (totalAfterVerify / requiredJobs) * 100)}%`,
                         height: '100%',
                         background: qualifies ? RF_MINT_ACCENT : RF_GOLD_YELLOW,
-                        borderRadius: 10, transition: 'width 0.3s ease'
+                        borderRadius: 6, transition: 'width 0.3s ease'
                       }} />
                     </div>
 
-                    <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)', margin: 0, lineHeight: 1.5 }}>
+                    <p style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.7)', margin: 0, lineHeight: 1.4 }}>
                       {qualifies ? (
-                        <>Verifying this deliverable completes job #{totalAfterVerify}, meeting the {requiredJobs}-job requirement for promotion to <strong>{activeTask.target_level.replace('_', ' ')}</strong>.</>
+                        <>Job #{totalAfterVerify} qualifies member for promotion to <strong>{activeTask.target_level.replace('_', ' ')}</strong>.</>
                       ) : (
-                        <>Verifying this deliverable logs job #{totalAfterVerify}. The contributor needs <strong>{requiredJobs - totalAfterVerify} more verified job{requiredJobs - totalAfterVerify === 1 ? '' : 's'}</strong> before qualifying for promotion to <strong>{activeTask.target_level.replace('_', ' ')}</strong>.</>
+                        <>{requiredJobs - totalAfterVerify} more verified mission{requiredJobs - totalAfterVerify === 1 ? '' : 's'} needed for promotion.</>
                       )}
                     </p>
                   </div>
                 );
               })()}
 
-              {/* Task Details */}
+              {/* Task Category */}
               <div>
-                <span style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>
-                  Mission Category &amp; Division
+                <span style={{ fontSize: 10.5, fontWeight: 700, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  Category &amp; Division
                 </span>
-                <p style={{ fontSize: 13, color: '#FFFFFF', marginTop: 4 }}>
-                  <strong>Division:</strong> {activeTask.division} • <strong>Category:</strong> {activeTask.task_category}
+                <p style={{ fontSize: 12.5, color: '#FFFFFF', marginTop: 3, margin: '3px 0 0 0' }}>
+                  <strong style={{ color: RF_MINT_ACCENT }}>{activeTask.division}</strong> • {activeTask.task_category}
                 </p>
               </div>
 
+              {/* Description */}
               <div>
-                <span style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>
-                  Work Accomplished &amp; Impact Description
+                <span style={{ fontSize: 10.5, fontWeight: 700, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  Work Summary
                 </span>
                 <p style={{
-                  fontSize: 13.5, color: 'rgba(255,255,255,0.85)', lineHeight: 1.6,
-                  background: 'rgba(0,0,0,0.25)', padding: '14px 16px', borderRadius: 10,
-                  marginTop: 6, whiteSpace: 'pre-wrap'
+                  fontSize: 12.5, color: 'rgba(255,255,255,0.85)', lineHeight: 1.55,
+                  background: 'rgba(0,0,0,0.25)', padding: '10px 12px', borderRadius: 8,
+                  marginTop: 4, whiteSpace: 'pre-wrap', margin: '4px 0 0 0'
                 }}>
                   {activeTask.task_description}
                 </p>
@@ -7707,22 +7710,23 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               {/* Deliverable Links */}
               {(activeTask.deliverable_url || activeTask.additional_url) && (
                 <div>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>
-                    Deliverable &amp; Proof URLs
+                  <span style={{ fontSize: 10.5, fontWeight: 700, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginBottom: 5 }}>
+                    Deliverable Links
                   </span>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginTop: 6 }}>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                     {activeTask.deliverable_url && (
                       <a
                         href={activeTask.deliverable_url}
                         target="_blank"
                         rel="noopener noreferrer"
                         style={{
-                          background: 'rgba(24, 252, 92, 0.1)', border: `1px solid ${RF_LEAF_GREEN}55`,
-                          color: RF_MINT_ACCENT, padding: '6px 14px', borderRadius: 8, fontSize: 12.5,
-                          textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6
+                          background: 'rgba(24, 252, 92, 0.08)', border: `1px solid ${RF_LEAF_GREEN}44`,
+                          color: RF_MINT_ACCENT, padding: '6px 12px', borderRadius: 7, fontSize: 12,
+                          textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 5,
+                          whiteSpace: 'nowrap'
                         }}
                       >
-                        <ExternalLink size={13} /> View Primary Deliverable
+                        <ExternalLink size={12} /> {isMobile ? 'Deliverable Link' : 'Primary Deliverable'}
                       </a>
                     )}
                     {activeTask.additional_url && (
@@ -7731,12 +7735,13 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                         target="_blank"
                         rel="noopener noreferrer"
                         style={{
-                          background: 'rgba(255, 255, 255, 0.06)', border: '1px solid rgba(255, 255, 255, 0.15)',
-                          color: '#FFFFFF', padding: '6px 14px', borderRadius: 8, fontSize: 12.5,
-                          textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6
+                          background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.12)',
+                          color: '#FFFFFF', padding: '6px 12px', borderRadius: 7, fontSize: 12,
+                          textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 5,
+                          whiteSpace: 'nowrap'
                         }}
                       >
-                        <ExternalLink size={13} /> Additional Verification Link
+                        <ExternalLink size={12} /> Verification Link
                       </a>
                     )}
                   </div>
@@ -7745,22 +7750,22 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
               {/* Attached Screenshots Gallery */}
               <div>
-                <span style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', display: 'block', marginBottom: 8 }}>
-                  Uploaded Screenshots &amp; Evidence ({activeTask.screenshots.length})
+                <span style={{ fontSize: 10.5, fontWeight: 700, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginBottom: 6 }}>
+                  Screenshots ({activeTask.screenshots.length})
                 </span>
                 {activeTask.screenshots.length === 0 ? (
-                  <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', fontStyle: 'italic' }}>
-                    No screenshots attached to this mission.
+                  <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', fontStyle: 'italic', margin: 0 }}>
+                    No screenshots attached.
                   </p>
                 ) : (
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(auto-fit, minmax(130px, 1fr))' : 'repeat(auto-fit, minmax(160px, 1fr))', gap: 10 }}>
                     {activeTask.screenshots.map((s, idx) => (
                       <div
                         key={s.id || idx}
                         onClick={() => setScreenshotModalUrl(s.data_url)}
                         style={{
-                          background: 'rgba(0,0,0,0.4)', borderRadius: 10, overflow: 'hidden',
-                          border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer',
+                          background: 'rgba(0,0,0,0.35)', borderRadius: 9, overflow: 'hidden',
+                          border: '1px solid rgba(255,255,255,0.09)', cursor: 'pointer',
                           transition: 'transform 0.15s, border-color 0.15s'
                         }}
                         onMouseEnter={e => {
@@ -7768,30 +7773,34 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                           e.currentTarget.style.transform = 'scale(1.02)';
                         }}
                         onMouseLeave={e => {
-                          e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)';
+                          e.currentTarget.style.borderColor = 'rgba(255,255,255,0.09)';
                           e.currentTarget.style.transform = '';
                         }}
                       >
-                        <div style={{ height: 110, position: 'relative' }}>
+                        <div style={{ height: isMobile ? 85 : 100, position: 'relative', background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                           <img
                             src={s.data_url}
                             alt={s.name || `Screenshot ${idx + 1}`}
+                            onError={e => {
+                              // Hide broken image and keep container clean
+                              (e.currentTarget as HTMLImageElement).style.opacity = '0';
+                            }}
                             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                           />
                           <div style={{
-                            position: 'absolute', bottom: 4, right: 6,
-                            background: 'rgba(0,0,0,0.7)', borderRadius: 4, padding: '2px 6px',
-                            fontSize: 10, color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: 3
+                            position: 'absolute', bottom: 4, right: 5,
+                            background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(4px)', borderRadius: 4, padding: '2px 5px',
+                            fontSize: 9.5, color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: 3
                           }}>
                             <Eye size={10} /> Enlarge
                           </div>
                         </div>
-                        <div style={{ padding: '8px 10px' }}>
-                          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <div style={{ padding: '6px 8px' }}>
+                          <div style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.7)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                             {s.name || `Image #${idx + 1}`}
                           </div>
                           {s.caption && (
-                            <div style={{ fontSize: 11, color: RF_MINT_ACCENT, marginTop: 2, fontStyle: 'italic' }}>
+                            <div style={{ fontSize: 10, color: RF_MINT_ACCENT, marginTop: 2, fontStyle: 'italic', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                               "{s.caption}"
                             </div>
                           )}
@@ -7804,19 +7813,19 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
               {/* Squad / Admin Feedback Notes */}
               <div>
-                <span style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', display: 'block', marginBottom: 6 }}>
-                  Squad Lead &amp; Admin Verification Feedback
+                <span style={{ fontSize: 10.5, fontWeight: 700, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginBottom: 4 }}>
+                  Verification Feedback
                 </span>
                 <textarea
-                  rows={3}
-                  placeholder="Add feedback, notes or peer validation remarks for the contributor..."
+                  rows={2}
+                  placeholder="Add feedback or review remarks for contributor..."
                   value={taskFeedback}
                   onChange={e => setTaskFeedback(e.target.value)}
                   style={{
-                    width: '100%', padding: '10px 14px', borderRadius: 8,
-                    background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)',
-                    color: '#FFFFFF', fontSize: 13, outline: 'none', boxSizing: 'border-box',
-                    fontFamily: 'inherit'
+                    width: '100%', padding: '8px 12px', borderRadius: 8,
+                    background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.12)',
+                    color: '#FFFFFF', fontSize: 12.5, outline: 'none', boxSizing: 'border-box',
+                    fontFamily: 'inherit', resize: 'vertical'
                   }}
                 />
               </div>
@@ -7825,31 +7834,34 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             {/* Modal Actions */}
             <div style={{
               flexShrink: 0,
-              padding: isMobile ? '12px 16px calc(14px + env(safe-area-inset-bottom, 12px))' : '18px 28px',
+              padding: isMobile ? '10px 14px calc(12px + env(safe-area-inset-bottom, 12px))' : '16px 24px',
               borderTop: '1px solid rgba(255,255,255,0.08)',
-              display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: 10,
+              display: 'flex', alignItems: 'center', justifyContent: isMobile ? 'stretch' : 'space-between', gap: 10,
               background: 'rgba(5, 18, 11, 0.95)'
             }}>
-              <button
-                type="button"
-                onClick={() => setTaskModalOpen(false)}
-                style={{
-                  background: 'none', border: 'none', color: 'rgba(255,255,255,0.6)',
-                  fontSize: 13, cursor: 'pointer'
-                }}
-              >
-                Close
-              </button>
+              {!isMobile && (
+                <button
+                  type="button"
+                  onClick={() => setTaskModalOpen(false)}
+                  style={{
+                    background: 'none', border: 'none', color: 'rgba(255,255,255,0.6)',
+                    fontSize: 13, cursor: 'pointer', padding: '6px 12px'
+                  }}
+                >
+                  Close
+                </button>
+              )}
 
-              <div style={{ display: 'flex', gap: 10 }}>
+              <div style={{ display: 'flex', gap: 8, width: isMobile ? '100%' : 'auto', flex: isMobile ? 1 : 'initial' }}>
                 <button
                   type="button"
                   disabled={updatingTask}
                   onClick={() => handleUpdateTaskStatus('NEEDS_REVISION')}
                   style={{
-                    background: 'rgba(244, 124, 32, 0.15)', border: `1px solid rgba(244, 124, 32, 0.5)`,
-                    color: '#FFB27D', padding: '9px 16px', borderRadius: 100, fontSize: 12.5,
-                    fontWeight: 600, cursor: updatingTask ? 'not-allowed' : 'pointer'
+                    background: 'rgba(244, 124, 32, 0.12)', border: `1px solid rgba(244, 124, 32, 0.4)`,
+                    color: '#FFB27D', padding: isMobile ? '10px 8px' : '9px 16px', borderRadius: 8, fontSize: 12,
+                    fontWeight: 600, cursor: updatingTask ? 'not-allowed' : 'pointer',
+                    flex: isMobile ? 1 : 'initial', textAlign: 'center', whiteSpace: 'nowrap'
                   }}
                 >
                   Request Revision
@@ -7869,20 +7881,21 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                       disabled={updatingTask}
                       onClick={() => handleUpdateTaskStatus('VERIFIED')}
                       style={{
-                        background: qualifies ? RF_LEAF_GREEN : 'rgba(24, 252, 92, 0.2)',
+                        background: qualifies ? RF_LEAF_GREEN : 'rgba(24, 252, 92, 0.18)',
                         color: qualifies ? RF_DEEP_GREEN : RF_MINT_ACCENT,
-                        border: qualifies ? 'none' : `1px solid ${RF_LEAF_GREEN}66`,
-                        padding: '9px 20px', borderRadius: 100, fontSize: 12.5, fontWeight: 700,
-                        cursor: updatingTask ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 6
+                        border: qualifies ? 'none' : `1px solid ${RF_LEAF_GREEN}55`,
+                        padding: isMobile ? '10px 10px' : '9px 18px', borderRadius: 8, fontSize: 12, fontWeight: 700,
+                        cursor: updatingTask ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5,
+                        flex: isMobile ? 1.3 : 'initial', textAlign: 'center', whiteSpace: 'nowrap'
                       }}
                     >
                       <Check size={14} />
                       {updatingTask ? (
                         'Verifying...'
                       ) : qualifies ? (
-                        `Verify Proof & Promote to ${activeTask.target_level.replace('_', ' ')}`
+                        isMobile ? 'Verify & Promote' : `Verify Proof & Promote to ${activeTask.target_level.replace('_', ' ')}`
                       ) : (
-                        `Verify Task Proof (${totalAfterVerify}/${requiredJobs} Jobs Done)`
+                        isMobile ? `Verify Proof (${totalAfterVerify}/${requiredJobs})` : `Verify Task Proof (${totalAfterVerify}/${requiredJobs} Done)`
                       )}
                     </button>
                   );
