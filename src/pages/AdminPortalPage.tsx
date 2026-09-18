@@ -6832,7 +6832,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '0 0 4px', flexWrap: 'wrap' }}>
                   <h2 style={{ fontSize: isMobile ? 18 : 24, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
-                    Platform Analytics &amp; Intelligence
+                    {isMobile ? 'Platform Analytics' : 'Platform Analytics & Intelligence'}
                   </h2>
                   <span style={{
                     fontSize: 10, fontWeight: 700, background: 'rgba(24, 252, 92, 0.12)',
