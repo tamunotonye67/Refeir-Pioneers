@@ -7165,7 +7165,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             </div>
 
             {/* Modal Scrollable Body */}
-            <div style={{
+            <div className="rp-sleek-scroll" style={{
               flex: 1,
               minHeight: 0,
               padding: isMobile ? '16px 14px' : '24px 28px',
@@ -7522,7 +7522,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             </div>
 
             {/* Modal Body */}
-            <div style={{
+            <div className="rp-sleek-scroll" style={{
               flex: 1,
               minHeight: 0,
               padding: isMobile ? '16px 14px' : '24px 28px',
@@ -7928,6 +7928,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             {/* Form */}
             <form
               onSubmit={handleCreateWorker}
+              className="rp-sleek-scroll"
               style={{
                 flex: 1,
                 minHeight: 0,
@@ -8091,6 +8092,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
         >
           <div
             onClick={e => e.stopPropagation()}
+            className="rp-sleek-scroll"
             style={{
               maxWidth: 900, width: '100%',
               maxHeight: isMobile ? 'calc(100dvh - 28px - env(safe-area-inset-bottom, 16px))' : '92vh',
@@ -8450,6 +8452,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
         >
           <div
             onClick={e => e.stopPropagation()}
+            className="rp-sleek-scroll"
             style={{
               maxWidth: 540, width: '100%',
               maxHeight: isMobile ? 'calc(100dvh - 28px - env(safe-area-inset-bottom, 16px))' : '90vh',
@@ -8524,6 +8527,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 onChange={e => setSuspendReasonInput(e.target.value)}
                 placeholder="Explain the specific reason for suspending this account..."
                 rows={3}
+                className="rp-input-modern rp-sleek-scroll"
                 style={{
                   width: '100%', padding: '12px 14px', borderRadius: 10,
                   background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(239, 68, 68, 0.3)',
@@ -8578,6 +8582,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
         >
           <div
             onClick={e => e.stopPropagation()}
+            className="rp-sleek-scroll"
             style={{
               maxWidth: 580, width: '100%',
               maxHeight: isMobile ? 'calc(100dvh - 28px - env(safe-area-inset-bottom, 16px))' : '90vh',
@@ -8746,61 +8751,151 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
         <div
           onClick={() => setNewTaskModalOpen(false)}
           style={{
-            position: 'fixed', inset: 0, zIndex: 1100,
-            background: 'rgba(5, 18, 11, 0.85)', backdropFilter: 'blur(12px)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            padding: isMobile ? '12px 10px calc(16px + env(safe-area-inset-bottom, 16px))' : 20
+            position: 'fixed',
+            inset: 0,
+            zIndex: 1100,
+            background: 'rgba(3, 10, 6, 0.82)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            display: 'flex',
+            alignItems: isMobile ? 'flex-end' : 'center',
+            justifyContent: 'center',
+            padding: isMobile ? 0 : 20,
+            animation: 'fadeIn 0.2s ease-out'
           }}
         >
           <div
             onClick={e => e.stopPropagation()}
+            className="rp-sleek-scroll"
             style={{
-              maxWidth: 720, width: '100%',
-              maxHeight: isMobile ? 'calc(100dvh - 28px - env(safe-area-inset-bottom, 16px))' : '90vh',
+              maxWidth: 720,
+              width: '100%',
+              maxHeight: isMobile ? 'calc(100dvh - 20px)' : '88vh',
               overflowY: 'auto',
               WebkitOverflowScrolling: 'touch',
               overscrollBehavior: 'contain',
-              background: 'linear-gradient(145deg, #0B2416 0%, #061A0F 100%)', borderRadius: isMobile ? 18 : 24,
-              border: '1px solid rgba(102, 187, 42, 0.35)',
-              padding: isMobile ? '20px 16px calc(30px + env(safe-area-inset-bottom, 20px))' : '32px',
-              boxShadow: '0 25px 60px rgba(0,0,0,0.9)'
+              background: 'linear-gradient(175deg, #0A2216 0%, #05140C 100%)',
+              borderRadius: isMobile ? '24px 24px 0 0' : 24,
+              border: '1px solid rgba(24, 252, 92, 0.22)',
+              boxShadow: '0 32px 80px -16px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.04) inset',
+              position: 'relative',
+              display: 'flex',
+              flexDirection: 'column'
             }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+            {/* Top Glowing Emerald Accent Line */}
+            <div
+              style={{
+                height: 2,
+                width: '100%',
+                background: 'linear-gradient(90deg, transparent, rgba(24, 252, 92, 0.6), transparent)',
+                position: 'sticky',
+                top: 0,
+                zIndex: 10
+              }}
+            />
+
+            {/* Modal Header */}
+            <div
+              style={{
+                padding: isMobile ? '18px 20px 14px' : '26px 30px 18px',
+                borderBottom: '1px solid rgba(255, 255, 255, 0.07)',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                position: 'sticky',
+                top: 2,
+                background: 'rgba(10, 34, 22, 0.96)',
+                backdropFilter: 'blur(16px)',
+                zIndex: 5
+              }}
+            >
               <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                <div style={{
-                  width: 48, height: 48, borderRadius: 14, background: 'rgba(24, 252, 92, 0.15)',
-                  border: `1px solid ${RF_LEAF_GREEN}66`, display: 'flex', alignItems: 'center',
-                  justifyContent: 'center', color: RF_MINT_ACCENT
-                }}>
-                  <Radio size={22} />
+                <div
+                  style={{
+                    width: 44,
+                    height: 44,
+                    borderRadius: 12,
+                    background: 'rgba(24, 252, 92, 0.12)',
+                    border: '1px solid rgba(24, 252, 92, 0.28)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: RF_MINT_ACCENT,
+                    flexShrink: 0
+                  }}
+                >
+                  <Radio size={20} />
                 </div>
                 <div>
-                  <h3 style={{ fontSize: 20, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
-                    Squad Lead Broadcast Protocol
-                  </h3>
-                  <div style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.6)', marginTop: 2 }}>
-                    Announce &amp; broadcast missions directly to WhatsApp groups with special Airtime, Data, or Cash bounties
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <h3 style={{ fontSize: isMobile ? 17 : 19, fontWeight: 800, color: '#FFFFFF', margin: 0, letterSpacing: '-0.01em' }}>
+                      Squad Mission Broadcast
+                    </h3>
+                    <span
+                      style={{
+                        fontSize: 10,
+                        fontWeight: 700,
+                        color: RF_MINT_ACCENT,
+                        background: 'rgba(24, 252, 92, 0.12)',
+                        border: '1px solid rgba(24, 252, 92, 0.25)',
+                        padding: '2px 7px',
+                        borderRadius: 100,
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.04em'
+                      }}
+                    >
+                      Protocol
+                    </span>
+                  </div>
+                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', marginTop: 2 }}>
+                    Publish missions and distribute Airtime, Data, or Cash bounties across squads
                   </div>
                 </div>
               </div>
 
               <button
                 onClick={() => setNewTaskModalOpen(false)}
+                aria-label="Close modal"
                 style={{
-                  background: 'rgba(255,255,255,0.06)', border: 'none', color: 'rgba(255,255,255,0.6)',
-                  width: 32, height: 32, borderRadius: '50%', cursor: 'pointer', display: 'flex',
-                  alignItems: 'center', justifyContent: 'center'
+                  background: 'rgba(255, 255, 255, 0.06)',
+                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                  color: 'rgba(255, 255, 255, 0.75)',
+                  width: 32,
+                  height: 32,
+                  borderRadius: '50%',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'all 0.15s ease'
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
+                  e.currentTarget.style.color = '#FFFFFF';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.06)';
+                  e.currentTarget.style.color = 'rgba(255, 255, 255, 0.75)';
                 }}
               >
-                ✕
+                <X size={15} />
               </button>
             </div>
 
-            <form onSubmit={handleCreateTask} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+            {/* Modal Body Form */}
+            <form
+              onSubmit={handleCreateTask}
+              style={{
+                padding: isMobile ? '20px 18px calc(24px + env(safe-area-inset-bottom, 16px))' : '26px 30px 30px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 20
+              }}
+            >
               {/* Mission Title */}
               <div>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#FFFFFF', marginBottom: 6 }}>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.55)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
                   Mission Title *
                 </label>
                 <input
@@ -8808,28 +8903,41 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                   value={newTaskTitle}
                   onChange={e => setNewTaskTitle(e.target.value)}
                   placeholder="e.g. Campus Viral Loop: Share Refeir Milestone Carousel to WhatsApp Status"
+                  className="rp-input-modern"
                   style={{
-                    width: '100%', padding: '10px 14px', borderRadius: 10,
-                    background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.2)',
-                    color: '#FFFFFF', fontSize: 13.5, outline: 'none', boxSizing: 'border-box'
+                    width: '100%',
+                    padding: '11px 14px',
+                    borderRadius: 12,
+                    background: 'rgba(255, 255, 255, 0.035)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    color: '#FFFFFF',
+                    fontSize: 13.5,
+                    outline: 'none',
+                    boxSizing: 'border-box'
                   }}
                   required
                 />
               </div>
 
               {/* Target Squad & Cycle Grid */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 14 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 14 }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#FFFFFF', marginBottom: 6 }}>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.55)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
                     Target Squad / Division *
                   </label>
                   <select
                     value={newTaskSquad}
                     onChange={e => setNewTaskSquad(e.target.value as any)}
+                    className="rp-input-modern"
                     style={{
-                      width: '100%', padding: '10px 42px 10px 14px', borderRadius: 10,
-                      background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.2)',
-                      color: '#FFFFFF', fontSize: 13, outline: 'none'
+                      width: '100%',
+                      padding: '11px 40px 11px 14px',
+                      borderRadius: 12,
+                      background: 'rgba(255, 255, 255, 0.035)',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      color: '#FFFFFF',
+                      fontSize: 13,
+                      outline: 'none'
                     }}
                     required
                   >
@@ -8844,16 +8952,22 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#FFFFFF', marginBottom: 6 }}>
-                    Frequency / Sprint Cycle *
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.55)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
+                    Sprint Cycle / Frequency *
                   </label>
                   <select
                     value={newTaskFrequency}
                     onChange={e => setNewTaskFrequency(e.target.value as any)}
+                    className="rp-input-modern"
                     style={{
-                      width: '100%', padding: '10px 42px 10px 14px', borderRadius: 10,
-                      background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.2)',
-                      color: '#FFFFFF', fontSize: 13, outline: 'none'
+                      width: '100%',
+                      padding: '11px 40px 11px 14px',
+                      borderRadius: 12,
+                      background: 'rgba(255, 255, 255, 0.035)',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      color: '#FFFFFF',
+                      fontSize: 13,
+                      outline: 'none'
                     }}
                     required
                   >
@@ -8865,9 +8979,9 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               </div>
 
               {/* Category & Deadline Grid */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 14 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 14 }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#FFFFFF', marginBottom: 6 }}>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.55)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
                     Task Category *
                   </label>
                   <input
@@ -8875,17 +8989,24 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                     value={newTaskCategory}
                     onChange={e => setNewTaskCategory(e.target.value)}
                     placeholder="e.g. Liking, Commenting & Viral Loop Sharing"
+                    className="rp-input-modern"
                     style={{
-                      width: '100%', padding: '10px 14px', borderRadius: 10,
-                      background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.2)',
-                      color: '#FFFFFF', fontSize: 13, outline: 'none', boxSizing: 'border-box'
+                      width: '100%',
+                      padding: '11px 14px',
+                      borderRadius: 12,
+                      background: 'rgba(255, 255, 255, 0.035)',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      color: '#FFFFFF',
+                      fontSize: 13,
+                      outline: 'none',
+                      boxSizing: 'border-box'
                     }}
                     required
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#FFFFFF', marginBottom: 6 }}>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.55)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
                     Submission Deadline
                   </label>
                   <input
@@ -8893,39 +9014,95 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                     value={newTaskDeadline}
                     onChange={e => setNewTaskDeadline(e.target.value)}
                     placeholder="e.g. Today 11:59 PM WAT"
+                    className="rp-input-modern"
                     style={{
-                      width: '100%', padding: '10px 14px', borderRadius: 10,
-                      background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.2)',
-                      color: '#FFFFFF', fontSize: 13, outline: 'none', boxSizing: 'border-box'
+                      width: '100%',
+                      padding: '11px 14px',
+                      borderRadius: 12,
+                      background: 'rgba(255, 255, 255, 0.035)',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      color: '#FFFFFF',
+                      fontSize: 13,
+                      outline: 'none',
+                      boxSizing: 'border-box'
                     }}
                   />
                 </div>
               </div>
 
               {/* Special Bonus / Bounty Incentive Box */}
-              <div style={{
-                background: 'rgba(0,0,0,0.3)', borderRadius: 14, padding: '18px 20px',
-                border: '1px solid rgba(255, 209, 102, 0.25)'
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-                  <Gift size={16} color={RF_GOLD_YELLOW} />
-                  <span style={{ fontSize: 13, fontWeight: 700, color: RF_GOLD_YELLOW, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    Special Bonus &amp; Bounty Motivation (Airtime, Data, Cash)
-                  </span>
+              <div
+                style={{
+                  background: 'linear-gradient(145deg, rgba(246, 178, 26, 0.04) 0%, rgba(24, 252, 92, 0.02) 100%)',
+                  borderRadius: 16,
+                  padding: '18px 20px',
+                  border: '1px solid rgba(246, 178, 26, 0.2)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 14
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <div
+                      style={{
+                        width: 28,
+                        height: 28,
+                        borderRadius: 8,
+                        background: 'rgba(246, 178, 26, 0.12)',
+                        border: '1px solid rgba(246, 178, 26, 0.3)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: RF_GOLD_YELLOW
+                      }}
+                    >
+                      <Gift size={15} />
+                    </div>
+                    <div>
+                      <span style={{ fontSize: 12.5, fontWeight: 800, color: RF_GOLD_YELLOW, letterSpacing: '-0.01em' }}>
+                        Incentivized Bounty Motivation
+                      </span>
+                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', marginLeft: 8 }}>
+                        Airtime, Data, Cash, or XP
+                      </span>
+                    </div>
+                  </div>
+                  {newTaskBountyType !== 'NONE' && (
+                    <span
+                      style={{
+                        fontSize: 10.5,
+                        fontWeight: 700,
+                        color: RF_GOLD_YELLOW,
+                        background: 'rgba(246, 178, 26, 0.15)',
+                        border: '1px solid rgba(246, 178, 26, 0.35)',
+                        padding: '2px 8px',
+                        borderRadius: 100
+                      }}
+                    >
+                      Active Bounty
+                    </span>
+                  )}
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 14, marginBottom: 14 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 12 }}>
                   <div>
-                    <label style={{ display: 'block', fontSize: 11.5, fontWeight: 600, color: '#FFFFFF', marginBottom: 4 }}>
+                    <label style={{ display: 'block', fontSize: 10.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>
                       Bounty Reward Type *
                     </label>
                     <select
                       value={newTaskBountyType}
                       onChange={e => setNewTaskBountyType(e.target.value as any)}
+                      className="rp-input-modern"
                       style={{
-                        width: '100%', padding: '8px 38px 8px 12px', borderRadius: 8,
-                        background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.2)',
-                        color: '#FFFFFF', fontSize: 12.5, outline: 'none'
+                        width: '100%',
+                        padding: '9px 38px 9px 12px',
+                        borderRadius: 10,
+                        background: 'rgba(0, 0, 0, 0.35)',
+                        border: '1px solid rgba(246, 178, 26, 0.25)',
+                        color: '#FFFFFF',
+                        fontSize: 12.5,
+                        outline: 'none'
                       }}
                       required
                     >
@@ -8938,7 +9115,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                   </div>
 
                   <div>
-                    <label style={{ display: 'block', fontSize: 11.5, fontWeight: 600, color: '#FFFFFF', marginBottom: 4 }}>
+                    <label style={{ display: 'block', fontSize: 10.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>
                       Bounty Prize Label
                     </label>
                     <input
@@ -8946,18 +9123,25 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                       value={newTaskBountyReward}
                       onChange={e => setNewTaskBountyReward(e.target.value)}
                       placeholder="e.g. ₦1,500 Airtime Voucher or 10GB Data"
+                      className="rp-input-modern"
                       style={{
-                        width: '100%', padding: '8px 12px', borderRadius: 8,
-                        background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.2)',
-                        color: '#FFFFFF', fontSize: 12.5, outline: 'none', boxSizing: 'border-box'
+                        width: '100%',
+                        padding: '9px 12px',
+                        borderRadius: 10,
+                        background: 'rgba(0, 0, 0, 0.35)',
+                        border: '1px solid rgba(246, 178, 26, 0.25)',
+                        color: '#FFFFFF',
+                        fontSize: 12.5,
+                        outline: 'none',
+                        boxSizing: 'border-box'
                       }}
                     />
                   </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 14 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 12 }}>
                   <div>
-                    <label style={{ display: 'block', fontSize: 11.5, fontWeight: 600, color: '#FFFFFF', marginBottom: 4 }}>
+                    <label style={{ display: 'block', fontSize: 10.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>
                       Max Claims / Winner Cap
                     </label>
                     <input
@@ -8966,33 +9150,47 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                       max={100}
                       value={newTaskMaxClaims}
                       onChange={e => setNewTaskMaxClaims(Number(e.target.value))}
+                      className="rp-input-modern"
                       style={{
-                        width: '100%', padding: '8px 12px', borderRadius: 8,
-                        background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.2)',
-                        color: '#FFFFFF', fontSize: 12.5, outline: 'none', boxSizing: 'border-box'
+                        width: '100%',
+                        padding: '9px 12px',
+                        borderRadius: 10,
+                        background: 'rgba(0, 0, 0, 0.35)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        color: '#FFFFFF',
+                        fontSize: 12.5,
+                        outline: 'none',
+                        boxSizing: 'border-box'
                       }}
                     />
                   </div>
 
                   <div>
-                    <label style={{ display: 'block', fontSize: 11.5, fontWeight: 600, color: '#FFFFFF', marginBottom: 4 }}>
-                      Deliverable Verification Format
+                    <label style={{ display: 'block', fontSize: 10.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>
+                      Verification Format
                     </label>
                     <input
                       type="text"
                       defaultValue="Screenshot Proof + Live Post Link"
                       placeholder="e.g. Screenshot Proof + Live Post Link"
+                      className="rp-input-modern"
                       style={{
-                        width: '100%', padding: '8px 12px', borderRadius: 8,
-                        background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.2)',
-                        color: '#FFFFFF', fontSize: 12.5, outline: 'none', boxSizing: 'border-box'
+                        width: '100%',
+                        padding: '9px 12px',
+                        borderRadius: 10,
+                        background: 'rgba(0, 0, 0, 0.35)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        color: '#FFFFFF',
+                        fontSize: 12.5,
+                        outline: 'none',
+                        boxSizing: 'border-box'
                       }}
                     />
                   </div>
                 </div>
 
-                <div style={{ marginTop: 12 }}>
-                  <label style={{ display: 'block', fontSize: 11.5, fontWeight: 600, color: '#FFFFFF', marginBottom: 4 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 10.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>
                     Bounty Claim Instructions
                   </label>
                   <input
@@ -9000,10 +9198,17 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                     value={newTaskBountyInstructions}
                     onChange={e => setNewTaskBountyInstructions(e.target.value)}
                     placeholder="e.g. First 10 verified submissions will receive instant mobile airtime voucher on WhatsApp."
+                    className="rp-input-modern"
                     style={{
-                      width: '100%', padding: '8px 12px', borderRadius: 8,
-                      background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.2)',
-                      color: '#FFFFFF', fontSize: 12, outline: 'none', boxSizing: 'border-box'
+                      width: '100%',
+                      padding: '9px 12px',
+                      borderRadius: 10,
+                      background: 'rgba(0, 0, 0, 0.35)',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      color: '#FFFFFF',
+                      fontSize: 12,
+                      outline: 'none',
+                      boxSizing: 'border-box'
                     }}
                   />
                 </div>
@@ -9011,18 +9216,27 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
               {/* Task Description */}
               <div>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#FFFFFF', marginBottom: 6 }}>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.55)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
                   Mission Briefing &amp; Context *
                 </label>
                 <textarea
                   value={newTaskDescription}
                   onChange={e => setNewTaskDescription(e.target.value)}
                   rows={3}
-                  placeholder="Explain the mission, purpose, why this matters for Refeir, and the target audience..."
+                  placeholder="Explain the mission purpose, why this matters for Refeir, and the target audience..."
+                  className="rp-input-modern rp-sleek-scroll"
                   style={{
-                    width: '100%', padding: '10px 14px', borderRadius: 10,
-                    background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.2)',
-                    color: '#FFFFFF', fontSize: 13, outline: 'none', resize: 'vertical', boxSizing: 'border-box'
+                    width: '100%',
+                    padding: '11px 14px',
+                    borderRadius: 12,
+                    background: 'rgba(255, 255, 255, 0.035)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    color: '#FFFFFF',
+                    fontSize: 13,
+                    lineHeight: 1.55,
+                    outline: 'none',
+                    resize: 'vertical',
+                    boxSizing: 'border-box'
                   }}
                   required
                 />
@@ -9030,7 +9244,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
               {/* Requirements Checklist (Newline separated) */}
               <div>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#FFFFFF', marginBottom: 6 }}>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.55)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
                   Deliverable Requirements (One per line)
                 </label>
                 <textarea
@@ -9038,27 +9252,81 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                   onChange={e => setNewTaskRequirements(e.target.value)}
                   rows={3}
                   placeholder="1. Like and leave an insightful comment on the linked post&#10;2. Share to your WhatsApp status or story&#10;3. Take a screenshot showing your engagement&#10;4. Submit proof via Refeir Pioneers submit portal"
+                  className="rp-input-modern rp-sleek-scroll"
                   style={{
-                    width: '100%', padding: '10px 14px', borderRadius: 10,
-                    background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.2)',
-                    color: '#FFFFFF', fontSize: 12.5, outline: 'none', resize: 'vertical', boxSizing: 'border-box'
+                    width: '100%',
+                    padding: '11px 14px',
+                    borderRadius: 12,
+                    background: 'rgba(255, 255, 255, 0.035)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    color: '#FFFFFF',
+                    fontSize: 12.5,
+                    lineHeight: 1.55,
+                    outline: 'none',
+                    resize: 'vertical',
+                    boxSizing: 'border-box'
                   }}
                 />
               </div>
 
-              {/* WhatsApp Broadcast Live Preview */}
-              <div style={{
-                background: 'rgba(37, 211, 102, 0.08)', border: '1px dashed rgba(37, 211, 102, 0.4)',
-                borderRadius: 14, padding: '14px 18px'
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8, color: '#25D366', fontSize: 12, fontWeight: 700 }}>
-                  <MessageSquare size={14} /> WhatsApp Broadcast Message Preview (Ready for Squad Groups)
+              {/* WhatsApp Broadcast Live Preview Card */}
+              <div
+                style={{
+                  background: 'linear-gradient(145deg, rgba(37, 211, 102, 0.05) 0%, rgba(15, 46, 30, 0.2) 100%)',
+                  border: '1px solid rgba(37, 211, 102, 0.25)',
+                  borderRadius: 16,
+                  padding: '16px 18px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 10
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 6 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#25D366', fontSize: 12, fontWeight: 700 }}>
+                    <MessageSquare size={14} />
+                    <span>WhatsApp Broadcast Format (Ready for Community Groups)</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const msg = `📢 *REFEIR PIONEERS • ${newTaskFrequency.replace('_', ' ')} MISSION*\n🎯 *Squad:* ${SQUAD_INFO[newTaskSquad]?.name || 'All Squads'}\n━━━━━━━━━━━━━━━━━━━━\n⚡ *${newTaskTitle || 'Mission Title'}*\n${newTaskBountyType !== 'NONE' ? `🎁 *Bounty Reward:* ${newTaskBountyReward || 'Special Bounty'}\n` : ''}⏱️ *Deadline:* ${newTaskDeadline}\n━━━━━━━━━━━━━━━━━━━━\n👉 *Full briefing & submit proof:* ${window.location.origin}/tasks`;
+                      navigator.clipboard.writeText(msg);
+                      alert('Broadcast message copied to clipboard!');
+                    }}
+                    style={{
+                      background: 'rgba(37, 211, 102, 0.12)',
+                      border: '1px solid rgba(37, 211, 102, 0.3)',
+                      color: '#25D366',
+                      padding: '4px 10px',
+                      borderRadius: 100,
+                      fontSize: 11,
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 4
+                    }}
+                  >
+                    <Copy size={11} /> Copy Preview
+                  </button>
                 </div>
-                <div style={{
-                  fontSize: 12, color: 'rgba(255,255,255,0.85)', fontFamily: 'monospace',
-                  whiteSpace: 'pre-wrap', lineHeight: 1.5, background: 'rgba(0,0,0,0.3)',
-                  padding: '10px 12px', borderRadius: 8
-                }}>
+
+                <div
+                  className="rp-sleek-scroll"
+                  style={{
+                    fontSize: 12,
+                    color: 'rgba(255,255,255,0.9)',
+                    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+                    whiteSpace: 'pre-wrap',
+                    lineHeight: 1.6,
+                    background: '#091A12',
+                    border: '1px solid rgba(37, 211, 102, 0.18)',
+                    padding: '12px 14px',
+                    borderRadius: 10,
+                    maxHeight: 180,
+                    overflowY: 'auto'
+                  }}
+                >
 {`📢 *REFEIR PIONEERS • ${newTaskFrequency.replace('_', ' ')} MISSION*
 🎯 *Squad:* ${SQUAD_INFO[newTaskSquad]?.name || 'All Squads'}
 ━━━━━━━━━━━━━━━━━━━━
@@ -9070,15 +9338,33 @@ ${newTaskBountyType !== 'NONE' ? `🎁 *Bounty Reward:* ${newTaskBountyReward ||
               </div>
 
               {/* Action Buttons */}
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 10 }}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  alignItems: 'center',
+                  gap: 12,
+                  marginTop: 6,
+                  paddingTop: 16,
+                  borderTop: '1px solid rgba(255, 255, 255, 0.07)'
+                }}
+              >
                 <button
                   type="button"
                   onClick={() => setNewTaskModalOpen(false)}
                   style={{
-                    background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.18)',
-                    color: '#FFFFFF', padding: '10px 18px', borderRadius: 100, fontSize: 13,
-                    cursor: 'pointer'
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    border: '1px solid rgba(255, 255, 255, 0.14)',
+                    color: 'rgba(255, 255, 255, 0.8)',
+                    padding: '11px 22px',
+                    borderRadius: 100,
+                    fontSize: 13,
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease'
                   }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)')}
                 >
                   Cancel
                 </button>
@@ -9086,10 +9372,27 @@ ${newTaskBountyType !== 'NONE' ? `🎁 *Bounty Reward:* ${newTaskBountyReward ||
                 <button
                   type="submit"
                   style={{
-                    background: RF_LEAF_GREEN, color: RF_DEEP_GREEN, border: 'none',
-                    padding: '10px 24px', borderRadius: 100, fontSize: 13, fontWeight: 700,
-                    cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
-                    boxShadow: `0 4px 14px ${RF_LEAF_GREEN}44`
+                    background: `linear-gradient(135deg, ${RF_MINT_ACCENT} 0%, #15B84B 100%)`,
+                    color: '#061A0F',
+                    border: 'none',
+                    padding: '11px 28px',
+                    borderRadius: 100,
+                    fontSize: 13,
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    boxShadow: '0 4px 18px rgba(24, 252, 92, 0.35)',
+                    transition: 'all 0.15s ease'
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.transform = 'translateY(-1px)';
+                    e.currentTarget.style.boxShadow = '0 6px 22px rgba(24, 252, 92, 0.5)';
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.transform = '';
+                    e.currentTarget.style.boxShadow = '0 4px 18px rgba(24, 252, 92, 0.35)';
                   }}
                 >
                   <Radio size={14} /> Launch Broadcast Protocol
