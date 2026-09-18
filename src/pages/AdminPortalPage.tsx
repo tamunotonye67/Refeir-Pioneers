@@ -1684,40 +1684,56 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
   // Status Badge Component
   const renderStatusBadge = (status: ReviewStatus) => {
+    const baseStyle = {
+      padding: isMobile ? '2.5px 7px' : '4px 10px',
+      borderRadius: 100,
+      fontSize: isMobile ? 10 : 11.5,
+      fontWeight: 700,
+      letterSpacing: '0.03em',
+      whiteSpace: 'nowrap' as const,
+      flexShrink: 0,
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: 4
+    };
     switch (status) {
       case 'ACCEPTED':
         return (
           <span style={{
-            background: 'rgba(24, 252, 92, 0.15)', color: RF_MINT_ACCENT, border: `1px solid ${RF_LEAF_GREEN}55`,
-            padding: '4px 10px', borderRadius: 100, fontSize: 11.5, fontWeight: 700, letterSpacing: '0.04em'
+            ...baseStyle,
+            background: 'rgba(24, 252, 92, 0.12)', color: RF_MINT_ACCENT, border: `1px solid ${RF_LEAF_GREEN}55`,
           }}>
+            <span style={{ width: 4.5, height: 4.5, borderRadius: '50%', background: RF_MINT_ACCENT, flexShrink: 0 }} />
             ACCEPTED
           </span>
         );
       case 'REVIEWING':
         return (
           <span style={{
-            background: 'rgba(246, 178, 26, 0.15)', color: RF_GOLD_YELLOW, border: `1px solid ${RF_GOLD_YELLOW}55`,
-            padding: '4px 10px', borderRadius: 100, fontSize: 11.5, fontWeight: 700, letterSpacing: '0.04em'
+            ...baseStyle,
+            background: 'rgba(246, 178, 26, 0.12)', color: RF_GOLD_YELLOW, border: `1px solid ${RF_GOLD_YELLOW}55`,
           }}>
+            <span style={{ width: 4.5, height: 4.5, borderRadius: '50%', background: RF_GOLD_YELLOW, flexShrink: 0 }} />
             REVIEWING
           </span>
         );
       case 'WAITLISTED':
         return (
           <span style={{
-            background: 'rgba(244, 124, 32, 0.15)', color: '#FFB27D', border: `1px solid rgba(244, 124, 32, 0.5)`,
-            padding: '4px 10px', borderRadius: 100, fontSize: 11.5, fontWeight: 700, letterSpacing: '0.04em'
+            ...baseStyle,
+            background: 'rgba(244, 124, 32, 0.12)', color: '#FFB27D', border: `1px solid rgba(244, 124, 32, 0.5)`,
           }}>
+            <span style={{ width: 4.5, height: 4.5, borderRadius: '50%', background: '#FFB27D', flexShrink: 0 }} />
             WAITLISTED
           </span>
         );
       case 'REJECTED':
         return (
           <span style={{
+            ...baseStyle,
             background: 'rgba(239, 68, 68, 0.12)', color: '#FCA5A5', border: '1px solid rgba(239, 68, 68, 0.4)',
-            padding: '4px 10px', borderRadius: 100, fontSize: 11.5, fontWeight: 700, letterSpacing: '0.04em'
           }}>
+            <span style={{ width: 4.5, height: 4.5, borderRadius: '50%', background: '#EF4444', flexShrink: 0 }} />
             REJECTED
           </span>
         );
@@ -1725,9 +1741,11 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
       default:
         return (
           <span style={{
+            ...baseStyle,
             background: 'rgba(255, 255, 255, 0.08)', color: 'rgba(255, 255, 255, 0.8)', border: '1px solid rgba(255, 255, 255, 0.2)',
-            padding: '4px 10px', borderRadius: 100, fontSize: 11.5, fontWeight: 600, letterSpacing: '0.04em'
+            fontWeight: 600,
           }}>
+            <span style={{ width: 4.5, height: 4.5, borderRadius: '50%', background: 'rgba(255, 255, 255, 0.5)', flexShrink: 0 }} />
             PENDING
           </span>
         );
@@ -1735,103 +1753,118 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
   };
 
   const renderTaskStatusBadge = (status: string) => {
+    const baseStyle = {
+      padding: isMobile ? '2.5px 7px' : '4px 10px',
+      borderRadius: 100,
+      fontSize: isMobile ? 10 : 11.5,
+      fontWeight: 700,
+      letterSpacing: '0.03em',
+      whiteSpace: 'nowrap' as const,
+      flexShrink: 0,
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: 4
+    };
     switch (status) {
       case 'VERIFIED':
         return (
           <span style={{
-            background: 'rgba(24, 252, 92, 0.15)', color: RF_MINT_ACCENT, border: `1px solid ${RF_LEAF_GREEN}66`,
-            padding: '5px 12px', borderRadius: 100, fontSize: 11.5, fontWeight: 700, letterSpacing: '0.04em',
-            display: 'inline-flex', alignItems: 'center', gap: 5, whiteSpace: 'nowrap', flexShrink: 0
+            ...baseStyle,
+            background: 'rgba(24, 252, 92, 0.12)', color: RF_MINT_ACCENT, border: `1px solid ${RF_LEAF_GREEN}66`,
           }}>
-            <Check size={12} /> VERIFIED
+            <Check size={isMobile ? 10 : 12} style={{ flexShrink: 0 }} /> VERIFIED
           </span>
         );
       case 'NEEDS_REVISION':
         return (
           <span style={{
-            background: 'rgba(244, 124, 32, 0.15)', color: '#FFB27D', border: `1px solid rgba(244, 124, 32, 0.5)`,
-            padding: '5px 12px', borderRadius: 100, fontSize: 11.5, fontWeight: 700, letterSpacing: '0.04em',
-            display: 'inline-flex', alignItems: 'center', gap: 5, whiteSpace: 'nowrap', flexShrink: 0
+            ...baseStyle,
+            background: 'rgba(244, 124, 32, 0.12)', color: '#FFB27D', border: `1px solid rgba(244, 124, 32, 0.5)`,
           }}>
-            <AlertTriangle size={12} /> NEEDS REVISION
+            <AlertTriangle size={isMobile ? 10 : 12} style={{ flexShrink: 0 }} /> NEEDS REVISION
           </span>
         );
       case 'REJECTED':
         return (
           <span style={{
+            ...baseStyle,
             background: 'rgba(239, 68, 68, 0.12)', color: '#FCA5A5', border: '1px solid rgba(239, 68, 68, 0.4)',
-            padding: '5px 12px', borderRadius: 100, fontSize: 11.5, fontWeight: 700, letterSpacing: '0.04em',
-            display: 'inline-flex', alignItems: 'center', gap: 5, whiteSpace: 'nowrap', flexShrink: 0
           }}>
-            <XCircle size={12} /> REJECTED
+            <XCircle size={isMobile ? 10 : 12} style={{ flexShrink: 0 }} /> REJECTED
           </span>
         );
       case 'PENDING':
       default:
         return (
           <span style={{
-            background: 'rgba(246, 178, 26, 0.15)', color: RF_GOLD_YELLOW, border: '1px solid rgba(246, 178, 26, 0.45)',
-            padding: '5px 12px', borderRadius: 100, fontSize: 11.5, fontWeight: 700, letterSpacing: '0.04em',
-            display: 'inline-flex', alignItems: 'center', gap: 5, whiteSpace: 'nowrap', flexShrink: 0
+            ...baseStyle,
+            background: 'rgba(246, 178, 26, 0.12)', color: RF_GOLD_YELLOW, border: '1px solid rgba(246, 178, 26, 0.45)',
           }}>
-            <Clock size={12} /> PENDING PROOF
+            <Clock size={isMobile ? 10 : 12} style={{ flexShrink: 0 }} /> PENDING PROOF
           </span>
         );
     }
   };
 
   const renderStaffRoleBadge = (role: StaffRole) => {
+    const badgeStyle = {
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: 4,
+      padding: isMobile ? '2.5px 8px' : '3px 9px',
+      borderRadius: 100,
+      fontSize: isMobile ? 10 : 11,
+      fontWeight: 700,
+      letterSpacing: '0.03em',
+      whiteSpace: 'nowrap' as const,
+      flexShrink: 0
+    };
     switch (role) {
       case 'SUPER_ADMIN':
         return (
           <span style={{
+            ...badgeStyle,
             background: `${RF_GOLD_YELLOW}15`, color: RF_GOLD_YELLOW, border: `1px solid ${RF_GOLD_YELLOW}55`,
-            padding: '4px 10px', borderRadius: 100, fontSize: 11, fontWeight: 700, letterSpacing: '0.04em',
-            display: 'inline-flex', alignItems: 'center', gap: 4
           }}>
-            <Shield size={11} /> SUPER ADMIN
+            <Shield size={isMobile ? 10 : 11} style={{ flexShrink: 0 }} /> SUPER ADMIN
           </span>
         );
       case 'MANAGER':
         return (
           <span style={{
+            ...badgeStyle,
             background: 'rgba(168, 85, 247, 0.15)', color: '#C084FC', border: '1px solid rgba(168, 85, 247, 0.45)',
-            padding: '4px 10px', borderRadius: 100, fontSize: 11, fontWeight: 700, letterSpacing: '0.04em',
-            display: 'inline-flex', alignItems: 'center', gap: 4
           }}>
-            <Briefcase size={11} /> MANAGER
+            <Briefcase size={isMobile ? 10 : 11} style={{ flexShrink: 0 }} /> MANAGER
           </span>
         );
       case 'SQUAD_LEAD':
         return (
           <span style={{
+            ...badgeStyle,
             background: `${RF_ORANGE}15`, color: '#FFB27D', border: `1px solid ${RF_ORANGE}55`,
-            padding: '4px 10px', borderRadius: 100, fontSize: 11, fontWeight: 700, letterSpacing: '0.04em',
-            display: 'inline-flex', alignItems: 'center', gap: 4
           }}>
-            <Star size={11} /> SQUAD LEAD
+            <Star size={isMobile ? 10 : 11} style={{ flexShrink: 0 }} /> SQUAD LEAD
           </span>
         );
       case 'TASK_VIEWER':
       case 'TASK_VERIFIER':
         return (
           <span style={{
+            ...badgeStyle,
             background: `${RF_LEAF_GREEN}15`, color: RF_LEAF_GREEN, border: `1px solid ${RF_LEAF_GREEN}55`,
-            padding: '4px 10px', borderRadius: 100, fontSize: 11, fontWeight: 700, letterSpacing: '0.04em',
-            display: 'inline-flex', alignItems: 'center', gap: 4
           }}>
-            <Eye size={11} /> TASK VIEWER
+            <Eye size={isMobile ? 10 : 11} style={{ flexShrink: 0 }} /> TASK VIEWER
           </span>
         );
       case 'ADMISSIONS_REVIEWER':
       default:
         return (
           <span style={{
+            ...badgeStyle,
             background: `${RF_MINT_ACCENT}15`, color: RF_MINT_ACCENT, border: `1px solid ${RF_MINT_ACCENT}55`,
-            padding: '4px 10px', borderRadius: 100, fontSize: 11, fontWeight: 700, letterSpacing: '0.04em',
-            display: 'inline-flex', alignItems: 'center', gap: 4
           }}>
-            <UserCheck size={11} /> ADMISSIONS REVIEWER
+            <UserCheck size={isMobile ? 10 : 11} style={{ flexShrink: 0 }} /> ADMISSIONS REVIEWER
           </span>
         );
     }
@@ -5251,16 +5284,16 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
             overflow: 'hidden'
           }}>
             <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-              <table style={{ width: '100%', minWidth: isMobile ? 900 : 700, borderCollapse: 'collapse', textAlign: 'left' }}>
+              <table style={{ width: '100%', minWidth: isMobile ? 780 : 700, borderCollapse: 'collapse', textAlign: 'left' }}>
               <thead>
                 <tr style={{ background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                  <th style={{ padding: '16px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>Worker / Reviewer</th>
-                  <th style={{ padding: '16px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>Role</th>
-                  <th style={{ padding: '16px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>Assigned Squad</th>
-                  <th style={{ padding: '16px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>Access Passcode</th>
-                  <th style={{ padding: '16px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>Reviews Handled</th>
-                  <th style={{ padding: '16px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>Status</th>
-                  <th style={{ padding: '16px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: 'right', whiteSpace: 'nowrap' }}>Actions</th>
+                  <th style={{ padding: isMobile ? '12px 14px' : '16px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>Worker / Reviewer</th>
+                  <th style={{ padding: isMobile ? '12px 14px' : '16px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>Role</th>
+                  <th style={{ padding: isMobile ? '12px 14px' : '16px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>Assigned Squad</th>
+                  <th style={{ padding: isMobile ? '12px 14px' : '16px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>Access Passcode</th>
+                  <th style={{ padding: isMobile ? '12px 14px' : '16px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>Reviews Handled</th>
+                  <th style={{ padding: isMobile ? '12px 14px' : '16px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>Status</th>
+                  <th style={{ padding: isMobile ? '12px 14px' : '16px 20px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: 'right', whiteSpace: 'nowrap' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -5286,23 +5319,23 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                         onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                       >
                         {/* Worker Identity */}
-                        <td style={{ padding: '16px 20px' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                        <td style={{ padding: isMobile ? '12px 14px' : '16px 20px', whiteSpace: 'nowrap' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                             <div style={{
-                              width: 36, height: 36, borderRadius: '50%',
+                              width: isMobile ? 32 : 36, height: isMobile ? 32 : 36, borderRadius: '50%',
                               background: member.role === 'SUPER_ADMIN' ? `${RF_GOLD_YELLOW}25` : `${RF_LEAF_GREEN}20`,
                               border: `1px solid ${member.role === 'SUPER_ADMIN' ? RF_GOLD_YELLOW : RF_LEAF_GREEN}55`,
                               display: 'flex', alignItems: 'center', justifyContent: 'center',
                               color: member.role === 'SUPER_ADMIN' ? RF_GOLD_YELLOW : RF_MINT_ACCENT,
-                              fontWeight: 800, fontSize: 14
+                              fontWeight: 800, fontSize: isMobile ? 12.5 : 14, flexShrink: 0
                             }}>
                               {member.name.charAt(0).toUpperCase()}
                             </div>
                             <div>
-                              <div style={{ fontSize: 14, fontWeight: 700, color: '#FFFFFF' }}>
+                              <div style={{ fontSize: isMobile ? 13 : 14, fontWeight: 700, color: '#FFFFFF' }}>
                                 {member.name}
                               </div>
-                              <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.5)' }}>
+                              <div style={{ fontSize: isMobile ? 11 : 11.5, color: 'rgba(255,255,255,0.5)' }}>
                                 {member.email}
                               </div>
                             </div>
@@ -5310,77 +5343,80 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                         </td>
 
                         {/* Role */}
-                        <td style={{ padding: '16px 20px' }}>
+                        <td style={{ padding: isMobile ? '12px 14px' : '16px 20px', whiteSpace: 'nowrap' }}>
                           {renderStaffRoleBadge(member.role)}
                         </td>
 
                         {/* Squad */}
-                        <td style={{ padding: '16px 20px' }}>
+                        <td style={{ padding: isMobile ? '12px 14px' : '16px 20px', whiteSpace: 'nowrap' }}>
                           <span style={{
-                            fontSize: 12, fontWeight: 600,
+                            fontSize: isMobile ? 11 : 12, fontWeight: 600,
                             color: member.assigned_division === 'ALL' ? RF_MINT_ACCENT : 'rgba(255,255,255,0.85)',
-                            background: 'rgba(255,255,255,0.05)', padding: '3px 8px', borderRadius: 6
+                            background: 'rgba(255,255,255,0.05)', padding: '2.5px 8px', borderRadius: 6,
+                            whiteSpace: 'nowrap', display: 'inline-block'
                           }}>
                             {member.assigned_division === 'ALL' ? '🌐 All Squads' : member.assigned_division}
                           </span>
                         </td>
 
                         {/* Passcode */}
-                        <td style={{ padding: '16px 20px' }}>
+                        <td style={{ padding: isMobile ? '12px 14px' : '16px 20px', whiteSpace: 'nowrap' }}>
                           {isSuperAdmin ? (
-                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(0,0,0,0.3)', padding: '4px 8px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)' }}>
-                              <span style={{ fontFamily: 'monospace', fontSize: 12, color: isRevealed ? RF_MINT_ACCENT : 'rgba(255,255,255,0.5)', minWidth: 74 }}>
+                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(0,0,0,0.3)', padding: '3px 8px', borderRadius: 6, border: '1px solid rgba(255,255,255,0.1)' }}>
+                              <span style={{ fontFamily: 'monospace', fontSize: isMobile ? 11 : 12, color: isRevealed ? RF_MINT_ACCENT : 'rgba(255,255,255,0.5)', minWidth: 68 }}>
                                 {isRevealed ? member.passcode : '••••••••'}
                               </span>
                               <button
                                 type="button"
                                 onClick={() => setRevealedPasscodes(prev => ({ ...prev, [member.id]: !prev[member.id] }))}
                                 title={isRevealed ? 'Hide passcode' : 'Show passcode'}
-                                style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer', padding: 2 }}
+                                style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer', padding: 2, display: 'inline-flex', alignItems: 'center' }}
                               >
-                                {isRevealed ? <EyeOff size={13} /> : <Eye size={13} />}
+                                {isRevealed ? <EyeOff size={12} /> : <Eye size={12} />}
                               </button>
                               <button
                                 type="button"
                                 onClick={() => handleCopyPasscode(member.id, member.passcode)}
                                 title="Copy passcode"
-                                style={{ background: 'none', border: 'none', color: copiedPasscodeId === member.id ? RF_MINT_ACCENT : 'rgba(255,255,255,0.5)', cursor: 'pointer', padding: 2 }}
+                                style={{ background: 'none', border: 'none', color: copiedPasscodeId === member.id ? RF_MINT_ACCENT : 'rgba(255,255,255,0.5)', cursor: 'pointer', padding: 2, display: 'inline-flex', alignItems: 'center' }}
                               >
-                                <Copy size={13} />
+                                <Copy size={12} />
                               </button>
                             </div>
                           ) : (
-                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: 'rgba(255,255,255,0.4)', fontSize: 12, fontFamily: 'monospace' }}>
-                              <Lock size={12} color="rgba(255,255,255,0.3)" /> ••••••••
+                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, color: 'rgba(255,255,255,0.4)', fontSize: 11.5, fontFamily: 'monospace' }}>
+                              <Lock size={11} color="rgba(255,255,255,0.3)" /> ••••••••
                             </div>
                           )}
                         </td>
 
                         {/* Reviews Conducted */}
-                        <td style={{ padding: '16px 20px' }}>
-                          <span style={{ fontSize: 13, fontWeight: 600, color: '#FFFFFF' }}>
+                        <td style={{ padding: isMobile ? '12px 14px' : '16px 20px', whiteSpace: 'nowrap' }}>
+                          <span style={{ fontSize: isMobile ? 12 : 13, fontWeight: 600, color: '#FFFFFF' }}>
                             {member.reviews_count}
                           </span>
-                          <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.45)', marginLeft: 4 }}>
+                          <span style={{ fontSize: isMobile ? 10.5 : 11.5, color: 'rgba(255,255,255,0.45)', marginLeft: 4 }}>
                             verified
                           </span>
                         </td>
 
                         {/* Status */}
-                        <td style={{ padding: '16px 20px' }}>
+                        <td style={{ padding: isMobile ? '12px 14px' : '16px 20px', whiteSpace: 'nowrap' }}>
                           <span style={{
-                            padding: '3px 9px', borderRadius: 100, fontSize: 11, fontWeight: 700,
-                            background: member.status === 'ACTIVE' ? 'rgba(24, 252, 92, 0.15)' : 'rgba(239, 68, 68, 0.15)',
+                            padding: isMobile ? '2.5px 8px' : '3px 9px', borderRadius: 100, fontSize: isMobile ? 10 : 11, fontWeight: 700,
+                            background: member.status === 'ACTIVE' ? 'rgba(24, 252, 92, 0.12)' : 'rgba(239, 68, 68, 0.12)',
                             color: member.status === 'ACTIVE' ? RF_MINT_ACCENT : '#FCA5A5',
-                            border: `1px solid ${member.status === 'ACTIVE' ? RF_LEAF_GREEN : '#EF4444'}`
+                            border: `1px solid ${member.status === 'ACTIVE' ? RF_LEAF_GREEN : '#EF4444'}55`,
+                            display: 'inline-flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap', flexShrink: 0
                           }}>
+                            <span style={{ width: 4.5, height: 4.5, borderRadius: '50%', background: member.status === 'ACTIVE' ? RF_MINT_ACCENT : '#EF4444', flexShrink: 0 }} />
                             {member.status}
                           </span>
                         </td>
 
                         {/* Actions */}
-                        <td style={{ padding: '16px 20px', textAlign: 'right' }}>
-                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                        <td style={{ padding: isMobile ? '12px 14px' : '16px 20px', textAlign: 'right', whiteSpace: 'nowrap' }}>
+                          <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'flex-end', gap: 6, whiteSpace: 'nowrap', flexShrink: 0 }}>
                             {isSuperAdmin ? (
                               <>
                                 {!isRootSuperAdmin && (
@@ -5390,8 +5426,9 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                                       background: member.status === 'ACTIVE' ? 'rgba(244, 124, 32, 0.1)' : 'rgba(24, 252, 92, 0.1)',
                                       border: `1px solid ${member.status === 'ACTIVE' ? RF_ORANGE : RF_LEAF_GREEN}44`,
                                       color: member.status === 'ACTIVE' ? '#FFB27D' : RF_MINT_ACCENT,
-                                      padding: '5px 12px', borderRadius: 100, fontSize: 11.5, fontWeight: 600,
-                                      cursor: 'pointer'
+                                      padding: isMobile ? '3px 9px' : '4px 12px', borderRadius: 6, fontSize: isMobile ? 10.5 : 11.5, fontWeight: 600,
+                                      cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: 4,
+                                      transition: 'all 0.15s'
                                     }}
                                   >
                                     {member.status === 'ACTIVE' ? 'Suspend' : 'Activate'}
@@ -5403,22 +5440,27 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                                     onClick={() => handleDeleteStaff(member.id)}
                                     title="Delete worker account"
                                     style={{
-                                      background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)',
-                                      color: '#FCA5A5', padding: '6px', borderRadius: 8, cursor: 'pointer',
-                                      display: 'flex', alignItems: 'center', justifyContent: 'center'
+                                      background: 'rgba(239, 68, 68, 0.12)', border: '1px solid rgba(239, 68, 68, 0.3)',
+                                      color: '#FCA5A5', width: isMobile ? 26 : 28, height: isMobile ? 26 : 28,
+                                      minWidth: isMobile ? 26 : 28, maxWidth: isMobile ? 26 : 28,
+                                      borderRadius: 6, cursor: 'pointer', flexShrink: 0, padding: 0,
+                                      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                                      transition: 'all 0.15s'
                                     }}
+                                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(239, 68, 68, 0.22)')}
+                                    onMouseLeave={e => (e.currentTarget.style.background = 'rgba(239, 68, 68, 0.12)')}
                                   >
-                                    <Trash2 size={13} />
+                                    <Trash2 size={isMobile ? 12 : 13} style={{ flexShrink: 0 }} />
                                   </button>
                                 ) : (
-                                  <span style={{ fontSize: 11, color: RF_GOLD_YELLOW, fontStyle: 'italic', fontWeight: 600 }}>
+                                  <span style={{ fontSize: isMobile ? 10.5 : 11, color: RF_GOLD_YELLOW, fontStyle: 'italic', fontWeight: 600, whiteSpace: 'nowrap', flexShrink: 0 }}>
                                     ★ Super Admin
                                   </span>
                                 )}
                               </>
                             ) : (
-                              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', fontStyle: 'italic', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                                <Lock size={11} /> View only
+                              <span style={{ fontSize: isMobile ? 10.5 : 11, color: 'rgba(255,255,255,0.35)', fontStyle: 'italic', display: 'inline-flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap', flexShrink: 0 }}>
+                                <Lock size={10} /> View only
                               </span>
                             )}
                           </div>
