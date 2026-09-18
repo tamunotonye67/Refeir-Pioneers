@@ -328,6 +328,31 @@ export const verifyStaffEmailPassword = (email: string, password: string): Staff
 };
 
 /**
+ * Update a staff member's details, role, division, passcode, or password (Super Admin only).
+ */
+export const updateStaffMember = (
+  id: string,
+  updates: Partial<Omit<StaffMember, 'id' | 'added_at' | 'reviews_count'>>
+): StaffMember | null => {
+  const all = getStaffMembers();
+  let updatedMember: StaffMember | null = null;
+  const updated = all.map(s => {
+    if (s.id === id) {
+      updatedMember = {
+        ...s,
+        ...updates
+      };
+      return updatedMember;
+    }
+    return s;
+  });
+  if (updatedMember) {
+    saveStaffMembers(updated);
+  }
+  return updatedMember;
+};
+
+/**
  * Update a staff member's password (Super Admin only).
  */
 export const updateStaffPassword = (id: string, newPassword: string): void => {

@@ -44,6 +44,8 @@ import {
   getStaffMembers,
   saveStaffMembers,
   addStaffMember,
+  updateStaffMember,
+  updateStaffPassword,
   toggleStaffStatus,
   deleteStaffMember,
   verifyStaffPasscode,
@@ -347,7 +349,22 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
   const [newWorkerRole, setNewWorkerRole] = useState<StaffRole>('ADMISSIONS_REVIEWER');
   const [newWorkerDivision, setNewWorkerDivision] = useState('ALL');
   const [newWorkerPasscode, setNewWorkerPasscode] = useState('');
+  const [newWorkerPassword, setNewWorkerPassword] = useState('');
   const [workerFormError, setWorkerFormError] = useState('');
+
+  // Edit Staff Member & Reset Password State
+  const [editStaffModalOpen, setEditStaffModalOpen] = useState(false);
+  const [editingStaffMember, setEditingStaffMember] = useState<StaffMember | null>(null);
+  const [editStaffName, setEditStaffName] = useState('');
+  const [editStaffEmail, setEditStaffEmail] = useState('');
+  const [editStaffRole, setEditStaffRole] = useState<StaffRole>('ADMISSIONS_REVIEWER');
+  const [editStaffDivision, setEditStaffDivision] = useState('ALL');
+  const [editStaffPasscode, setEditStaffPasscode] = useState('');
+  const [editStaffPassword, setEditStaffPassword] = useState('');
+  const [editStaffStatus, setEditStaffStatus] = useState<'ACTIVE' | 'SUSPENDED'>('ACTIVE');
+  const [showEditStaffPassword, setShowEditStaffPassword] = useState(false);
+  const [editStaffError, setEditStaffError] = useState('');
+  const [editStaffSuccess, setEditStaffSuccess] = useState('');
 
   // Proofs of Work Review State
   const [activeTask, setActiveTask] = useState<TaskSubmissionRecord | null>(null);
@@ -470,12 +487,15 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
       return;
     }
 
+    const defaultPwd = newWorkerPassword.trim() || `${newWorkerName.trim().split(' ')[0]}@Refeir2026!`;
+
     addStaffMember({
       name: newWorkerName.trim(),
       email: newWorkerEmail.trim().toLowerCase(),
       role: newWorkerRole,
       assigned_division: newWorkerDivision,
       passcode: newWorkerPasscode.trim(),
+      password: defaultPwd,
       status: 'ACTIVE'
     });
 
@@ -483,7 +503,79 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
     setNewWorkerName('');
     setNewWorkerEmail('');
     setNewWorkerPasscode('');
+    setNewWorkerPassword('');
     setAddWorkerModalOpen(false);
+  };
+
+  // Open Edit Staff Modal
+  const handleOpenEditStaff = (member: StaffMember) => {
+    if (!permissions.canManageStaff) {
+      alert('Unauthorized: Only Super Admin (Tonye Taylor) can edit staff details or reset credentials.');
+      return;
+    }
+    setEditingStaffMember(member);
+    setEditStaffName(member.name);
+    setEditStaffEmail(member.email);
+    setEditStaffRole(member.role);
+    setEditStaffDivision(member.assigned_division);
+    setEditStaffPasscode(member.passcode);
+    setEditStaffPassword(member.password || '');
+    setEditStaffStatus(member.status);
+    setShowEditStaffPassword(false);
+    setEditStaffError('');
+    setEditStaffSuccess('');
+    setEditStaffModalOpen(true);
+  };
+
+  // Save Edit Staff Changes
+  const handleSaveEditStaff = (e: React.FormEvent) => {
+    e.preventDefault();
+    setEditStaffError('');
+    setEditStaffSuccess('');
+
+    if (!permissions.canManageStaff || !editingStaffMember) {
+      setEditStaffError('Unauthorized: Only Super Admin has permission to modify staff records.');
+      return;
+    }
+
+    if (!editStaffName.trim()) {
+      setEditStaffError('Please enter the staff member’s full name.');
+      return;
+    }
+    if (!editStaffEmail.trim() || !editStaffEmail.includes('@')) {
+      setEditStaffError('Please enter a valid email address.');
+      return;
+    }
+    if (!editStaffPasscode.trim()) {
+      setEditStaffError('Access passcode cannot be empty.');
+      return;
+    }
+
+    const updated = updateStaffMember(editingStaffMember.id, {
+      name: editStaffName.trim(),
+      email: editStaffEmail.trim().toLowerCase(),
+      role: editStaffRole,
+      assigned_division: editStaffDivision,
+      passcode: editStaffPasscode.trim(),
+      password: editStaffPassword.trim() || undefined,
+      status: editStaffStatus
+    });
+
+    if (updated) {
+      setStaffList(getStaffMembers());
+      // If the Super Admin edited their own account, update session too
+      if (loggedInStaff?.id === updated.id) {
+        setLoggedInStaff(updated);
+        setActiveStaffSession(updated);
+      }
+      setEditStaffSuccess('Staff details and credentials updated successfully!');
+      setTimeout(() => {
+        setEditStaffModalOpen(false);
+        setEditingStaffMember(null);
+      }, 1000);
+    } else {
+      setEditStaffError('Failed to update staff record. Please try again.');
+    }
   };
 
   const handleCopyPasscode = (id: string, code: string) => {
@@ -1167,6 +1259,14 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           setTaskModalOpen(false);
           return;
         }
+        if (editStaffModalOpen) {
+          setEditStaffModalOpen(false);
+          return;
+        }
+        if (appointSquadLeadModalOpen) {
+          setAppointSquadLeadModalOpen(false);
+          return;
+        }
         if (addWorkerModalOpen) {
           setAddWorkerModalOpen(false);
           return;
@@ -1195,6 +1295,8 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
     newTaskModalOpen,
     memberModalOpen,
     taskModalOpen,
+    editStaffModalOpen,
+    appointSquadLeadModalOpen,
     addWorkerModalOpen,
     modalOpen,
     adminProfileDockerOpen,
@@ -5513,6 +5615,31 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                           <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'flex-end', gap: 6, whiteSpace: 'nowrap', flexShrink: 0 }}>
                             {isSuperAdmin ? (
                               <>
+                                <button
+                                  onClick={() => handleOpenEditStaff(member)}
+                                  title="Edit details & reset password"
+                                  style={{
+                                    background: 'rgba(56, 189, 248, 0.12)',
+                                    border: '1px solid rgba(56, 189, 248, 0.35)',
+                                    color: '#38BDF8',
+                                    padding: isMobile ? '3px 8px' : '4px 11px',
+                                    borderRadius: 6,
+                                    fontSize: isMobile ? 10.5 : 11.5,
+                                    fontWeight: 600,
+                                    cursor: 'pointer',
+                                    whiteSpace: 'nowrap',
+                                    flexShrink: 0,
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: 4,
+                                    transition: 'all 0.15s'
+                                  }}
+                                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(56, 189, 248, 0.22)')}
+                                  onMouseLeave={e => (e.currentTarget.style.background = 'rgba(56, 189, 248, 0.12)')}
+                                >
+                                  <Edit3 size={isMobile ? 11 : 12} /> Edit
+                                </button>
+
                                 {!isRootSuperAdmin && (
                                   <button
                                     onClick={() => handleToggleStaff(member.id)}
@@ -5529,7 +5656,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                                   </button>
                                 )}
 
-                                {!isRootSuperAdmin ? (
+                                {!isRootSuperAdmin && (
                                   <button
                                     onClick={() => handleDeleteStaff(member.id)}
                                     title="Delete worker account"
@@ -5546,10 +5673,6 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                                   >
                                     <Trash2 size={isMobile ? 12 : 13} style={{ flexShrink: 0 }} />
                                   </button>
-                                ) : (
-                                  <span style={{ fontSize: isMobile ? 10.5 : 11, color: RF_GOLD_YELLOW, fontStyle: 'italic', fontWeight: 600, whiteSpace: 'nowrap', flexShrink: 0 }}>
-                                    ★ Super Admin
-                                  </span>
                                 )}
                               </>
                             ) : (
@@ -8387,27 +8510,67 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 </div>
               </div>
 
-              <div style={{ marginBottom: 24 }}>
-                <label style={{ display: 'block', fontSize: 12.5, fontWeight: 600, color: 'rgba(255,255,255,0.85)', marginBottom: 6 }}>
-                  Dedicated Access Passcode *
-                </label>
-                <div style={{ position: 'relative' }}>
-                  <input
-                    type="text"
-                    value={newWorkerPasscode}
-                    onChange={e => setNewWorkerPasscode(e.target.value)}
-                    placeholder="e.g. worker26_482"
-                    style={{
-                      width: '100%', padding: '11px 14px 11px 36px', borderRadius: 10,
-                      background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)',
-                      color: '#FFFFFF', fontSize: 13.5, fontFamily: 'monospace', outline: 'none', boxSizing: 'border-box'
-                    }}
-                  />
-                  <Key size={15} style={{ position: 'absolute', left: 12, top: 13, color: 'rgba(255,255,255,0.4)' }} />
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 14, marginBottom: 24 }}>
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                    <label style={{ fontSize: 12.5, fontWeight: 600, color: 'rgba(255,255,255,0.85)' }}>
+                      Access Passcode *
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setNewWorkerPasscode(`worker26_${Math.floor(100 + Math.random() * 900)}`)}
+                      style={{ background: 'none', border: 'none', color: RF_MINT_ACCENT, fontSize: 11, fontWeight: 600, cursor: 'pointer', padding: 0 }}
+                    >
+                      Generate
+                    </button>
+                  </div>
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type="text"
+                      value={newWorkerPasscode}
+                      onChange={e => setNewWorkerPasscode(e.target.value)}
+                      placeholder="e.g. worker26_482"
+                      style={{
+                        width: '100%', padding: '11px 14px 11px 36px', borderRadius: 10,
+                        background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)',
+                        color: '#FFFFFF', fontSize: 13.5, fontFamily: 'monospace', outline: 'none', boxSizing: 'border-box'
+                      }}
+                    />
+                    <Key size={15} style={{ position: 'absolute', left: 12, top: 13, color: 'rgba(255,255,255,0.4)' }} />
+                  </div>
                 </div>
-                <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.45)', marginTop: 4, display: 'block' }}>
-                  Worker will enter this passcode to log into the internal portal.
-                </span>
+
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                    <label style={{ fontSize: 12.5, fontWeight: 600, color: 'rgba(255,255,255,0.85)' }}>
+                      Password (Optional)
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const base = newWorkerName.trim() ? newWorkerName.trim().split(' ')[0] : 'Worker';
+                        setNewWorkerPassword(`${base}@Refeir2026!`);
+                      }}
+                      style={{ background: 'none', border: 'none', color: RF_MINT_ACCENT, fontSize: 11, fontWeight: 600, cursor: 'pointer', padding: 0 }}
+                    >
+                      Generate
+                    </button>
+                  </div>
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type="text"
+                      value={newWorkerPassword}
+                      onChange={e => setNewWorkerPassword(e.target.value)}
+                      placeholder="Auto-generated if empty"
+                      style={{
+                        width: '100%', padding: '11px 14px 11px 36px', borderRadius: 10,
+                        background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)',
+                        color: '#FFFFFF', fontSize: 13.5, outline: 'none', boxSizing: 'border-box'
+                      }}
+                    />
+                    <Lock size={15} style={{ position: 'absolute', left: 12, top: 13, color: 'rgba(255,255,255,0.4)' }} />
+                  </div>
+                </div>
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
@@ -8432,6 +8595,360 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                   }}
                 >
                   <UserPlus size={14} /> Add Worker to Team
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ─── EDIT STAFF MEMBER & RESET PASSWORD MODAL ───────────────────────── */}
+      {editStaffModalOpen && editingStaffMember && (
+        <div
+          onClick={() => {
+            setEditStaffModalOpen(false);
+            setEditingStaffMember(null);
+          }}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 1100,
+            background: 'rgba(5, 18, 11, 0.85)', backdropFilter: 'blur(12px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            padding: isMobile ? '12px 10px calc(16px + env(safe-area-inset-bottom, 16px))' : 20
+          }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              background: 'linear-gradient(145deg, #0B2416 0%, #061A0F 100%)',
+              border: '1px solid rgba(56, 189, 248, 0.35)',
+              borderRadius: isMobile ? 18 : 24, maxWidth: 540, width: '100%',
+              maxHeight: isMobile ? 'calc(100dvh - 28px - env(safe-area-inset-bottom, 16px))' : '90vh',
+              boxShadow: '0 25px 60px rgba(0,0,0,0.85)',
+              position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column'
+            }}
+          >
+            {/* Header */}
+            <div style={{
+              flexShrink: 0,
+              padding: isMobile ? '16px 18px 14px' : '22px 28px 16px', borderBottom: '1px solid rgba(255,255,255,0.08)',
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{
+                  width: 38, height: 38, borderRadius: 10, background: 'rgba(56, 189, 248, 0.15)',
+                  border: '1px solid rgba(56, 189, 248, 0.35)', display: 'flex', alignItems: 'center',
+                  justifyContent: 'center', color: '#38BDF8'
+                }}>
+                  <Edit3 size={18} />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: isMobile ? 16 : 18, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
+                    Edit Staff &amp; Reset Credentials
+                  </h3>
+                  <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', margin: '2px 0 0' }}>
+                    {editingStaffMember.name} • {editingStaffMember.role.replace('_', ' ')}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => {
+                  setEditStaffModalOpen(false);
+                  setEditingStaffMember(null);
+                }}
+                style={{
+                  background: 'rgba(255,255,255,0.06)', border: 'none', color: 'rgba(255,255,255,0.6)',
+                  width: 32, height: 32, borderRadius: '50%', cursor: 'pointer', display: 'flex',
+                  alignItems: 'center', justifyContent: 'center'
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Form Content */}
+            <form
+              onSubmit={handleSaveEditStaff}
+              className="rp-sleek-scroll"
+              style={{
+                flex: 1,
+                minHeight: 0,
+                padding: isMobile ? '16px 18px calc(24px + env(safe-area-inset-bottom, 18px))' : '22px 28px',
+                overflowY: 'auto',
+                WebkitOverflowScrolling: 'touch',
+                overscrollBehavior: 'contain'
+              }}
+            >
+              {editStaffError && (
+                <div style={{
+                  background: 'rgba(239, 68, 68, 0.15)', border: '1px solid #EF4444',
+                  borderRadius: 10, padding: '10px 14px', color: '#FCA5A5',
+                  fontSize: 13, marginBottom: 14
+                }}>
+                  {editStaffError}
+                </div>
+              )}
+
+              {editStaffSuccess && (
+                <div style={{
+                  background: 'rgba(24, 252, 92, 0.15)', border: `1px solid ${RF_MINT_ACCENT}`,
+                  borderRadius: 10, padding: '10px 14px', color: RF_MINT_ACCENT,
+                  fontSize: 13, marginBottom: 14, display: 'flex', alignItems: 'center', gap: 6
+                }}>
+                  <CheckCircle2 size={16} /> {editStaffSuccess}
+                </div>
+              )}
+
+              {/* Account Metadata Badge */}
+              <div style={{
+                background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',
+                borderRadius: 10, padding: '10px 14px', marginBottom: 16,
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8
+              }}>
+                <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.55)', fontFamily: 'monospace' }}>
+                  ID: {editingStaffMember.id}
+                </span>
+                <span style={{ fontSize: 11.5, color: RF_MINT_ACCENT, fontWeight: 600 }}>
+                  {editingStaffMember.reviews_count} reviews handled
+                </span>
+              </div>
+
+              {/* Name & Email */}
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 12, marginBottom: 14 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
+                    Full Name *
+                  </label>
+                  <input
+                    type="text"
+                    value={editStaffName}
+                    onChange={e => setEditStaffName(e.target.value)}
+                    style={{
+                      width: '100%', padding: '10px 12px', borderRadius: 9,
+                      background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)',
+                      color: '#FFFFFF', fontSize: 13, outline: 'none', boxSizing: 'border-box'
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
+                    Email Address *
+                  </label>
+                  <input
+                    type="email"
+                    value={editStaffEmail}
+                    onChange={e => setEditStaffEmail(e.target.value)}
+                    style={{
+                      width: '100%', padding: '10px 12px', borderRadius: 9,
+                      background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)',
+                      color: '#FFFFFF', fontSize: 13, outline: 'none', boxSizing: 'border-box'
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Role & Squad Division */}
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 12, marginBottom: 14 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
+                    Assigned Role *
+                  </label>
+                  <select
+                    value={editStaffRole}
+                    onChange={e => setEditStaffRole(e.target.value as StaffRole)}
+                    style={{
+                      width: '100%', padding: '10px 36px 10px 12px', borderRadius: 9,
+                      background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.15)',
+                      color: '#FFFFFF', fontSize: 12.5, outline: 'none', boxSizing: 'border-box', cursor: 'pointer'
+                    }}
+                  >
+                    <option value="SUPER_ADMIN">Super Admin (Full Root Authority)</option>
+                    <option value="MANAGER">Manager (Full Ops except Staff Admin)</option>
+                    <option value="ADMISSIONS_REVIEWER">Admissions Reviewer (Candidates)</option>
+                    <option value="SQUAD_LEAD">Squad Lead (Missions &amp; Proofs)</option>
+                    <option value="TASK_VERIFIER">Task Verifier (Proofs of Work)</option>
+                    <option value="TASK_VIEWER">Task Viewer (Read Only)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
+                    Squad Scope *
+                  </label>
+                  <select
+                    value={editStaffDivision}
+                    onChange={e => setEditStaffDivision(e.target.value)}
+                    style={{
+                      width: '100%', padding: '10px 36px 10px 12px', borderRadius: 9,
+                      background: 'rgba(15, 46, 30, 0.95)', border: '1px solid rgba(255,255,255,0.15)',
+                      color: '#FFFFFF', fontSize: 12.5, outline: 'none', boxSizing: 'border-box', cursor: 'pointer'
+                    }}
+                  >
+                    <option value="ALL">All Squads (Global)</option>
+                    <option value="TECH_PRODUCT">Tech &amp; Product</option>
+                    <option value="CREATIVE">Creative</option>
+                    <option value="GROWTH">Growth</option>
+                    <option value="BUSINESS">Business</option>
+                    <option value="COMMUNITY">Community</option>
+                    <option value="RESEARCH_TESTING">Research &amp; Testing</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Status Selector */}
+              <div style={{ marginBottom: 16 }}>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>
+                  Account Status
+                </label>
+                <div style={{ display: 'flex', gap: 10 }}>
+                  <button
+                    type="button"
+                    onClick={() => setEditStaffStatus('ACTIVE')}
+                    style={{
+                      flex: 1, padding: '9px', borderRadius: 8, fontSize: 12.5, fontWeight: 700,
+                      background: editStaffStatus === 'ACTIVE' ? 'rgba(24, 252, 92, 0.18)' : 'rgba(255,255,255,0.04)',
+                      border: `1px solid ${editStaffStatus === 'ACTIVE' ? RF_MINT_ACCENT : 'rgba(255,255,255,0.1)'}`,
+                      color: editStaffStatus === 'ACTIVE' ? RF_MINT_ACCENT : 'rgba(255,255,255,0.5)',
+                      cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6
+                    }}
+                  >
+                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: editStaffStatus === 'ACTIVE' ? RF_MINT_ACCENT : 'rgba(255,255,255,0.4)' }} />
+                    ACTIVE (Access Allowed)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEditStaffStatus('SUSPENDED')}
+                    style={{
+                      flex: 1, padding: '9px', borderRadius: 8, fontSize: 12.5, fontWeight: 700,
+                      background: editStaffStatus === 'SUSPENDED' ? 'rgba(239, 68, 68, 0.18)' : 'rgba(255,255,255,0.04)',
+                      border: `1px solid ${editStaffStatus === 'SUSPENDED' ? '#EF4444' : 'rgba(255,255,255,0.1)'}`,
+                      color: editStaffStatus === 'SUSPENDED' ? '#FCA5A5' : 'rgba(255,255,255,0.5)',
+                      cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6
+                    }}
+                  >
+                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: editStaffStatus === 'SUSPENDED' ? '#EF4444' : 'rgba(255,255,255,0.4)' }} />
+                    SUSPENDED (Access Blocked)
+                  </button>
+                </div>
+              </div>
+
+              {/* Credential Reset Container */}
+              <div style={{
+                background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(255,255,255,0.12)',
+                borderRadius: 12, padding: '14px 16px', marginBottom: 20
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 12 }}>
+                  <Key size={15} color={RF_GOLD_YELLOW} />
+                  <span style={{ fontSize: 12.5, fontWeight: 700, color: '#FFFFFF' }}>
+                    Reset Authentication Credentials
+                  </span>
+                </div>
+
+                {/* Passcode Row */}
+                <div style={{ marginBottom: 12 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 }}>
+                    <label style={{ fontSize: 11.5, fontWeight: 600, color: 'rgba(255,255,255,0.75)' }}>
+                      Access Passcode (Short Code Login)
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setEditStaffPasscode(`worker26_${Math.floor(100 + Math.random() * 900)}`)}
+                      style={{ background: 'none', border: 'none', color: RF_MINT_ACCENT, fontSize: 11, fontWeight: 600, cursor: 'pointer', padding: 0 }}
+                    >
+                      Generate New Passcode
+                    </button>
+                  </div>
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type="text"
+                      value={editStaffPasscode}
+                      onChange={e => setEditStaffPasscode(e.target.value)}
+                      placeholder="e.g. worker26_482"
+                      style={{
+                        width: '100%', padding: '9px 12px 9px 34px', borderRadius: 8,
+                        background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)',
+                        color: '#FFFFFF', fontSize: 13, fontFamily: 'monospace', outline: 'none', boxSizing: 'border-box'
+                      }}
+                    />
+                    <Key size={14} style={{ position: 'absolute', left: 11, top: 11, color: 'rgba(255,255,255,0.4)' }} />
+                  </div>
+                </div>
+
+                {/* Password Row */}
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 }}>
+                    <label style={{ fontSize: 11.5, fontWeight: 600, color: 'rgba(255,255,255,0.75)' }}>
+                      Password (Email + Password Login)
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const base = editStaffName.trim() ? editStaffName.trim().split(' ')[0] : 'Staff';
+                        setEditStaffPassword(`${base}@Refeir${Math.floor(100 + Math.random() * 900)}!`);
+                        setShowEditStaffPassword(true);
+                      }}
+                      style={{ background: 'none', border: 'none', color: RF_MINT_ACCENT, fontSize: 11, fontWeight: 600, cursor: 'pointer', padding: 0 }}
+                    >
+                      Generate Strong Password
+                    </button>
+                  </div>
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type={showEditStaffPassword ? 'text' : 'password'}
+                      value={editStaffPassword}
+                      onChange={e => setEditStaffPassword(e.target.value)}
+                      placeholder="e.g. Sarah@Admit2026"
+                      style={{
+                        width: '100%', padding: '9px 40px 9px 34px', borderRadius: 8,
+                        background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)',
+                        color: '#FFFFFF', fontSize: 13, outline: 'none', boxSizing: 'border-box'
+                      }}
+                    />
+                    <Lock size={14} style={{ position: 'absolute', left: 11, top: 11, color: 'rgba(255,255,255,0.4)' }} />
+                    <button
+                      type="button"
+                      onClick={() => setShowEditStaffPassword(!showEditStaffPassword)}
+                      style={{
+                        position: 'absolute', right: 10, top: 9, background: 'none', border: 'none',
+                        color: 'rgba(255,255,255,0.5)', cursor: 'pointer', padding: 2
+                      }}
+                    >
+                      {showEditStaffPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                    </button>
+                  </div>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', marginTop: 4, display: 'block' }}>
+                    Staff member can log in using either their email + password or their access passcode.
+                  </span>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditStaffModalOpen(false);
+                    setEditingStaffMember(null);
+                  }}
+                  style={{
+                    background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)',
+                    color: '#FFFFFF', padding: '9px 18px', borderRadius: 100, fontSize: 13,
+                    cursor: 'pointer'
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  style={{
+                    background: '#38BDF8', color: '#04101A', border: 'none',
+                    padding: '9px 22px', borderRadius: 100, fontSize: 13, fontWeight: 700,
+                    cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
+                    boxShadow: '0 2px 14px rgba(56, 189, 248, 0.4)'
+                  }}
+                >
+                  <Save size={14} /> Save Changes
                 </button>
               </div>
             </form>
