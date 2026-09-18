@@ -7,7 +7,7 @@ import {
   UserPlus, Trash2, Key, EyeOff, Copy, Ban, UserX, Calendar,
   Building2, Globe, Phone, Send, AtSign, Share2, Briefcase,
   AlertTriangle, Brain, Gift, Zap, Megaphone, PlusCircle, Radio, DollarSign,
-  X, Menu, BarChart3, Activity, TrendingUp, Target, PieChart, Info, HelpCircle
+  Bell, X, CheckCheck, Menu, BarChart3, Activity, TrendingUp, Target, PieChart, Info, HelpCircle
 } from 'lucide-react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import {
@@ -24,7 +24,10 @@ import {
   activateContributor,
   ContributorProfile,
   syncContributorsToSupabase,
-  fetchContributorsFromDatabase
+  fetchContributorsFromDatabase,
+  enforceInactivityRule,
+  getContributorActivityStatus,
+  INACTIVITY_LIMIT_DAYS
 } from '../lib/contributorAuth';
 import {
   PioneerApplicationRecord,
@@ -37,6 +40,7 @@ import {
 import {
   StaffMember,
   StaffRole,
+  StaffPermissions,
   getStaffMembers,
   saveStaffMembers,
   addStaffMember,
@@ -46,7 +50,8 @@ import {
   verifyStaffEmailPassword,
   getActiveStaffSession,
   setActiveStaffSession,
-  isTabAuthorized
+  isTabAuthorized,
+  getStaffPermissions
 } from '../lib/staffManagement';
 import {
   PioneerCertificate,
@@ -415,9 +420,14 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
   const isSuperAdmin = loggedInStaff?.role === 'SUPER_ADMIN';
 
+  // Role-Based Access Control (RBAC) Permissions
+  const permissions: StaffPermissions = useMemo(() => {
+    return getStaffPermissions(loggedInStaff?.role || 'TASK_VIEWER');
+  }, [loggedInStaff]);
+
   // Toggle Worker Active / Suspended (Super Admin Only)
   const handleToggleStaff = (id: string) => {
-    if (!isSuperAdmin) {
+    if (!permissions.canManageStaff) {
       alert('Unauthorized: Only Super Admin (Tonye Taylor) has permission to suspend or activate staff members.');
       return;
     }
@@ -427,7 +437,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
   // Delete Worker (Super Admin Only)
   const handleDeleteStaff = (id: string) => {
-    if (!isSuperAdmin) {
+    if (!permissions.canManageStaff) {
       alert('Unauthorized: Only Super Admin (Tonye Taylor) has permission to remove staff members.');
       return;
     }
@@ -539,6 +549,14 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
   const handleUpdateTaskStatus = async (newStatus: 'VERIFIED' | 'NEEDS_REVISION' | 'REJECTED') => {
     if (!activeTask) return;
+    if (!permissions.canVerifyTasks) {
+      alert('Unauthorized: You do not have permission to verify or reject proofs of work.');
+      return;
+    }
+    if (loggedInStaff?.role === 'SQUAD_LEAD' && loggedInStaff.assigned_division !== 'ALL' && activeTask.division !== loggedInStaff.assigned_division) {
+      alert(`Unauthorized: As Squad Lead for ${loggedInStaff.assigned_division.replace('_', ' ')}, you can only verify deliverables submitted to your assigned squad.`);
+      return;
+    }
     setUpdatingTask(true);
     try {
       await updateTaskSubmissionStatus(activeTask.id, newStatus, taskFeedback.trim());
@@ -622,18 +640,27 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
         console.warn('Error reloading task submissions:', e);
       }
 
-      // 3. Refresh Pioneer Members
+      // 3. Refresh Pioneer Members & Enforce 14-Day Inactivity Rule
       try {
+        let loadedMembers: ContributorProfile[] = [];
         if (isSupabaseConfigured) {
           const dbContributors = await fetchContributorsFromDatabase();
           if (dbContributors && dbContributors.length > 0) {
-            setMembersList(dbContributors);
+            loadedMembers = dbContributors;
           } else {
-            setMembersList(getAllContributors());
+            loadedMembers = getAllContributors();
           }
         } else {
-          setMembersList(getAllContributors());
+          loadedMembers = getAllContributors();
         }
+
+        // Enforce strict 14-day inactivity demotion rule to Level 1
+        const currentTasks = await getTaskSubmissions().catch(() => taskSubmissions);
+        const { updatedContributors, demotedCount } = enforceInactivityRule(loadedMembers, currentTasks);
+        if (demotedCount > 0) {
+          loadedMembers = updatedContributors || getAllContributors();
+        }
+        setMembersList(loadedMembers);
       } catch {
         setMembersList(getAllContributors());
       }
@@ -829,12 +856,20 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
   };
 
   const handleOpenSuspendModal = (member: ContributorProfile) => {
+    if (!permissions.canSuspendMembers) {
+      alert('Unauthorized: You do not have permission to suspend pioneer accounts.');
+      return;
+    }
     setSuspendModalMember(member);
     setSuspendReasonInput('Violation of Refeir Pioneer Code of Conduct');
   };
 
   const handleConfirmSuspend = () => {
     if (!suspendModalMember) return;
+    if (!permissions.canSuspendMembers) {
+      alert('Unauthorized: You do not have permission to suspend pioneer accounts.');
+      return;
+    }
     try {
       const updated = suspendContributor(suspendModalMember.email, suspendReasonInput);
       refreshMembers();
@@ -851,6 +886,10 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
   };
 
   const handleReactivateMember = (member: ContributorProfile) => {
+    if (!permissions.canSuspendMembers) {
+      alert('Unauthorized: You do not have permission to reactivate pioneer accounts.');
+      return;
+    }
     try {
       const updated = activateContributor(member.email);
       refreshMembers();
@@ -865,6 +904,10 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
   };
 
   const handlePromoteMemberLevel = (email: string, newLevel: ContributorTier) => {
+    if (!permissions.canModifyMemberTier) {
+      alert('Unauthorized: Only Super Admin has authority to manually override or promote pioneer ranks.');
+      return;
+    }
     updateContributorLevel(email, newLevel);
     refreshMembers();
     if (selectedMember?.email.toLowerCase() === email.toLowerCase()) {
@@ -892,6 +935,10 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
   };
 
   const handleOpenAppointSquadLead = (member?: ContributorProfile) => {
+    if (!permissions.canManageStaff) {
+      alert('Unauthorized: Only Super Admin can appoint Squad Leads.');
+      return;
+    }
     if (member) {
       setAppointLeadMember(member);
       const app = applications.find(a => a.email.toLowerCase() === member.email.toLowerCase());
@@ -911,6 +958,10 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
   const handleConfirmAppointSquadLead = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!permissions.canManageStaff) {
+      setAppointLeadError('Unauthorized: Only Super Admin can appoint Squad Leads.');
+      return;
+    }
     if (!appointLeadMember) {
       setAppointLeadError('Please select a pioneer member to appoint as Squad Lead.');
       return;
@@ -966,6 +1017,10 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
   };
 
   const handleOpenIssueCertModal = (memberEmail?: string, defaultLevel?: ContributorTier) => {
+    if (!permissions.canIssueCertificates) {
+      alert('Unauthorized: You do not have permission to issue certificates.');
+      return;
+    }
     if (memberEmail) {
       setIssueCertMemberEmail(memberEmail);
     } else if (membersList.length > 0) {
@@ -979,6 +1034,10 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
   const handleConfirmIssueCertificate = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!permissions.canIssueCertificates) {
+      alert('Unauthorized: You do not have permission to issue certificates.');
+      return;
+    }
     const targetMember = membersList.find(m => m.email.toLowerCase() === issueCertMemberEmail.toLowerCase());
     if (!targetMember) {
       alert('Selected pioneer member was not found');
@@ -1003,6 +1062,10 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
   };
 
   const handleRevokeCertificate = (id: string) => {
+    if (!permissions.canRevokeCertificates) {
+      alert('Unauthorized: Only Super Admin has authority to revoke minted certificates.');
+      return;
+    }
     const reason = window.prompt('Enter reason for revoking this certificate:');
     if (reason === null) return;
     revokeCertificate(id, reason.trim() || 'Administrative revocation');
@@ -1304,6 +1367,16 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
   const handleCreateTask = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!permissions.canAnnounceTasks) {
+      alert('Unauthorized: You do not have permission to announce squad tasks.');
+      return;
+    }
+    if (loggedInStaff?.role === 'SQUAD_LEAD' && loggedInStaff.assigned_division !== 'ALL') {
+      if (newTaskSquad !== loggedInStaff.assigned_division && newTaskSquad !== 'GENERAL') {
+        alert(`Unauthorized: As Squad Lead for ${loggedInStaff.assigned_division.replace('_', ' ')}, you can only announce tasks for your division or General missions.`);
+        return;
+      }
+    }
     if (!newTaskTitle.trim()) {
       alert('Please enter a task title');
       return;
@@ -1340,6 +1413,10 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
   };
 
   const handleDeleteTask = (id: string, title: string) => {
+    if (!permissions.canDeleteTasks) {
+      alert('Unauthorized: Only Super Admin and authorized managers can delete squad missions.');
+      return;
+    }
     if (!window.confirm(`Are you sure you want to delete mission "${title}"?`)) return;
     deleteSquadTask(id);
     setTasksList(getAllSquadTasks());
@@ -1348,6 +1425,10 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
   };
 
   const handleToggleTaskStatus = (id: string) => {
+    if (!permissions.canAnnounceTasks) {
+      alert('Unauthorized: You do not have permission to toggle squad task status.');
+      return;
+    }
     toggleTaskStatus(id);
     setTasksList(getAllSquadTasks());
   };
@@ -1395,9 +1476,42 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
     };
   }, [tasksList]);
 
-  // Prevent body scroll jitter/shaking on mobile when full-screen drawer or profile docker is open
+  // ─── NOTIFICATION CENTER STATE & ACTIVITY FEED ──────────────────────────────
+  const [notificationOpen, setNotificationOpen] = useState(false);
+  const [readNotificationIds, setReadNotificationIds] = useState<string[]>(() => {
+    try {
+      const stored = localStorage.getItem('refeir_admin_read_notifs');
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [notifFilter, setNotifFilter] = useState<'all' | 'action'>('all');
+  const notifDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close notifications popover on click outside or escape key
   useEffect(() => {
-    if ((adminMobileNavOpen && isMobile) || (adminProfileDockerOpen && isMobile)) {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (!isMobile && notifDropdownRef.current && !notifDropdownRef.current.contains(e.target as Node)) {
+        setNotificationOpen(false);
+      }
+    };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setNotificationOpen(false);
+    };
+    if (notificationOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleKeyDown);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [notificationOpen, isMobile]);
+
+  // Prevent body scroll jitter/shaking on mobile when full-screen drawer or notification/profile docker is open
+  useEffect(() => {
+    if ((adminMobileNavOpen && isMobile) || (notificationOpen && isMobile) || (adminProfileDockerOpen && isMobile)) {
       const origBodyOverflow = document.body.style.overflow;
       const origHtmlOverflow = document.documentElement.style.overflow;
       const origTouchAction = document.body.style.touchAction;
@@ -1418,7 +1532,106 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
         document.documentElement.style.overscrollBehavior = origHtmlOverscroll;
       };
     }
-  }, [adminMobileNavOpen, adminProfileDockerOpen, isMobile]);
+  }, [adminMobileNavOpen, notificationOpen, adminProfileDockerOpen, isMobile]);
+
+  const notificationsList = useMemo(() => {
+    const list: Array<{
+      id: string;
+      type: 'action' | 'info' | 'success' | 'alert';
+      title: string;
+      desc: string;
+      time: string;
+      targetTab: 'applications' | 'proofs' | 'members' | 'workers' | 'certificates' | 'tasks';
+      unread?: boolean;
+    }> = [];
+
+    // Pending applications needing evaluation
+    if (stats.pending > 0) {
+      list.push({
+        id: `apps-pending-${stats.pending}`,
+        type: 'action',
+        title: `${stats.pending} Application${stats.pending > 1 ? 's' : ''} Pending Evaluation`,
+        desc: `${stats.pending} candidate submission${stats.pending > 1 ? 's' : ''} awaiting admissions review.`,
+        time: 'Action Required',
+        targetTab: 'applications'
+      });
+    }
+
+    // Pending task proofs
+    if (taskStats.pending > 0) {
+      list.push({
+        id: `proofs-pending-${taskStats.pending}`,
+        type: 'action',
+        title: `${taskStats.pending} Task Proof${taskStats.pending > 1 ? 's' : ''} Awaiting Approval`,
+        desc: 'Pioneers have submitted work proofs ready for verification & bounty rewards.',
+        time: 'Needs Review',
+        targetTab: 'proofs'
+      });
+    }
+
+    // Founding 100 Seats progress
+    list.push({
+      id: 'founding-100-milestone',
+      type: 'info',
+      title: `Founding 100 Cohort: ${stats.founding}/100 Confirmed`,
+      desc: `${Math.max(0, 100 - stats.founding)} Founding Pioneer seats remaining across all 6 squads.`,
+      time: 'Milestone',
+      targetTab: 'applications'
+    });
+
+    // Active squad missions & bounties
+    if (squadTaskStats.active > 0) {
+      list.push({
+        id: `active-missions-${squadTaskStats.active}`,
+        type: 'info',
+        title: `${squadTaskStats.active} Live Squad Missions Active`,
+        desc: `${squadTaskStats.bounties} missions with active cash, airtime, or data bounties.`,
+        time: 'Live',
+        targetTab: 'tasks'
+      });
+    }
+
+    // Pioneer Certifications
+    if (certificatesList.length > 0) {
+      list.push({
+        id: `certs-count-${certificatesList.length}`,
+        type: 'success',
+        title: `${certificatesList.length} Accreditations Issued`,
+        desc: 'Verified level credentials active in the Pioneer certificate registry.',
+        time: 'Credentials',
+        targetTab: 'certificates'
+      });
+    }
+
+    return list.map(item => ({
+      ...item,
+      unread: !readNotificationIds.includes(item.id)
+    }));
+  }, [stats.pending, stats.founding, taskStats.pending, squadTaskStats.active, squadTaskStats.bounties, certificatesList.length, readNotificationIds]);
+
+  const unreadNotifCount = useMemo(() => {
+    return notificationsList.filter(n => n.unread).length;
+  }, [notificationsList]);
+
+  const handleMarkAllNotificationsRead = () => {
+    const allIds = notificationsList.map(n => n.id);
+    setReadNotificationIds(allIds);
+    try {
+      localStorage.setItem('refeir_admin_read_notifs', JSON.stringify(allIds));
+    } catch {}
+  };
+
+  const handleNotificationClick = (item: typeof notificationsList[0]) => {
+    if (!readNotificationIds.includes(item.id)) {
+      const updated = [...readNotificationIds, item.id];
+      setReadNotificationIds(updated);
+      try {
+        localStorage.setItem('refeir_admin_read_notifs', JSON.stringify(updated));
+      } catch {}
+    }
+    setAdminTab(item.targetTab);
+    setNotificationOpen(false);
+  };
 
   // Open Detailed Review Modal
   const openReviewModal = (app: ApplicationRecord) => {
@@ -1436,6 +1649,14 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
   // Save Application Changes
   const handleSaveChanges = async () => {
     if (!activeApp) return;
+    if (!permissions.canReviewApplications) {
+      alert('Unauthorized: You do not have permission to review or evaluate applications.');
+      return;
+    }
+    if (!permissions.canModifyMemberTier && editContributorLevel !== (activeApp.contributor_level || 'LEVEL_1')) {
+      alert('Unauthorized: Only Super Admin has authority to manually modify or assign contributor levels.');
+      return;
+    }
     setSavingChanges(true);
     setSaveSuccessMsg('');
 
@@ -1993,13 +2214,62 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           </div>
 
           {/* Right Action Cluster */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 8 : 8, position: 'relative', flexShrink: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 8 : 8, position: 'relative', flexShrink: 0 }} ref={notifDropdownRef}>
+            {/* Notification Center Trigger */}
+            <button
+              onClick={() => {
+                setNotificationOpen(prev => !prev);
+                setAdminMobileNavOpen(false);
+                setAdminProfileDockerOpen(false);
+              }}
+              title="Notification Center"
+              style={{
+                background: notificationOpen ? 'rgba(24, 252, 92, 0.18)' : 'rgba(255,255,255,0.05)',
+                border: notificationOpen ? `1px solid ${RF_MINT_ACCENT}55` : '1px solid rgba(255,255,255,0.12)',
+                color: notificationOpen ? RF_MINT_ACCENT : '#FFFFFF',
+                height: 34,
+                width: 34,
+                borderRadius: 9,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                position: 'relative',
+                transition: 'all 0.15s ease',
+                flexShrink: 0
+              }}
+            >
+              <Bell size={15} />
+              {unreadNotifCount > 0 && (
+                <span style={{
+                  position: 'absolute',
+                  top: -3,
+                  right: -3,
+                  minWidth: 16,
+                  height: 16,
+                  borderRadius: 8,
+                  background: RF_MINT_ACCENT,
+                  color: RF_DEEP_GREEN,
+                  fontSize: 9.5,
+                  fontWeight: 800,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '0 4px',
+                  boxShadow: '0 0 8px rgba(24, 252, 92, 0.6)'
+                }}>
+                  {unreadNotifCount}
+                </span>
+              )}
+            </button>
+
             {/* Mobile Staff Avatar Button (Tapping opens dedicated Staff Profile Docker) */}
             {isMobile && loggedInStaff && (
               <button
                 onClick={() => {
                   setAdminProfileDockerOpen(prev => !prev);
                   setAdminMobileNavOpen(false);
+                  setNotificationOpen(false);
                 }}
                 title={`Staff Profile: ${loggedInStaff.name} (${loggedInStaff.role})`}
                 style={{
@@ -2142,12 +2412,541 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               </button>
             )}
 
-            {/* End Header Actions */}
+            {/* Notification Center Popover (Desktop only) */}
+            {notificationOpen && !isMobile && (
+              /* Desktop Popover Dropdown */
+              <div style={{
+                position: 'absolute',
+                top: 'calc(100% + 10px)',
+                right: 0,
+                width: 420,
+                maxWidth: 'calc(100vw - 32px)',
+                background: 'rgba(7, 22, 14, 0.96)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                borderRadius: 16,
+                boxShadow: '0 24px 60px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(24, 252, 92, 0.08)',
+                backdropFilter: 'blur(30px) saturate(160%)',
+                WebkitBackdropFilter: 'blur(30px) saturate(160%)',
+                zIndex: 1000,
+                overflow: 'hidden',
+                animation: 'rp-fade-slide 0.2s ease-out'
+              }}>
+                {/* Header */}
+                <div style={{
+                  padding: '14px 18px',
+                  borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  background: 'rgba(255, 255, 255, 0.02)'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <Bell size={15} color={RF_MINT_ACCENT} />
+                    <span style={{ fontSize: 13.5, fontWeight: 700, color: '#FFFFFF', letterSpacing: '-0.01em' }}>
+                      Notifications
+                    </span>
+                    {unreadNotifCount > 0 && (
+                      <span style={{
+                        fontSize: 10.5,
+                        fontWeight: 700,
+                        padding: '1px 8px',
+                        borderRadius: 100,
+                        background: 'rgba(24, 252, 92, 0.12)',
+                        color: RF_MINT_ACCENT,
+                        border: '1px solid rgba(24, 252, 92, 0.25)'
+                      }}>
+                        {unreadNotifCount} new
+                      </span>
+                    )}
+                  </div>
+
+                  {unreadNotifCount > 0 && (
+                    <button
+                      onClick={handleMarkAllNotificationsRead}
+                      style={{
+                        background: 'rgba(255, 255, 255, 0.04)',
+                        border: '1px solid rgba(255, 255, 255, 0.08)',
+                        color: RF_MINT_ACCENT,
+                        fontSize: 11.5,
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 5,
+                        padding: '4px 10px',
+                        borderRadius: 100,
+                        transition: 'all 0.15s ease'
+                      }}
+                      onMouseEnter={e => {
+                        e.currentTarget.style.background = 'rgba(24, 252, 92, 0.12)';
+                        e.currentTarget.style.borderColor = 'rgba(24, 252, 92, 0.3)';
+                      }}
+                      onMouseLeave={e => {
+                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.04)';
+                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+                      }}
+                    >
+                      <CheckCheck size={13} />
+                      Mark read
+                    </button>
+                  )}
+                </div>
+
+                {/* Modern Segmented Filter Tabs */}
+                <div style={{
+                  display: 'flex',
+                  gap: 6,
+                  padding: '8px 14px',
+                  borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+                  background: 'rgba(0, 0, 0, 0.2)'
+                }}>
+                  <button
+                    onClick={() => setNotifFilter('all')}
+                    style={{
+                      background: notifFilter === 'all' ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+                      border: notifFilter === 'all' ? '1px solid rgba(255, 255, 255, 0.14)' : '1px solid transparent',
+                      color: notifFilter === 'all' ? '#FFFFFF' : 'rgba(255, 255, 255, 0.5)',
+                      padding: '4px 10px',
+                      borderRadius: 8,
+                      fontSize: 11.5,
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease'
+                    }}
+                  >
+                    All ({notificationsList.length})
+                  </button>
+                  <button
+                    onClick={() => setNotifFilter('action')}
+                    style={{
+                      background: notifFilter === 'action' ? 'rgba(251, 191, 36, 0.15)' : 'transparent',
+                      border: notifFilter === 'action' ? '1px solid rgba(251, 191, 36, 0.3)' : '1px solid transparent',
+                      color: notifFilter === 'action' ? RF_GOLD_YELLOW : 'rgba(255, 255, 255, 0.5)',
+                      padding: '4px 10px',
+                      borderRadius: 8,
+                      fontSize: 11.5,
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease'
+                    }}
+                  >
+                    Action Needed ({notificationsList.filter(n => n.type === 'action').length})
+                  </button>
+                </div>
+
+                {/* Notifications List */}
+                <div className="rp-sleek-scroll" style={{ maxHeight: 360, overflowY: 'auto', padding: '8px 10px' }}>
+                  {notificationsList
+                    .filter(n => notifFilter === 'all' || n.type === 'action')
+                    .map(n => {
+                      const isUnread = n.unread;
+                      return (
+                        <div
+                          key={n.id}
+                          onClick={() => handleNotificationClick(n)}
+                          style={{
+                            padding: '11px 13px',
+                            borderRadius: 12,
+                            background: isUnread ? 'rgba(24, 252, 92, 0.03)' : 'transparent',
+                            border: isUnread ? '1px solid rgba(24, 252, 92, 0.14)' : '1px solid transparent',
+                            marginBottom: 4,
+                            cursor: 'pointer',
+                            transition: 'all 0.15s ease',
+                            display: 'flex',
+                            gap: 12,
+                            alignItems: 'flex-start'
+                          }}
+                          onMouseEnter={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.04)'}
+                          onMouseLeave={e => e.currentTarget.style.background = isUnread ? 'rgba(24, 252, 92, 0.03)' : 'transparent'}
+                        >
+                          <div style={{
+                            width: 32,
+                            height: 32,
+                            borderRadius: 9,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            flexShrink: 0,
+                            marginTop: 1,
+                            background:
+                              n.type === 'action' ? 'rgba(251, 191, 36, 0.12)' :
+                              n.type === 'success' ? 'rgba(24, 252, 92, 0.12)' :
+                              n.type === 'alert' ? 'rgba(239, 68, 68, 0.12)' :
+                              'rgba(56, 189, 248, 0.12)',
+                            color:
+                              n.type === 'action' ? RF_GOLD_YELLOW :
+                              n.type === 'success' ? RF_MINT_ACCENT :
+                              n.type === 'alert' ? '#FCA5A5' :
+                              '#38BDF8'
+                          }}>
+                            {n.type === 'action' ? <AlertCircle size={15} /> :
+                             n.type === 'success' ? <CheckCircle2 size={15} /> :
+                             n.type === 'alert' ? <AlertTriangle size={15} /> :
+                             <Shield size={15} />}
+                          </div>
+
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6, marginBottom: 2 }}>
+                              <span style={{
+                                fontSize: 9.5,
+                                fontWeight: 700,
+                                padding: '1px 6px',
+                                borderRadius: 4,
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.04em',
+                                background:
+                                  n.type === 'action' ? 'rgba(251, 191, 36, 0.14)' :
+                                  n.type === 'success' ? 'rgba(24, 252, 92, 0.12)' :
+                                  n.type === 'alert' ? 'rgba(239, 68, 68, 0.12)' :
+                                  'rgba(56, 189, 248, 0.12)',
+                                color:
+                                  n.type === 'action' ? RF_GOLD_YELLOW :
+                                  n.type === 'success' ? RF_MINT_ACCENT :
+                                  n.type === 'alert' ? '#FCA5A5' :
+                                  '#38BDF8'
+                              }}>
+                                {n.time}
+                              </span>
+                              {isUnread && (
+                                <span style={{
+                                  width: 6,
+                                  height: 6,
+                                  borderRadius: '50%',
+                                  background: RF_MINT_ACCENT,
+                                  boxShadow: '0 0 6px rgba(24, 252, 92, 0.8)'
+                                }} />
+                              )}
+                            </div>
+                            <h4 style={{
+                              fontSize: 12.5,
+                              fontWeight: isUnread ? 700 : 600,
+                              color: '#FFFFFF',
+                              margin: '2px 0 0',
+                              lineHeight: 1.35,
+                              whiteSpace: 'normal',
+                              wordBreak: 'break-word'
+                            }}>
+                              {n.title}
+                            </h4>
+                            <p style={{
+                              fontSize: 11.5,
+                              color: 'rgba(255, 255, 255, 0.62)',
+                              margin: '3px 0 0',
+                              lineHeight: 1.4
+                            }}>
+                              {n.desc}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                </div>
+
+                {/* Footer */}
+                <div style={{
+                  padding: '10px 16px',
+                  borderTop: '1px solid rgba(255, 255, 255, 0.06)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  background: 'rgba(0, 0, 0, 0.22)'
+                }}>
+                  <span style={{ fontSize: 10.5, color: 'rgba(255, 255, 255, 0.45)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: RF_MINT_ACCENT, boxShadow: '0 0 6px rgba(24,252,92,0.6)' }} />
+                    Live Activity Feed
+                  </span>
+                  <span style={{ fontSize: 10.5, color: 'rgba(255, 255, 255, 0.45)' }}>
+                    Refeir Admissions Suite
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </header>
 
+      {/* ─── MOBILE NOTIFICATION DOCKER (Bottom Sheet) ─── */}
+      {isMobile && notificationOpen && (
+        <div
+          onClick={() => setNotificationOpen(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 10000,
+            background: 'rgba(3, 10, 6, 0.75)',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'flex-end',
+            animation: 'fadeIn 0.2s ease-out'
+          }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              background: '#081C12',
+              borderTop: `1.5px solid ${RF_MINT_ACCENT}55`,
+              borderRadius: '24px 24px 0 0',
+              padding: '16px 18px calc(24px + env(safe-area-inset-bottom, 20px))',
+              boxShadow: '0 -10px 40px rgba(0,0,0,0.7)',
+              maxHeight: '85dvh',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 12,
+              overflow: 'hidden'
+            }}
+          >
+            {/* Drag Handle */}
+            <div
+              style={{
+                width: 40,
+                height: 4,
+                borderRadius: 2,
+                background: 'rgba(255,255,255,0.2)',
+                margin: '0 auto 2px',
+                cursor: 'pointer'
+              }}
+              onClick={() => setNotificationOpen(false)}
+            />
 
+            {/* Header */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 6, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: 8,
+                  background: 'rgba(24, 252, 92, 0.15)',
+                  border: '1px solid rgba(24, 252, 92, 0.3)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: RF_MINT_ACCENT
+                }}>
+                  <Bell size={16} />
+                </div>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <h3 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: '#FFFFFF' }}>
+                      Notifications
+                    </h3>
+                    {unreadNotifCount > 0 && (
+                      <span style={{
+                        fontSize: 10,
+                        fontWeight: 700,
+                        padding: '1px 6px',
+                        borderRadius: 100,
+                        background: 'rgba(24, 252, 92, 0.15)',
+                        color: RF_MINT_ACCENT,
+                        border: '1px solid rgba(24, 252, 92, 0.3)'
+                      }}>
+                        {unreadNotifCount} new
+                      </span>
+                    )}
+                  </div>
+                  <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.45)' }}>
+                    Live Activity &amp; Admissions Feed
+                  </span>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                {unreadNotifCount > 0 && (
+                  <button
+                    onClick={handleMarkAllNotificationsRead}
+                    style={{
+                      background: 'rgba(24, 252, 92, 0.1)',
+                      border: '1px solid rgba(24, 252, 92, 0.25)',
+                      color: RF_MINT_ACCENT,
+                      fontSize: 11,
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      padding: '4px 8px',
+                      borderRadius: 100,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 4
+                    }}
+                  >
+                    <CheckCheck size={12} />
+                    <span>Mark read</span>
+                  </button>
+                )}
+                <button
+                  onClick={() => setNotificationOpen(false)}
+                  style={{
+                    width: 30,
+                    height: 30,
+                    borderRadius: '50%',
+                    background: 'rgba(255,255,255,0.06)',
+                    border: '1px solid rgba(255,255,255,0.12)',
+                    color: 'rgba(255,255,255,0.7)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <X size={15} />
+                </button>
+              </div>
+            </div>
+
+            {/* Filter Tabs */}
+            <div style={{ display: 'flex', gap: 6, padding: '2px 0' }}>
+              <button
+                onClick={() => setNotifFilter('all')}
+                style={{
+                  background: notifFilter === 'all' ? 'rgba(255, 255, 255, 0.12)' : 'rgba(255, 255, 255, 0.04)',
+                  border: notifFilter === 'all' ? '1px solid rgba(255, 255, 255, 0.2)' : '1px solid rgba(255, 255, 255, 0.06)',
+                  color: notifFilter === 'all' ? '#FFFFFF' : 'rgba(255, 255, 255, 0.55)',
+                  padding: '5px 12px',
+                  borderRadius: 8,
+                  fontSize: 12,
+                  fontWeight: 600,
+                  cursor: 'pointer'
+                }}
+              >
+                All ({notificationsList.length})
+              </button>
+              <button
+                onClick={() => setNotifFilter('action')}
+                style={{
+                  background: notifFilter === 'action' ? 'rgba(251, 191, 36, 0.18)' : 'rgba(255, 255, 255, 0.04)',
+                  border: notifFilter === 'action' ? '1px solid rgba(251, 191, 36, 0.35)' : '1px solid rgba(255, 255, 255, 0.06)',
+                  color: notifFilter === 'action' ? RF_GOLD_YELLOW : 'rgba(255, 255, 255, 0.55)',
+                  padding: '5px 12px',
+                  borderRadius: 8,
+                  fontSize: 12,
+                  fontWeight: 600,
+                  cursor: 'pointer'
+                }}
+              >
+                Action Needed ({notificationsList.filter(n => n.type === 'action').length})
+              </button>
+            </div>
+
+            {/* Notifications Scrollable List */}
+            <div
+              className="rp-sleek-scroll"
+              style={{
+                flex: 1,
+                minHeight: 0,
+                maxHeight: 'calc(65dvh - 120px)',
+                overflowY: 'auto',
+                WebkitOverflowScrolling: 'touch',
+                overscrollBehavior: 'contain',
+                touchAction: 'pan-y',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 6
+              }}
+            >
+              {notificationsList
+                .filter(n => notifFilter === 'all' || n.type === 'action')
+                .map(n => {
+                  const isUnread = n.unread;
+                  return (
+                    <div
+                      key={n.id}
+                      onClick={() => handleNotificationClick(n)}
+                      style={{
+                        padding: '11px 13px',
+                        borderRadius: 12,
+                        background: isUnread ? 'rgba(24, 252, 92, 0.04)' : 'rgba(255, 255, 255, 0.02)',
+                        border: isUnread ? '1px solid rgba(24, 252, 92, 0.18)' : '1px solid rgba(255, 255, 255, 0.05)',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        gap: 12,
+                        alignItems: 'flex-start'
+                      }}
+                    >
+                      <div style={{
+                        width: 32,
+                        height: 32,
+                        borderRadius: 9,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                        marginTop: 1,
+                        background:
+                          n.type === 'action' ? 'rgba(251, 191, 36, 0.12)' :
+                          n.type === 'success' ? 'rgba(24, 252, 92, 0.12)' :
+                          n.type === 'alert' ? 'rgba(239, 68, 68, 0.12)' :
+                          'rgba(56, 189, 248, 0.12)',
+                        color:
+                          n.type === 'action' ? RF_GOLD_YELLOW :
+                          n.type === 'success' ? RF_MINT_ACCENT :
+                          n.type === 'alert' ? '#FCA5A5' :
+                          '#38BDF8'
+                      }}>
+                        {n.type === 'action' ? <AlertCircle size={15} /> :
+                         n.type === 'success' ? <CheckCircle2 size={15} /> :
+                         n.type === 'alert' ? <AlertTriangle size={15} /> :
+                         <Shield size={15} />}
+                      </div>
+
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6, marginBottom: 2 }}>
+                          <span style={{
+                            fontSize: 9.5,
+                            fontWeight: 700,
+                            padding: '1px 6px',
+                            borderRadius: 4,
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.04em',
+                            background:
+                              n.type === 'action' ? 'rgba(251, 191, 36, 0.14)' :
+                              n.type === 'success' ? 'rgba(24, 252, 92, 0.12)' :
+                              n.type === 'alert' ? 'rgba(239, 68, 68, 0.12)' :
+                              'rgba(56, 189, 248, 0.12)',
+                            color:
+                              n.type === 'action' ? RF_GOLD_YELLOW :
+                              n.type === 'success' ? RF_MINT_ACCENT :
+                              n.type === 'alert' ? '#FCA5A5' :
+                              '#38BDF8'
+                          }}>
+                            {n.time}
+                          </span>
+                          {isUnread && (
+                            <span style={{
+                              width: 6,
+                              height: 6,
+                              borderRadius: '50%',
+                              background: RF_MINT_ACCENT,
+                              boxShadow: '0 0 6px rgba(24, 252, 92, 0.8)'
+                            }} />
+                          )}
+                        </div>
+                        <h4 style={{
+                          fontSize: 12.5,
+                          fontWeight: isUnread ? 700 : 600,
+                          color: '#FFFFFF',
+                          margin: '2px 0 0',
+                          lineHeight: 1.35,
+                          whiteSpace: 'normal',
+                          wordBreak: 'break-word'
+                        }}>
+                          {n.title}
+                        </h4>
+                        <p style={{
+                          fontSize: 11.5,
+                          color: 'rgba(255, 255, 255, 0.62)',
+                          margin: '3px 0 0',
+                          lineHeight: 1.4
+                        }}>
+                          {n.desc}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Full-Viewport Mobile Admin Navigation Drawer */}
       {adminMobileNavOpen && isMobile && (
@@ -4057,6 +4856,8 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                       s => s.name.toUpperCase().includes((member.division || '').toUpperCase()) || (member.division || '').toUpperCase().includes(s.tag)
                     ) || SQUAD_INFO.GENERAL;
 
+                    const activityStatus = getContributorActivityStatus(member, taskSubmissions);
+
                     return (
                       <tr
                         key={member.id}
@@ -4136,14 +4937,32 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                               {member.division || 'Unassigned'}
                             </span>
                           </div>
-                          <span style={{
-                            fontSize: 10, fontWeight: 700,
-                            color: RF_GOLD_YELLOW, background: 'rgba(255, 209, 102, 0.1)',
-                            border: '1px solid rgba(255, 209, 102, 0.3)',
-                            padding: '1.5px 6px', borderRadius: 5, textTransform: 'uppercase'
-                          }}>
-                            {(member.contributor_level || 'LEVEL_1').replace('_', ' ')}
-                          </span>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'flex-start' }}>
+                            <span style={{
+                              fontSize: 10, fontWeight: 700,
+                              color: RF_GOLD_YELLOW, background: 'rgba(255, 209, 102, 0.1)',
+                              border: '1px solid rgba(255, 209, 102, 0.3)',
+                              padding: '1.5px 6px', borderRadius: 5, textTransform: 'uppercase'
+                            }}>
+                              {(member.contributor_level || 'LEVEL_1').replace('_', ' ')}
+                            </span>
+                            {member.demoted_due_to_inactivity && (
+                              <span style={{
+                                fontSize: 9,
+                                fontWeight: 700,
+                                color: '#FFB27D',
+                                background: 'rgba(244, 124, 32, 0.14)',
+                                border: '1px solid rgba(244, 124, 32, 0.4)',
+                                padding: '1px 5px',
+                                borderRadius: 4,
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 3
+                              }} title="Reset to Level 1 due to 14+ days of inactivity">
+                                <AlertTriangle size={8} /> 14d Inactivity Reset
+                              </span>
+                            )}
+                          </div>
                         </td>
 
                         {/* Date of Birth */}
@@ -4197,15 +5016,33 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                               )}
                             </div>
                           ) : (
-                            <span style={{
-                              padding: '2.5px 7px', borderRadius: 100, fontSize: 10, fontWeight: 700,
-                              background: 'rgba(24, 252, 92, 0.12)', color: RF_MINT_ACCENT,
-                              border: `1px solid ${RF_LEAF_GREEN}55`, display: 'inline-flex', alignItems: 'center', gap: 4,
-                              flexShrink: 0, whiteSpace: 'nowrap'
-                            }}>
-                              <span style={{ width: 5, height: 5, borderRadius: '50%', background: RF_MINT_ACCENT, display: 'inline-block' }} />
-                              ACTIVE
-                            </span>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'flex-start' }}>
+                              <span style={{
+                                padding: '2.5px 7px', borderRadius: 100, fontSize: 10, fontWeight: 700,
+                                background: 'rgba(24, 252, 92, 0.12)', color: RF_MINT_ACCENT,
+                                border: `1px solid ${RF_LEAF_GREEN}55`, display: 'inline-flex', alignItems: 'center', gap: 4,
+                                flexShrink: 0, whiteSpace: 'nowrap'
+                              }}>
+                                <span style={{ width: 5, height: 5, borderRadius: '50%', background: RF_MINT_ACCENT, display: 'inline-block' }} />
+                                ACTIVE
+                              </span>
+                              {activityStatus.isAtRisk && !member.demoted_due_to_inactivity && (
+                                <span style={{
+                                  fontSize: 9.5,
+                                  fontWeight: 700,
+                                  color: RF_GOLD_YELLOW,
+                                  background: 'rgba(255, 209, 102, 0.12)',
+                                  border: '1px solid rgba(255, 209, 102, 0.3)',
+                                  padding: '1px 6px',
+                                  borderRadius: 4,
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: 3
+                                }} title={`Inactive for ${activityStatus.daysSinceActive} days. Progress resets to Level 1 after 14 days.`}>
+                                  <Clock size={9} /> At Risk ({14 - activityStatus.daysSinceActive}d left)
+                                </span>
+                              )}
+                            </div>
                           )}
                         </td>
 

@@ -1,9 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import {
   X, CheckCircle2, ArrowRight, FileText,
   Link as LinkIcon, Award, Zap,
   Eye, RefreshCw, User, LogIn,
-  LogOut, ExternalLink, Key, Search, Mail, Briefcase, Globe
+  LogOut, ExternalLink, Key, Search, Mail, Briefcase, Globe,
+  AlertTriangle, Clock
 } from 'lucide-react';
 import {
   RF_DEEP_GREEN,
@@ -24,7 +25,9 @@ import {
 import {
   getCurrentContributor,
   signOutContributor,
-  ContributorProfile
+  ContributorProfile,
+  getContributorActivityStatus,
+  INACTIVITY_LIMIT_DAYS
 } from '../lib/contributorAuth';
 
 interface SubmitTaskPageProps {
@@ -90,6 +93,11 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
   } | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const activityStatus = useMemo(() => {
+    if (!contributor) return null;
+    return getContributorActivityStatus(contributor, myTasks);
+  }, [contributor, myTasks]);
 
   // Synchronize contributor auth changes
   useEffect(() => {
@@ -626,6 +634,77 @@ export const SubmitTaskPage: React.FC<SubmitTaskPageProps> = ({ onNavigate, onOp
                     <LogOut size={12} style={{ flexShrink: 0 }} />
                     <span>Sign Out</span>
                   </button>
+                </div>
+              </div>
+            )}
+
+            {/* 14-Day Inactivity Demotion Alert or Warning Banner */}
+            {contributor && contributor.demoted_due_to_inactivity && (
+              <div style={{
+                background: 'rgba(239, 68, 68, 0.12)',
+                border: '1px solid rgba(239, 68, 68, 0.35)',
+                borderRadius: 14,
+                padding: '14px 16px',
+                marginBottom: 16,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12
+              }}>
+                <div style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: 10,
+                  background: 'rgba(239, 68, 68, 0.2)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#FCA5A5',
+                  flexShrink: 0
+                }}>
+                  <AlertTriangle size={18} />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 13.5, fontWeight: 700, color: '#FFFFFF', marginBottom: 2 }}>
+                    Progress Reset Due to 14-Day Inactivity Rule
+                  </div>
+                  <div style={{ fontSize: 12, color: 'rgba(255, 255, 255, 0.75)', lineHeight: 1.45 }}>
+                    Your rank was reset to <strong>Level 1 (Pioneer Associate)</strong> because no verified task deliverables were recorded for over 14 days. Complete and submit squad deliverables below to restore higher tiers!
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {contributor && !contributor.demoted_due_to_inactivity && activityStatus && activityStatus.isAtRisk && (
+              <div style={{
+                background: 'rgba(251, 191, 36, 0.12)',
+                border: '1px solid rgba(251, 191, 36, 0.35)',
+                borderRadius: 14,
+                padding: '14px 16px',
+                marginBottom: 16,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12
+              }}>
+                <div style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: 10,
+                  background: 'rgba(251, 191, 36, 0.2)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: RF_GOLD_YELLOW,
+                  flexShrink: 0
+                }}>
+                  <Clock size={18} />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 13.5, fontWeight: 700, color: '#FFFFFF', marginBottom: 2 }}>
+                    Activity Warning: {14 - activityStatus.daysSinceActive} Days Until Progress Reset
+                  </div>
+                  <div style={{ fontSize: 12, color: 'rgba(255, 255, 255, 0.75)', lineHeight: 1.45 }}>
+                    You have been inactive for <strong>{activityStatus.daysSinceActive} days</strong>. Refeir Pioneers inactive for 14 days have their tier progress withdrawn and reset to Level 1. Submit a task proof today to maintain your standing!
+                  </div>
                 </div>
               </div>
             )}

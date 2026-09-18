@@ -1,5 +1,6 @@
 import { supabase, isSupabaseConfigured } from './supabase';
 import { issueCertificate } from './certificates';
+import { touchContributorActivity } from './contributorAuth';
 
 export interface ScreenshotAttachment {
   id: string;
@@ -137,6 +138,11 @@ export const saveTaskSubmission = async (
     created_at: new Date().toISOString()
   };
 
+  // Touch contributor activity timestamp for 14-day inactivity rule
+  try {
+    touchContributorActivity(record.email);
+  } catch {}
+
   // Try Supabase first if configured
   if (isSupabaseConfigured) {
     try {
@@ -250,6 +256,9 @@ export const updateTaskSubmissionStatus = async (
 
   // If newly verified, check for rank promotion and certificate issuance
   if (status === 'VERIFIED' && affectedRecord) {
+    try {
+      touchContributorActivity(affectedRecord.email);
+    } catch {}
     try {
       const verifiedCount = updated.filter(
         t => t.email.toLowerCase() === affectedRecord!.email.toLowerCase() && t.status === 'VERIFIED'

@@ -80,6 +80,143 @@ const DEFAULT_STAFF: StaffMember[] = [
   }
 ];
 
+export interface StaffPermissions {
+  /** Can access staff directory, add/delete/suspend workers, change passcodes */
+  canManageStaff: boolean;
+  /** Can review, accept, waitlist, and reject candidate applications */
+  canReviewApplications: boolean;
+  /** Can delete candidate applications */
+  canDeleteApplications: boolean;
+  /** Can verify task proofs and award milestone progression */
+  canVerifyTasks: boolean;
+  /** Can create and announce squad missions */
+  canAnnounceTasks: boolean;
+  /** Can delete squad missions */
+  canDeleteTasks: boolean;
+  /** Can issue official completion certificates */
+  canIssueCertificates: boolean;
+  /** Can revoke issued certificates */
+  canRevokeCertificates: boolean;
+  /** Can manually edit member tiers / levels */
+  canModifyMemberTier: boolean;
+  /** Can suspend or reinstate members */
+  canSuspendMembers: boolean;
+  /** Can view platform analytics and intelligence */
+  canViewAnalytics: boolean;
+  /** Whether this role is strictly read-only */
+  isReadOnly: boolean;
+}
+
+export const getStaffPermissions = (role: StaffRole): StaffPermissions => {
+  switch (role) {
+    case 'SUPER_ADMIN':
+      return {
+        canManageStaff: true,
+        canReviewApplications: true,
+        canDeleteApplications: true,
+        canVerifyTasks: true,
+        canAnnounceTasks: true,
+        canDeleteTasks: true,
+        canIssueCertificates: true,
+        canRevokeCertificates: true,
+        canModifyMemberTier: true,
+        canSuspendMembers: true,
+        canViewAnalytics: true,
+        isReadOnly: false
+      };
+    case 'MANAGER':
+      return {
+        canManageStaff: false,
+        canReviewApplications: true,
+        canDeleteApplications: false,
+        canVerifyTasks: true,
+        canAnnounceTasks: true,
+        canDeleteTasks: false,
+        canIssueCertificates: true,
+        canRevokeCertificates: false,
+        canModifyMemberTier: false,
+        canSuspendMembers: true,
+        canViewAnalytics: true,
+        isReadOnly: false
+      };
+    case 'ADMISSIONS_REVIEWER':
+      return {
+        canManageStaff: false,
+        canReviewApplications: true,
+        canDeleteApplications: false,
+        canVerifyTasks: false,
+        canAnnounceTasks: false,
+        canDeleteTasks: false,
+        canIssueCertificates: false,
+        canRevokeCertificates: false,
+        canModifyMemberTier: false,
+        canSuspendMembers: false,
+        canViewAnalytics: false,
+        isReadOnly: false
+      };
+    case 'SQUAD_LEAD':
+      return {
+        canManageStaff: false,
+        canReviewApplications: false,
+        canDeleteApplications: false,
+        canVerifyTasks: true,
+        canAnnounceTasks: true,
+        canDeleteTasks: false,
+        canIssueCertificates: false,
+        canRevokeCertificates: false,
+        canModifyMemberTier: false,
+        canSuspendMembers: false,
+        canViewAnalytics: false,
+        isReadOnly: false
+      };
+    case 'TASK_VERIFIER':
+      return {
+        canManageStaff: false,
+        canReviewApplications: false,
+        canDeleteApplications: false,
+        canVerifyTasks: true,
+        canAnnounceTasks: false,
+        canDeleteTasks: false,
+        canIssueCertificates: false,
+        canRevokeCertificates: false,
+        canModifyMemberTier: false,
+        canSuspendMembers: false,
+        canViewAnalytics: false,
+        isReadOnly: false
+      };
+    case 'TASK_VIEWER':
+      return {
+        canManageStaff: false,
+        canReviewApplications: false,
+        canDeleteApplications: false,
+        canVerifyTasks: false,
+        canAnnounceTasks: false,
+        canDeleteTasks: false,
+        canIssueCertificates: false,
+        canRevokeCertificates: false,
+        canModifyMemberTier: false,
+        canSuspendMembers: false,
+        canViewAnalytics: false,
+        isReadOnly: true
+      };
+    default:
+      return {
+        canManageStaff: false,
+        canReviewApplications: false,
+        canDeleteApplications: false,
+        canVerifyTasks: false,
+        canAnnounceTasks: false,
+        canDeleteTasks: false,
+        canIssueCertificates: false,
+        canRevokeCertificates: false,
+        canModifyMemberTier: false,
+        canSuspendMembers: false,
+        canViewAnalytics: false,
+        isReadOnly: true
+      };
+  }
+};
+
 /**
  * Returns whether a given staff role is authorized to view a specific admin tab
  */

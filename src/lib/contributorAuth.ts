@@ -54,6 +54,14 @@ export interface ContributorProfile {
   is_suspended?: boolean;
   suspension_reason?: string;
   suspended_at?: string;
+  /** Timestamp of most recent deliverable or login action */
+  last_active_at?: string;
+  /** Set to true if rank progress was automatically withdrawn due to 14+ days inactivity */
+  demoted_due_to_inactivity?: boolean;
+  /** Timestamp when the 14-day inactivity withdrawal was applied */
+  last_inactivity_demotion_at?: string;
+  /** Previous tier held before inactivity withdrawal */
+  previous_level_before_demotion?: ContributorTier;
 }
 
 const SESSION_KEY = 'refeir_contributor_session_v1';
@@ -621,6 +629,199 @@ export const updateContributorAvatar = (email: string, avatarUrl: string): Contr
     return updated;
   }
   return null;
+};
+
+// ─── STRICT PROTOCOL INACTIVITY GOVERNANCE RULE ──────────────────────────
+export const INACTIVITY_LIMIT_DAYS = 14; // Strict 2-week inactivity threshold
+export const INACTIVITY_LIMIT_MS = INACTIVITY_LIMIT_DAYS * 24 * 60 * 60 * 1000;
+
+/**
+ * Updates the last active timestamp for a contributor whenever they sign in,
+ * submit a deliverable, or complete an official action.
+ */
+export const touchContributorActivity = (email: string): void => {
+  const cleanEmail = email.trim().toLowerCase();
+  const users = getStoredUsers();
+  const idx = users.findIndex(u => u.email.toLowerCase() === cleanEmail);
+  if (idx !== -1) {
+    users[idx] = {
+      ...users[idx],
+      last_active_at: new Date().toISOString(),
+      demoted_due_to_inactivity: false
+    };
+    saveStoredUsers(users);
+
+    const current = getCurrentContributor();
+    if (current && current.email.toLowerCase() === cleanEmail) {
+      const updatedSession = {
+        ...current,
+        last_active_at: users[idx].last_active_at,
+        demoted_due_to_inactivity: false
+      };
+      localStorage.setItem(SESSION_KEY, JSON.stringify(updatedSession));
+      notifyAuthChange();
+    }
+  }
+};
+
+/**
+ * Returns activity metrics and days remaining for a specific contributor.
+ */
+export const getContributorActivityStatus = (
+  contributor: ContributorProfile,
+  taskSubmissions?: Array<{ email: string; created_at: string }>
+): {
+  daysSinceActive: number;
+  daysRemainingBeforeDemotion: number;
+  isAtRisk: boolean;
+  isDemoted: boolean;
+  lastActiveDateStr: string;
+} => {
+  let latestActivityMs = 0;
+
+  if (contributor.last_active_at) {
+    const ms = new Date(contributor.last_active_at).getTime();
+    if (!isNaN(ms) && ms > latestActivityMs) latestActivityMs = ms;
+  }
+
+  if (taskSubmissions && taskSubmissions.length > 0) {
+    const userTasks = taskSubmissions.filter(t => t.email.toLowerCase() === contributor.email.toLowerCase());
+    for (const t of userTasks) {
+      const ms = new Date(t.created_at).getTime();
+      if (!isNaN(ms) && ms > latestActivityMs) latestActivityMs = ms;
+    }
+  }
+
+  if (latestActivityMs === 0) {
+    if (contributor.profile_completed_at) {
+      const ms = new Date(contributor.profile_completed_at).getTime();
+      if (!isNaN(ms)) latestActivityMs = ms;
+    } else if (contributor.created_at) {
+      const ms = new Date(contributor.created_at).getTime();
+      if (!isNaN(ms)) latestActivityMs = ms;
+    }
+  }
+
+  const now = Date.now();
+  const diffMs = latestActivityMs > 0 ? now - latestActivityMs : 0;
+  const daysSinceActive = Math.floor(diffMs / (24 * 60 * 60 * 1000));
+  const daysRemainingBeforeDemotion = Math.max(0, INACTIVITY_LIMIT_DAYS - daysSinceActive);
+  const isAtRisk = contributor.contributor_level !== 'LEVEL_1' && daysSinceActive >= 10 && daysSinceActive < INACTIVITY_LIMIT_DAYS;
+  const isDemoted = Boolean(contributor.demoted_due_to_inactivity);
+
+  return {
+    daysSinceActive,
+    daysRemainingBeforeDemotion,
+    isAtRisk,
+    isDemoted,
+    lastActiveDateStr: latestActivityMs > 0 ? new Date(latestActivityMs).toLocaleDateString() : 'N/A'
+  };
+};
+
+/**
+ * Strict Protocol Governance Rule:
+ * Pioneers who remain inactive for two weeks (14 days) will have their rank progress
+ * withdrawn and reset back to LEVEL_1 automatically.
+ */
+export const enforceInactivityRule = (
+  customContributors?: ContributorProfile[],
+  taskSubmissions?: Array<{ email: string; created_at: string; status?: string }>
+): { updatedContributors: ContributorProfile[]; demotedCount: number; demotedEmails: string[] } => {
+  const users = customContributors || getStoredUsers();
+  const now = Date.now();
+  let demotedCount = 0;
+  const demotedEmails: string[] = [];
+
+  const updated = users.map(user => {
+    // Level 1 users cannot be demoted further
+    if (user.contributor_level === 'LEVEL_1') {
+      return user;
+    }
+
+    let latestActivityMs = 0;
+
+    if (user.last_active_at) {
+      const ms = new Date(user.last_active_at).getTime();
+      if (!isNaN(ms) && ms > latestActivityMs) latestActivityMs = ms;
+    }
+
+    if (taskSubmissions && taskSubmissions.length > 0) {
+      const userTasks = taskSubmissions.filter(t => t.email.toLowerCase() === user.email.toLowerCase());
+      for (const t of userTasks) {
+        const ms = new Date(t.created_at).getTime();
+        if (!isNaN(ms) && ms > latestActivityMs) latestActivityMs = ms;
+      }
+    }
+
+    if (latestActivityMs === 0) {
+      if (user.profile_completed_at) {
+        const ms = new Date(user.profile_completed_at).getTime();
+        if (!isNaN(ms)) latestActivityMs = ms;
+      } else if (user.created_at) {
+        const ms = new Date(user.created_at).getTime();
+        if (!isNaN(ms)) latestActivityMs = ms;
+      }
+    }
+
+    // Check if 14+ days have passed with zero activity
+    const isInactiveOver14Days = latestActivityMs > 0 && (now - latestActivityMs > INACTIVITY_LIMIT_MS);
+
+    if (isInactiveOver14Days) {
+      demotedCount++;
+      demotedEmails.push(user.email);
+      const prevLevel = user.contributor_level;
+
+      const demotedUser: ContributorProfile = {
+        ...user,
+        contributor_level: 'LEVEL_1',
+        demoted_due_to_inactivity: true,
+        last_inactivity_demotion_at: new Date().toISOString(),
+        previous_level_before_demotion: prevLevel
+      };
+
+      // Sync linked application if any
+      if (user.application_number) {
+        try {
+          updateStoredApplication(user.application_number, { contributor_level: 'LEVEL_1' });
+        } catch {}
+      }
+
+      // Sync Supabase if configured
+      if (isSupabaseConfigured) {
+        supabase
+          .from('contributor_profiles')
+          .update({
+            contributor_level: 'LEVEL_1'
+          })
+          .eq('email', user.email)
+          .then(({ error }) => {
+            if (error) console.warn('Supabase demotion sync error:', error?.message);
+          });
+      }
+
+      return demotedUser;
+    }
+
+    return user;
+  });
+
+  if (demotedCount > 0) {
+    saveStoredUsers(updated);
+
+    // Check if currently active session was demoted
+    const current = getCurrentContributor();
+    if (current && demotedEmails.some(e => e.toLowerCase() === current.email.toLowerCase())) {
+      const freshDemoted = updated.find(u => u.email.toLowerCase() === current.email.toLowerCase());
+      if (freshDemoted) {
+        const safeSession = { ...freshDemoted };
+        delete safeSession.password;
+        localStorage.setItem(SESSION_KEY, JSON.stringify(safeSession));
+        notifyAuthChange();
+      }
+    }
+  }
+
+  return { updatedContributors: updated, demotedCount, demotedEmails };
 };
 
 // Dispatch custom event for reactive UI updates
