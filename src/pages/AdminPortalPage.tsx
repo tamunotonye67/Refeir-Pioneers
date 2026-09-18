@@ -3573,24 +3573,24 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
           <div>
             {/* Section Header with Title & Action Controls */}
             <div style={{
-              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-              marginBottom: isMobile ? 20 : 28, flexWrap: 'wrap', gap: 16
+              display: 'flex', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center',
+              marginBottom: isMobile ? 16 : 24, flexWrap: 'wrap', gap: isMobile ? 10 : 16
             }}>
               <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '0 0 6px', flexWrap: 'wrap' }}>
-                  <h2 style={{ fontSize: isMobile ? 20 : 24, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '0 0 4px', flexWrap: 'wrap' }}>
+                  <h2 style={{ fontSize: isMobile ? 18 : 24, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
                     {isMobile ? 'Admissions' : 'Pioneer Admissions & Applications'}
                   </h2>
                   <span style={{
-                    fontSize: 10.5, fontWeight: 700, background: 'rgba(24, 252, 92, 0.12)',
+                    fontSize: 10, fontWeight: 700, background: 'rgba(24, 252, 92, 0.12)',
                     color: RF_MINT_ACCENT, border: `1px solid ${RF_MINT_ACCENT}55`,
-                    padding: '3px 10px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 4,
-                    textTransform: 'uppercase'
+                    padding: '2.5px 7px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 4,
+                    textTransform: 'uppercase', flexShrink: 0, whiteSpace: 'nowrap'
                   }}>
-                    <UserCheck size={11} /> {stats.total} Total Applicants
+                    <UserCheck size={10} /> {stats.total} Total Applicants
                   </span>
                 </div>
-                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', margin: 0, maxWidth: 820, lineHeight: 1.5 }}>
+                <p style={{ fontSize: isMobile ? 12 : 13, color: 'rgba(255,255,255,0.65)', margin: 0, maxWidth: 820, lineHeight: 1.5 }}>
                   Review candidate applications, verify portfolios, and manage squad admissions.
                 </p>
               </div>
@@ -4066,24 +4066,24 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
       <div>
         {/* Section Header with Title & Action Controls */}
         <div style={{
-          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-          marginBottom: isMobile ? 20 : 28, flexWrap: 'wrap', gap: 16
+          display: 'flex', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center',
+          marginBottom: isMobile ? 16 : 24, flexWrap: 'wrap', gap: isMobile ? 10 : 16
         }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '0 0 6px', flexWrap: 'wrap' }}>
-              <h2 style={{ fontSize: isMobile ? 20 : 24, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '0 0 4px', flexWrap: 'wrap' }}>
+              <h2 style={{ fontSize: isMobile ? 18 : 24, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
                 {isMobile ? 'Task Proofs' : 'Proof of Work & Task Verifications'}
               </h2>
               <span style={{
-                fontSize: 10.5, fontWeight: 700, background: 'rgba(255, 209, 102, 0.12)',
+                fontSize: 10, fontWeight: 700, background: 'rgba(255, 209, 102, 0.12)',
                 color: RF_GOLD_YELLOW, border: `1px solid ${RF_GOLD_YELLOW}55`,
-                padding: '3px 10px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 4,
-                textTransform: 'uppercase'
+                padding: '2.5px 7px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 4,
+                textTransform: 'uppercase', flexShrink: 0, whiteSpace: 'nowrap'
               }}>
-                <Clock size={11} /> {taskStats.pending} Pending Review
+                <Clock size={10} /> {taskStats.pending} Pending Review
               </span>
             </div>
-            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', margin: 0, maxWidth: 820, lineHeight: 1.5 }}>
+            <p style={{ fontSize: isMobile ? 12 : 13, color: 'rgba(255,255,255,0.65)', margin: 0, maxWidth: 820, lineHeight: 1.5 }}>
               Audit deliverable proofs, award contribution points, and request revisions.
             </p>
           </div>
@@ -4509,24 +4509,24 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
           {/* Header with Title & Refresh */}
           <div style={{
-            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-            marginBottom: isMobile ? 20 : 28, flexWrap: 'wrap', gap: 16
+            display: 'flex', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center',
+            marginBottom: isMobile ? 16 : 24, flexWrap: 'wrap', gap: isMobile ? 10 : 16
           }}>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '0 0 6px', flexWrap: 'wrap' }}>
-                <h2 style={{ fontSize: isMobile ? 20 : 24, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '0 0 4px', flexWrap: 'wrap' }}>
+                <h2 style={{ fontSize: isMobile ? 18 : 24, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
                   {isMobile ? 'Pioneers Directory' : 'Pioneer Members & Contributor Profiles'}
                 </h2>
                 <span style={{
-                  fontSize: 10.5, fontWeight: 700, background: 'rgba(24, 252, 92, 0.12)',
+                  fontSize: 10, fontWeight: 700, background: 'rgba(24, 252, 92, 0.12)',
                   color: RF_MINT_ACCENT, border: `1px solid ${RF_LEAF_GREEN}44`,
-                  padding: '3px 10px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 4,
-                  textTransform: 'uppercase'
+                  padding: '2.5px 7px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 4,
+                  textTransform: 'uppercase', flexShrink: 0, whiteSpace: 'nowrap'
                 }}>
-                  <Users size={11} /> {membersList.length} Registered Pioneers
+                  <Users size={10} /> {membersList.length} Registered Pioneers
                 </span>
               </div>
-              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', margin: 0, maxWidth: 760, lineHeight: 1.5 }}>
+              <p style={{ fontSize: isMobile ? 12 : 13, color: 'rgba(255,255,255,0.65)', margin: 0, maxWidth: 760, lineHeight: 1.5 }}>
                 Directory of verified pioneers, contributor identities, and rank records.
               </p>
             </div>
@@ -4536,7 +4536,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
               disabled={loading}
               style={{
                 background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.18)',
-                color: '#FFFFFF', padding: isMobile ? '7px 12px' : '8px 16px', borderRadius: 100, fontSize: isMobile ? 11.5 : 12.5,
+                color: '#FFFFFF', padding: isMobile ? '7px 12px' : '8px 18px', borderRadius: 100, fontSize: isMobile ? 11.5 : 12.5,
                 fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5,
                 transition: 'all 0.2s', width: isMobile ? '100%' : 'auto', justifyContent: 'center'
               }}
@@ -5051,45 +5051,46 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
         <div>
           {/* Header with Title & Action Controls */}
           <div style={{
-            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-            marginBottom: isMobile ? 20 : 28, flexWrap: 'wrap', gap: 16
+            display: 'flex', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center',
+            marginBottom: isMobile ? 16 : 24, flexWrap: 'wrap', gap: isMobile ? 10 : 16,
+            overflow: 'hidden', width: '100%', boxSizing: 'border-box'
           }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '0 0 6px', flexWrap: 'wrap' }}>
-                <h2 style={{ fontSize: isMobile ? 20 : 24, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '0 0 4px', flexWrap: 'wrap', minWidth: 0 }}>
+                <h2 style={{ fontSize: isMobile ? 18 : 24, fontWeight: 700, color: '#FFFFFF', margin: 0, whiteSpace: isMobile ? 'nowrap' : 'normal', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 }}>
                   {isMobile ? 'Review Team' : 'Review Team & Squad Workers'}
                 </h2>
                 {isSuperAdmin ? (
                   <span style={{
-                    fontSize: 10.5, fontWeight: 700, background: 'rgba(24, 252, 92, 0.12)',
+                    fontSize: 10, fontWeight: 700, background: 'rgba(24, 252, 92, 0.12)',
                     color: RF_MINT_ACCENT, border: `1px solid ${RF_MINT_ACCENT}55`,
-                    padding: '3px 10px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 4,
-                    textTransform: 'uppercase'
+                    padding: '2.5px 7px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 4,
+                    textTransform: 'uppercase', flexShrink: 0, whiteSpace: 'nowrap'
                   }}>
-                    <Shield size={11} /> {isMobile ? 'Super Admin' : 'Super Admin Privilege Active'}
+                    <Shield size={10} /> {isMobile ? 'Super Admin' : 'Super Admin Privilege Active'}
                   </span>
                 ) : (
                   <span style={{
-                    fontSize: 10.5, fontWeight: 700, background: 'rgba(255, 209, 102, 0.12)',
+                    fontSize: 10, fontWeight: 700, background: 'rgba(255, 209, 102, 0.12)',
                     color: RF_GOLD_YELLOW, border: `1px solid ${RF_GOLD_YELLOW}55`,
-                    padding: '3px 10px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 4,
-                    textTransform: 'uppercase'
+                    padding: '2.5px 7px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 4,
+                    textTransform: 'uppercase', flexShrink: 0, whiteSpace: 'nowrap'
                   }}>
-                    <Lock size={11} /> {isMobile ? 'Staff Directory' : 'Read-Only Staff Directory'}
+                    <Lock size={10} /> {isMobile ? 'Staff Directory' : 'Read-Only Staff Directory'}
                   </span>
                 )}
               </div>
-              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', margin: 0, maxWidth: 820, lineHeight: 1.5 }}>
+              <p style={{ fontSize: isMobile ? 12 : 13, color: 'rgba(255,255,255,0.65)', margin: 0, maxWidth: 820, lineHeight: 1.5 }}>
                 Manage staff reviewers, assign squad leads, and oversee permissions.
               </p>
             </div>
 
             <div style={{
-              display: isMobile ? 'grid' : 'flex',
-              gridTemplateColumns: isMobile ? '1fr 1fr' : undefined,
+              display: 'flex',
               alignItems: 'center',
-              gap: isMobile ? 8 : 10,
-              width: isMobile ? '100%' : 'auto'
+              gap: 8,
+              width: isMobile ? '100%' : 'auto',
+              flexWrap: 'wrap'
             }}>
               {isSuperAdmin && (
                 <>
@@ -5099,18 +5100,18 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                       background: 'rgba(251, 191, 36, 0.14)',
                       border: '1px solid rgba(251, 191, 36, 0.35)',
                       color: RF_GOLD_YELLOW,
-                      height: isMobile ? 38 : 40,
-                      padding: isMobile ? '0 10px' : '0 18px',
-                      borderRadius: isMobile ? 10 : 100,
-                      fontSize: isMobile ? 12 : 13,
+                      padding: isMobile ? '7px 12px' : '8px 18px',
+                      borderRadius: 100,
+                      fontSize: isMobile ? 11.5 : 12.5,
                       fontWeight: 700,
                       cursor: 'pointer',
                       display: 'inline-flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      gap: 6,
+                      gap: 5,
                       transition: 'all 0.2s',
-                      whiteSpace: 'nowrap'
+                      whiteSpace: 'nowrap',
+                      flex: isMobile ? 1 : 'initial'
                     }}
                     onMouseEnter={e => {
                       e.currentTarget.style.background = 'rgba(251, 191, 36, 0.25)';
@@ -5119,7 +5120,7 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                       e.currentTarget.style.background = 'rgba(251, 191, 36, 0.14)';
                     }}
                   >
-                    <Star size={14} /> Appoint Squad Lead
+                    <Star size={13} /> Appoint Squad Lead
                   </button>
 
                   <button
@@ -5132,24 +5133,24 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                       background: RF_LEAF_GREEN,
                       color: RF_DEEP_GREEN,
                       border: 'none',
-                      height: isMobile ? 38 : 40,
-                      padding: isMobile ? '0 12px' : '0 20px',
-                      borderRadius: isMobile ? 10 : 100,
-                      fontSize: isMobile ? 12 : 13,
+                      padding: isMobile ? '7px 12px' : '8px 18px',
+                      borderRadius: 100,
+                      fontSize: isMobile ? 11.5 : 12.5,
                       fontWeight: 700,
                       cursor: 'pointer',
                       display: 'inline-flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      gap: 6,
-                      boxShadow: `0 4px 14px ${RF_LEAF_GREEN}44`,
+                      gap: 5,
+                      boxShadow: `0 3px 12px ${RF_LEAF_GREEN}33`,
                       transition: 'all 0.2s',
-                      whiteSpace: 'nowrap'
+                      whiteSpace: 'nowrap',
+                      flex: isMobile ? 1 : 'initial'
                     }}
                     onMouseEnter={e => (e.currentTarget.style.background = RF_MINT_ACCENT)}
                     onMouseLeave={e => (e.currentTarget.style.background = RF_LEAF_GREEN)}
                   >
-                    <UserPlus size={14} /> Add Worker
+                    <UserPlus size={13} /> Add Worker
                   </button>
                 </>
               )}
@@ -5161,21 +5162,20 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                   background: 'rgba(255,255,255,0.06)',
                   border: '1px solid rgba(255,255,255,0.18)',
                   color: '#FFFFFF',
-                  height: isMobile ? 38 : 40,
-                  padding: isMobile ? '0 12px' : '0 18px',
-                  borderRadius: isMobile ? 10 : 100,
-                  fontSize: isMobile ? 12 : 13,
+                  padding: isMobile ? '7px 12px' : '8px 18px',
+                  borderRadius: 100,
+                  fontSize: isMobile ? 11.5 : 12.5,
                   fontWeight: 600,
                   cursor: 'pointer',
                   display: 'inline-flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  gap: 6,
-                  gridColumn: isMobile ? (isSuperAdmin ? 'span 2' : undefined) : undefined,
-                  whiteSpace: 'nowrap'
+                  gap: 5,
+                  whiteSpace: 'nowrap',
+                  flexShrink: 0
                 }}
               >
-                <RefreshCw size={14} className={loading ? 'rp-spin' : ''} /> {loading ? 'Syncing...' : 'Refresh'}
+                <RefreshCw size={13} className={loading ? 'rp-spin' : ''} /> {loading ? 'Syncing...' : 'Refresh'}
               </button>
             </div>
           </div>
@@ -5473,24 +5473,24 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
 
           {/* Header with Title, "+ Issue Certificate" CTA & Refresh */}
           <div style={{
-            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-            marginBottom: isMobile ? 20 : 28, flexWrap: 'wrap', gap: 16
+            display: 'flex', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center',
+            marginBottom: isMobile ? 16 : 24, flexWrap: 'wrap', gap: isMobile ? 10 : 16
           }}>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '0 0 6px', flexWrap: 'wrap' }}>
-                <h2 style={{ fontSize: isMobile ? 20 : 24, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '0 0 4px', flexWrap: 'wrap' }}>
+                <h2 style={{ fontSize: isMobile ? 18 : 24, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
                   {isMobile ? 'Certificates' : 'Pioneer Certificates & Level Accreditations'}
                 </h2>
                 <span style={{
-                  fontSize: 10.5, fontWeight: 700, background: 'rgba(255, 209, 102, 0.12)',
+                  fontSize: 10, fontWeight: 700, background: 'rgba(255, 209, 102, 0.12)',
                   color: RF_GOLD_YELLOW, border: `1px solid ${RF_GOLD_YELLOW}55`,
-                  padding: '3px 10px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 4,
-                  textTransform: 'uppercase'
+                  padding: '2.5px 7px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 4,
+                  textTransform: 'uppercase', flexShrink: 0, whiteSpace: 'nowrap'
                 }}>
-                  <Award size={11} /> {certificatesList.length} Minted
+                  <Award size={10} /> {certificatesList.length} Minted
                 </span>
               </div>
-              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', margin: 0, maxWidth: 780, lineHeight: 1.5 }}>
+              <p style={{ fontSize: isMobile ? 12 : 13, color: 'rgba(255,255,255,0.65)', margin: 0, maxWidth: 780, lineHeight: 1.5 }}>
                 Issue, verify, and inspect official pioneer completion certificates.
               </p>
             </div>
@@ -5516,8 +5516,9 @@ export const AdminPortalPage: React.FC<AdminPortalPageProps> = ({ onNavigate }) 
                 disabled={loading}
                 style={{
                   background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.18)',
-                  color: '#FFFFFF', padding: isMobile ? '7px 12px' : '8px 16px', borderRadius: 100, fontSize: isMobile ? 11.5 : 12.5,
-                  fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5
+                  color: '#FFFFFF', padding: isMobile ? '7px 12px' : '8px 18px', borderRadius: 100, fontSize: isMobile ? 11.5 : 12.5,
+                  fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5,
+                  flexShrink: 0
                 }}
               >
                 <RefreshCw size={13} className={loading ? 'rp-spin' : ''} /> {loading ? 'Syncing...' : 'Refresh'}
