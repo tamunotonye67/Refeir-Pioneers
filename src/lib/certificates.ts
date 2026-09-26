@@ -1,5 +1,6 @@
 import { ContributorProfile } from './contributorAuth';
-import { api } from './api';
+import { db, isFirebaseConfigured } from './firebase';
+import { collection, doc, getDocs, setDoc, updateDoc } from 'firebase/firestore';
 
 export type ContributorTier = 'LEVEL_1' | 'LEVEL_2' | 'LEVEL_3' | 'LEVEL_4' | 'LEVEL_5';
 
@@ -124,27 +125,42 @@ export function getAllCertificates(): PioneerCertificate[] {
 }
 
 export async function fetchCertificatesFromDatabase(): Promise<PioneerCertificate[]> {
-  try {
-    const res = await api.certificates.getAll();
-    if (res.success && Array.isArray(res.data) && res.data.length > 0) {
-      localStorage.setItem(CERTIFICATES_STORAGE_KEY, JSON.stringify(res.data));
-      return res.data;
+  if (isFirebaseConfigured) {
+    try {
+      const colRef = collection(db, 'pioneer_certificates');
+      const snapshot = await getDocs(colRef);
+      if (!snapshot.empty) {
+        const certs: PioneerCertificate[] = snapshot.docs.map(d => ({
+          ...(d.data() as PioneerCertificate),
+          id: d.id
+        }));
+        localStorage.setItem(CERTIFICATES_STORAGE_KEY, JSON.stringify(certs));
+        return certs;
+      }
+    } catch (err) {
+      console.warn('Firebase certificates fetch notice:', err);
     }
-  } catch (err) {
-    console.warn('Backend API certificates fetch notice:', err);
   }
 
   return getAllCertificates();
 }
 
 export async function syncCertificatesToFirebase(): Promise<{ synced: number; error: string | null }> {
+  if (!isFirebaseConfigured) {
+    return { synced: 0, error: 'Firebase is not configured in .env' };
+  }
+
   try {
     const localCerts = getAllCertificates();
+    let synced = 0;
     for (const c of localCerts) {
-      await api.certificates.issue(c);
+      const docRef = doc(db, 'pioneer_certificates', c.id);
+      await setDoc(docRef, c, { merge: true });
+      synced++;
     }
-    return { synced: localCerts.length, error: null };
+    return { synced, error: null };
   } catch (err: any) {
+    console.error('Firebase certificates sync failed:', err);
     return { synced: 0, error: err?.message || 'Sync failed' };
   }
 }
@@ -216,10 +232,13 @@ export function issueCertificate(params: {
   const updated = [newCert, ...all];
   localStorage.setItem(CERTIFICATES_STORAGE_KEY, JSON.stringify(updated));
 
-  // Sync to custom backend API
-  api.certificates.issue(newCert).catch(err => {
-    console.warn('Backend API certificate issue notice:', err);
-  });
+  // Sync to Firebase Firestore directly
+  if (isFirebaseConfigured) {
+    const docRef = doc(db, 'pioneer_certificates', newCert.id);
+    setDoc(docRef, newCert, { merge: true }).catch(err => {
+      console.warn('Firebase certificate issue notice:', err);
+    });
+  }
 
   return newCert;
 }
@@ -242,9 +261,15 @@ export function revokeCertificate(id: string, reason: string): PioneerCertificat
 
   localStorage.setItem(CERTIFICATES_STORAGE_KEY, JSON.stringify(updated));
 
-  api.certificates.revoke(id).catch(err => {
-    console.warn('Backend API certificate revoke notice:', err);
-  });
+  if (isFirebaseConfigured && targetCert) {
+    const docRef = doc(db, 'pioneer_certificates', id);
+    updateDoc(docRef, {
+      status: 'REVOKED',
+      revocation_reason: reason || 'Administrative decision'
+    }).catch(err => {
+      console.warn('Firebase certificate revoke notice:', err);
+    });
+  }
 
   return targetCert;
 }

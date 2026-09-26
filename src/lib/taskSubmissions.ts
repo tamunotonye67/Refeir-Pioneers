@@ -1,4 +1,5 @@
-import { api } from './api';
+import { db, isFirebaseConfigured } from './firebase';
+import { collection, doc, getDocs, setDoc, updateDoc, query, orderBy } from 'firebase/firestore';
 import { issueCertificate } from './certificates';
 import { touchContributorActivity } from './contributorAuth';
 
@@ -96,14 +97,21 @@ const INITIAL_DEMO_TASKS: TaskSubmissionRecord[] = [
 ];
 
 export const getTaskSubmissions = async (): Promise<TaskSubmissionRecord[]> => {
-  try {
-    const res = await api.proofs.getAll();
-    if (res.success && Array.isArray(res.data) && res.data.length > 0) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(res.data));
-      return res.data;
+  if (isFirebaseConfigured) {
+    try {
+      const q = query(collection(db, 'pioneer_proof_of_work'), orderBy('created_at', 'desc'));
+      const snapshot = await getDocs(q);
+      if (!snapshot.empty) {
+        const records: TaskSubmissionRecord[] = snapshot.docs.map(d => ({
+          id: d.id,
+          ...d.data()
+        } as TaskSubmissionRecord));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+        return records;
+      }
+    } catch (err) {
+      console.warn('Firestore proof_of_work fetch notice:', err);
     }
-  } catch (err) {
-    console.warn('Backend API proof_of_work fetch notice:', err);
   }
 
   // Check localStorage
@@ -138,10 +146,12 @@ export const saveTaskSubmission = async (
     touchContributorActivity(record.email);
   } catch {}
 
-  // Save to backend API
-  api.proofs.submit(record).catch(err => {
-    console.warn('Backend API submission notice:', err);
-  });
+  // Save to Firebase Firestore directly
+  if (isFirebaseConfigured) {
+    setDoc(doc(db, 'pioneer_proof_of_work', record.reference_id), record, { merge: true }).catch((err: any) => {
+      console.warn('Firestore task submission save error:', err);
+    });
+  }
 
   // Local storage save
   const current = await getTaskSubmissions();
@@ -151,10 +161,14 @@ export const saveTaskSubmission = async (
 };
 
 export const syncTaskSubmissionsToFirebase = async (): Promise<{ synced: number; error: string | null }> => {
+  if (!isFirebaseConfigured) {
+    return { synced: 0, error: 'Firebase credentials not configured' };
+  }
+
   try {
     const local = await getTaskSubmissions();
     for (const item of local) {
-      await api.proofs.submit(item);
+      await setDoc(doc(db, 'pioneer_proof_of_work', item.reference_id), item, { merge: true });
     }
     return { synced: local.length, error: null };
   } catch (err: any) {
@@ -169,11 +183,6 @@ export const updateTaskSubmissionStatus = async (
   status: 'VERIFIED' | 'NEEDS_REVISION' | 'REJECTED',
   admin_feedback?: string
 ): Promise<void> => {
-  // Update in backend API
-  api.proofs.review(id, { status, admin_feedback }).catch(err => {
-    console.warn('Backend API review notice:', err);
-  });
-
   // Update in localStorage
   const current = await getTaskSubmissions();
   let affectedRecord: TaskSubmissionRecord | undefined;
@@ -187,6 +196,16 @@ export const updateTaskSubmissionStatus = async (
   });
 
   localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+
+  // Sync to Firebase Firestore directly
+  if (isFirebaseConfigured && affectedRecord) {
+    setDoc(doc(db, 'pioneer_proof_of_work', affectedRecord.reference_id), {
+      status,
+      admin_feedback: admin_feedback ?? affectedRecord.admin_feedback
+    }, { merge: true }).catch((err: any) => {
+      console.warn('Firestore submission review error:', err);
+    });
+  }
 
   // If newly verified, check for rank promotion and certificate issuance
   if (status === 'VERIFIED' && affectedRecord) {
@@ -223,6 +242,13 @@ export const updateTaskSubmissionStatus = async (
           issued_by: 'Refeir Admissions Committee & Protocol Stewards',
           special_distinction: `Earned with ${verifiedCount} verified deliverables in the Refeir Founding 100 cohort`
         });
+
+        // Sync contributor tier to Firestore
+        if (isFirebaseConfigured) {
+          updateDoc(doc(db, 'contributor_profiles', affectedRecord.email.toLowerCase()), {
+            contributor_level: earnedTier
+          }).catch((err: any) => console.warn('Firestore tier promotion update error:', err));
+        }
       }
     } catch (promoErr) {
       console.warn('Auto promotion certificate issuance non-fatal warning:', promoErr);

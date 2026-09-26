@@ -4,13 +4,10 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently -k -p \"[{name}]\" -n \"CLIENT,SERVER\" -c \"cyan.bold,green.bold\" \"npm run dev:client\" \"npm run dev:server\"",
-    "dev:client": "vite",
-    "dev:server": "tsx watch server/index.ts",
+    "dev": "vite",
     "build": "tsc && vite build",
-    "build:server": "tsc -p server/tsconfig.json",
-    "start": "node dist-server/index.js",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy:rules": "firebase deploy --only firestore:rules,storage"
   },
   "dependencies": {
     "canvas-confetti": "^1.9.4",

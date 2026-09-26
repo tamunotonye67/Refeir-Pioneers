@@ -1,4 +1,21 @@
-import { api } from './api';
+import { auth, db, isFirebaseConfigured } from './firebase';
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+  signOut
+} from 'firebase/auth';
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  setDoc,
+  updateDoc,
+  query,
+  orderBy
+} from 'firebase/firestore';
 import {
   validateAcceptanceCredentials,
   updateStoredApplication,
@@ -187,18 +204,23 @@ export const signUpContributor = async (data: {
   users.push(newProfile);
   saveStoredUsers(users);
 
-  // Send to custom backend API
-  api.auth.signup({
-    application_number: newProfile.application_number,
-    acceptance_code: newProfile.acceptance_code,
-    email: newProfile.email,
-    password: newProfile.password,
-    full_name: newProfile.full_name,
-    division: newProfile.division,
-    whatsapp_number: newProfile.whatsapp_number
-  }).catch(err => {
-    console.warn('Backend API signup notice:', err);
-  });
+  // If Firebase is configured, create Auth user and store profile in Firestore
+  if (isFirebaseConfigured) {
+    try {
+      await createUserWithEmailAndPassword(auth, email, data.password || 'password123');
+    } catch (authErr: any) {
+      // If user already exists in Auth, allow sign in linking
+      if (authErr.code !== 'auth/email-already-in-use') {
+        console.warn('Firebase Auth creation notice:', authErr.message);
+      }
+    }
+
+    try {
+      await setDoc(doc(db, 'contributor_profiles', email.toLowerCase()), newProfile, { merge: true });
+    } catch (fsErr: any) {
+      console.warn('Firestore profile creation error:', fsErr.message);
+    }
+  }
 
   // Mark application as having an account created
   updateStoredApplication(appNum, { account_created: true });
@@ -304,10 +326,12 @@ export const completeContributorProfile = async (
   users[userIdx] = updated;
   saveStoredUsers(users);
 
-  // Sync to custom backend API
-  api.auth.updateProfile(updated).catch((err: any) => {
-    console.warn('Backend API updateProfile notice:', err);
-  });
+  // Sync to Firebase Firestore directly
+  if (isFirebaseConfigured) {
+    setDoc(doc(db, 'contributor_profiles', email.toLowerCase()), updated, { merge: true }).catch((err: any) => {
+      console.warn('Firestore updateProfile error:', err);
+    });
+  }
 
   // Sync to pioneerApplications
   if (user.application_number) {
@@ -332,38 +356,33 @@ export const completeContributorProfile = async (
 export const signInContributor = async (emailInput: string, passwordInput: string): Promise<ContributorProfile> => {
   const email = emailInput.trim().toLowerCase();
   const users = getStoredUsers();
+  let user = users.find(u => u.email.toLowerCase() === email);
 
-  // 1. Try signing in via custom backend API
-  try {
-    const res = await api.auth.signin(email, passwordInput);
-    if (res.success && res.data) {
-      const serverProfile = {
-        ...res.data,
-        password: passwordInput
-      } as ContributorProfile;
-      const idx = users.findIndex(u => u.email.toLowerCase() === email);
-      if (idx !== -1) {
-        users[idx] = serverProfile;
-      } else {
-        users.push(serverProfile);
-      }
-      saveStoredUsers(users);
-
-      const safeSession = { ...serverProfile };
-      delete safeSession.password;
-      localStorage.setItem(SESSION_KEY, JSON.stringify(safeSession));
-      notifyAuthChange();
-      return safeSession;
-    } else if (res.error && !res.error.includes('Network error')) {
-      throw new Error(res.error);
+  // 1. If Firebase is configured, authenticate via Firebase Auth & Firestore
+  if (isFirebaseConfigured) {
+    try {
+      await signInWithEmailAndPassword(auth, email, passwordInput);
+    } catch (authErr: any) {
+      console.warn('Firebase Auth sign in notice:', authErr.message);
     }
-  } catch (err: any) {
-    if (err.message && !err.message.includes('Network error') && !err.message.includes('Failed to fetch')) {
-      throw err;
+
+    try {
+      const docSnap = await getDoc(doc(db, 'contributor_profiles', email));
+      if (docSnap.exists()) {
+        const firestoreData = docSnap.data() as ContributorProfile;
+        const idx = users.findIndex(u => u.email.toLowerCase() === email);
+        if (idx !== -1) {
+          users[idx] = firestoreData;
+        } else {
+          users.push(firestoreData);
+        }
+        saveStoredUsers(users);
+        user = firestoreData;
+      }
+    } catch (fsErr: any) {
+      console.warn('Firestore profile fetch error:', fsErr.message);
     }
   }
-
-  const user = users.find(u => u.email.toLowerCase() === email);
 
   if (!user) {
     throw new Error(
@@ -371,7 +390,7 @@ export const signInContributor = async (emailInput: string, passwordInput: strin
     );
   }
 
-  if (user.password && user.password !== passwordInput) {
+  if (user.password && user.password !== passwordInput && !isFirebaseConfigured) {
     throw new Error('Invalid password. Please check your credentials or reset your password with Admissions.');
   }
 
@@ -393,7 +412,26 @@ export const signInContributor = async (emailInput: string, passwordInput: strin
  * Sign in or activate account using Google Authentication
  */
 export const signInWithGoogle = async (googleEmail?: string, googleName?: string, googleAvatar?: string): Promise<ContributorProfile> => {
-  const email = (googleEmail || '').trim().toLowerCase();
+  let email = (googleEmail || '').trim().toLowerCase();
+  let name = googleName;
+  let avatar = googleAvatar;
+
+  // If Firebase is configured and no email passed in, trigger Firebase Google popup
+  if (isFirebaseConfigured && !email) {
+    try {
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      email = (result.user.email || '').trim().toLowerCase();
+      name = result.user.displayName || name;
+      avatar = result.user.photoURL || avatar;
+    } catch (gErr: any) {
+      if (gErr.code !== 'auth/popup-closed-by-user') {
+        throw new Error(`Google Sign-In failed: ${gErr.message}`);
+      }
+      throw gErr;
+    }
+  }
+
   if (!email) {
     throw new Error('Google authentication did not return a valid email address.');
   }
@@ -401,19 +439,21 @@ export const signInWithGoogle = async (googleEmail?: string, googleName?: string
   const users = getStoredUsers();
   let user = users.find(u => u.email.toLowerCase() === email);
 
-  // 1. Try signing in via custom backend API
-  if (!user) {
+  // Check Cloud Firestore for existing profile
+  if (isFirebaseConfigured) {
     try {
-      const res = await api.auth.signin(email, 'google_oauth');
-      if (res.success && res.data) {
-        user = {
-          ...res.data,
-          password: 'google_oauth'
-        } as ContributorProfile;
-        users.push(user);
+      const docSnap = await getDoc(doc(db, 'contributor_profiles', email));
+      if (docSnap.exists()) {
+        user = docSnap.data() as ContributorProfile;
+        const idx = users.findIndex(u => u.email.toLowerCase() === email);
+        if (idx !== -1) {
+          users[idx] = user;
+        } else {
+          users.push(user);
+        }
         saveStoredUsers(users);
       }
-    } catch {
+    } catch (err) {
       // ignore
     }
   }
@@ -738,10 +778,12 @@ export const enforceInactivityRule = (
         } catch {}
       }
 
-      // Sync to custom backend API
-      api.auth.updateProfile(demotedUser).catch((err: any) => {
-        console.warn('Backend demotion sync notice:', err);
-      });
+      // Sync to Firebase Firestore directly
+      if (isFirebaseConfigured) {
+        setDoc(doc(db, 'contributor_profiles', user.email.toLowerCase()), demotedUser, { merge: true }).catch((err: any) => {
+          console.warn('Firestore demotion sync notice:', err);
+        });
+      }
 
       return demotedUser;
     }
@@ -774,35 +816,46 @@ export const notifyAuthChange = () => {
 };
 
 /**
- * Fetches all contributor profiles from Custom Backend API and updates local cache.
+ * Fetches all contributor profiles from Cloud Firestore and updates local cache.
  */
 export const fetchContributorsFromDatabase = async (): Promise<ContributorProfile[]> => {
+  if (!isFirebaseConfigured) {
+    return getStoredUsers();
+  }
+
   try {
-    const res = await api.auth.getContributors();
-    if (res.success && Array.isArray(res.data) && res.data.length > 0) {
-      const mapped = res.data.map((u: any) => ({
-        ...u,
-        password: u.password_hash || u.password || 'password123'
-      }));
-      saveStoredUsers(mapped as ContributorProfile[]);
+    const q = query(collection(db, 'contributor_profiles'), orderBy('created_at', 'desc'));
+    const snap = await getDocs(q);
+    if (!snap.empty) {
+      const mapped = snap.docs.map(d => ({
+        ...d.data(),
+        id: d.id,
+        password: d.data().password_hash || d.data().password || 'password123'
+      })) as ContributorProfile[];
+
+      saveStoredUsers(mapped);
       notifyAuthChange();
-      return mapped as ContributorProfile[];
+      return mapped;
     }
   } catch (err) {
-    console.warn('Could not query custom backend contributor_profiles:', err);
+    console.warn('Could not query contributor_profiles from Firestore:', err);
   }
 
   return getStoredUsers();
 };
 
 /**
- * Pushes all locally stored contributors to Backend API.
+ * Pushes all locally stored contributors to Cloud Firestore directly.
  */
 export const syncContributorsToFirebase = async (): Promise<{ success: boolean; count: number; error?: string }> => {
+  if (!isFirebaseConfigured) {
+    return { success: false, count: 0, error: 'Firebase credentials not configured' };
+  }
+
   const users = getStoredUsers();
   try {
     for (const u of users) {
-      await api.auth.updateProfile(u);
+      await setDoc(doc(db, 'contributor_profiles', u.email.toLowerCase()), u, { merge: true });
     }
     return { success: true, count: users.length };
   } catch (err: any) {

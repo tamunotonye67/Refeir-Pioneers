@@ -21,6 +21,8 @@ dist-server
 .env.test.local
 .env.production.local
 !.env.example
+serviceAccountKey.json
+*serviceAccount*.json
 
 # Editor directories and files
 .vscode/*

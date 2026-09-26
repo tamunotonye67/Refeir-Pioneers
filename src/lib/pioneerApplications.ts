@@ -1,4 +1,5 @@
-import { api } from './api';
+import { db, isFirebaseConfigured } from './firebase';
+import { collection, doc, getDocs, setDoc, query, orderBy } from 'firebase/firestore';
 
 export type PioneerReviewStatus = 'PENDING' | 'REVIEWING' | 'ACCEPTED' | 'WAITLISTED' | 'REJECTED';
 export type ContributorTier = 'LEVEL_1' | 'LEVEL_2' | 'LEVEL_3' | 'LEVEL_4' | 'LEVEL_5';
@@ -183,10 +184,13 @@ export const addStoredApplication = (record: Omit<PioneerApplicationRecord, 'id'
   }
   saveStoredApplications(apps);
 
-  // Send to custom backend API
-  api.applications.submit(fullRecord).catch((err: any) => {
-    console.warn('Backend API application submit notice:', err);
-  });
+  // Sync to Firebase Firestore directly
+  if (isFirebaseConfigured) {
+    const docId = fullRecord.application_number.toUpperCase();
+    setDoc(doc(db, 'pioneer_applications', docId), fullRecord, { merge: true }).catch((err: any) => {
+      console.warn('Firestore application save error:', err);
+    });
+  }
 };
 
 export const generateAcceptanceCode = (_appNumber?: string): string => {
@@ -235,12 +239,16 @@ export const updateStoredApplication = (
   });
 
   if (updatedApp) {
+    const finalApp: PioneerApplicationRecord = updatedApp;
     saveStoredApplications(modified);
 
-    // Sync to custom backend API
-    api.applications.updateStatus(idOrAppNumber, updates).catch((err: any) => {
-      console.warn('Backend API updateStatus notice:', err);
-    });
+    // Sync to Firebase Firestore directly
+    if (isFirebaseConfigured) {
+      const docId = (finalApp.application_number || idOrAppNumber).toUpperCase();
+      setDoc(doc(db, 'pioneer_applications', docId), finalApp, { merge: true }).catch((err: any) => {
+        console.warn('Firestore updateStoredApplication error:', err);
+      });
+    }
   }
   return updatedApp;
 };
@@ -313,27 +321,42 @@ export const generateNextPioneerId = (): string => {
 };
 
 /**
- * Fetches applications from Custom Backend API and updates local cache.
+ * Fetches applications from Cloud Firestore directly and updates local cache.
  */
 export const fetchApplicationsFromDatabase = async (): Promise<PioneerApplicationRecord[]> => {
+  if (!isFirebaseConfigured) {
+    return getStoredApplications();
+  }
+
   try {
-    const res = await api.applications.getAll();
-    if (res.success && Array.isArray(res.data) && res.data.length > 0) {
-      saveStoredApplications(res.data);
-      return res.data;
+    const q = query(collection(db, 'pioneer_applications'), orderBy('created_at', 'desc'));
+    const snap = await getDocs(q);
+    if (!snap.empty) {
+      const records: PioneerApplicationRecord[] = snap.docs.map(d => ({
+        id: d.id,
+        ...d.data()
+      } as PioneerApplicationRecord));
+
+      saveStoredApplications(records);
+      return records;
     }
   } catch (err) {
-    console.warn('Could not query applications from custom backend:', err);
+    console.warn('Could not query applications from Firestore:', err);
   }
 
   return getStoredApplications();
 };
 
 export const syncApplicationsToFirebase = async (): Promise<{ success: boolean; count: number; error?: string }> => {
+  if (!isFirebaseConfigured) {
+    return { success: false, count: 0, error: 'Firebase credentials not configured' };
+  }
+
   const apps = getStoredApplications();
   try {
     for (const app of apps) {
-      await api.applications.submit(app);
+      const docId = app.application_number.toUpperCase();
+      await setDoc(doc(db, 'pioneer_applications', docId), app, { merge: true });
     }
     return { success: true, count: apps.length };
   } catch (err: any) {

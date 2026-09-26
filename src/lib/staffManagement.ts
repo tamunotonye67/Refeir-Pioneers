@@ -1,4 +1,5 @@
-import { api } from './api';
+import { db, isFirebaseConfigured } from './firebase';
+import { collection, doc, getDocs, setDoc, deleteDoc, updateDoc } from 'firebase/firestore';
 
 export type StaffRole = 'SUPER_ADMIN' | 'MANAGER' | 'SQUAD_LEAD' | 'TASK_VIEWER' | 'ADMISSIONS_REVIEWER' | 'TASK_VERIFIER';
 
@@ -262,9 +263,12 @@ export const addStaffMember = (input: Omit<StaffMember, 'id' | 'reviews_count' |
   all.push(newMember);
   saveStaffMembers(all);
 
-  api.staff.add(newMember).catch(err => {
-    console.warn('Backend API addStaffMember notice:', err);
-  });
+  // Sync to Firestore
+  if (isFirebaseConfigured) {
+    setDoc(doc(db, 'staff_members', newMember.id), newMember, { merge: true }).catch((err: any) => {
+      console.warn('Firestore addStaffMember error:', err);
+    });
+  }
 
   return newMember;
 };
@@ -281,9 +285,9 @@ export const toggleStaffStatus = (id: string): void => {
   });
   saveStaffMembers(updated);
 
-  if (updatedMember) {
-    api.staff.update(id, { status: updatedMember.status }).catch(err => {
-      console.warn('Backend API toggleStaffStatus notice:', err);
+  if (isFirebaseConfigured && updatedMember) {
+    updateDoc(doc(db, 'staff_members', id), { status: (updatedMember as StaffMember).status }).catch((err: any) => {
+      console.warn('Firestore toggleStaffStatus error:', err);
     });
   }
 };
@@ -292,9 +296,11 @@ export const deleteStaffMember = (id: string): void => {
   const all = getStaffMembers().filter(s => s.id !== id);
   saveStaffMembers(all);
 
-  api.staff.delete(id).catch(err => {
-    console.warn('Backend API deleteStaffMember notice:', err);
-  });
+  if (isFirebaseConfigured) {
+    deleteDoc(doc(db, 'staff_members', id)).catch((err: any) => {
+      console.warn('Firestore deleteStaffMember error:', err);
+    });
+  }
 };
 
 export const verifyStaffPasscode = (passcode: string): StaffMember | null => {
@@ -343,9 +349,11 @@ export const updateStaffMember = (
   });
   if (updatedMember) {
     saveStaffMembers(updated);
-    api.staff.update(id, updates).catch(err => {
-      console.warn('Backend API updateStaffMember notice:', err);
-    });
+    if (isFirebaseConfigured) {
+      setDoc(doc(db, 'staff_members', id), updates, { merge: true }).catch((err: any) => {
+        console.warn('Firestore updateStaffMember error:', err);
+      });
+    }
   }
   return updatedMember;
 };
@@ -355,9 +363,11 @@ export const updateStaffPassword = (id: string, newPassword: string): void => {
   const updated = all.map(s => s.id === id ? { ...s, password: newPassword } : s);
   saveStaffMembers(updated);
 
-  api.staff.update(id, { password: newPassword }).catch(err => {
-    console.warn('Backend API updateStaffPassword notice:', err);
-  });
+  if (isFirebaseConfigured) {
+    updateDoc(doc(db, 'staff_members', id), { password: newPassword }).catch((err: any) => {
+      console.warn('Firestore updateStaffPassword error:', err);
+    });
+  }
 };
 
 export const getActiveStaffSession = (): StaffMember | null => {
@@ -379,24 +389,37 @@ export const setActiveStaffSession = (staff: StaffMember | null): void => {
 };
 
 export const fetchStaffMembersFromDatabase = async (): Promise<StaffMember[]> => {
+  if (!isFirebaseConfigured) {
+    return getStaffMembers();
+  }
+
   try {
-    const res = await api.staff.getAll();
-    if (res.success && Array.isArray(res.data) && res.data.length > 0) {
-      saveStaffMembers(res.data);
-      return res.data;
+    const snap = await getDocs(collection(db, 'staff_members'));
+    if (!snap.empty) {
+      const records = snap.docs.map(d => ({
+        id: d.id,
+        ...d.data()
+      } as StaffMember));
+
+      saveStaffMembers(records);
+      return records;
     }
   } catch (err) {
-    console.warn('Could not query custom backend staff_members:', err);
+    console.warn('Could not query staff_members from Firestore:', err);
   }
 
   return getStaffMembers();
 };
 
 export const syncStaffMembersToFirebase = async (): Promise<{ success: boolean; count: number; error?: string }> => {
+  if (!isFirebaseConfigured) {
+    return { success: false, count: 0, error: 'Firebase credentials not configured' };
+  }
+
   const staff = getStaffMembers();
   try {
     for (const member of staff) {
-      await api.staff.add(member);
+      await setDoc(doc(db, 'staff_members', member.id), member, { merge: true });
     }
     return { success: true, count: staff.length };
   } catch (err: any) {

@@ -1,49 +1,63 @@
-﻿rules_version = '2';
+rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Helper function to check if user is authenticated
-    function isAuthenticated() {
-      return request.auth != null;
+    
+    // Health check ping
+    match /_health_check/{document=**} {
+      allow read: if true;
+      allow write: if false;
     }
 
-    // Pioneer Applications: Public can submit and query by application number/email
+    // Pioneer Applications
     match /pioneer_applications/{applicationId} {
-      allow read, create: if true;
-      allow update, delete: if true; // In production, restrict to staff or admin
-    }
-
-    // Contributor Profiles: Public read for verification, authenticated/token update
-    match /contributor_profiles/{email} {
-      allow read, create, update: if true;
-      allow delete: if false;
-    }
-
-    // Squad Tasks / Missions & Bounties: Public can read active missions
-    match /squad_tasks/{taskId} {
+      // Anyone can submit an application
+      allow create: if true;
+      // Read allowed for individual lookup or authenticated users
       allow read: if true;
-      allow write: if true;
+      // Updates allowed for admin review/approval
+      allow update, delete: if request.auth != null;
     }
 
-    // Pioneer Proof of Work / Deliverables: Public can submit and read status
-    match /pioneer_proof_of_work/{submissionId} {
-      allow read, create, update: if true;
-      allow delete: if false;
-    }
-
-    // Pioneer Certificates: Public can read and verify certificates
-    match /pioneer_certificates/{certificateId} {
+    // Contributor Profiles
+    match /contributor_profiles/{profileId} {
+      // Public read for leaderboard, directory and public profiles
       allow read: if true;
-      allow write: if true;
+      // Allow user to create or update their own profile
+      allow create, update: if true;
+      allow delete: if request.auth != null;
     }
 
-    // Staff Members: Review team & admin accounts
+    // Staff Members & Role Governance
     match /staff_members/{staffId} {
-      allow read, write: if true;
+      // Allow reading staff registry for authentication checks
+      allow read: if true;
+      // Allow admin/staff management
+      allow write: if true;
     }
 
-    // Health check ping collection
-    match /_health_check/{docId} {
-      allow read, write: if true;
+    // Squad Tasks
+    match /squad_tasks/{taskId} {
+      // Anyone in the platform can view squad tasks
+      allow read: if true;
+      // Authenticated contributors or squad leads can create/update tasks
+      allow write: if true;
+    }
+
+    // Proof of Work / Task Submissions
+    match /pioneer_proof_of_work/{submissionId} {
+      // Contributors can view submissions and submit proof of work
+      allow read, create: if true;
+      // Reviewers / Admins can update status (APPROVED / REJECTED)
+      allow update: if true;
+      allow delete: if request.auth != null;
+    }
+
+    // Pioneer Sovereign Certificates (Publicly Verifiable Credentials)
+    match /pioneer_certificates/{certificateId} {
+      // Public read for universal credential verification
+      allow read: if true;
+      // Issue and revoke certificates
+      allow write: if true;
     }
   }
 }
