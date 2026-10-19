@@ -366,6 +366,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
                   ))}
                 </div>
               </div>
+            </div>
           </div>
         </div>
       </section>
