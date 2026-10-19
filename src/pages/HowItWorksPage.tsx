@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTheme } from '../context/ThemeContext';
 import {
   ArrowRight, CheckCircle2, Users, Award, Shield,
   Layers, Clock, AlertCircle, HelpCircle
@@ -18,6 +19,9 @@ interface HowItWorksPageProps {
 }
 
 export const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onNavigate, onOpenStatus }) => {
+  const { theme } = useTheme();
+  const isLight = theme === 'light';
+
   const steps = [
     {
       number: '01',
@@ -60,13 +64,18 @@ export const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onNavigate, onOp
     <div className="rp-howitworks-page" style={{ minHeight: '100vh', background: 'var(--rp-bg-page)', color: 'var(--rp-text-main)' }}>
       {/* Header Banner */}
       <section style={{
-        background: `linear-gradient(135deg, ${RF_DEEP_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
-        padding: '130px 24px 70px', position: 'relative', overflow: 'hidden', color: '#FFFFFF', textAlign: 'center'
+        background: isLight
+          ? 'radial-gradient(ellipse at 50% -20%, #E8F5EE 0%, #F5FAF7 70%, #FFFFFF 100%)'
+          : `linear-gradient(135deg, ${RF_DEEP_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
+        padding: '130px 24px 70px', position: 'relative', overflow: 'hidden',
+        color: isLight ? '#0A1C12' : '#FFFFFF', textAlign: 'center'
       }}>
         <div style={{ maxWidth: 960, margin: '0 auto', position: 'relative', zIndex: 2 }}>
           <span style={{
             display: 'inline-block', fontSize: 11, fontWeight: 700, letterSpacing: '0.16em',
-            color: RF_MINT_ACCENT, background: 'rgba(24, 252, 92, 0.1)', border: `1px solid ${RF_LEAF_GREEN}33`,
+            color: isLight ? '#0F4829' : RF_MINT_ACCENT,
+            background: isLight ? 'rgba(102, 187, 42, 0.12)' : 'rgba(24, 252, 92, 0.1)',
+            border: `1px solid ${isLight ? 'rgba(15, 46, 30, 0.16)' : `${RF_LEAF_GREEN}33`}`,
             padding: '6px 16px', borderRadius: 100, textTransform: 'uppercase', marginBottom: 20
           }}>
             Admissions & Lifecycle
@@ -74,12 +83,15 @@ export const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onNavigate, onOp
 
           <h1 style={{
             fontSize: 'clamp(34px, 5vw, 64px)', fontWeight: 500, lineHeight: 1.15,
-            letterSpacing: '-0.02em', marginBottom: 20, fontFamily: 'Plus Jakarta Sans, sans-serif'
+            letterSpacing: '-0.02em', marginBottom: 20, fontFamily: 'Plus Jakarta Sans, sans-serif',
+            color: isLight ? '#0A1C12' : '#FFFFFF'
           }}>
             How the Pioneer Program<br />
             <span style={{
               fontStyle: 'italic', fontWeight: 400,
-              background: `linear-gradient(135deg, ${RF_MINT_ACCENT} 0%, ${RF_LEAF_GREEN} 60%, ${RF_GOLD_YELLOW} 100%)`,
+              background: isLight
+                ? `linear-gradient(135deg, #0F4829 0%, ${RF_LEAF_GREEN} 60%, #B8860B 100%)`
+                : `linear-gradient(135deg, ${RF_MINT_ACCENT} 0%, ${RF_LEAF_GREEN} 60%, ${RF_GOLD_YELLOW} 100%)`,
               WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'
             }}>
               works from start to launch.
@@ -87,7 +99,8 @@ export const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onNavigate, onOp
           </h1>
 
           <p style={{
-            fontSize: 'clamp(15px, 1.8vw, 18px)', color: 'rgba(255,255,255,0.85)',
+            fontSize: 'clamp(15px, 1.8vw, 18px)',
+            color: isLight ? '#273E31' : 'rgba(255,255,255,0.85)',
             lineHeight: 1.7, maxWidth: 700, margin: '0 auto 32px'
           }}>
             From application to mainnet privileges, here is everything you need to know about joining the Founding 100 and co-building Africa’s referral freelance protocol.
@@ -117,18 +130,20 @@ export const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onNavigate, onOp
             <button
               onClick={onOpenStatus}
               style={{
-                background: 'rgba(255,255,255,0.04)', color: '#FFFFFF',
-                border: '1px solid rgba(255,255,255,0.2)', padding: '13px 26px',
+                background: isLight ? '#FFFFFF' : 'rgba(255,255,255,0.04)',
+                color: isLight ? '#0A1C12' : '#FFFFFF',
+                border: isLight ? '1.5px solid rgba(15, 46, 30, 0.18)' : '1px solid rgba(255,255,255,0.2)',
+                padding: '13px 26px',
                 borderRadius: 100, fontSize: 14, fontWeight: 500, cursor: 'pointer',
                 transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: 7
               }}
               onMouseEnter={e => {
-                e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
-                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.4)';
+                e.currentTarget.style.background = isLight ? '#F1F5F9' : 'rgba(255,255,255,0.08)';
+                e.currentTarget.style.borderColor = isLight ? 'rgba(15, 46, 30, 0.3)' : 'rgba(255,255,255,0.4)';
               }}
               onMouseLeave={e => {
-                e.currentTarget.style.background = 'rgba(255,255,255,0.04)';
-                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)';
+                e.currentTarget.style.background = isLight ? '#FFFFFF' : 'rgba(255,255,255,0.04)';
+                e.currentTarget.style.borderColor = isLight ? 'rgba(15, 46, 30, 0.18)' : 'rgba(255,255,255,0.2)';
               }}
             >
               Check Existing Status
@@ -138,7 +153,7 @@ export const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onNavigate, onOp
       </section>
 
       {/* Step-by-Step Flow */}
-      <section style={{ padding: '90px 24px', background: '#F8FAF9' }}>
+      <section style={{ padding: '90px 24px', background: isLight ? '#F8FAF9' : 'transparent' }}>
         <div style={{ maxWidth: 980, margin: '0 auto' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
             {steps.map((step, idx) => (
@@ -243,17 +258,27 @@ export const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onNavigate, onOp
 
       {/* Bottom CTA */}
       <section style={{
-        background: `linear-gradient(135deg, ${RF_DEEP_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
-        padding: '80px 24px', color: '#FFFFFF', textAlign: 'center'
+        background: isLight
+          ? 'linear-gradient(180deg, #F5FAF7 0%, #EDF5F0 100%)'
+          : `linear-gradient(135deg, ${RF_DEEP_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
+        padding: '80px 24px',
+        color: isLight ? '#0A1C12' : '#FFFFFF',
+        textAlign: 'center',
+        borderTop: isLight ? '1px solid rgba(15, 46, 30, 0.08)' : 'none'
       }}>
         <div style={{ maxWidth: 780, margin: '0 auto' }}>
           <h2 style={{
             fontSize: 'clamp(24px, 3.6vw, 42px)', fontWeight: 500, fontFamily: 'Plus Jakarta Sans, sans-serif',
-            marginBottom: 16, whiteSpace: 'nowrap'
+            marginBottom: 16, whiteSpace: 'nowrap',
+            color: isLight ? '#0A1C12' : '#FFFFFF'
           }}>
             Applications are currently open
           </h2>
-          <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, marginBottom: 30 }}>
+          <p style={{
+            fontSize: 15,
+            color: isLight ? '#273E31' : 'rgba(255,255,255,0.75)',
+            lineHeight: 1.7, marginBottom: 30
+          }}>
             Seats in the Founding 100 are filled as exceptional applications arrive.<br />
             Do not wait for public launch to claim your builder seat.
           </p>

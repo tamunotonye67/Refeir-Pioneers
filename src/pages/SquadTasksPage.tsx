@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useTheme } from '../context/ThemeContext';
 import {
   Zap, Calendar, Clock, Share2, Check, Copy, ExternalLink,
   Gift, Wifi, DollarSign, Award, ArrowRight, Shield, CheckCircle2,
@@ -34,6 +35,8 @@ interface SquadTasksPageProps {
 }
 
 export const SquadTasksPage: React.FC<SquadTasksPageProps> = ({ onNavigate, onOpenStatus }) => {
+  const { theme } = useTheme();
+  const isLight = theme === 'light';
   const [contributor, setContributor] = useState<ContributorProfile | null>(getCurrentContributor());
   const [tasks, setTasks] = useState<SquadTask[]>([]);
   const [selectedSquad, setSelectedSquad] = useState<SquadDivision | 'ALL'>('ALL');
@@ -139,34 +142,36 @@ export const SquadTasksPage: React.FC<SquadTasksPageProps> = ({ onNavigate, onOp
       <div className="rp-squadtasks-page" style={{
         background: 'var(--rp-bg-page)',
         minHeight: '100vh',
-        color: 'var(--rp-text-main)',
+        color: isLight ? '#0A1C12' : 'var(--rp-text-main)',
         paddingTop: isMobile ? 40 : 90,
         paddingBottom: isMobile ? 60 : 100,
         display: 'flex',
         alignItems: 'center'
       }}>
         <div style={{ maxWidth: 760, width: '100%', margin: '0 auto', padding: isMobile ? '0 16px' : '0 24px' }}>
-          <div style={{
-            background: 'linear-gradient(180deg, rgba(15, 46, 30, 0.85) 0%, rgba(7, 24, 15, 0.98) 100%)',
-            border: '1px solid rgba(102, 187, 42, 0.3)',
+          <div className="rp-auth-gate-card" style={{
+            background: isLight
+              ? '#FFFFFF'
+              : 'linear-gradient(180deg, rgba(15, 46, 30, 0.85) 0%, rgba(7, 24, 15, 0.98) 100%)',
+            border: isLight ? '1px solid rgba(15, 46, 30, 0.12)' : '1px solid rgba(102, 187, 42, 0.3)',
             borderRadius: isMobile ? 22 : 28,
             padding: isMobile ? '32px 20px 28px' : '52px 40px',
             textAlign: 'center',
-            boxShadow: '0 24px 64px rgba(0, 0, 0, 0.6)'
+            boxShadow: isLight ? '0 20px 50px rgba(15, 46, 30, 0.08)' : '0 24px 64px rgba(0, 0, 0, 0.6)'
           }}>
             {/* Lock Emblem */}
             <div style={{
               width: isMobile ? 56 : 72,
               height: isMobile ? 56 : 72,
               borderRadius: '50%',
-              background: 'rgba(24, 252, 92, 0.08)',
-              border: '1px solid rgba(24, 252, 92, 0.28)',
+              background: isLight ? 'rgba(15, 46, 30, 0.06)' : 'rgba(24, 252, 92, 0.08)',
+              border: isLight ? '1px solid rgba(15, 46, 30, 0.15)' : '1px solid rgba(24, 252, 92, 0.28)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               margin: isMobile ? '0 auto 16px' : '0 auto 24px',
-              color: RF_MINT_ACCENT,
-              boxShadow: '0 0 26px rgba(24, 252, 92, 0.16)'
+              color: isLight ? RF_DEEP_GREEN : RF_MINT_ACCENT,
+              boxShadow: isLight ? 'none' : '0 0 26px rgba(24, 252, 92, 0.16)'
             }}>
               <Lock size={isMobile ? 24 : 32} />
             </div>
@@ -177,9 +182,9 @@ export const SquadTasksPage: React.FC<SquadTasksPageProps> = ({ onNavigate, onOp
               gap: 6,
               padding: isMobile ? '4px 12px' : '6px 16px',
               borderRadius: 999,
-              background: 'rgba(245, 158, 11, 0.14)',
-              border: '1px solid rgba(245, 158, 11, 0.35)',
-              color: '#FCD34D',
+              background: isLight ? 'rgba(245, 158, 11, 0.1)' : 'rgba(245, 158, 11, 0.14)',
+              border: isLight ? '1px solid rgba(245, 158, 11, 0.3)' : '1px solid rgba(245, 158, 11, 0.35)',
+              color: isLight ? '#B45309' : '#FCD34D',
               fontSize: isMobile ? 11 : 12,
               fontWeight: 700,
               textTransform: 'uppercase',
@@ -195,7 +200,7 @@ export const SquadTasksPage: React.FC<SquadTasksPageProps> = ({ onNavigate, onOp
               fontSize: isMobile ? '24px' : 'clamp(30px, 5vw, 44px)',
               fontWeight: 800,
               margin: isMobile ? '0 0 12px' : '0 0 16px',
-              color: '#FFFFFF',
+              color: isLight ? '#0A1C12' : '#FFFFFF',
               lineHeight: 1.2
             }}>
               Sign In to Access Daily Tasks &amp; Bounties
@@ -203,7 +208,7 @@ export const SquadTasksPage: React.FC<SquadTasksPageProps> = ({ onNavigate, onOp
 
             <p style={{
               fontSize: isMobile ? 13.5 : 16,
-              color: 'rgba(255, 255, 255, 0.72)',
+              color: isLight ? '#4B6354' : 'rgba(255, 255, 255, 0.72)',
               maxWidth: 580,
               margin: isMobile ? '0 auto 24px' : '0 auto 36px',
               lineHeight: isMobile ? 1.55 : 1.65
@@ -232,23 +237,15 @@ export const SquadTasksPage: React.FC<SquadTasksPageProps> = ({ onNavigate, onOp
                   gap: 8,
                   padding: '0 26px',
                   borderRadius: 12,
-                  background: RF_MINT_ACCENT,
-                  color: RF_FOREST_DARK,
+                  background: isLight ? RF_DEEP_GREEN : RF_MINT_ACCENT,
+                  color: isLight ? '#FFFFFF' : RF_FOREST_DARK,
                   border: 'none',
                   fontWeight: 700,
                   fontSize: 14,
                   cursor: 'pointer',
                   transition: 'all 0.2s',
-                  boxShadow: '0 4px 18px rgba(24, 252, 92, 0.3)',
+                  boxShadow: isLight ? '0 4px 14px rgba(15, 46, 30, 0.2)' : '0 4px 18px rgba(24, 252, 92, 0.3)',
                   whiteSpace: 'nowrap'
-                }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.boxShadow = '0 6px 24px rgba(24, 252, 92, 0.45)';
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = '0 4px 18px rgba(24, 252, 92, 0.3)';
                 }}
               >
                 Sign In
@@ -266,22 +263,14 @@ export const SquadTasksPage: React.FC<SquadTasksPageProps> = ({ onNavigate, onOp
                   gap: 8,
                   padding: '0 22px',
                   borderRadius: 12,
-                  background: 'rgba(255, 255, 255, 0.06)',
-                  color: '#FFFFFF',
-                  border: '1px solid rgba(255, 255, 255, 0.16)',
+                  background: isLight ? '#F5FAF7' : 'rgba(255, 255, 255, 0.06)',
+                  color: isLight ? '#0A1C12' : '#FFFFFF',
+                  border: isLight ? '1px solid rgba(15, 46, 30, 0.15)' : '1px solid rgba(255, 255, 255, 0.16)',
                   fontWeight: 600,
                   fontSize: 14,
                   cursor: 'pointer',
                   transition: 'all 0.2s',
                   whiteSpace: 'nowrap'
-                }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.borderColor = 'rgba(24, 252, 92, 0.4)';
-                  e.currentTarget.style.color = RF_MINT_ACCENT;
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.16)';
-                  e.currentTarget.style.color = '#FFFFFF';
                 }}
               >
                 Activate Account
@@ -295,13 +284,13 @@ export const SquadTasksPage: React.FC<SquadTasksPageProps> = ({ onNavigate, onOp
               gap: isMobile ? 8 : 14,
               textAlign: 'left',
               paddingTop: isMobile ? 20 : 28,
-              borderTop: '1px solid rgba(255, 255, 255, 0.08)'
+              borderTop: isLight ? '1px solid rgba(15, 46, 30, 0.1)' : '1px solid rgba(255, 255, 255, 0.08)'
             }}>
               <div style={{
-                background: 'rgba(0,0,0,0.3)',
+                background: isLight ? '#F8FAF9' : 'rgba(0,0,0,0.3)',
                 padding: isMobile ? '12px 14px' : '18px 16px',
                 borderRadius: isMobile ? 12 : 16,
-                border: '1px solid rgba(255,255,255,0.06)',
+                border: isLight ? '1px solid rgba(15, 46, 30, 0.08)' : '1px solid rgba(255,255,255,0.06)',
                 display: 'flex',
                 alignItems: isMobile ? 'center' : 'flex-start',
                 flexDirection: isMobile ? 'row' : 'column',
@@ -311,35 +300,35 @@ export const SquadTasksPage: React.FC<SquadTasksPageProps> = ({ onNavigate, onOp
                   width: isMobile ? 32 : 'auto',
                   height: isMobile ? 32 : 'auto',
                   borderRadius: 8,
-                  background: isMobile ? 'rgba(24, 252, 92, 0.08)' : 'transparent',
+                  background: isLight ? 'rgba(15, 46, 30, 0.06)' : isMobile ? 'rgba(24, 252, 92, 0.08)' : 'transparent',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   flexShrink: 0,
-                  color: 'rgba(255,255,255,0.45)',
+                  color: isLight ? RF_DEEP_GREEN : 'rgba(255,255,255,0.45)',
                   fontSize: 12,
                   gap: 6
                 }}>
-                  <Lock size={13} color={isMobile ? RF_MINT_ACCENT : undefined} />
-                  {!isMobile && <span>Squad Directives</span>}
+                  <Lock size={13} color={isLight ? RF_DEEP_GREEN : isMobile ? RF_MINT_ACCENT : undefined} />
+                  {!isMobile && <span style={{ fontWeight: 600, color: isLight ? '#4B6354' : undefined }}>Squad Directives</span>}
                 </div>
                 <div>
                   {isMobile && (
-                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>
+                    <div style={{ fontSize: 11, color: isLight ? '#4B6354' : 'rgba(255,255,255,0.5)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>
                       Squad Directives
                     </div>
                   )}
-                  <div style={{ fontSize: isMobile ? 12.5 : 13.5, color: 'rgba(255,255,255,0.9)', fontWeight: 600, marginTop: isMobile ? 1 : 0 }}>
+                  <div style={{ fontSize: isMobile ? 12.5 : 13.5, color: isLight ? '#0A1C12' : 'rgba(255,255,255,0.9)', fontWeight: 600, marginTop: isMobile ? 1 : 0 }}>
                     Daily missions and sprint briefs across 6 squads
                   </div>
                 </div>
               </div>
 
               <div style={{
-                background: 'rgba(0,0,0,0.3)',
+                background: isLight ? '#F8FAF9' : 'rgba(0,0,0,0.3)',
                 padding: isMobile ? '12px 14px' : '18px 16px',
                 borderRadius: isMobile ? 12 : 16,
-                border: '1px solid rgba(255,255,255,0.06)',
+                border: isLight ? '1px solid rgba(15, 46, 30, 0.08)' : '1px solid rgba(255,255,255,0.06)',
                 display: 'flex',
                 alignItems: isMobile ? 'center' : 'flex-start',
                 flexDirection: isMobile ? 'row' : 'column',
@@ -349,35 +338,35 @@ export const SquadTasksPage: React.FC<SquadTasksPageProps> = ({ onNavigate, onOp
                   width: isMobile ? 32 : 'auto',
                   height: isMobile ? 32 : 'auto',
                   borderRadius: 8,
-                  background: isMobile ? 'rgba(245, 158, 11, 0.08)' : 'transparent',
+                  background: isLight ? 'rgba(245, 158, 11, 0.1)' : isMobile ? 'rgba(245, 158, 11, 0.08)' : 'transparent',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   flexShrink: 0,
-                  color: 'rgba(255,255,255,0.45)',
+                  color: isLight ? '#B45309' : 'rgba(255,255,255,0.45)',
                   fontSize: 12,
                   gap: 6
                 }}>
-                  <Lock size={13} color={isMobile ? '#FCD34D' : undefined} />
-                  {!isMobile && <span>Bounty Incentives</span>}
+                  <Lock size={13} color={isLight ? '#B45309' : isMobile ? '#FCD34D' : undefined} />
+                  {!isMobile && <span style={{ fontWeight: 600, color: isLight ? '#4B6354' : undefined }}>Bounty Incentives</span>}
                 </div>
                 <div>
                   {isMobile && (
-                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>
+                    <div style={{ fontSize: 11, color: isLight ? '#4B6354' : 'rgba(255,255,255,0.5)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>
                       Bounty Incentives
                     </div>
                   )}
-                  <div style={{ fontSize: isMobile ? 12.5 : 13.5, color: 'rgba(255,255,255,0.9)', fontWeight: 600, marginTop: isMobile ? 1 : 0 }}>
+                  <div style={{ fontSize: isMobile ? 12.5 : 13.5, color: isLight ? '#0A1C12' : 'rgba(255,255,255,0.9)', fontWeight: 600, marginTop: isMobile ? 1 : 0 }}>
                     Airtime, Data, and Cash prizes for daily tasks
                   </div>
                 </div>
               </div>
 
               <div style={{
-                background: 'rgba(0,0,0,0.3)',
+                background: isLight ? '#F8FAF9' : 'rgba(0,0,0,0.3)',
                 padding: isMobile ? '12px 14px' : '18px 16px',
                 borderRadius: isMobile ? 12 : 16,
-                border: '1px solid rgba(255,255,255,0.06)',
+                border: isLight ? '1px solid rgba(15, 46, 30, 0.08)' : '1px solid rgba(255,255,255,0.06)',
                 display: 'flex',
                 alignItems: isMobile ? 'center' : 'flex-start',
                 flexDirection: isMobile ? 'row' : 'column',
@@ -387,39 +376,39 @@ export const SquadTasksPage: React.FC<SquadTasksPageProps> = ({ onNavigate, onOp
                   width: isMobile ? 32 : 'auto',
                   height: isMobile ? 32 : 'auto',
                   borderRadius: 8,
-                  background: isMobile ? 'rgba(59, 130, 246, 0.08)' : 'transparent',
+                  background: isLight ? 'rgba(37, 99, 235, 0.1)' : isMobile ? 'rgba(59, 130, 246, 0.08)' : 'transparent',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   flexShrink: 0,
-                  color: 'rgba(255,255,255,0.45)',
+                  color: isLight ? '#1D4ED8' : 'rgba(255,255,255,0.45)',
                   fontSize: 12,
                   gap: 6
                 }}>
-                  <Lock size={13} color={isMobile ? '#93C5FD' : undefined} />
-                  {!isMobile && <span>Advancement Rubric</span>}
+                  <Lock size={13} color={isLight ? '#1D4ED8' : isMobile ? '#93C5FD' : undefined} />
+                  {!isMobile && <span style={{ fontWeight: 600, color: isLight ? '#4B6354' : undefined }}>Advancement Rubric</span>}
                 </div>
                 <div>
                   {isMobile && (
-                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>
+                    <div style={{ fontSize: 11, color: isLight ? '#4B6354' : 'rgba(255,255,255,0.5)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>
                       Advancement Rubric
                     </div>
                   )}
-                  <div style={{ fontSize: isMobile ? 12.5 : 13.5, color: 'rgba(255,255,255,0.9)', fontWeight: 600, marginTop: isMobile ? 1 : 0 }}>
+                  <div style={{ fontSize: isMobile ? 12.5 : 13.5, color: isLight ? '#0A1C12' : 'rgba(255,255,255,0.9)', fontWeight: 600, marginTop: isMobile ? 1 : 0 }}>
                     Submit verified proof of work to level up tiers
                   </div>
                 </div>
               </div>
             </div>
 
-            <p style={{ fontSize: isMobile ? 12.5 : 13, color: 'rgba(255,255,255,0.45)', marginTop: isMobile ? 22 : 32, marginBottom: 0 }}>
+            <p style={{ fontSize: isMobile ? 12.5 : 13, color: isLight ? '#64748B' : 'rgba(255,255,255,0.45)', marginTop: isMobile ? 22 : 32, marginBottom: 0 }}>
               Applied already?{' '}
               <button
                 onClick={onOpenStatus}
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: RF_MINT_ACCENT,
+                  color: isLight ? RF_DEEP_GREEN : RF_MINT_ACCENT,
                   cursor: 'pointer',
                   fontWeight: 600,
                   padding: 0,
@@ -486,8 +475,10 @@ export const SquadTasksPage: React.FC<SquadTasksPageProps> = ({ onNavigate, onOp
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: 6,
             padding: isMobile ? '4px 12px' : '6px 18px', borderRadius: 100,
-            background: 'rgba(24, 252, 92, 0.1)', border: '1px solid rgba(24, 252, 92, 0.28)',
-            color: RF_MINT_ACCENT, fontSize: isMobile ? 11 : 12, fontWeight: 700, letterSpacing: '0.04em',
+            background: isLight ? 'rgba(15, 46, 30, 0.08)' : 'rgba(24, 252, 92, 0.1)',
+            border: isLight ? '1px solid rgba(15, 46, 30, 0.15)' : '1px solid rgba(24, 252, 92, 0.28)',
+            color: isLight ? RF_DEEP_GREEN : RF_MINT_ACCENT,
+            fontSize: isMobile ? 11 : 12, fontWeight: 700, letterSpacing: '0.04em',
             textTransform: 'uppercase', marginBottom: isMobile ? 12 : 18
           }}>
             <Shield size={12} />
@@ -500,14 +491,14 @@ export const SquadTasksPage: React.FC<SquadTasksPageProps> = ({ onNavigate, onOp
             fontWeight: 800,
             lineHeight: 1.15,
             margin: isMobile ? '0 0 10px' : '0 0 16px',
-            color: '#FFFFFF'
+            color: isLight ? '#0A1C12' : '#FFFFFF'
           }}>
             Daily Squad Missions &amp; Bounties
           </h1>
 
           <p style={{
             fontSize: isMobile ? 13.5 : 16,
-            color: 'rgba(255,255,255,0.72)',
+            color: isLight ? '#4B6354' : 'rgba(255,255,255,0.72)',
             maxWidth: 720,
             margin: isMobile ? '0 auto 20px' : '0 auto 28px',
             lineHeight: isMobile ? 1.55 : 1.6
@@ -524,49 +515,57 @@ export const SquadTasksPage: React.FC<SquadTasksPageProps> = ({ onNavigate, onOp
             margin: isMobile ? '0 auto 24px' : '0 auto 36px'
           }}>
             <div style={{
-              background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: isMobile ? 12 : 16, padding: isMobile ? '12px 14px' : '16px 20px', textAlign: 'center'
+              background: isLight ? '#FFFFFF' : 'rgba(0,0,0,0.35)',
+              border: isLight ? '1px solid rgba(15, 46, 30, 0.12)' : '1px solid rgba(255,255,255,0.08)',
+              borderRadius: isMobile ? 12 : 16, padding: isMobile ? '12px 14px' : '16px 20px', textAlign: 'center',
+              boxShadow: isLight ? '0 4px 12px rgba(15, 46, 30, 0.04)' : 'none'
             }}>
-              <div style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              <div style={{ fontSize: isMobile ? 10 : 11, color: isLight ? '#4B6354' : 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 Active Missions
               </div>
-              <div style={{ fontSize: isMobile ? 20 : 26, fontWeight: 900, color: RF_MINT_ACCENT, marginTop: 2 }}>
+              <div style={{ fontSize: isMobile ? 20 : 26, fontWeight: 900, color: isLight ? RF_DEEP_GREEN : RF_MINT_ACCENT, marginTop: 2 }}>
                 {filteredTasks.length} Live
               </div>
             </div>
 
             <div style={{
-              background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: isMobile ? 12 : 16, padding: isMobile ? '12px 14px' : '16px 20px', textAlign: 'center'
+              background: isLight ? '#FFFFFF' : 'rgba(0,0,0,0.35)',
+              border: isLight ? '1px solid rgba(15, 46, 30, 0.12)' : '1px solid rgba(255,255,255,0.08)',
+              borderRadius: isMobile ? 12 : 16, padding: isMobile ? '12px 14px' : '16px 20px', textAlign: 'center',
+              boxShadow: isLight ? '0 4px 12px rgba(15, 46, 30, 0.04)' : 'none'
             }}>
-              <div style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              <div style={{ fontSize: isMobile ? 10 : 11, color: isLight ? '#4B6354' : 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 Active Bonus Bounties
               </div>
-              <div style={{ fontSize: isMobile ? 20 : 26, fontWeight: 900, color: RF_GOLD_YELLOW, marginTop: 2 }}>
+              <div style={{ fontSize: isMobile ? 20 : 26, fontWeight: 900, color: isLight ? '#B45309' : RF_GOLD_YELLOW, marginTop: 2 }}>
                 {activeBountiesCount} Rewarded
               </div>
             </div>
 
             <div style={{
-              background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: isMobile ? 12 : 16, padding: isMobile ? '12px 14px' : '16px 20px', textAlign: 'center'
+              background: isLight ? '#FFFFFF' : 'rgba(0,0,0,0.35)',
+              border: isLight ? '1px solid rgba(15, 46, 30, 0.12)' : '1px solid rgba(255,255,255,0.08)',
+              borderRadius: isMobile ? 12 : 16, padding: isMobile ? '12px 14px' : '16px 20px', textAlign: 'center',
+              boxShadow: isLight ? '0 4px 12px rgba(15, 46, 30, 0.04)' : 'none'
             }}>
-              <div style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              <div style={{ fontSize: isMobile ? 10 : 11, color: isLight ? '#4B6354' : 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 Squad Divisions
               </div>
-              <div style={{ fontSize: isMobile ? 20 : 26, fontWeight: 900, color: '#60A5FA', marginTop: 2 }}>
+              <div style={{ fontSize: isMobile ? 20 : 26, fontWeight: 900, color: '#2563EB', marginTop: 2 }}>
                 6 Active
               </div>
             </div>
 
             <div style={{
-              background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: isMobile ? 12 : 16, padding: isMobile ? '12px 14px' : '16px 20px', textAlign: 'center'
+              background: isLight ? '#FFFFFF' : 'rgba(0,0,0,0.35)',
+              border: isLight ? '1px solid rgba(15, 46, 30, 0.12)' : '1px solid rgba(255,255,255,0.08)',
+              borderRadius: isMobile ? 12 : 16, padding: isMobile ? '12px 14px' : '16px 20px', textAlign: 'center',
+              boxShadow: isLight ? '0 4px 12px rgba(15, 46, 30, 0.04)' : 'none'
             }}>
-              <div style={{ fontSize: isMobile ? 10 : 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              <div style={{ fontSize: isMobile ? 10 : 11, color: isLight ? '#4B6354' : 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 Bounty Review
               </div>
-              <div style={{ fontSize: isMobile ? 20 : 26, fontWeight: 900, color: '#34D399', marginTop: 2 }}>
+              <div style={{ fontSize: isMobile ? 20 : 26, fontWeight: 900, color: '#059669', marginTop: 2 }}>
                 &lt; 24h Payout
               </div>
             </div>
@@ -575,12 +574,12 @@ export const SquadTasksPage: React.FC<SquadTasksPageProps> = ({ onNavigate, onOp
 
         {/* Filter Controls Bar */}
         <div style={{
-          background: 'rgba(15, 46, 30, 0.85)',
-          border: '1px solid rgba(102, 187, 42, 0.25)',
+          background: isLight ? '#FFFFFF' : 'rgba(15, 46, 30, 0.85)',
+          border: isLight ? '1px solid rgba(15, 46, 30, 0.12)' : '1px solid rgba(102, 187, 42, 0.25)',
           borderRadius: 20,
           padding: '18px 22px',
           marginBottom: 32,
-          boxShadow: '0 15px 40px rgba(0,0,0,0.4)',
+          boxShadow: isLight ? '0 10px 30px rgba(15, 46, 30, 0.05)' : '0 15px 40px rgba(0,0,0,0.4)',
           display: 'flex',
           flexDirection: 'column',
           gap: 16

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTheme } from '../context/ThemeContext';
 import {
   Code2, Palette, TrendingUp, Briefcase, Users, FlaskConical,
   ArrowRight, CheckCircle2, Award, Clock, Target, Layers
@@ -175,6 +176,8 @@ const DIVISIONS_CATALOG: DivisionDetail[] = [
 ];
 
 export const DivisionsPage: React.FC<DivisionsPageProps> = ({ onNavigate }) => {
+  const { theme } = useTheme();
+  const isLight = theme === 'light';
   const [selectedId, setSelectedId] = useState<string>('TECH_PRODUCT');
   const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
 
@@ -190,14 +193,18 @@ export const DivisionsPage: React.FC<DivisionsPageProps> = ({ onNavigate }) => {
     <div className="rp-divisions-page" style={{ minHeight: '100vh', background: 'var(--rp-bg-page)', color: 'var(--rp-text-main)' }}>
       {/* Header Banner */}
       <section style={{
-        background: `linear-gradient(135deg, ${RF_DEEP_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
+        background: isLight
+          ? 'radial-gradient(ellipse at 50% -20%, #E8F5EE 0%, #F5FAF7 70%, #FFFFFF 100%)'
+          : `linear-gradient(135deg, ${RF_DEEP_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
         padding: isMobile ? '80px 16px 36px' : '130px 24px 70px',
-        position: 'relative', overflow: 'hidden', color: '#FFFFFF', textAlign: 'center'
+        position: 'relative', overflow: 'hidden', color: isLight ? '#0A1C12' : '#FFFFFF', textAlign: 'center'
       }}>
         <div style={{ maxWidth: 940, margin: '0 auto', position: 'relative', zIndex: 2 }}>
           <span style={{
             display: 'inline-block', fontSize: isMobile ? 10.5 : 11, fontWeight: 700, letterSpacing: '0.14em',
-            color: RF_MINT_ACCENT, background: 'rgba(24, 252, 92, 0.1)', border: `1px solid ${RF_LEAF_GREEN}33`,
+            color: isLight ? '#0F4829' : RF_MINT_ACCENT,
+            background: isLight ? 'rgba(102, 187, 42, 0.12)' : 'rgba(24, 252, 92, 0.1)',
+            border: `1px solid ${isLight ? 'rgba(15, 46, 30, 0.16)' : `${RF_LEAF_GREEN}33`}`,
             padding: isMobile ? '5px 14px' : '6px 16px', borderRadius: 100, textTransform: 'uppercase', marginBottom: isMobile ? 14 : 20
           }}>
             Pioneer Divisions & Squads
@@ -205,12 +212,15 @@ export const DivisionsPage: React.FC<DivisionsPageProps> = ({ onNavigate }) => {
 
           <h1 style={{
             fontSize: isMobile ? '28px' : 'clamp(34px, 5vw, 64px)', fontWeight: 600, lineHeight: 1.15,
-            letterSpacing: '-0.02em', marginBottom: isMobile ? 14 : 20, fontFamily: 'Plus Jakarta Sans, sans-serif'
+            letterSpacing: '-0.02em', marginBottom: isMobile ? 14 : 20, fontFamily: 'Plus Jakarta Sans, sans-serif',
+            color: isLight ? '#0A1C12' : '#FFFFFF'
           }}>
             Six squads building the<br />
             <span style={{
               fontStyle: 'italic', fontWeight: 400,
-              background: `linear-gradient(135deg, ${RF_MINT_ACCENT} 0%, ${RF_LEAF_GREEN} 60%, ${RF_GOLD_YELLOW} 100%)`,
+              background: isLight
+                ? `linear-gradient(135deg, #0F4829 0%, ${RF_LEAF_GREEN} 60%, #B8860B 100%)`
+                : `linear-gradient(135deg, ${RF_MINT_ACCENT} 0%, ${RF_LEAF_GREEN} 60%, ${RF_GOLD_YELLOW} 100%)`,
               WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'
             }}>
               foundations of Refeir.
@@ -218,7 +228,8 @@ export const DivisionsPage: React.FC<DivisionsPageProps> = ({ onNavigate }) => {
           </h1>
 
           <p style={{
-            fontSize: isMobile ? 14 : 'clamp(15px, 1.8vw, 18px)', color: 'rgba(255,255,255,0.85)',
+            fontSize: isMobile ? 14 : 'clamp(15px, 1.8vw, 18px)',
+            color: isLight ? '#273E31' : 'rgba(255,255,255,0.85)',
             lineHeight: 1.6, maxWidth: 680, margin: isMobile ? '0 auto 24px' : '0 auto 32px'
           }}>
             Every Refeir Pioneer is assigned to a specialized division based on their superpowers. Discover where your expertise can make the deepest impact.
@@ -245,13 +256,17 @@ export const DivisionsPage: React.FC<DivisionsPageProps> = ({ onNavigate }) => {
                   key={div.id}
                   onClick={() => setSelectedId(div.id)}
                   style={{
-                    background: isSelected ? 'rgba(255,255,255,0.16)' : 'rgba(255,255,255,0.04)',
-                    color: isSelected ? '#FFFFFF' : 'rgba(255,255,255,0.7)',
-                    border: `1px solid ${isSelected ? div.color : 'rgba(255,255,255,0.14)'}`,
+                    background: isSelected
+                      ? (isLight ? '#FFFFFF' : 'rgba(255,255,255,0.16)')
+                      : (isLight ? 'rgba(15,46,30,0.04)' : 'rgba(255,255,255,0.04)'),
+                    color: isSelected
+                      ? (isLight ? '#0A1C12' : '#FFFFFF')
+                      : (isLight ? '#475569' : 'rgba(255,255,255,0.7)'),
+                    border: `1.5px solid ${isSelected ? div.color : (isLight ? 'rgba(15,46,30,0.12)' : 'rgba(255,255,255,0.14)')}`,
                     borderRadius: 100,
                     padding: isMobile ? '7px 14px' : '9px 18px',
                     fontSize: isMobile ? 12 : 13,
-                    fontWeight: isSelected ? 600 : 500,
+                    fontWeight: isSelected ? 700 : 500,
                     cursor: 'pointer',
                     transition: 'all 0.2s',
                     display: 'flex',
@@ -259,7 +274,7 @@ export const DivisionsPage: React.FC<DivisionsPageProps> = ({ onNavigate }) => {
                     gap: 7,
                     flexShrink: 0,
                     whiteSpace: 'nowrap',
-                    boxShadow: isSelected ? `0 0 16px ${div.color}33` : 'none'
+                    boxShadow: isSelected ? (isLight ? `0 4px 14px ${div.color}35` : `0 0 16px ${div.color}33`) : 'none'
                   }}
                 >
                   <span style={{ width: 7, height: 7, borderRadius: '50%', background: div.color, flexShrink: 0 }} />
@@ -272,33 +287,43 @@ export const DivisionsPage: React.FC<DivisionsPageProps> = ({ onNavigate }) => {
       </section>
 
       {/* Main Selected Division Deep Dive */}
-      <section style={{ padding: isMobile ? '24px 12px 40px' : '80px 24px', background: '#F8FAF9' }}>
+      <section style={{ padding: isMobile ? '24px 12px 40px' : '80px 24px', background: isLight ? '#F8FAF9' : 'transparent' }}>
         <div style={{ maxWidth: 1140, margin: '0 auto' }}>
           <div style={{
-            background: '#FFFFFF', borderRadius: isMobile ? 18 : 24, border: '1px solid #E2E8F0',
-            overflow: 'hidden', boxShadow: '0 12px 40px rgba(0,0,0,0.06)'
+            background: isLight ? '#FFFFFF' : '#0B1F15',
+            borderRadius: isMobile ? 18 : 24,
+            border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255,255,255,0.1)',
+            overflow: 'hidden',
+            boxShadow: isLight ? '0 12px 40px rgba(0,0,0,0.06)' : '0 12px 40px rgba(0,0,0,0.4)'
           }}>
             {/* Division Banner Top */}
             <div style={{
-              background: `linear-gradient(135deg, ${RF_DARK_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
-              padding: isMobile ? '20px 16px' : '36px 36px', color: '#FFFFFF',
+              background: isLight
+                ? 'linear-gradient(135deg, #EDF8F2 0%, #E3EFE8 100%)'
+                : `linear-gradient(135deg, ${RF_DARK_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
+              padding: isMobile ? '20px 16px' : '36px 36px',
+              color: isLight ? '#0A1C12' : '#FFFFFF',
               display: 'flex', flexDirection: isMobile ? 'column' : 'row',
               justifyContent: 'space-between', alignItems: isMobile ? 'stretch' : 'center',
-              gap: isMobile ? 16 : 20
+              gap: isMobile ? 16 : 20,
+              borderBottom: isLight ? '1px solid rgba(15,46,30,0.1)' : 'none'
             }}>
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
                   <span style={{
                     fontSize: 10.5, fontWeight: 700, color: activeDivision.color, fontFamily: 'monospace',
-                    background: 'rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: 6
+                    background: isLight ? '#FFFFFF' : 'rgba(255,255,255,0.1)',
+                    border: isLight ? '1px solid rgba(15,46,30,0.12)' : 'none',
+                    padding: '2px 8px', borderRadius: 6
                   }}>
                     {activeDivision.badge}
                   </span>
-                  <span style={{ fontSize: isMobile ? 12 : 13, color: 'rgba(255,255,255,0.65)' }}>{activeDivision.lead}</span>
+                  <span style={{ fontSize: isMobile ? 12 : 13, color: isLight ? '#273E31' : 'rgba(255,255,255,0.65)' }}>{activeDivision.lead}</span>
                 </div>
                 <h2 style={{
                   fontSize: isMobile ? 22 : 'clamp(26px, 3.5vw, 38px)', fontWeight: 600,
-                  fontFamily: 'Plus Jakarta Sans, sans-serif', margin: 0, lineHeight: 1.2
+                  fontFamily: 'Plus Jakarta Sans, sans-serif', margin: 0, lineHeight: 1.2,
+                  color: isLight ? '#0A1C12' : '#FFFFFF'
                 }}>
                   {activeDivision.name}
                 </h2>
@@ -311,14 +336,15 @@ export const DivisionsPage: React.FC<DivisionsPageProps> = ({ onNavigate }) => {
                 gap: 10,
                 width: isMobile ? '100%' : 'auto',
                 paddingTop: isMobile ? 8 : 0,
-                borderTop: isMobile ? '1px solid rgba(255,255,255,0.08)' : 'none'
+                borderTop: isMobile ? (isLight ? '1px solid rgba(15,46,30,0.08)' : '1px solid rgba(255,255,255,0.08)') : 'none'
               }}>
                 <div style={{
-                  background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.14)',
+                  background: isLight ? '#FFFFFF' : 'rgba(255,255,255,0.08)',
+                  border: isLight ? '1px solid rgba(15,46,30,0.14)' : '1px solid rgba(255,255,255,0.14)',
                   padding: isMobile ? '6px 12px' : '8px 16px', borderRadius: 100, fontSize: isMobile ? 11.5 : 13,
-                  color: 'rgba(255,255,255,0.85)', display: 'flex', alignItems: 'center', gap: 6
+                  color: isLight ? '#0A1C12' : 'rgba(255,255,255,0.85)', display: 'flex', alignItems: 'center', gap: 6
                 }}>
-                  <Clock size={12} color={RF_MINT_ACCENT} />
+                  <Clock size={12} color={isLight ? '#0F4829' : RF_MINT_ACCENT} />
                   <span>{activeDivision.weeklyHours}</span>
                 </div>
 
@@ -356,32 +382,34 @@ export const DivisionsPage: React.FC<DivisionsPageProps> = ({ onNavigate }) => {
             }}>
               {/* Left Column: Description & Responsibilities */}
               <div>
-                <h3 style={{ fontSize: isMobile ? 16 : 18, fontWeight: 700, color: RF_DEEP_GREEN, marginBottom: isMobile ? 8 : 12 }}>
+                <h3 style={{ fontSize: isMobile ? 16 : 18, fontWeight: 700, color: isLight ? '#0A1C12' : RF_DEEP_GREEN, marginBottom: isMobile ? 8 : 12 }}>
                   Squad Mission
                 </h3>
-                <p style={{ fontSize: isMobile ? 13.5 : 15, color: '#475569', lineHeight: 1.7, marginBottom: isMobile ? 20 : 28 }}>
+                <p style={{ fontSize: isMobile ? 13.5 : 15, color: isLight ? '#273E31' : '#475569', lineHeight: 1.7, marginBottom: isMobile ? 20 : 28 }}>
                   {activeDivision.description}
                 </p>
 
-                <h3 style={{ fontSize: isMobile ? 16 : 18, fontWeight: 700, color: RF_DEEP_GREEN, marginBottom: isMobile ? 10 : 14 }}>
+                <h3 style={{ fontSize: isMobile ? 16 : 18, fontWeight: 700, color: isLight ? '#0A1C12' : RF_DEEP_GREEN, marginBottom: isMobile ? 10 : 14 }}>
                   Core Responsibilities
                 </h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? 10 : 12, marginBottom: isMobile ? 22 : 32 }}>
                   {activeDivision.responsibilities.map((resp, i) => (
                     <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
                       <CheckCircle2 size={15} color={activeDivision.accent} style={{ marginTop: 3, flexShrink: 0 }} />
-                      <span style={{ fontSize: isMobile ? 13 : 14, color: '#334155', lineHeight: 1.55 }}>{resp}</span>
+                      <span style={{ fontSize: isMobile ? 13 : 14, color: isLight ? '#273E31' : '#334155', lineHeight: 1.55 }}>{resp}</span>
                     </div>
                   ))}
                 </div>
 
-                <h3 style={{ fontSize: isMobile ? 16 : 18, fontWeight: 700, color: RF_DEEP_GREEN, marginBottom: isMobile ? 10 : 14 }}>
+                <h3 style={{ fontSize: isMobile ? 16 : 18, fontWeight: 700, color: isLight ? '#0A1C12' : RF_DEEP_GREEN, marginBottom: isMobile ? 10 : 14 }}>
                   Key Skills & Superpowers
                 </h3>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                   {activeDivision.skills.map((skill, i) => (
                     <span key={i} style={{
-                      background: '#F1F5F9', color: '#1E293B',
+                      background: isLight ? '#EDF5F0' : '#F1F5F9',
+                      color: isLight ? '#0A1C12' : '#1E293B',
+                      border: isLight ? '1px solid rgba(15,46,30,0.1)' : 'none',
                       padding: isMobile ? '5px 11px' : '6px 14px',
                       borderRadius: 100, fontSize: isMobile ? 12 : 13, fontWeight: 600
                     }}>
@@ -393,9 +421,11 @@ export const DivisionsPage: React.FC<DivisionsPageProps> = ({ onNavigate }) => {
 
               {/* Right Column: Visual Persona & Key Deliverables */}
               <div style={{
-                background: '#F8FAF9', borderRadius: isMobile ? 16 : 20,
+                background: isLight ? '#F8FAF9' : 'rgba(15,46,30,0.3)',
+                borderRadius: isMobile ? 16 : 20,
                 padding: isMobile ? '18px 14px' : '30px 26px',
-                border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', gap: isMobile ? 18 : 24
+                border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255,255,255,0.08)',
+                display: 'flex', flexDirection: 'column', gap: isMobile ? 18 : 24
               }}>
                 <div style={{ textAlign: 'center' }}>
                   <img
@@ -410,7 +440,8 @@ export const DivisionsPage: React.FC<DivisionsPageProps> = ({ onNavigate }) => {
 
                 <div>
                   <h4 style={{
-                    fontSize: isMobile ? 14 : 15, fontWeight: 700, color: RF_DEEP_GREEN,
+                    fontSize: isMobile ? 14 : 15, fontWeight: 700,
+                    color: isLight ? '#0A1C12' : RF_DEEP_GREEN,
                     marginBottom: 10, display: 'flex', alignItems: 'center', gap: 7
                   }}>
                     <Target size={16} color={RF_LEAF_GREEN} />
@@ -419,9 +450,13 @@ export const DivisionsPage: React.FC<DivisionsPageProps> = ({ onNavigate }) => {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                     {activeDivision.deliverables.map((item, i) => (
                       <div key={i} style={{
-                        background: '#FFFFFF', padding: isMobile ? '10px 12px' : '12px 16px',
-                        borderRadius: 10, border: '1px solid #E2E8F0',
-                        fontSize: isMobile ? 12.5 : 13.5, color: '#334155', fontWeight: 500
+                        background: '#FFFFFF',
+                        padding: isMobile ? '10px 12px' : '12px 16px',
+                        borderRadius: 10,
+                        border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255,255,255,0.1)',
+                        fontSize: isMobile ? 12.5 : 13.5,
+                        color: isLight ? '#0A1C12' : '#334155',
+                        fontWeight: 500
                       }}>
                         {item}
                       </div>
@@ -435,14 +470,15 @@ export const DivisionsPage: React.FC<DivisionsPageProps> = ({ onNavigate }) => {
       </section>
 
       {/* All 6 Divisions Compact Overview */}
-      <section style={{ padding: isMobile ? '44px 14px' : '80px 24px', background: '#FFFFFF' }}>
+      <section style={{ padding: isMobile ? '44px 14px' : '80px 24px', background: isLight ? '#FFFFFF' : 'transparent' }}>
         <div style={{ maxWidth: 1140, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: isMobile ? 28 : 48 }}>
             <span style={{ fontSize: 11, fontWeight: 700, color: RF_LEAF_GREEN, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
               Full Squad Directory
             </span>
             <h2 style={{
-              fontSize: isMobile ? 24 : 'clamp(28px, 3.5vw, 42px)', fontWeight: 600, color: RF_DEEP_GREEN,
+              fontSize: isMobile ? 24 : 'clamp(28px, 3.5vw, 42px)', fontWeight: 600,
+              color: isLight ? '#0A1C12' : '#FFFFFF',
               fontFamily: 'Plus Jakarta Sans, sans-serif', marginTop: 6
             }}>
               Find where you fit best
@@ -459,8 +495,10 @@ export const DivisionsPage: React.FC<DivisionsPageProps> = ({ onNavigate }) => {
                 key={item.id}
                 onClick={() => { setSelectedId(item.id); window.scrollTo({ top: isMobile ? 280 : 400, behavior: 'smooth' }); }}
                 style={{
-                  background: item.id === selectedId ? `${RF_LEAF_GREEN}08` : '#F8FAF9',
-                  border: `1.5px solid ${item.id === selectedId ? RF_LEAF_GREEN : '#E2E8F0'}`,
+                  background: item.id === selectedId
+                    ? (isLight ? '#F0FDF4' : `${RF_LEAF_GREEN}08`)
+                    : (isLight ? '#F8FAF9' : 'rgba(255,255,255,0.03)'),
+                  border: `1.5px solid ${item.id === selectedId ? RF_LEAF_GREEN : (isLight ? '#E2E8F0' : 'rgba(255,255,255,0.08)')}`,
                   borderRadius: isMobile ? 14 : 18,
                   padding: isMobile ? '18px 16px' : '28px 24px',
                   cursor: 'pointer',
@@ -472,13 +510,13 @@ export const DivisionsPage: React.FC<DivisionsPageProps> = ({ onNavigate }) => {
                   <span style={{ fontSize: 10.5, fontWeight: 700, color: item.color, fontFamily: 'monospace' }}>
                     {item.badge}
                   </span>
-                  <span style={{ fontSize: 11.5, color: '#94A3B8' }}>{item.weeklyHours}</span>
+                  <span style={{ fontSize: 11.5, color: isLight ? '#64748B' : '#94A3B8' }}>{item.weeklyHours}</span>
                 </div>
 
-                <h3 style={{ fontSize: isMobile ? 16 : 18, fontWeight: 700, color: RF_DEEP_GREEN, marginBottom: 6 }}>
+                <h3 style={{ fontSize: isMobile ? 16 : 18, fontWeight: 700, color: isLight ? '#0A1C12' : RF_DEEP_GREEN, marginBottom: 6 }}>
                   {item.name}
                 </h3>
-                <p style={{ fontSize: isMobile ? 13 : 13.5, color: '#64748B', lineHeight: 1.55, marginBottom: 14 }}>
+                <p style={{ fontSize: isMobile ? 13 : 13.5, color: isLight ? '#475569' : '#64748B', lineHeight: 1.55, marginBottom: 14 }}>
                   {item.description}
                 </p>
 
@@ -487,7 +525,7 @@ export const DivisionsPage: React.FC<DivisionsPageProps> = ({ onNavigate }) => {
                   alignItems: 'center',
                   justifyContent: 'space-between',
                   paddingTop: 10,
-                  borderTop: '1px solid #E2E8F0',
+                  borderTop: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255,255,255,0.08)',
                   marginTop: 4
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12.5, fontWeight: 600, color: RF_LEAF_GREEN }}>
@@ -499,7 +537,7 @@ export const DivisionsPage: React.FC<DivisionsPageProps> = ({ onNavigate }) => {
                       onNavigate('/#apply');
                     }}
                     style={{
-                      background: item.id === selectedId ? RF_LEAF_GREEN : 'rgba(24, 252, 92, 0.08)',
+                      background: item.id === selectedId ? RF_LEAF_GREEN : (isLight ? 'rgba(15,46,30,0.06)' : 'rgba(24, 252, 92, 0.08)'),
                       color: RF_DEEP_GREEN,
                       border: `1px solid ${RF_LEAF_GREEN}44`,
                       borderRadius: 100,
@@ -520,18 +558,26 @@ export const DivisionsPage: React.FC<DivisionsPageProps> = ({ onNavigate }) => {
 
       {/* Pioneer Perks Section */}
       <section style={{
-        background: `linear-gradient(135deg, ${RF_DEEP_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
-        padding: isMobile ? '48px 14px' : '80px 24px', color: '#FFFFFF', textAlign: 'center'
+        background: isLight
+          ? 'linear-gradient(180deg, #F5FAF7 0%, #EDF5F0 100%)'
+          : `linear-gradient(135deg, ${RF_DEEP_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
+        padding: isMobile ? '48px 14px' : '80px 24px',
+        color: isLight ? '#0A1C12' : '#FFFFFF',
+        textAlign: 'center',
+        borderTop: isLight ? '1px solid rgba(15,46,30,0.08)' : 'none'
       }}>
         <div style={{ maxWidth: 1000, margin: '0 auto' }}>
           <h2 style={{
             fontSize: isMobile ? 24 : 'clamp(28px, 4vw, 44px)', fontWeight: 600, fontFamily: 'Plus Jakarta Sans, sans-serif',
-            marginBottom: 12
+            marginBottom: 12,
+            color: isLight ? '#0A1C12' : '#FFFFFF'
           }}>
             What every Pioneer receives
           </h2>
           <p style={{
-            fontSize: isMobile ? 13.5 : 15, color: 'rgba(255,255,255,0.75)', lineHeight: 1.6,
+            fontSize: isMobile ? 13.5 : 15,
+            color: isLight ? '#273E31' : 'rgba(255,255,255,0.75)',
+            lineHeight: 1.6,
             maxWidth: 640, margin: isMobile ? '0 auto 24px' : '0 auto 40px'
           }}>
             Pioneer membership is an exclusive community for builders who want priority access and economic equity in the Refeir ecosystem.
@@ -553,11 +599,22 @@ export const DivisionsPage: React.FC<DivisionsPageProps> = ({ onNavigate }) => {
               { title: 'Priority Alpha Bounties', desc: 'First-look access to paid client pilot contracts, feature bounties, and platform launches.' }
             ].map((perk, i) => (
               <div key={i} style={{
-                background: 'rgba(255,255,255,0.04)', borderRadius: isMobile ? 12 : 14,
-                padding: isMobile ? '16px 14px' : '22px 20px', border: '1px solid rgba(255,255,255,0.1)'
+                background: isLight ? '#FFFFFF' : 'rgba(255,255,255,0.04)',
+                borderRadius: isMobile ? 12 : 14,
+                padding: isMobile ? '16px 14px' : '22px 20px',
+                border: isLight ? '1px solid rgba(15,46,30,0.1)' : '1px solid rgba(255,255,255,0.1)',
+                boxShadow: isLight ? '0 4px 14px rgba(15,46,30,0.04)' : 'none'
               }}>
-                <h4 style={{ fontSize: isMobile ? 14 : 15, fontWeight: 700, color: RF_MINT_ACCENT, marginBottom: 4 }}>{perk.title}</h4>
-                <p style={{ fontSize: isMobile ? 12.5 : 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.55, margin: 0 }}>{perk.desc}</p>
+                <h4 style={{
+                  fontSize: isMobile ? 14 : 15, fontWeight: 700,
+                  color: isLight ? '#0F4829' : RF_MINT_ACCENT,
+                  marginBottom: 4
+                }}>{perk.title}</h4>
+                <p style={{
+                  fontSize: isMobile ? 12.5 : 13,
+                  color: isLight ? '#273E31' : 'rgba(255,255,255,0.7)',
+                  lineHeight: 1.55, margin: 0
+                }}>{perk.desc}</p>
               </div>
             ))}
           </div>

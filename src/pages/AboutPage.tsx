@@ -11,6 +11,7 @@ import {
   RF_MINT_ACCENT,
   RF_GOLD_YELLOW
 } from '../constants/brand';
+import { useTheme } from '../context/ThemeContext';
 
 interface AboutPageProps {
   onNavigate: (path: string) => void;
@@ -18,36 +19,56 @@ interface AboutPageProps {
 }
 
 export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
+  const { theme } = useTheme();
+  const isLight = theme === 'light';
+
   return (
-    <div className="rp-about-page" style={{ minHeight: '100vh', background: 'var(--rp-bg-page)', color: 'var(--rp-text-main)' }}>
+    <div className="rp-about-page" style={{
+      minHeight: '100vh',
+      background: isLight ? '#F8FAF9' : 'var(--rp-bg-page)',
+      color: isLight ? '#0A1C12' : 'var(--rp-text-main)'
+    }}>
       {/* Hero Section */}
       <section style={{
-        background: `linear-gradient(135deg, ${RF_DEEP_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
-        padding: '130px 24px 80px', position: 'relative', overflow: 'hidden', color: '#FFFFFF'
+        background: isLight
+          ? 'radial-gradient(ellipse 80% 80% at 50% -20%, rgba(21, 128, 61, 0.12) 0%, #F5FAF7 75%)'
+          : `linear-gradient(135deg, ${RF_DEEP_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
+        padding: '130px 24px 80px',
+        position: 'relative',
+        overflow: 'hidden',
+        color: isLight ? '#0A1C12' : '#FFFFFF',
+        borderBottom: isLight ? '1px solid rgba(15, 46, 30, 0.1)' : 'none'
       }}>
         {/* Subtle Ambient Glow */}
-        <div style={{
-          position: 'absolute', top: -100, right: -100, width: 500, height: 500, borderRadius: '50%',
-          background: `radial-gradient(circle, ${RF_LEAF_GREEN}18 0%, transparent 70%)`, filter: 'blur(50px)', pointerEvents: 'none'
-        }} />
+        {!isLight && (
+          <div style={{
+            position: 'absolute', top: -100, right: -100, width: 500, height: 500, borderRadius: '50%',
+            background: `radial-gradient(circle, ${RF_LEAF_GREEN}18 0%, transparent 70%)`, filter: 'blur(50px)', pointerEvents: 'none'
+          }} />
+        )}
 
         <div style={{ maxWidth: 1080, margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 2 }}>
           <span style={{
             display: 'inline-block', fontSize: 11, fontWeight: 700, letterSpacing: '0.16em',
-            color: RF_MINT_ACCENT, background: 'rgba(24, 252, 92, 0.1)', border: `1px solid ${RF_LEAF_GREEN}33`,
+            color: isLight ? '#15803D' : RF_MINT_ACCENT,
+            background: isLight ? 'rgba(21, 128, 61, 0.08)' : 'rgba(24, 252, 92, 0.1)',
+            border: isLight ? '1px solid rgba(21, 128, 61, 0.25)' : `1px solid ${RF_LEAF_GREEN}33`,
             padding: '6px 16px', borderRadius: 100, textTransform: 'uppercase', marginBottom: 20
           }}>
             Our Mission & Architecture
           </span>
 
           <h1 style={{
-            fontSize: 'clamp(36px, 5.5vw, 68px)', fontWeight: 500, lineHeight: 1.15,
-            letterSpacing: '-0.02em', marginBottom: 24, fontFamily: 'Plus Jakarta Sans, sans-serif'
+            fontSize: 'clamp(36px, 5.5vw, 68px)', fontWeight: 600, lineHeight: 1.15,
+            letterSpacing: '-0.02em', marginBottom: 24, fontFamily: 'Plus Jakarta Sans, sans-serif',
+            color: isLight ? '#0A1C12' : '#FFFFFF'
           }}>
             Building Africa's first<br />
             <span style={{
-              fontStyle: 'italic', fontWeight: 400,
-              background: `linear-gradient(135deg, ${RF_MINT_ACCENT} 0%, ${RF_LEAF_GREEN} 60%, ${RF_GOLD_YELLOW} 100%)`,
+              fontStyle: 'italic', fontWeight: 500,
+              background: isLight
+                ? 'linear-gradient(135deg, #15803D 0%, #16A34A 50%, #D97706 100%)'
+                : `linear-gradient(135deg, ${RF_MINT_ACCENT} 0%, ${RF_LEAF_GREEN} 60%, ${RF_GOLD_YELLOW} 100%)`,
               WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'
             }}>
               referral-powered freelance economy.
@@ -55,7 +76,8 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
           </h1>
 
           <p style={{
-            fontSize: 'clamp(16px, 1.8vw, 19px)', color: 'rgba(255,255,255,0.85)',
+            fontSize: 'clamp(16px, 1.8vw, 19px)',
+            color: isLight ? '#273E31' : 'rgba(255,255,255,0.85)',
             lineHeight: 1.7, maxWidth: 760, margin: '0 auto 36px'
           }}>
             Refeir replaces cold algorithmic job boards with high-trust human networks. We empower professionals to connect opportunities, vouch for excellence, and share directly in the economic value they generate.
@@ -66,7 +88,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
               onClick={() => onNavigate('/#apply')}
               style={{
                 background: RF_LEAF_GREEN, color: RF_DEEP_GREEN, border: 'none',
-                padding: '13px 30px', borderRadius: 100, fontSize: 14, fontWeight: 600,
+                padding: '13px 30px', borderRadius: 100, fontSize: 14, fontWeight: 700,
                 cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: 8,
                 boxShadow: `0 4px 18px ${RF_LEAF_GREEN}35`
               }}
@@ -85,18 +107,22 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
             <button
               onClick={() => onNavigate('/story')}
               style={{
-                background: 'rgba(255,255,255,0.04)', color: '#FFFFFF',
-                border: '1px solid rgba(255,255,255,0.2)', padding: '13px 26px',
+                background: isLight ? 'rgba(15, 46, 30, 0.05)' : 'rgba(255,255,255,0.04)',
+                color: isLight ? '#0A1C12' : '#FFFFFF',
+                border: isLight ? '1px solid rgba(15, 46, 30, 0.2)' : '1px solid rgba(255,255,255,0.2)',
+                padding: '13px 26px',
                 borderRadius: 100, fontSize: 14, fontWeight: 500, cursor: 'pointer',
                 transition: 'all 0.2s'
               }}
               onMouseEnter={e => {
-                e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
-                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.4)';
+                e.currentTarget.style.background = isLight ? 'rgba(15, 46, 30, 0.1)' : 'rgba(255,255,255,0.08)';
+                e.currentTarget.style.borderColor = isLight ? 'rgba(15, 46, 30, 0.4)' : 'rgba(255,255,255,0.4)';
+                e.currentTarget.style.color = isLight ? '#15803D' : '#FFFFFF';
               }}
               onMouseLeave={e => {
-                e.currentTarget.style.background = 'rgba(255,255,255,0.04)';
-                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)';
+                e.currentTarget.style.background = isLight ? 'rgba(15, 46, 30, 0.05)' : 'rgba(255,255,255,0.04)';
+                e.currentTarget.style.borderColor = isLight ? 'rgba(15, 46, 30, 0.2)' : 'rgba(255,255,255,0.2)';
+                e.currentTarget.style.color = isLight ? '#0A1C12' : '#FFFFFF';
               }}
             >
               The Refeir Story & Founder
@@ -105,18 +131,22 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
             <button
               onClick={() => onNavigate('/divisions')}
               style={{
-                background: 'rgba(255,255,255,0.04)', color: '#FFFFFF',
-                border: '1px solid rgba(255,255,255,0.2)', padding: '13px 26px',
+                background: isLight ? 'rgba(15, 46, 30, 0.05)' : 'rgba(255,255,255,0.04)',
+                color: isLight ? '#0A1C12' : '#FFFFFF',
+                border: isLight ? '1px solid rgba(15, 46, 30, 0.2)' : '1px solid rgba(255,255,255,0.2)',
+                padding: '13px 26px',
                 borderRadius: 100, fontSize: 14, fontWeight: 500, cursor: 'pointer',
                 transition: 'all 0.2s'
               }}
               onMouseEnter={e => {
-                e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
-                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.4)';
+                e.currentTarget.style.background = isLight ? 'rgba(15, 46, 30, 0.1)' : 'rgba(255,255,255,0.08)';
+                e.currentTarget.style.borderColor = isLight ? 'rgba(15, 46, 30, 0.4)' : 'rgba(255,255,255,0.4)';
+                e.currentTarget.style.color = isLight ? '#15803D' : '#FFFFFF';
               }}
               onMouseLeave={e => {
-                e.currentTarget.style.background = 'rgba(255,255,255,0.04)';
-                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)';
+                e.currentTarget.style.background = isLight ? 'rgba(15, 46, 30, 0.05)' : 'rgba(255,255,255,0.04)';
+                e.currentTarget.style.borderColor = isLight ? 'rgba(15, 46, 30, 0.2)' : 'rgba(255,255,255,0.2)';
+                e.currentTarget.style.color = isLight ? '#0A1C12' : '#FFFFFF';
               }}
             >
               Explore Pioneer Divisions
@@ -235,35 +265,53 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
 
             {/* Visual Architecture Graphic */}
             <div style={{
-              background: `linear-gradient(135deg, ${RF_DARK_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
-              borderRadius: 24, padding: '36px 30px', color: '#FFFFFF',
-              boxShadow: '0 20px 50px rgba(0,0,0,0.18)', border: '1px solid rgba(102, 187, 42, 0.2)'
+              background: isLight ? '#FFFFFF' : `linear-gradient(135deg, ${RF_DARK_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
+              borderRadius: 24, padding: '36px 30px',
+              color: isLight ? '#0A1C12' : '#FFFFFF',
+              boxShadow: isLight ? '0 12px 35px rgba(15, 46, 30, 0.06)' : '0 20px 50px rgba(0,0,0,0.18)',
+              border: isLight ? '1px solid rgba(15, 46, 30, 0.12)' : '1px solid rgba(102, 187, 42, 0.2)'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 24 }}>
-                <Layers size={18} color={RF_MINT_ACCENT} />
-                <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.14em', color: RF_MINT_ACCENT, textTransform: 'uppercase' }}>
+                <Layers size={18} color={isLight ? '#15803D' : RF_MINT_ACCENT} />
+                <span style={{
+                  fontSize: 11, fontWeight: 700, letterSpacing: '0.14em',
+                  color: isLight ? '#15803D' : RF_MINT_ACCENT,
+                  textTransform: 'uppercase'
+                }}>
                   Value Flow Simulation
                 </span>
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: 12, padding: '16px 18px', border: '1px solid rgba(255,255,255,0.1)' }}>
-                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>1. Project Funded</div>
-                  <div style={{ fontSize: 17, fontWeight: 700, color: '#FFFFFF', marginTop: 4 }}>Client deposits $1,500 in Escrow</div>
+                <div style={{
+                  background: isLight ? '#F8FAF9' : 'rgba(255,255,255,0.06)',
+                  borderRadius: 12, padding: '16px 18px',
+                  border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255,255,255,0.1)'
+                }}>
+                  <div style={{ fontSize: 11, color: isLight ? '#64748B' : 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>1. Project Funded</div>
+                  <div style={{ fontSize: 17, fontWeight: 700, color: isLight ? '#0A1C12' : '#FFFFFF', marginTop: 4 }}>Client deposits $1,500 in Escrow</div>
                 </div>
 
-                <div style={{ textAlign: 'center', color: RF_LEAF_GREEN, fontSize: 18 }}>↓</div>
+                <div style={{ textAlign: 'center', color: isLight ? '#15803D' : RF_LEAF_GREEN, fontSize: 18 }}>↓</div>
 
-                <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: 12, padding: '16px 18px', border: '1px solid rgba(255,255,255,0.1)' }}>
-                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>2. Milestone Completed</div>
-                  <div style={{ fontSize: 17, fontWeight: 700, color: '#FFFFFF', marginTop: 4 }}>Talent earns $1,350 (90%)</div>
+                <div style={{
+                  background: isLight ? '#F8FAF9' : 'rgba(255,255,255,0.06)',
+                  borderRadius: 12, padding: '16px 18px',
+                  border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255,255,255,0.1)'
+                }}>
+                  <div style={{ fontSize: 11, color: isLight ? '#64748B' : 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>2. Milestone Completed</div>
+                  <div style={{ fontSize: 17, fontWeight: 700, color: isLight ? '#0A1C12' : '#FFFFFF', marginTop: 4 }}>Talent earns $1,350 (90%)</div>
                 </div>
 
-                <div style={{ textAlign: 'center', color: RF_MINT_ACCENT, fontSize: 18 }}>↓</div>
+                <div style={{ textAlign: 'center', color: isLight ? '#15803D' : RF_MINT_ACCENT, fontSize: 18 }}>↓</div>
 
-                <div style={{ background: `${RF_LEAF_GREEN}14`, borderRadius: 12, padding: '16px 18px', border: `1px solid ${RF_LEAF_GREEN}44` }}>
-                  <div style={{ fontSize: 11, color: RF_MINT_ACCENT, fontWeight: 700, textTransform: 'uppercase' }}>3. Referral Protocol Distributed</div>
-                  <div style={{ fontSize: 17, fontWeight: 700, color: RF_MINT_ACCENT, marginTop: 4 }}>Pioneer Referrer receives $100 instant reward</div>
+                <div style={{
+                  background: isLight ? '#F0FDF4' : `${RF_LEAF_GREEN}14`,
+                  borderRadius: 12, padding: '16px 18px',
+                  border: isLight ? '1px solid rgba(21, 128, 61, 0.25)' : `1px solid ${RF_LEAF_GREEN}44`
+                }}>
+                  <div style={{ fontSize: 11, color: isLight ? '#166534' : RF_MINT_ACCENT, fontWeight: 700, textTransform: 'uppercase' }}>3. Referral Protocol Distributed</div>
+                  <div style={{ fontSize: 17, fontWeight: 700, color: isLight ? '#15803D' : RF_MINT_ACCENT, marginTop: 4 }}>Pioneer Referrer receives $100 instant reward</div>
                 </div>
               </div>
             </div>
@@ -272,14 +320,15 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
       </section>
 
       {/* Strategic Roadmap */}
-      <section style={{ padding: '90px 24px', background: '#FFFFFF' }}>
+      <section style={{ padding: '90px 24px', background: isLight ? '#FFFFFF' : 'transparent' }}>
         <div style={{ maxWidth: 1080, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 56 }}>
-            <span style={{ fontSize: 12, fontWeight: 700, color: RF_LEAF_GREEN, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+            <span style={{ fontSize: 12, fontWeight: 700, color: isLight ? '#15803D' : RF_LEAF_GREEN, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
               Strategic Milestones
             </span>
             <h2 style={{
-              fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 500, color: RF_DEEP_GREEN,
+              fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 600,
+              color: isLight ? '#0A1C12' : RF_DEEP_GREEN,
               fontFamily: 'Plus Jakarta Sans, sans-serif', marginTop: 10, letterSpacing: '-0.02em'
             }}>
               The journey to platform launch
@@ -317,10 +366,10 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
                 background: '#F8FAF9', borderRadius: 16, padding: '26px 22px', border: '1px solid #E2E8F0',
                 position: 'relative'
               }}>
-                <div style={{ fontSize: 10.5, fontWeight: 700, color: RF_LEAF_GREEN, letterSpacing: '0.1em' }}>
+                <div style={{ fontSize: 10.5, fontWeight: 700, color: isLight ? '#15803D' : RF_LEAF_GREEN, letterSpacing: '0.1em' }}>
                   {p.phase}
                 </div>
-                <h3 style={{ fontSize: 17, fontWeight: 700, color: RF_DEEP_GREEN, margin: '8px 0 4px' }}>
+                <h3 style={{ fontSize: 17, fontWeight: 700, color: isLight ? '#0A1C12' : RF_DEEP_GREEN, margin: '8px 0 4px' }}>
                   {p.title}
                 </h3>
                 <div style={{ fontSize: 12, color: '#94A3B8', marginBottom: 12 }}>{p.period}</div>
@@ -335,24 +384,33 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
 
       {/* CTA */}
       <section style={{
-        background: `linear-gradient(135deg, ${RF_DEEP_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
-        padding: '80px 24px', textAlign: 'center', color: '#FFFFFF'
+        background: isLight
+          ? 'linear-gradient(180deg, #EDF5F0 0%, #E3EFE7 100%)'
+          : `linear-gradient(135deg, ${RF_DEEP_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
+        padding: '80px 24px', textAlign: 'center',
+        color: isLight ? '#0A1C12' : '#FFFFFF',
+        borderTop: isLight ? '1px solid rgba(15, 46, 30, 0.1)' : 'none'
       }}>
         <div style={{ maxWidth: 640, margin: '0 auto' }}>
           <h2 style={{
-            fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 500, fontFamily: 'Plus Jakarta Sans, sans-serif',
+            fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 600, fontFamily: 'Plus Jakarta Sans, sans-serif',
+            color: isLight ? '#0A1C12' : '#FFFFFF',
             marginBottom: 16
           }}>
             Ready to shape this future?
           </h2>
-          <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, marginBottom: 30 }}>
+          <p style={{
+            fontSize: 15,
+            color: isLight ? '#273E31' : 'rgba(255,255,255,0.75)',
+            lineHeight: 1.7, marginBottom: 30
+          }}>
             Join the Founding 100 Pioneers and become an essential architect of Africa's next economic frontier.
           </p>
           <button
             onClick={() => onNavigate('/#apply')}
             style={{
               background: RF_LEAF_GREEN, color: RF_DEEP_GREEN, border: 'none',
-              padding: '13px 32px', borderRadius: 100, fontSize: 14, fontWeight: 600,
+              padding: '13px 32px', borderRadius: 100, fontSize: 14, fontWeight: 700,
               cursor: 'pointer', transition: 'all 0.2s', boxShadow: `0 4px 18px ${RF_LEAF_GREEN}35`
             }}
             onMouseEnter={e => {

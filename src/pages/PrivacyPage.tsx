@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTheme } from '../context/ThemeContext';
 import { Shield, Lock, Eye, FileText, ArrowRight } from 'lucide-react';
 import {
   RF_DEEP_GREEN,
@@ -14,44 +15,54 @@ interface PrivacyPageProps {
 }
 
 export const PrivacyPage: React.FC<PrivacyPageProps> = ({ onNavigate }) => {
+  const { theme } = useTheme();
+  const isLight = theme === 'light';
+
   return (
     <div className="rp-privacy-page" style={{ minHeight: '100vh', background: 'var(--rp-bg-page)', color: 'var(--rp-text-main)', paddingTop: 72 }}>
       {/* Header Banner */}
       <section style={{
-        background: `linear-gradient(135deg, ${RF_DEEP_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
-        padding: '80px 24px 60px', color: '#FFFFFF', textAlign: 'center'
+        background: isLight
+          ? 'radial-gradient(ellipse at 50% -20%, #E8F5EE 0%, #F5FAF7 70%, #FFFFFF 100%)'
+          : `linear-gradient(135deg, ${RF_DEEP_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
+        padding: '80px 24px 60px',
+        color: isLight ? '#0A1C12' : '#FFFFFF',
+        textAlign: 'center'
       }}>
         <div style={{ maxWidth: 780, margin: '0 auto' }}>
           <span style={{
             display: 'inline-block', fontSize: 11, fontWeight: 700, letterSpacing: '0.16em',
-            color: RF_MINT_ACCENT, background: 'rgba(24, 252, 92, 0.1)', border: `1px solid ${RF_LEAF_GREEN}33`,
+            color: isLight ? RF_DEEP_GREEN : RF_MINT_ACCENT,
+            background: isLight ? 'rgba(15, 46, 30, 0.08)' : 'rgba(24, 252, 92, 0.1)',
+            border: isLight ? '1px solid rgba(15, 46, 30, 0.15)' : `1px solid ${RF_LEAF_GREEN}33`,
             padding: '6px 16px', borderRadius: 100, textTransform: 'uppercase', marginBottom: 16
           }}>
             Legal & Compliance
           </span>
           <h1 style={{
-            fontSize: 'clamp(32px, 4.5vw, 52px)', fontWeight: 500, fontFamily: 'Plus Jakarta Sans, sans-serif',
+            fontSize: 'clamp(32px, 4.5vw, 52px)', fontWeight: 600, fontFamily: 'Plus Jakarta Sans, sans-serif',
+            color: isLight ? '#0A1C12' : '#FFFFFF',
             marginBottom: 12
           }}>
             Privacy Policy
           </h1>
-          <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)' }}>
+          <p style={{ fontSize: 14, color: isLight ? '#4B6354' : 'rgba(255,255,255,0.7)' }}>
             Last updated: March 2026 • Refeir Technologies Ltd.
           </p>
         </div>
       </section>
 
       {/* Main Content */}
-      <section style={{ padding: '70px 24px 100px', background: '#FFFFFF' }}>
-        <div style={{ maxWidth: 780, margin: '0 auto', fontSize: 15, lineHeight: 1.8, color: '#334155' }}>
-          <h2 style={{ fontSize: 22, fontWeight: 700, color: RF_DEEP_GREEN, marginTop: 32, marginBottom: 12 }}>
+      <section style={{ padding: '70px 24px 100px', background: isLight ? '#FFFFFF' : 'var(--rp-bg-page)' }}>
+        <div style={{ maxWidth: 780, margin: '0 auto', fontSize: 15, lineHeight: 1.8, color: isLight ? '#334155' : '#CBD5E1' }}>
+          <h2 style={{ fontSize: 22, fontWeight: 700, color: isLight ? RF_DEEP_GREEN : '#86EFAC', marginTop: 32, marginBottom: 12 }}>
             1. Overview & Commitment
           </h2>
           <p>
             Refeir Technologies Ltd. ("Refeir", "we", "us", or "our") respects your privacy and is committed to protecting the personal information you share when applying for the Refeir Pioneer Program or using our web applications. This Privacy Policy explains our practices regarding collection, usage, and disclosure of applicant data.
           </p>
 
-          <h2 style={{ fontSize: 22, fontWeight: 700, color: RF_DEEP_GREEN, marginTop: 32, marginBottom: 12 }}>
+          <h2 style={{ fontSize: 22, fontWeight: 700, color: isLight ? RF_DEEP_GREEN : '#86EFAC', marginTop: 32, marginBottom: 12 }}>
             2. Information We Collect
           </h2>
           <p>When you submit an application to join Refeir Pioneers, we collect:</p>
@@ -62,7 +73,7 @@ export const PrivacyPage: React.FC<PrivacyPageProps> = ({ onNavigate }) => {
             <li><strong>Admissions Records:</strong> Generated Application IDs (e.g. RP-2026-XXXXXX), review status notes, and assigned squad placements.</li>
           </ul>
 
-          <h2 style={{ fontSize: 22, fontWeight: 700, color: RF_DEEP_GREEN, marginTop: 32, marginBottom: 12 }}>
+          <h2 style={{ fontSize: 22, fontWeight: 700, color: isLight ? RF_DEEP_GREEN : '#86EFAC', marginTop: 32, marginBottom: 12 }}>
             3. How We Use Your Information
           </h2>
           <p>We process your personal information strictly for the following purposes:</p>
@@ -73,14 +84,14 @@ export const PrivacyPage: React.FC<PrivacyPageProps> = ({ onNavigate }) => {
             <li>To coordinate sprint deliverables, town hall schedules, and beta access permissions for admitted Pioneers.</li>
           </ul>
 
-          <h2 style={{ fontSize: 22, fontWeight: 700, color: RF_DEEP_GREEN, marginTop: 32, marginBottom: 12 }}>
+          <h2 style={{ fontSize: 22, fontWeight: 700, color: isLight ? RF_DEEP_GREEN : '#86EFAC', marginTop: 32, marginBottom: 12 }}>
             4. Data Storage & Security
           </h2>
           <p>
             Your information is stored in secured cloud databases with row-level security (RLS), transport layer encryption (TLS 1.3), and strict role-based access control limited to authorized admissions committee members. We do not sell, rent, or trade your personal data with third-party advertisers.
           </p>
 
-          <h2 style={{ fontSize: 22, fontWeight: 700, color: RF_DEEP_GREEN, marginTop: 32, marginBottom: 12 }}>
+          <h2 style={{ fontSize: 22, fontWeight: 700, color: isLight ? RF_DEEP_GREEN : '#86EFAC', marginTop: 32, marginBottom: 12 }}>
             5. Your Rights & Data Requests
           </h2>
           <p>
@@ -88,7 +99,7 @@ export const PrivacyPage: React.FC<PrivacyPageProps> = ({ onNavigate }) => {
           </p>
 
           <div style={{
-            marginTop: 48, paddingTop: 28, borderTop: '1px solid #E2E8F0',
+            marginTop: 48, paddingTop: 28, borderTop: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255,255,255,0.1)',
             display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 14
           }}>
             <button

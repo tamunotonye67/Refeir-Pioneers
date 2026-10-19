@@ -4688,3 +4688,17 @@ select.rp-has-custom-chevron {
 .theme-light .rp-ladder-execution-text {
   color: rgba(255, 255, 255, 0.88) !important;
 }
+
+/* Auth Gate card in light mode */
+[data-theme="light"] .rp-auth-gate-card,
+.theme-light .rp-auth-gate-card {
+  background: #FFFFFF !important;
+  border-color: rgba(15, 46, 30, 0.12) !important;
+  box-shadow: 0 20px 50px rgba(15, 46, 30, 0.08) !important;
+  color: #0A1C12 !important;
+}
+
+[data-theme="light"] .rp-squadtasks-page,
+.theme-light .rp-squadtasks-page {
+  background: var(--rp-bg-page) !important;
+}

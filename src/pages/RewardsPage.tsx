@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTheme } from '../context/ThemeContext';
 import {
   Shield, Award, Users, CheckCircle2, ArrowRight, Zap, Target,
   Star, TrendingUp, Layers, Code2, Palette, MessageSquare, Briefcase,
@@ -175,6 +176,8 @@ export const CONTRIBUTOR_LEVELS: ContributorLevel[] = [
 ];
 
 export const RewardsPage: React.FC<RewardsPageProps> = ({ onNavigate, onOpenStatus }) => {
+  const { theme } = useTheme();
+  const isLight = theme === 'light';
   const [activeLevel, setActiveLevel] = useState<number>(2); // Default highlight on Pioneer
   const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
 
@@ -190,22 +193,30 @@ export const RewardsPage: React.FC<RewardsPageProps> = ({ onNavigate, onOpenStat
     <div className="rp-rewards-page" style={{ minHeight: '100vh', background: 'var(--rp-bg-page)', color: 'var(--rp-text-main)', paddingTop: isMobile ? 56 : 72 }}>
       {/* Hero Header */}
       <section style={{
-        background: `linear-gradient(180deg, #07180F 0%, #0B2417 50%, #05120B 100%)`,
+        background: isLight
+          ? 'radial-gradient(ellipse at 50% -20%, #E8F5EE 0%, #F5FAF7 70%, #FFFFFF 100%)'
+          : `linear-gradient(180deg, #07180F 0%, #0B2417 50%, #05120B 100%)`,
         padding: isMobile ? '48px 16px 36px' : '90px 24px 70px', position: 'relative', overflow: 'hidden', textAlign: 'center',
-        borderBottom: '1px solid rgba(102, 187, 42, 0.2)'
+        borderBottom: isLight ? '1px solid rgba(15, 46, 30, 0.1)' : '1px solid rgba(102, 187, 42, 0.2)'
       }}>
-        {/* Ambient glow */}
-        <div style={{
-          position: 'absolute', top: '10%', left: '50%', transform: 'translateX(-50%)',
-          width: '80%', height: 350,
-          background: 'radial-gradient(ellipse at center, rgba(24, 252, 92, 0.12) 0%, transparent 70%)',
-          filter: 'blur(70px)', pointerEvents: 'none'
-        }} />
+        {/* Ambient glow in dark mode */}
+        {!isLight && (
+          <div style={{
+            position: 'absolute', top: '10%', left: '50%', transform: 'translateX(-50%)',
+            width: '80%', height: 350,
+            background: 'radial-gradient(ellipse at center, rgba(24, 252, 92, 0.12) 0%, transparent 70%)',
+            filter: 'blur(70px)', pointerEvents: 'none'
+          }} />
+        )}
 
         <div style={{ maxWidth: 960, margin: '0 auto', position: 'relative', zIndex: 2 }}>
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: 6,
-            color: RF_MINT_ACCENT, fontSize: isMobile ? 10.5 : 11, fontWeight: 700, letterSpacing: '0.12em',
+            color: isLight ? '#0F4829' : RF_MINT_ACCENT, fontSize: isMobile ? 10.5 : 11, fontWeight: 700, letterSpacing: '0.12em',
+            background: isLight ? 'rgba(102, 187, 42, 0.12)' : 'transparent',
+            padding: isLight ? '4px 12px' : 0,
+            borderRadius: isLight ? 100 : 0,
+            border: isLight ? '1px solid rgba(15, 46, 30, 0.14)' : 'none',
             textTransform: 'uppercase', marginBottom: isMobile ? 14 : 20
           }}>
             <Award size={12} />
@@ -214,12 +225,15 @@ export const RewardsPage: React.FC<RewardsPageProps> = ({ onNavigate, onOpenStat
 
           <h1 style={{
             fontSize: isMobile ? '28px' : 'clamp(34px, 5.2vw, 64px)', fontWeight: 600, lineHeight: 1.15,
-            letterSpacing: '-0.02em', marginBottom: isMobile ? 16 : 24, fontFamily: 'Plus Jakarta Sans, sans-serif'
+            letterSpacing: '-0.02em', marginBottom: isMobile ? 16 : 24, fontFamily: 'Plus Jakarta Sans, sans-serif',
+            color: isLight ? '#0A1C12' : '#FFFFFF'
           }}>
             Earn recognition and rewards<br />
             <span style={{
               fontStyle: 'italic', fontWeight: 400,
-              background: `linear-gradient(135deg, ${RF_MINT_ACCENT} 0%, ${RF_LEAF_GREEN} 60%, ${RF_GOLD_YELLOW} 100%)`,
+              background: isLight
+                ? `linear-gradient(135deg, #0F4829 0%, ${RF_LEAF_GREEN} 60%, #B8860B 100%)`
+                : `linear-gradient(135deg, ${RF_MINT_ACCENT} 0%, ${RF_LEAF_GREEN} 60%, ${RF_GOLD_YELLOW} 100%)`,
               WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'
             }}>
               through actual contribution,<br />
@@ -228,7 +242,8 @@ export const RewardsPage: React.FC<RewardsPageProps> = ({ onNavigate, onOpenStat
           </h1>
 
           <p style={{
-            fontSize: isMobile ? 13.5 : 'clamp(15px, 1.8vw, 18px)', color: 'rgba(255,255,255,0.78)',
+            fontSize: isMobile ? 13.5 : 'clamp(15px, 1.8vw, 18px)',
+            color: isLight ? '#273E31' : 'rgba(255,255,255,0.78)',
             lineHeight: 1.6, maxWidth: 760, margin: isMobile ? '0 auto 24px' : '0 auto 36px'
           }}>
             Refeir is a meritocracy. We don't hand out rewards simply for occupying a seat. 
@@ -272,19 +287,21 @@ export const RewardsPage: React.FC<RewardsPageProps> = ({ onNavigate, onOpenStat
               style={{
                 width: isMobile ? '100%' : 'auto',
                 height: 44,
-                background: 'rgba(255,255,255,0.05)', color: '#FFFFFF',
-                border: '1px solid rgba(255,255,255,0.18)', padding: '0 24px',
+                background: isLight ? '#FFFFFF' : 'rgba(255,255,255,0.05)',
+                color: isLight ? '#0A1C12' : '#FFFFFF',
+                border: isLight ? '1.5px solid rgba(15, 46, 30, 0.18)' : '1px solid rgba(255,255,255,0.18)',
+                padding: '0 24px',
                 borderRadius: 100, fontSize: 14, fontWeight: 600, cursor: 'pointer',
                 transition: 'all 0.2s', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 7,
                 whiteSpace: 'nowrap'
               }}
               onMouseEnter={e => {
-                e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
-                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.4)';
+                e.currentTarget.style.background = isLight ? '#F1F5F9' : 'rgba(255,255,255,0.08)';
+                e.currentTarget.style.borderColor = isLight ? 'rgba(15, 46, 30, 0.3)' : 'rgba(255,255,255,0.4)';
               }}
               onMouseLeave={e => {
-                e.currentTarget.style.background = 'rgba(255,255,255,0.04)';
-                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)';
+                e.currentTarget.style.background = isLight ? '#FFFFFF' : 'rgba(255,255,255,0.04)';
+                e.currentTarget.style.borderColor = isLight ? 'rgba(15, 46, 30, 0.18)' : 'rgba(255,255,255,0.2)';
               }}
             >
               Check Level
@@ -295,8 +312,8 @@ export const RewardsPage: React.FC<RewardsPageProps> = ({ onNavigate, onOpenStat
 
       {/* Core Principle Notice Bar */}
       <section style={{
-        background: 'rgba(102, 187, 42, 0.05)',
-        borderBottom: '1px solid rgba(102, 187, 42, 0.15)',
+        background: isLight ? '#EDF5F0' : 'rgba(102, 187, 42, 0.05)',
+        borderBottom: isLight ? '1px solid rgba(15, 46, 30, 0.1)' : '1px solid rgba(102, 187, 42, 0.15)',
         padding: isMobile ? '16px 16px' : '20px 24px'
       }}>
         <div style={{
@@ -306,36 +323,37 @@ export const RewardsPage: React.FC<RewardsPageProps> = ({ onNavigate, onOpenStat
         }}>
           <div style={{
             width: isMobile ? 28 : 32, height: isMobile ? 28 : 32, borderRadius: '50%',
-            background: 'rgba(255, 209, 102, 0.15)', border: `1px solid ${RF_GOLD_YELLOW}`,
+            background: isLight ? 'rgba(217, 119, 6, 0.12)' : 'rgba(255, 209, 102, 0.15)',
+            border: `1px solid ${isLight ? '#D97706' : RF_GOLD_YELLOW}`,
             display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
             marginTop: 2
           }}>
-            <Shield size={isMobile ? 14 : 16} color={RF_GOLD_YELLOW} />
+            <Shield size={isMobile ? 14 : 16} color={isLight ? '#B45309' : RF_GOLD_YELLOW} />
           </div>
-          <p style={{ margin: 0, fontSize: isMobile ? 12.5 : 13.5, color: 'rgba(255,255,255,0.85)', lineHeight: 1.55, flex: 1 }}>
-            <strong style={{ color: '#FFFFFF' }}>The Refeir Rule of Execution:</strong> Joining the community places you at{' '}
-            <span style={{ color: '#94A3B8', fontWeight: 600 }}>Level 1 (Member)</span>. To achieve{' '}
-            <span style={{ color: RF_LEAF_GREEN, fontWeight: 600 }}>Level 2 (Pioneer)</span> and unlock official badges, higher referral multipliers, bounties, and your Level Completion Certificate, you must complete and have verified at least 15 tangible proof-of-work missions (5x verified quota).
+          <p style={{ margin: 0, fontSize: isMobile ? 12.5 : 13.5, color: isLight ? '#273E31' : 'rgba(255,255,255,0.85)', lineHeight: 1.55, flex: 1 }}>
+            <strong style={{ color: isLight ? '#0A1C12' : '#FFFFFF' }}>The Refeir Rule of Execution:</strong> Joining the community places you at{' '}
+            <span style={{ color: isLight ? '#475569' : '#94A3B8', fontWeight: 600 }}>Level 1 (Member)</span>. To achieve{' '}
+            <span style={{ color: isLight ? '#15803D' : RF_LEAF_GREEN, fontWeight: 600 }}>Level 2 (Pioneer)</span> and unlock official badges, higher referral multipliers, bounties, and your Level Completion Certificate, you must complete and have verified at least 15 tangible proof-of-work missions (5x verified quota).
           </p>
         </div>
       </section>
-
       {/* Interactive Contributor Ladder Stepper */}
       <section id="ladder" style={{ padding: isMobile ? '40px 14px 60px' : '80px 24px 100px', maxWidth: 1200, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: isMobile ? 24 : 48 }}>
           <span style={{
-            fontSize: 10.5, fontWeight: 800, color: RF_MINT_ACCENT, letterSpacing: '0.16em',
+            fontSize: 10.5, fontWeight: 800, color: isLight ? '#0F4829' : RF_MINT_ACCENT, letterSpacing: '0.16em',
             textTransform: 'uppercase', marginBottom: 8, display: 'inline-block'
           }}>
             The 5 Levels of Advancement
           </span>
           <h2 style={{
-            fontSize: isMobile ? 24 : 'clamp(28px, 4vw, 44px)', fontWeight: 600, color: '#FFFFFF',
+            fontSize: isMobile ? 24 : 'clamp(28px, 4vw, 44px)', fontWeight: 600,
+            color: isLight ? '#0A1C12' : '#FFFFFF',
             letterSpacing: '-0.02em', fontFamily: 'Plus Jakarta Sans, sans-serif', margin: 0
           }}>
             The Refeir Contributor Ladder
           </h2>
-          <p style={{ fontSize: isMobile ? 13 : 15, color: 'rgba(255,255,255,0.65)', maxWidth: 600, margin: '8px auto 0' }}>
+          <p style={{ fontSize: isMobile ? 13 : 15, color: isLight ? '#475569' : 'rgba(255,255,255,0.65)', maxWidth: 600, margin: '8px auto 0' }}>
             Click on any level to inspect its qualification requirements, expected contributions, and formal rewards.
           </p>
         </div>
@@ -359,24 +377,28 @@ export const RewardsPage: React.FC<RewardsPageProps> = ({ onNavigate, onOpenStat
                 key={lvl.level}
                 onClick={() => setActiveLevel(lvl.level)}
                 style={{
-                  background: isCurrent ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.02)',
-                  border: isCurrent ? `1.5px solid ${lvl.color}` : '1px solid rgba(255,255,255,0.08)',
+                  background: isCurrent
+                    ? (isLight ? '#FFFFFF' : 'rgba(255,255,255,0.1)')
+                    : (isLight ? 'rgba(15,46,30,0.03)' : 'rgba(255,255,255,0.02)'),
+                  border: isCurrent
+                    ? `2px solid ${lvl.color}`
+                    : `1px solid ${isLight ? 'rgba(15,46,30,0.12)' : 'rgba(255,255,255,0.08)'}`,
                   borderRadius: isMobile ? 14 : 16,
                   padding: isMobile ? '10px 14px' : '18px 16px',
                   textAlign: 'left',
                   cursor: 'pointer',
                   position: 'relative',
                   transition: 'all 0.25s ease',
-                  boxShadow: isCurrent ? `0 8px 30px ${lvl.color}25` : 'none',
+                  boxShadow: isCurrent ? (isLight ? '0 8px 24px rgba(15,46,30,0.08)' : `0 8px 30px ${lvl.color}25`) : 'none',
                   flexShrink: 0,
                   minWidth: isMobile ? 140 : 'auto',
                   whiteSpace: isMobile ? 'nowrap' : 'normal'
                 }}
                 onMouseEnter={e => {
-                  if (!isCurrent) e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)';
+                  if (!isCurrent) e.currentTarget.style.borderColor = isLight ? 'rgba(15,46,30,0.25)' : 'rgba(255,255,255,0.2)';
                 }}
                 onMouseLeave={e => {
-                  if (!isCurrent) e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)';
+                  if (!isCurrent) e.currentTarget.style.borderColor = isLight ? 'rgba(15,46,30,0.12)' : 'rgba(255,255,255,0.08)';
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: isMobile ? 4 : 10 }}>
@@ -390,11 +412,16 @@ export const RewardsPage: React.FC<RewardsPageProps> = ({ onNavigate, onOpenStat
                     <span style={{ width: 6, height: 6, borderRadius: '50%', background: lvl.color }} />
                   )}
                 </div>
-                <div style={{ fontSize: isMobile ? 13.5 : 16, fontWeight: 600, color: isCurrent ? '#FFFFFF' : 'rgba(255,255,255,0.85)', marginBottom: 2 }}>
+                <div style={{
+                  fontSize: isMobile ? 13.5 : 16,
+                  fontWeight: 600,
+                  color: isLight ? '#0A1C12' : (isCurrent ? '#FFFFFF' : 'rgba(255,255,255,0.85)'),
+                  marginBottom: 2
+                }}>
                   {lvl.title}
                 </div>
                 {!isMobile && (
-                  <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.5)', lineHeight: 1.4 }}>
+                  <div style={{ fontSize: 11.5, color: isLight ? '#475569' : 'rgba(255,255,255,0.5)', lineHeight: 1.4 }}>
                     {lvl.tagline}
                   </div>
                 )}
@@ -405,18 +432,19 @@ export const RewardsPage: React.FC<RewardsPageProps> = ({ onNavigate, onOpenStat
 
         {/* Selected Tier Deep-Dive Card */}
         <div style={{
-          background: 'rgba(15, 46, 30, 0.45)',
-          border: `1.5px solid ${selectedTier.color}44`,
+          background: isLight ? '#FFFFFF' : 'rgba(15, 46, 30, 0.45)',
+          border: isLight ? '1.5px solid rgba(15, 46, 30, 0.12)' : `1.5px solid ${selectedTier.color}44`,
           borderRadius: isMobile ? 18 : 24,
           padding: isMobile ? '20px 16px' : '40px 36px',
-          boxShadow: `0 20px 60px rgba(0,0,0,0.5), inset 0 0 50px ${selectedTier.color}08`,
+          boxShadow: isLight ? '0 16px 40px rgba(15, 46, 30, 0.08)' : `0 20px 60px rgba(0,0,0,0.5), inset 0 0 50px ${selectedTier.color}08`,
           position: 'relative'
         }}>
           {/* Card Header */}
           <div style={{
             display: 'flex', justifyContent: 'space-between', alignItems: isMobile ? 'stretch' : 'flex-start',
             flexDirection: isMobile ? 'column' : 'row',
-            gap: isMobile ? 14 : 20, paddingBottom: isMobile ? 18 : 28, borderBottom: '1px solid rgba(255,255,255,0.08)'
+            gap: isMobile ? 14 : 20, paddingBottom: isMobile ? 18 : 28,
+            borderBottom: isLight ? '1px solid rgba(15,46,30,0.08)' : '1px solid rgba(255,255,255,0.08)'
           }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6, flexWrap: 'wrap' }}>
@@ -426,14 +454,22 @@ export const RewardsPage: React.FC<RewardsPageProps> = ({ onNavigate, onOpenStat
                 }}>
                   LEVEL 0{selectedTier.level} SPECIFICATION
                 </span>
-                <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.5)' }}>
-                  Governance: <strong style={{ color: '#FFFFFF' }}>{selectedTier.governance}</strong>
+                <span style={{ fontSize: 11.5, color: isLight ? '#475569' : 'rgba(255,255,255,0.5)' }}>
+                  Governance: <strong style={{ color: isLight ? '#0A1C12' : '#FFFFFF' }}>{selectedTier.governance}</strong>
                 </span>
               </div>
-              <h3 style={{ fontSize: isMobile ? 22 : 32, fontWeight: 600, color: '#FFFFFF', margin: 0, fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+              <h3 style={{
+                fontSize: isMobile ? 22 : 32, fontWeight: 600,
+                color: isLight ? '#0A1C12' : '#FFFFFF',
+                margin: 0, fontFamily: 'Plus Jakarta Sans, sans-serif'
+              }}>
                 {selectedTier.title}
               </h3>
-              <p style={{ fontSize: isMobile ? 13 : 14.5, color: selectedTier.color, margin: '4px 0 0', fontWeight: 500 }}>
+              <p style={{
+                fontSize: isMobile ? 13 : 14.5,
+                color: isLight ? '#0F4829' : selectedTier.color,
+                margin: '4px 0 0', fontWeight: 500
+              }}>
                 "{selectedTier.tagline}" — {selectedTier.subtitle}
               </p>
             </div>
@@ -465,14 +501,15 @@ export const RewardsPage: React.FC<RewardsPageProps> = ({ onNavigate, onOpenStat
 
           {/* Qualification Gate Callout */}
           <div style={{
-            background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',
+            background: isLight ? '#F8FAF9' : 'rgba(255,255,255,0.03)',
+            border: isLight ? '1px solid rgba(15,46,30,0.1)' : '1px solid rgba(255,255,255,0.08)',
             borderRadius: isMobile ? 12 : 14, padding: isMobile ? '12px 14px' : '16px 20px',
             margin: isMobile ? '16px 0 20px' : '24px 0 32px',
             display: 'flex', alignItems: 'center', gap: 12
           }}>
             <Target size={18} color={selectedTier.color} style={{ flexShrink: 0 }} />
-            <div style={{ fontSize: isMobile ? 12.5 : 13.5, color: 'rgba(255,255,255,0.9)', lineHeight: 1.5 }}>
-              <strong style={{ color: '#FFFFFF' }}>Qualification Gate:</strong> {selectedTier.criteria}
+            <div style={{ fontSize: isMobile ? 12.5 : 13.5, color: isLight ? '#273E31' : 'rgba(255,255,255,0.9)', lineHeight: 1.5 }}>
+              <strong style={{ color: isLight ? '#0A1C12' : '#FFFFFF' }}>Qualification Gate:</strong> {selectedTier.criteria}
             </div>
           </div>
 
@@ -484,16 +521,17 @@ export const RewardsPage: React.FC<RewardsPageProps> = ({ onNavigate, onOpenStat
           }}>
             {/* Column 1: Eligibility */}
             <div style={{
-              background: 'rgba(255,255,255,0.02)', padding: isMobile ? '16px 14px' : '24px 22px', borderRadius: isMobile ? 14 : 16,
-              border: '1px solid rgba(255,255,255,0.06)'
+              background: isLight ? '#F8FAF9' : 'rgba(255,255,255,0.02)',
+              padding: isMobile ? '16px 14px' : '24px 22px', borderRadius: isMobile ? 14 : 16,
+              border: isLight ? '1px solid rgba(15,46,30,0.08)' : '1px solid rgba(255,255,255,0.06)'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 12 }}>
                 <CheckCircle2 size={15} color={selectedTier.color} />
-                <span style={{ fontSize: 11.5, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'rgba(255,255,255,0.9)' }}>
+                <span style={{ fontSize: 11.5, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: isLight ? '#0A1C12' : 'rgba(255,255,255,0.9)' }}>
                   Eligibility Criteria
                 </span>
               </div>
-              <ul style={{ margin: 0, paddingLeft: 16, fontSize: isMobile ? 12.5 : 13, color: 'rgba(255,255,255,0.75)', lineHeight: 1.65 }}>
+              <ul style={{ margin: 0, paddingLeft: 16, fontSize: isMobile ? 12.5 : 13, color: isLight ? '#334155' : 'rgba(255,255,255,0.75)', lineHeight: 1.65 }}>
                 {selectedTier.eligibility.map((item, idx) => (
                   <li key={idx} style={{ marginBottom: 6 }}>{item}</li>
                 ))}
@@ -502,16 +540,17 @@ export const RewardsPage: React.FC<RewardsPageProps> = ({ onNavigate, onOpenStat
 
             {/* Column 2: Tangible Contributions */}
             <div style={{
-              background: 'rgba(255,255,255,0.02)', padding: isMobile ? '16px 14px' : '24px 22px', borderRadius: isMobile ? 14 : 16,
-              border: '1px solid rgba(255,255,255,0.06)'
+              background: isLight ? '#F8FAF9' : 'rgba(255,255,255,0.02)',
+              padding: isMobile ? '16px 14px' : '24px 22px', borderRadius: isMobile ? 14 : 16,
+              border: isLight ? '1px solid rgba(15,46,30,0.08)' : '1px solid rgba(255,255,255,0.06)'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 12 }}>
                 <Code2 size={15} color={selectedTier.color} />
-                <span style={{ fontSize: 11.5, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'rgba(255,255,255,0.9)' }}>
+                <span style={{ fontSize: 11.5, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: isLight ? '#0A1C12' : 'rgba(255,255,255,0.9)' }}>
                   Qualifying Missions
                 </span>
               </div>
-              <ul style={{ margin: 0, paddingLeft: 16, fontSize: isMobile ? 12.5 : 13, color: 'rgba(255,255,255,0.75)', lineHeight: 1.65 }}>
+              <ul style={{ margin: 0, paddingLeft: 16, fontSize: isMobile ? 12.5 : 13, color: isLight ? '#334155' : 'rgba(255,255,255,0.75)', lineHeight: 1.65 }}>
                 {selectedTier.contributions.map((item, idx) => (
                   <li key={idx} style={{ marginBottom: 6 }}>{item}</li>
                 ))}
@@ -520,19 +559,20 @@ export const RewardsPage: React.FC<RewardsPageProps> = ({ onNavigate, onOpenStat
 
             {/* Column 3: Rewards & Privileges */}
             <div style={{
-              background: 'rgba(255,255,255,0.02)', padding: isMobile ? '16px 14px' : '24px 22px', borderRadius: isMobile ? 14 : 16,
-              border: '1px solid rgba(255,255,255,0.06)'
+              background: isLight ? '#F8FAF9' : 'rgba(255,255,255,0.02)',
+              padding: isMobile ? '16px 14px' : '24px 22px', borderRadius: isMobile ? 14 : 16,
+              border: isLight ? '1px solid rgba(15,46,30,0.08)' : '1px solid rgba(255,255,255,0.06)'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 12 }}>
                 <Award size={15} color={selectedTier.color} />
-                <span style={{ fontSize: 11.5, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'rgba(255,255,255,0.9)' }}>
+                <span style={{ fontSize: 11.5, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: isLight ? '#0A1C12' : 'rgba(255,255,255,0.9)' }}>
                   Formal Rewards & Perks
                 </span>
               </div>
-              <ul style={{ margin: 0, paddingLeft: 16, fontSize: isMobile ? 12.5 : 13, color: 'rgba(255,255,255,0.75)', lineHeight: 1.65 }}>
+              <ul style={{ margin: 0, paddingLeft: 16, fontSize: isMobile ? 12.5 : 13, color: isLight ? '#334155' : 'rgba(255,255,255,0.75)', lineHeight: 1.65 }}>
                 {selectedTier.rewards.map((item, idx) => (
                   <li key={idx} style={{ marginBottom: 6 }}>
-                    <strong style={{ color: '#FFFFFF' }}>{item}</strong>
+                    <strong style={{ color: isLight ? '#0A1C12' : '#FFFFFF' }}>{item}</strong>
                   </li>
                 ))}
               </ul>
@@ -543,26 +583,27 @@ export const RewardsPage: React.FC<RewardsPageProps> = ({ onNavigate, onOpenStat
 
       {/* How Contributions are Measured & Scored */}
       <section style={{
-        background: '#07180F',
-        borderTop: '1px solid rgba(102, 187, 42, 0.2)',
-        borderBottom: '1px solid rgba(255,255,255,0.08)',
+        background: isLight ? '#FFFFFF' : '#07180F',
+        borderTop: isLight ? '1px solid rgba(15, 46, 30, 0.08)' : '1px solid rgba(102, 187, 42, 0.2)',
+        borderBottom: isLight ? '1px solid rgba(15, 46, 30, 0.08)' : '1px solid rgba(255,255,255,0.08)',
         padding: isMobile ? '48px 16px' : '90px 24px'
       }}>
         <div style={{ maxWidth: 1180, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: isMobile ? 32 : 56 }}>
             <span style={{
-              fontSize: 10.5, fontWeight: 800, color: RF_MINT_ACCENT, letterSpacing: '0.16em',
+              fontSize: 10.5, fontWeight: 800, color: isLight ? '#0F4829' : RF_MINT_ACCENT, letterSpacing: '0.16em',
               textTransform: 'uppercase', marginBottom: 8, display: 'inline-block'
             }}>
               Proof of Execution
             </span>
             <h2 style={{
-              fontSize: isMobile ? 24 : 'clamp(28px, 4vw, 44px)', fontWeight: 600, color: '#FFFFFF',
+              fontSize: isMobile ? 24 : 'clamp(28px, 4vw, 44px)', fontWeight: 600,
+              color: isLight ? '#0A1C12' : '#FFFFFF',
               letterSpacing: '-0.02em', fontFamily: 'Plus Jakarta Sans, sans-serif'
             }}>
               How Contributions are Evaluated
             </h2>
-            <p style={{ fontSize: isMobile ? 13 : 15, color: 'rgba(255,255,255,0.65)', maxWidth: 640, margin: '8px auto 0' }}>
+            <p style={{ fontSize: isMobile ? 13 : 15, color: isLight ? '#475569' : 'rgba(255,255,255,0.65)', maxWidth: 640, margin: '8px auto 0' }}>
               We evaluate contributions across six core functional tracks. Each mission is logged, reviewed, and vouched for before advancing your ladder rank.
             </p>
           </div>
@@ -613,19 +654,21 @@ export const RewardsPage: React.FC<RewardsPageProps> = ({ onNavigate, onOpenStat
               <div
                 key={title}
                 style={{
-                  background: 'rgba(255,255,255,0.02)',
-                  border: '1px solid rgba(255,255,255,0.08)',
+                  background: isLight ? '#F8FAF9' : 'rgba(255,255,255,0.02)',
+                  border: isLight ? '1px solid rgba(15,46,30,0.1)' : '1px solid rgba(255,255,255,0.08)',
                   borderRadius: isMobile ? 14 : 18,
                   padding: isMobile ? '18px 16px' : '28px 24px',
                   transition: 'all 0.2s'
                 }}
                 onMouseEnter={e => {
                   e.currentTarget.style.borderColor = color;
-                  e.currentTarget.style.background = 'rgba(255,255,255,0.04)';
+                  e.currentTarget.style.background = isLight ? '#FFFFFF' : 'rgba(255,255,255,0.04)';
+                  if (isLight) e.currentTarget.style.boxShadow = '0 6px 20px rgba(15,46,30,0.06)';
                 }}
                 onMouseLeave={e => {
-                  e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)';
-                  e.currentTarget.style.background = 'rgba(255,255,255,0.02)';
+                  e.currentTarget.style.borderColor = isLight ? 'rgba(15,46,30,0.1)' : 'rgba(255,255,255,0.08)';
+                  e.currentTarget.style.background = isLight ? '#F8FAF9' : 'rgba(255,255,255,0.02)';
+                  if (isLight) e.currentTarget.style.boxShadow = 'none';
                 }}
               >
                 <div style={{
@@ -635,10 +678,10 @@ export const RewardsPage: React.FC<RewardsPageProps> = ({ onNavigate, onOpenStat
                 }}>
                   <Icon size={isMobile ? 18 : 22} color={color} />
                 </div>
-                <h4 style={{ fontSize: isMobile ? 15 : 17, fontWeight: 600, color: '#FFFFFF', marginBottom: 6 }}>
+                <h4 style={{ fontSize: isMobile ? 15 : 17, fontWeight: 600, color: isLight ? '#0A1C12' : '#FFFFFF', marginBottom: 6 }}>
                   {title}
                 </h4>
-                <p style={{ fontSize: isMobile ? 12.5 : 13.5, color: 'rgba(255,255,255,0.65)', lineHeight: 1.55, margin: 0 }}>
+                <p style={{ fontSize: isMobile ? 12.5 : 13.5, color: isLight ? '#475569' : 'rgba(255,255,255,0.65)', lineHeight: 1.55, margin: 0 }}>
                   {desc}
                 </p>
               </div>
@@ -651,13 +694,14 @@ export const RewardsPage: React.FC<RewardsPageProps> = ({ onNavigate, onOpenStat
       <section style={{ padding: isMobile ? '48px 16px' : '90px 24px', maxWidth: 1040, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: isMobile ? 28 : 50 }}>
           <span style={{
-            fontSize: 10.5, fontWeight: 800, color: RF_GOLD_YELLOW, letterSpacing: '0.16em',
+            fontSize: 10.5, fontWeight: 800, color: isLight ? '#B45309' : RF_GOLD_YELLOW, letterSpacing: '0.16em',
             textTransform: 'uppercase', marginBottom: 8, display: 'inline-block'
           }}>
             Transparent Promotion Cycle
           </span>
           <h2 style={{
-            fontSize: isMobile ? 24 : 'clamp(28px, 4vw, 42px)', fontWeight: 600, color: '#FFFFFF',
+            fontSize: isMobile ? 24 : 'clamp(28px, 4vw, 42px)', fontWeight: 600,
+            color: isLight ? '#0A1C12' : '#FFFFFF',
             fontFamily: 'Plus Jakarta Sans, sans-serif', margin: 0
           }}>
             How to Level Up Your Standing
@@ -694,22 +738,25 @@ export const RewardsPage: React.FC<RewardsPageProps> = ({ onNavigate, onOpenStat
             <div
               key={item.step}
               style={{
-                background: 'rgba(255,255,255,0.02)',
-                border: '1px solid rgba(255,255,255,0.08)',
+                background: isLight ? '#FFFFFF' : 'rgba(255,255,255,0.02)',
+                border: isLight ? '1px solid rgba(15,46,30,0.1)' : '1px solid rgba(255,255,255,0.08)',
                 borderRadius: isMobile ? 14 : 16,
-                padding: isMobile ? '18px 16px' : '26px 22px'
+                padding: isMobile ? '18px 16px' : '26px 22px',
+                boxShadow: isLight ? '0 4px 16px rgba(15,46,30,0.04)' : 'none'
               }}
             >
               <div style={{
-                fontSize: isMobile ? 20 : 24, fontWeight: 800, color: RF_MINT_ACCENT, fontFamily: 'monospace',
+                fontSize: isMobile ? 20 : 24, fontWeight: 800,
+                color: isLight ? '#0F4829' : RF_MINT_ACCENT,
+                fontFamily: 'monospace',
                 marginBottom: 8
               }}>
                 {item.step}
               </div>
-              <h4 style={{ fontSize: isMobile ? 14.5 : 16, fontWeight: 600, color: '#FFFFFF', marginBottom: 6 }}>
+              <h4 style={{ fontSize: isMobile ? 14.5 : 16, fontWeight: 600, color: isLight ? '#0A1C12' : '#FFFFFF', marginBottom: 6 }}>
                 {item.title}
               </h4>
-              <p style={{ fontSize: isMobile ? 12.5 : 13, color: 'rgba(255,255,255,0.65)', lineHeight: 1.55, margin: 0 }}>
+              <p style={{ fontSize: isMobile ? 12.5 : 13, color: isLight ? '#475569' : 'rgba(255,255,255,0.65)', lineHeight: 1.55, margin: 0 }}>
                 {item.desc}
               </p>
             </div>
@@ -719,17 +766,26 @@ export const RewardsPage: React.FC<RewardsPageProps> = ({ onNavigate, onOpenStat
 
       {/* CTA Footer Section */}
       <section style={{
-        background: `linear-gradient(135deg, ${RF_DARK_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
-        padding: isMobile ? '48px 16px' : '80px 24px', textAlign: 'center', borderTop: '1px solid rgba(102, 187, 42, 0.25)'
+        background: isLight
+          ? 'linear-gradient(180deg, #F5FAF7 0%, #EDF5F0 100%)'
+          : `linear-gradient(135deg, ${RF_DARK_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
+        padding: isMobile ? '48px 16px' : '80px 24px',
+        textAlign: 'center',
+        borderTop: isLight ? '1px solid rgba(15,46,30,0.1)' : '1px solid rgba(102, 187, 42, 0.25)'
       }}>
         <div style={{ maxWidth: 740, margin: '0 auto' }}>
           <h2 style={{
-            fontSize: isMobile ? 24 : 'clamp(28px, 4.5vw, 48px)', fontWeight: 600, color: '#FFFFFF',
+            fontSize: isMobile ? 24 : 'clamp(28px, 4.5vw, 48px)', fontWeight: 600,
+            color: isLight ? '#0A1C12' : '#FFFFFF',
             fontFamily: 'Plus Jakarta Sans, sans-serif', marginBottom: 12
           }}>
             Ready to build your track record?
           </h2>
-          <p style={{ fontSize: isMobile ? 13.5 : 16, color: 'rgba(255,255,255,0.8)', lineHeight: 1.6, marginBottom: isMobile ? 24 : 32 }}>
+          <p style={{
+            fontSize: isMobile ? 13.5 : 16,
+            color: isLight ? '#273E31' : 'rgba(255,255,255,0.8)',
+            lineHeight: 1.6, marginBottom: isMobile ? 24 : 32
+          }}>
             Submit your application to the Founding 100 today. Step in as a Refeir Member, deliver your first mission, and climb to Lead.
           </p>
           <div style={{
@@ -768,8 +824,10 @@ export const RewardsPage: React.FC<RewardsPageProps> = ({ onNavigate, onOpenStat
               style={{
                 width: isMobile ? '100%' : 'auto',
                 height: 44,
-                background: 'rgba(255,255,255,0.05)', color: '#FFFFFF',
-                border: '1px solid rgba(255,255,255,0.2)', padding: '0 24px',
+                background: isLight ? '#FFFFFF' : 'rgba(255,255,255,0.05)',
+                color: isLight ? '#0A1C12' : '#FFFFFF',
+                border: isLight ? '1.5px solid rgba(15,46,30,0.18)' : '1px solid rgba(255,255,255,0.2)',
+                padding: '0 24px',
                 borderRadius: 100, fontSize: 14, fontWeight: 600, cursor: 'pointer',
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                 whiteSpace: 'nowrap'

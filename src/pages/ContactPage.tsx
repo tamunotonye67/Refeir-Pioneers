@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTheme } from '../context/ThemeContext';
 import {
   Mail, MessageSquare, Send, CheckCircle2, MapPin, Globe2,
   ExternalLink, Phone, ArrowRight, ShieldCheck
@@ -18,6 +19,9 @@ interface ContactPageProps {
 }
 
 export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
+  const { theme } = useTheme();
+  const isLight = theme === 'light';
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -47,13 +51,18 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
     <div className="rp-contact-page" style={{ minHeight: '100vh', background: 'var(--rp-bg-page)', color: 'var(--rp-text-main)' }}>
       {/* Header Banner */}
       <section style={{
-        background: `linear-gradient(135deg, ${RF_DEEP_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
-        padding: '130px 24px 70px', position: 'relative', overflow: 'hidden', color: '#FFFFFF', textAlign: 'center'
+        background: isLight
+          ? 'radial-gradient(ellipse at 50% -20%, #E8F5EE 0%, #F5FAF7 70%, #FFFFFF 100%)'
+          : `linear-gradient(135deg, ${RF_DEEP_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
+        padding: '130px 24px 70px', position: 'relative', overflow: 'hidden',
+        color: isLight ? '#0A1C12' : '#FFFFFF', textAlign: 'center'
       }}>
         <div style={{ maxWidth: 980, margin: '0 auto', position: 'relative', zIndex: 2 }}>
           <span style={{
             display: 'inline-block', fontSize: 11, fontWeight: 700, letterSpacing: '0.16em',
-            color: RF_MINT_ACCENT, background: 'rgba(24, 252, 92, 0.1)', border: `1px solid ${RF_LEAF_GREEN}33`,
+            color: isLight ? '#0F4829' : RF_MINT_ACCENT,
+            background: isLight ? 'rgba(102, 187, 42, 0.12)' : 'rgba(24, 252, 92, 0.1)',
+            border: `1px solid ${isLight ? 'rgba(15, 46, 30, 0.16)' : `${RF_LEAF_GREEN}33`}`,
             padding: '6px 16px', borderRadius: 100, textTransform: 'uppercase', marginBottom: 20
           }}>
             Connect With Refeir
@@ -61,12 +70,15 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
 
           <h1 style={{
             fontSize: 'clamp(32px, 4.8vw, 60px)', fontWeight: 500, lineHeight: 1.18,
-            letterSpacing: '-0.02em', marginBottom: 20, fontFamily: 'Plus Jakarta Sans, sans-serif'
+            letterSpacing: '-0.02em', marginBottom: 20, fontFamily: 'Plus Jakarta Sans, sans-serif',
+            color: isLight ? '#0A1C12' : '#FFFFFF'
           }}>
             We'd love to hear from<br />
             <span style={{
               fontStyle: 'italic', fontWeight: 400,
-              background: `linear-gradient(135deg, ${RF_MINT_ACCENT} 0%, ${RF_LEAF_GREEN} 60%, ${RF_GOLD_YELLOW} 100%)`,
+              background: isLight
+                ? `linear-gradient(135deg, #0F4829 0%, ${RF_LEAF_GREEN} 60%, #B8860B 100%)`
+                : `linear-gradient(135deg, ${RF_MINT_ACCENT} 0%, ${RF_LEAF_GREEN} 60%, ${RF_GOLD_YELLOW} 100%)`,
               WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
               WebkitBoxDecorationBreak: 'clone',
               boxDecorationBreak: 'clone',
@@ -78,7 +90,8 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
           </h1>
 
           <p style={{
-            fontSize: 'clamp(15px, 1.8vw, 18px)', color: 'rgba(255,255,255,0.85)',
+            fontSize: 'clamp(15px, 1.8vw, 18px)',
+            color: isLight ? '#273E31' : 'rgba(255,255,255,0.85)',
             lineHeight: 1.7, maxWidth: 800, margin: '0 auto'
           }}>
             Have questions about your Pioneer application, commercial partnerships, or press inquiries?<br />
@@ -88,7 +101,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
       </section>
 
       {/* Main Form & Contact Info Section */}
-      <section style={{ padding: '80px 24px 100px', background: '#F8FAF9' }}>
+      <section style={{ padding: '80px 24px 100px', background: isLight ? '#F8FAF9' : 'var(--rp-bg-page)' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <div style={{
             display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
@@ -96,16 +109,18 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
           }}>
             {/* Left Column: Interactive Contact Form */}
             <div style={{
-              background: '#FFFFFF', borderRadius: 20, padding: '40px 36px',
-              border: '1px solid #E2E8F0', boxShadow: '0 8px 30px rgba(0,0,0,0.03)'
+              background: isLight ? '#FFFFFF' : 'rgba(255, 255, 255, 0.04)',
+              borderRadius: 20, padding: '40px 36px',
+              border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.08)',
+              boxShadow: isLight ? '0 8px 30px rgba(0,0,0,0.03)' : 'none'
             }}>
               <h2 style={{
-                fontSize: 24, fontWeight: 500, color: RF_DEEP_GREEN,
+                fontSize: 24, fontWeight: 600, color: isLight ? '#0A1C12' : '#FFFFFF',
                 fontFamily: 'Plus Jakarta Sans, sans-serif', marginBottom: 8
               }}>
                 Send us a direct message
               </h2>
-              <p style={{ fontSize: 14, color: '#64748B', marginBottom: 28, lineHeight: 1.6 }}>
+              <p style={{ fontSize: 14, color: isLight ? '#64748B' : '#94A3B8', marginBottom: 28, lineHeight: 1.6 }}>
                 Fill in the form below and we'll route your inquiry to the relevant squad lead.
               </p>
 
@@ -117,10 +132,10 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
                   }}>
                     <CheckCircle2 size={32} color={RF_LEAF_GREEN} />
                   </div>
-                  <h3 style={{ fontSize: 20, fontWeight: 700, color: RF_DEEP_GREEN, marginBottom: 8 }}>
+                  <h3 style={{ fontSize: 20, fontWeight: 700, color: isLight ? '#0A1C12' : '#FFFFFF', marginBottom: 8 }}>
                     Message Received!
                   </h3>
-                  <p style={{ fontSize: 14.5, color: '#64748B', lineHeight: 1.6, maxWidth: 400, margin: '0 auto 24px' }}>
+                  <p style={{ fontSize: 14.5, color: isLight ? '#64748B' : '#94A3B8', lineHeight: 1.6, maxWidth: 400, margin: '0 auto 24px' }}>
                     Thank you, <strong>{formData.name}</strong>. Your message has been dispatched to our team. We typically respond within 24–48 hours.
                   </p>
                   <button
@@ -129,8 +144,9 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
                       setFormData({ name: '', email: '', phone: '', category: 'PIONEER_ADMISSIONS', message: '' });
                     }}
                     style={{
-                      background: '#F1F5F9', border: 'none', padding: '10px 22px', borderRadius: 100,
-                      fontSize: 13, fontWeight: 600, color: '#334155', cursor: 'pointer'
+                      background: isLight ? '#F1F5F9' : 'rgba(255, 255, 255, 0.1)',
+                      border: 'none', padding: '10px 22px', borderRadius: 100,
+                      fontSize: 13, fontWeight: 600, color: isLight ? '#334155' : '#FFFFFF', cursor: 'pointer'
                     }}
                   >
                     Send another message
@@ -148,7 +164,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
                   )}
 
                   <div>
-                    <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#334155', marginBottom: 6 }}>
+                    <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: isLight ? '#334155' : '#CBD5E1', marginBottom: 6 }}>
                       Full Name *
                     </label>
                     <input
@@ -159,14 +175,17 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
                       required
                       style={{
                         width: '100%', padding: '12px 16px', borderRadius: 10,
-                        border: '1px solid #CBD5E1', fontSize: 14, outline: 'none'
+                        border: isLight ? '1px solid #CBD5E1' : '1px solid rgba(255, 255, 255, 0.15)',
+                        background: isLight ? '#FFFFFF' : 'rgba(255, 255, 255, 0.05)',
+                        color: isLight ? '#0A1C12' : '#FFFFFF',
+                        fontSize: 14, outline: 'none'
                       }}
                     />
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 14 }}>
                     <div>
-                      <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#334155', marginBottom: 6 }}>
+                      <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: isLight ? '#334155' : '#CBD5E1', marginBottom: 6 }}>
                         Email Address *
                       </label>
                       <input
@@ -177,13 +196,16 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
                         required
                         style={{
                           width: '100%', padding: '12px 16px', borderRadius: 10,
-                          border: '1px solid #CBD5E1', fontSize: 14, outline: 'none'
+                          border: isLight ? '1px solid #CBD5E1' : '1px solid rgba(255, 255, 255, 0.15)',
+                          background: isLight ? '#FFFFFF' : 'rgba(255, 255, 255, 0.05)',
+                          color: isLight ? '#0A1C12' : '#FFFFFF',
+                          fontSize: 14, outline: 'none'
                         }}
                       />
                     </div>
 
                     <div>
-                      <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#334155', marginBottom: 6 }}>
+                      <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: isLight ? '#334155' : '#CBD5E1', marginBottom: 6 }}>
                         WhatsApp Number
                       </label>
                       <input
@@ -193,14 +215,17 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
                         onChange={e => setFormData({ ...formData, phone: e.target.value })}
                         style={{
                           width: '100%', padding: '12px 16px', borderRadius: 10,
-                          border: '1px solid #CBD5E1', fontSize: 14, outline: 'none'
+                          border: isLight ? '1px solid #CBD5E1' : '1px solid rgba(255, 255, 255, 0.15)',
+                          background: isLight ? '#FFFFFF' : 'rgba(255, 255, 255, 0.05)',
+                          color: isLight ? '#0A1C12' : '#FFFFFF',
+                          fontSize: 14, outline: 'none'
                         }}
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#334155', marginBottom: 6 }}>
+                    <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: isLight ? '#334155' : '#CBD5E1', marginBottom: 6 }}>
                       Inquiry Subject *
                     </label>
                     <select
@@ -209,8 +234,10 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
                       className="rp-light-select"
                       style={{
                         width: '100%', padding: '12px 42px 12px 16px', borderRadius: 10,
-                        border: '1px solid #CBD5E1', fontSize: 14, outline: 'none', background: '#FFFFFF',
-                        color: '#0F2E1E'
+                        border: isLight ? '1px solid #CBD5E1' : '1px solid rgba(255, 255, 255, 0.15)',
+                        background: isLight ? '#FFFFFF' : 'rgba(15, 30, 20, 0.9)',
+                        color: isLight ? '#0F2E1E' : '#FFFFFF',
+                        fontSize: 14, outline: 'none'
                       }}
                     >
                       <option value="PIONEER_ADMISSIONS">Pioneer Admissions & Review Question</option>
@@ -222,7 +249,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
                   </div>
 
                   <div>
-                    <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#334155', marginBottom: 6 }}>
+                    <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: isLight ? '#334155' : '#CBD5E1', marginBottom: 6 }}>
                       Your Message *
                     </label>
                     <textarea
@@ -233,7 +260,10 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
                       required
                       style={{
                         width: '100%', padding: '12px 16px', borderRadius: 10,
-                        border: '1px solid #CBD5E1', fontSize: 14, outline: 'none', resize: 'vertical'
+                        border: isLight ? '1px solid #CBD5E1' : '1px solid rgba(255, 255, 255, 0.15)',
+                        background: isLight ? '#FFFFFF' : 'rgba(255, 255, 255, 0.05)',
+                        color: isLight ? '#0A1C12' : '#FFFFFF',
+                        fontSize: 14, outline: 'none', resize: 'vertical'
                       }}
                     />
                   </div>
@@ -259,30 +289,33 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
               {/* Direct Channels Box */}
               <div style={{
-                background: `linear-gradient(135deg, ${RF_DEEP_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
-                borderRadius: 20, padding: '34px 30px', color: '#FFFFFF',
-                border: '1px solid rgba(102, 187, 42, 0.2)'
+                background: isLight
+                  ? '#EDF5F0'
+                  : `linear-gradient(135deg, ${RF_DEEP_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
+                borderRadius: 20, padding: '34px 30px',
+                color: isLight ? '#0A1C12' : '#FFFFFF',
+                border: isLight ? '1px solid rgba(15, 46, 30, 0.12)' : '1px solid rgba(102, 187, 42, 0.2)'
               }}>
-                <h3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>
+                <h3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16, color: isLight ? '#0A1C12' : '#FFFFFF' }}>
                   Direct Communication
                 </h3>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                   <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-                    <Mail size={18} color={RF_MINT_ACCENT} style={{ marginTop: 2, flexShrink: 0 }} />
+                    <Mail size={18} color={isLight ? RF_DEEP_GREEN : RF_MINT_ACCENT} style={{ marginTop: 2, flexShrink: 0 }} />
                     <div>
-                      <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>Pioneers Admissions</div>
-                      <a href="mailto:pioneers@refeir.com" style={{ fontSize: 14.5, color: '#FFFFFF', textDecoration: 'none', fontWeight: 600 }}>
+                      <div style={{ fontSize: 12, color: isLight ? '#4B6354' : 'rgba(255,255,255,0.6)', textTransform: 'uppercase' }}>Pioneers Admissions</div>
+                      <a href="mailto:pioneers@refeir.com" style={{ fontSize: 14.5, color: isLight ? '#0F2E1E' : '#FFFFFF', textDecoration: 'none', fontWeight: 600 }}>
                         pioneers@refeir.com
                       </a>
                     </div>
                   </div>
 
                   <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-                    <Mail size={18} color={RF_LEAF_GREEN} style={{ marginTop: 2, flexShrink: 0 }} />
+                    <Mail size={18} color={isLight ? RF_LEAF_GREEN : RF_LEAF_GREEN} style={{ marginTop: 2, flexShrink: 0 }} />
                     <div>
-                      <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>Commercial & Enterprise</div>
-                      <a href="mailto:partners@refeir.com" style={{ fontSize: 14.5, color: '#FFFFFF', textDecoration: 'none', fontWeight: 600 }}>
+                      <div style={{ fontSize: 12, color: isLight ? '#4B6354' : 'rgba(255,255,255,0.6)', textTransform: 'uppercase' }}>Commercial & Enterprise</div>
+                      <a href="mailto:partners@refeir.com" style={{ fontSize: 14.5, color: isLight ? '#0F2E1E' : '#FFFFFF', textDecoration: 'none', fontWeight: 600 }}>
                         partners@refeir.com
                       </a>
                     </div>
@@ -291,12 +324,12 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
                   <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
                     <MessageSquare size={18} color="#25D366" style={{ marginTop: 2, flexShrink: 0 }} />
                     <div>
-                      <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>Official WhatsApp</div>
+                      <div style={{ fontSize: 12, color: isLight ? '#4B6354' : 'rgba(255,255,255,0.6)', textTransform: 'uppercase' }}>Official WhatsApp</div>
                       <a
                         href="https://chat.whatsapp.com/sample-refeir-pioneers"
                         target="_blank"
                         rel="noopener noreferrer"
-                        style={{ fontSize: 14.5, color: '#25D366', textDecoration: 'none', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 4 }}
+                        style={{ fontSize: 14.5, color: '#16A34A', textDecoration: 'none', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 4 }}
                       >
                         Refeir Community <ExternalLink size={12} />
                       </a>
@@ -307,29 +340,32 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
 
               {/* Regional Hubs Box */}
               <div style={{
-                background: '#FFFFFF', borderRadius: 20, padding: '30px 28px',
-                border: '1px solid #E2E8F0'
+                background: isLight ? '#FFFFFF' : 'rgba(255, 255, 255, 0.04)',
+                borderRadius: 20, padding: '30px 28px',
+                border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.08)'
               }}>
-                <h3 style={{ fontSize: 16, fontWeight: 700, color: RF_DEEP_GREEN, marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <h3 style={{ fontSize: 16, fontWeight: 700, color: isLight ? RF_DEEP_GREEN : '#86EFAC', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
                   <MapPin size={17} color={RF_LEAF_GREEN} />
                   Pan-African Remote Presence
                 </h3>
-                <p style={{ fontSize: 13.5, color: '#64748B', lineHeight: 1.6, marginBottom: 18 }}>
+                <p style={{ fontSize: 13.5, color: isLight ? '#64748B' : '#94A3B8', lineHeight: 1.6, marginBottom: 18 }}>
                   Refeir is a remote-first platform connecting builders across Africa’s fastest-growing technology hubs:
                 </p>
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10 }}>
                   {['Lagos, Nigeria', 'Nairobi, Kenya', 'Kigali, Rwanda', 'Accra, Ghana', 'Cairo, Egypt', 'Johannesburg, SA'].map((city, i) => (
                     <div key={i} style={{
-                      background: '#F8FAF9', padding: '8px 12px', borderRadius: 8,
-                      fontSize: 12.5, color: '#334155', fontWeight: 500, border: '1px solid #E2E8F0'
+                      background: isLight ? '#F8FAF9' : 'rgba(255, 255, 255, 0.06)',
+                      padding: '8px 12px', borderRadius: 8,
+                      fontSize: 12.5, color: isLight ? '#334155' : '#E2E8F0',
+                      fontWeight: 500,
+                      border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.1)'
                     }}>
                       • {city}
                     </div>
                   ))}
                 </div>
               </div>
-            </div>
           </div>
         </div>
       </section>

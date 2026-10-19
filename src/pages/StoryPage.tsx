@@ -12,6 +12,7 @@ import {
   RF_MINT_ACCENT,
   RF_GOLD_YELLOW
 } from '../constants/brand';
+import { useTheme } from '../context/ThemeContext';
 
 interface StoryPageProps {
   onNavigate: (path: string) => void;
@@ -19,6 +20,8 @@ interface StoryPageProps {
 }
 
 export const StoryPage: React.FC<StoryPageProps> = ({ onNavigate }) => {
+  const { theme } = useTheme();
+  const isLight = theme === 'light';
   const [activeChapter, setActiveChapter] = React.useState<string>('all');
 
   const chapters = [
@@ -44,48 +47,63 @@ export const StoryPage: React.FC<StoryPageProps> = ({ onNavigate }) => {
   };
 
   return (
-    <div id="top" className="rp-story-page" style={{ minHeight: '100vh', background: 'var(--rp-bg-page)', color: 'var(--rp-text-main)', paddingTop: 72 }}>
+    <div id="top" className="rp-story-page" style={{
+      minHeight: '100vh',
+      background: isLight ? '#F8FAF9' : 'var(--rp-bg-page)',
+      color: isLight ? '#0A1C12' : 'var(--rp-text-main)',
+      paddingTop: 72
+    }}>
       {/* Hero Section */}
       <section style={{
-        background: `linear-gradient(145deg, ${RF_DEEP_GREEN} 0%, #07180F 40%, ${RF_FOREST_DARK} 100%)`,
+        background: isLight
+          ? 'radial-gradient(ellipse 80% 80% at 50% -20%, rgba(21, 128, 61, 0.12) 0%, #F5FAF7 75%)'
+          : `linear-gradient(145deg, ${RF_DEEP_GREEN} 0%, #07180F 40%, ${RF_FOREST_DARK} 100%)`,
         padding: '110px 24px 80px',
         position: 'relative',
         overflow: 'hidden',
-        borderBottom: '1px solid rgba(102, 187, 42, 0.15)'
+        borderBottom: isLight ? '1px solid rgba(15, 46, 30, 0.1)' : '1px solid rgba(102, 187, 42, 0.15)'
       }}>
         {/* Ambient Radial Glows */}
-        <div style={{
-          position: 'absolute', top: -140, right: -120, width: 550, height: 550, borderRadius: '50%',
-          background: `radial-gradient(circle, ${RF_LEAF_GREEN}20 0%, transparent 70%)`,
-          filter: 'blur(70px)', pointerEvents: 'none'
-        }} />
-        <div style={{
-          position: 'absolute', bottom: -100, left: -80, width: 450, height: 450, borderRadius: '50%',
-          background: `radial-gradient(circle, ${RF_MINT_ACCENT}15 0%, transparent 70%)`,
-          filter: 'blur(80px)', pointerEvents: 'none'
-        }} />
+        {!isLight && (
+          <>
+            <div style={{
+              position: 'absolute', top: -140, right: -120, width: 550, height: 550, borderRadius: '50%',
+              background: `radial-gradient(circle, ${RF_LEAF_GREEN}20 0%, transparent 70%)`,
+              filter: 'blur(70px)', pointerEvents: 'none'
+            }} />
+            <div style={{
+              position: 'absolute', bottom: -100, left: -80, width: 450, height: 450, borderRadius: '50%',
+              background: `radial-gradient(circle, ${RF_MINT_ACCENT}15 0%, transparent 70%)`,
+              filter: 'blur(80px)', pointerEvents: 'none'
+            }} />
+          </>
+        )}
 
         <div style={{ maxWidth: 1040, margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 2 }}>
           {/* Eyebrow badge */}
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: 8,
             fontSize: 11, fontWeight: 700, letterSpacing: '0.16em',
-            color: RF_MINT_ACCENT, background: 'rgba(24, 252, 92, 0.08)',
-            border: `1px solid ${RF_LEAF_GREEN}44`,
+            color: isLight ? '#15803D' : RF_MINT_ACCENT,
+            background: isLight ? 'rgba(21, 128, 61, 0.08)' : 'rgba(24, 252, 92, 0.08)',
+            border: isLight ? '1px solid rgba(21, 128, 61, 0.25)' : `1px solid ${RF_LEAF_GREEN}44`,
             padding: '7px 18px', borderRadius: 100, textTransform: 'uppercase', marginBottom: 24
           }}>
-            <Compass size={13} color={RF_MINT_ACCENT} />
+            <Compass size={13} color={isLight ? '#15803D' : RF_MINT_ACCENT} />
             The Refeir Chronicles • Genesis & Vision
           </div>
 
           <h1 style={{
-            fontSize: 'clamp(38px, 6vw, 72px)', fontWeight: 500, lineHeight: 1.12,
-            letterSpacing: '-0.025em', marginBottom: 24, fontFamily: 'Plus Jakarta Sans, sans-serif'
+            fontSize: 'clamp(38px, 6vw, 72px)', fontWeight: 600, lineHeight: 1.12,
+            letterSpacing: '-0.025em', marginBottom: 24, fontFamily: 'Plus Jakarta Sans, sans-serif',
+            color: isLight ? '#0A1C12' : '#FFFFFF'
           }}>
             How Refeir was born,<br />
             <span style={{
-              fontStyle: 'italic', fontWeight: 400,
-              background: `linear-gradient(135deg, ${RF_MINT_ACCENT} 0%, ${RF_LEAF_GREEN} 60%, ${RF_GOLD_YELLOW} 100%)`,
+              fontStyle: 'italic', fontWeight: 500,
+              background: isLight
+                ? 'linear-gradient(135deg, #15803D 0%, #16A34A 50%, #D97706 100%)'
+                : `linear-gradient(135deg, ${RF_MINT_ACCENT} 0%, ${RF_LEAF_GREEN} 60%, ${RF_GOLD_YELLOW} 100%)`,
               WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'
             }}>
               and the future we are building.
@@ -93,10 +111,11 @@ export const StoryPage: React.FC<StoryPageProps> = ({ onNavigate }) => {
           </h1>
 
           <p style={{
-            fontSize: 'clamp(16px, 1.9vw, 20px)', color: 'rgba(255,255,255,0.85)',
-            lineHeight: 1.7, maxWidth: 820, margin: '0 auto 36px', fontWeight: 300
+            fontSize: 'clamp(16px, 1.9vw, 20px)',
+            color: isLight ? '#273E31' : 'rgba(255,255,255,0.85)',
+            lineHeight: 1.7, maxWidth: 820, margin: '0 auto 36px', fontWeight: 400
           }}>
-            From grassroots university chatrooms and broken freelance bidding boards to an unstoppable economic engine. Discover why Founder <strong style={{ color: '#FFFFFF', fontWeight: 600 }}>Tonye Taylor</strong> built Refeir, the untold history of our first cohorts, and the sovereign roadmap ahead.
+            From grassroots university chatrooms and broken freelance bidding boards to an unstoppable economic engine. Discover why Founder <strong style={{ color: isLight ? '#0A1C12' : '#FFFFFF', fontWeight: 700 }}>Tonye Taylor</strong> built Refeir, the untold history of our first cohorts, and the sovereign roadmap ahead.
           </p>
 
           {/* Chapter Category Filter Pills (Horizontal swipeable on mobile, single line on desktop) */}
@@ -112,12 +131,14 @@ export const StoryPage: React.FC<StoryPageProps> = ({ onNavigate }) => {
                     className="rp-story-pill"
                     style={{
                       fontSize: 12.5,
-                      fontWeight: isSelected ? 600 : 500,
-                      color: isSelected ? RF_DEEP_GREEN : 'rgba(255,255,255,0.8)',
+                      fontWeight: isSelected ? 700 : 500,
+                      color: isSelected
+                        ? RF_DEEP_GREEN
+                        : (isLight ? '#0A1C12' : 'rgba(255,255,255,0.8)'),
                       background: isSelected
                         ? RF_LEAF_GREEN
-                        : 'rgba(255,255,255,0.05)',
-                      border: `1px solid ${isSelected ? RF_LEAF_GREEN : 'rgba(255,255,255,0.12)'}`,
+                        : (isLight ? 'rgba(15, 46, 30, 0.05)' : 'rgba(255,255,255,0.05)'),
+                      border: `1px solid ${isSelected ? RF_LEAF_GREEN : (isLight ? 'rgba(15, 46, 30, 0.14)' : 'rgba(255,255,255,0.12)')}`,
                       padding: '8px 16px',
                       borderRadius: 100,
                       cursor: 'pointer',
@@ -131,20 +152,20 @@ export const StoryPage: React.FC<StoryPageProps> = ({ onNavigate }) => {
                     }}
                     onMouseEnter={e => {
                       if (!isSelected) {
-                        e.currentTarget.style.color = RF_MINT_ACCENT;
-                        e.currentTarget.style.borderColor = `${RF_MINT_ACCENT}55`;
-                        e.currentTarget.style.background = 'rgba(24, 252, 92, 0.08)';
+                        e.currentTarget.style.color = isLight ? '#15803D' : RF_MINT_ACCENT;
+                        e.currentTarget.style.borderColor = isLight ? 'rgba(21, 128, 61, 0.4)' : `${RF_MINT_ACCENT}55`;
+                        e.currentTarget.style.background = isLight ? 'rgba(21, 128, 61, 0.08)' : 'rgba(24, 252, 92, 0.08)';
                       }
                     }}
                     onMouseLeave={e => {
                       if (!isSelected) {
-                        e.currentTarget.style.color = 'rgba(255,255,255,0.8)';
-                        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)';
-                        e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
+                        e.currentTarget.style.color = isLight ? '#0A1C12' : 'rgba(255,255,255,0.8)';
+                        e.currentTarget.style.borderColor = isLight ? 'rgba(15, 46, 30, 0.14)' : 'rgba(255,255,255,0.12)';
+                        e.currentTarget.style.background = isLight ? 'rgba(15, 46, 30, 0.05)' : 'rgba(255,255,255,0.05)';
                       }
                     }}
                   >
-                    <IconComp size={13} color={isSelected ? RF_DEEP_GREEN : RF_MINT_ACCENT} />
+                    <IconComp size={13} color={isSelected ? RF_DEEP_GREEN : (isLight ? '#15803D' : RF_MINT_ACCENT)} />
                     {item.label}
                   </button>
                 );
@@ -155,41 +176,65 @@ export const StoryPage: React.FC<StoryPageProps> = ({ onNavigate }) => {
       </section>
 
       {/* Chapter 1: The Genesis - How Refeir Was Born */}
-      <section id="genesis" style={{ padding: '90px 24px', maxWidth: 1100, margin: '0 auto' }}>
+      <section id="genesis" style={{
+        padding: '90px 24px',
+        maxWidth: 1100,
+        margin: '0 auto',
+        background: 'transparent'
+      }}>
         <div className="rp-story-genesis-grid">
           <div>
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
-              color: RF_GOLD_YELLOW, fontSize: 11, fontWeight: 700, letterSpacing: '0.14em',
+              color: isLight ? '#B45309' : RF_GOLD_YELLOW, fontSize: 11, fontWeight: 700, letterSpacing: '0.14em',
               textTransform: 'uppercase', marginBottom: 12
             }}>
               <Flame size={14} />
               Chapter I • The Catalyst
             </div>
             <h2 style={{
-              fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 500, lineHeight: 1.2,
-              letterSpacing: '-0.02em', marginBottom: 20, fontFamily: 'Plus Jakarta Sans, sans-serif'
+              fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 600, lineHeight: 1.2,
+              letterSpacing: '-0.02em', marginBottom: 20, fontFamily: 'Plus Jakarta Sans, sans-serif',
+              color: isLight ? '#0A1C12' : '#FFFFFF'
             }}>
               The African freelance paradox & the broken trust gap.
             </h2>
-            <p style={{ fontSize: 15.5, color: 'rgba(255,255,255,0.75)', lineHeight: 1.75, marginBottom: 16 }}>
+            <p style={{
+              fontSize: 15.5,
+              color: isLight ? '#273E31' : 'rgba(255,255,255,0.75)',
+              lineHeight: 1.75, marginBottom: 16
+            }}>
               Across African universities and tech ecosystems, a profound contradiction exists. Every year, hundreds of thousands of brilliant software engineers, creative directors, growth strategists, and researchers graduate into an artificial economic wall.
             </p>
-            <p style={{ fontSize: 15.5, color: 'rgba(255,255,255,0.75)', lineHeight: 1.75, marginBottom: 16 }}>
-              When talented youth turn to global freelance platforms like Upwork or Fiverr, they are greeted by hostile barriers: <span style={{ color: '#FFFFFF', fontWeight: 600 }}>20% platform taxes</span>, geographic bias, arbitrary account terminations with trapped funds, and demoralizing "race-to-the-bottom" bidding wars that devalue African craftsmanship.
+            <p style={{
+              fontSize: 15.5,
+              color: isLight ? '#273E31' : 'rgba(255,255,255,0.75)',
+              lineHeight: 1.75, marginBottom: 16
+            }}>
+              When talented youth turn to global freelance platforms like Upwork or Fiverr, they are greeted by hostile barriers: <span style={{ color: isLight ? '#0A1C12' : '#FFFFFF', fontWeight: 700 }}>20% platform taxes</span>, geographic bias, arbitrary account terminations with trapped funds, and demoralizing "race-to-the-bottom" bidding wars that devalue African craftsmanship.
             </p>
-            <p style={{ fontSize: 15.5, color: 'rgba(255,255,255,0.75)', lineHeight: 1.75 }}>
-              Yet, beneath the surface of these broken platforms, real commerce was already thriving. In university WhatsApp groups, campus tech circles, and Telegram developer channels, clients were getting hired through direct peer recommendations. But the people vouching for talent and bringing high-ticket deals to the table received zero equity, zero commission, and zero lasting attribution. Refeir was born to institutionalize what Africans do naturally: <strong style={{ color: RF_MINT_ACCENT }}>grow together through trusted referrals</strong>.
+            <p style={{
+              fontSize: 15.5,
+              color: isLight ? '#273E31' : 'rgba(255,255,255,0.75)',
+              lineHeight: 1.75
+            }}>
+              Yet, beneath the surface of these broken platforms, real commerce was already thriving. In university WhatsApp groups, campus tech circles, and Telegram developer channels, clients were getting hired through direct peer recommendations. But the people vouching for talent and bringing high-ticket deals to the table received zero equity, zero commission, and zero lasting attribution. Refeir was born to institutionalize what Africans do naturally: <strong style={{ color: isLight ? '#15803D' : RF_MINT_ACCENT }}>grow together through trusted referrals</strong>.
             </p>
           </div>
 
           {/* Key Contrast Cards */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <div style={{
-              background: 'rgba(255, 60, 60, 0.05)', border: '1px solid rgba(255, 75, 75, 0.2)',
-              borderRadius: 16, padding: '24px 24px'
+              background: isLight ? '#FEF2F2' : 'rgba(255, 60, 60, 0.05)',
+              border: isLight ? '1px solid rgba(239, 68, 68, 0.25)' : '1px solid rgba(255, 75, 75, 0.2)',
+              borderRadius: 16, padding: '24px 24px',
+              boxShadow: isLight ? '0 4px 16px rgba(239, 68, 68, 0.04)' : 'none'
             }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: '#FF7B7B', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 14 }}>
+              <div style={{
+                fontSize: 12, fontWeight: 700,
+                color: isLight ? '#DC2626' : '#FF7B7B',
+                letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 14
+              }}>
                 The Legacy Gig Trap
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
@@ -199,8 +244,12 @@ export const StoryPage: React.FC<StoryPageProps> = ({ onNavigate }) => {
                   'Zero rewards for the connector or mentor who matched the client.',
                   'Vulnerable to foreign payment lockouts and sudden account bans.'
                 ].map((text, idx) => (
-                  <div key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 13.5, color: 'rgba(255,255,255,0.72)', lineHeight: 1.6 }}>
-                    <span style={{ color: '#FF7B7B', fontSize: 16, lineHeight: 1.2, flexShrink: 0 }}>•</span>
+                  <div key={idx} style={{
+                    display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 13.5,
+                    color: isLight ? '#991B1B' : 'rgba(255,255,255,0.72)',
+                    lineHeight: 1.6
+                  }}>
+                    <span style={{ color: isLight ? '#DC2626' : '#FF7B7B', fontSize: 16, lineHeight: 1.2, flexShrink: 0 }}>•</span>
                     <span>{text}</span>
                   </div>
                 ))}
@@ -208,11 +257,16 @@ export const StoryPage: React.FC<StoryPageProps> = ({ onNavigate }) => {
             </div>
 
             <div style={{
-              background: `linear-gradient(135deg, ${RF_DEEP_GREEN}88 0%, rgba(15, 46, 30, 0.4) 100%)`,
-              border: `1px solid ${RF_LEAF_GREEN}44`,
-              borderRadius: 16, padding: '24px 24px'
+              background: isLight ? '#F0FDF4' : `linear-gradient(135deg, ${RF_DEEP_GREEN}88 0%, rgba(15, 46, 30, 0.4) 100%)`,
+              border: isLight ? '1px solid rgba(21, 128, 61, 0.25)' : `1px solid ${RF_LEAF_GREEN}44`,
+              borderRadius: 16, padding: '24px 24px',
+              boxShadow: isLight ? '0 4px 16px rgba(21, 128, 61, 0.05)' : 'none'
             }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: RF_MINT_ACCENT, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 14 }}>
+              <div style={{
+                fontSize: 12, fontWeight: 700,
+                color: isLight ? '#15803D' : RF_MINT_ACCENT,
+                letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 14
+              }}>
                 The Refeir Breakthrough
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
@@ -222,9 +276,13 @@ export const StoryPage: React.FC<StoryPageProps> = ({ onNavigate }) => {
                   { title: 'Peer-Vouched Verification', desc: 'Reputable Pioneers confirm deliverables before promotions occur.' },
                   { title: 'Sovereign Escrow Rails', desc: 'Protected payments that guarantee immediate disbursements upon milestone clearance.' }
                 ].map((item, idx) => (
-                  <div key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 13.5, color: 'rgba(255,255,255,0.85)', lineHeight: 1.6 }}>
-                    <span style={{ color: RF_MINT_ACCENT, fontSize: 16, lineHeight: 1.2, flexShrink: 0 }}>•</span>
-                    <span><strong style={{ color: '#FFFFFF' }}>{item.title}:</strong> {item.desc}</span>
+                  <div key={idx} style={{
+                    display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 13.5,
+                    color: isLight ? '#166534' : 'rgba(255,255,255,0.85)',
+                    lineHeight: 1.6
+                  }}>
+                    <span style={{ color: isLight ? '#15803D' : RF_MINT_ACCENT, fontSize: 16, lineHeight: 1.2, flexShrink: 0 }}>•</span>
+                    <span><strong style={{ color: isLight ? '#0A1C12' : '#FFFFFF' }}>{item.title}:</strong> {item.desc}</span>
                   </div>
                 ))}
               </div>
@@ -235,28 +293,35 @@ export const StoryPage: React.FC<StoryPageProps> = ({ onNavigate }) => {
 
       {/* Chapter 2: The Founder - Tonye Taylor */}
       <section id="founder" style={{
-        background: `linear-gradient(180deg, #07180F 0%, ${RF_DEEP_GREEN}44 50%, #05120B 100%)`,
+        background: isLight
+          ? 'linear-gradient(180deg, #F8FAF9 0%, #F1F6F3 100%)'
+          : `linear-gradient(180deg, #07180F 0%, ${RF_DEEP_GREEN}44 50%, #05120B 100%)`,
         padding: '100px 24px',
-        borderTop: '1px solid rgba(102, 187, 42, 0.15)',
-        borderBottom: '1px solid rgba(102, 187, 42, 0.15)'
+        borderTop: isLight ? '1px solid rgba(15, 46, 30, 0.1)' : '1px solid rgba(102, 187, 42, 0.15)',
+        borderBottom: isLight ? '1px solid rgba(15, 46, 30, 0.1)' : '1px solid rgba(102, 187, 42, 0.15)'
       }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 54 }}>
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
-              color: RF_MINT_ACCENT, fontSize: 11, fontWeight: 700, letterSpacing: '0.14em',
+              color: isLight ? '#15803D' : RF_MINT_ACCENT, fontSize: 11, fontWeight: 700, letterSpacing: '0.14em',
               textTransform: 'uppercase', marginBottom: 12
             }}>
               <Shield size={14} />
               Chapter II • The Architect
             </div>
             <h2 style={{
-              fontSize: 'clamp(32px, 4.5vw, 52px)', fontWeight: 500, lineHeight: 1.15,
-              letterSpacing: '-0.02em', fontFamily: 'Plus Jakarta Sans, sans-serif'
+              fontSize: 'clamp(32px, 4.5vw, 52px)', fontWeight: 600, lineHeight: 1.15,
+              letterSpacing: '-0.02em', fontFamily: 'Plus Jakarta Sans, sans-serif',
+              color: isLight ? '#0A1C12' : '#FFFFFF'
             }}>
               Meet the Founder: Tonye Taylor
             </h2>
-            <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.7)', maxWidth: 680, margin: '14px auto 0', lineHeight: 1.6 }}>
+            <p style={{
+              fontSize: 16,
+              color: isLight ? '#273E31' : 'rgba(255,255,255,0.7)',
+              maxWidth: 680, margin: '14px auto 0', lineHeight: 1.6
+            }}>
               The journey, the obsession, and the philosophy behind building a sovereign economic bridge for Africa's most ambitious builders.
             </p>
           </div>
@@ -267,9 +332,10 @@ export const StoryPage: React.FC<StoryPageProps> = ({ onNavigate }) => {
           }}>
             {/* Founder Portrait & Meta Card */}
             <div style={{
-              background: `linear-gradient(145deg, ${RF_DEEP_GREEN}99 0%, #05120B 100%)`,
-              border: `1px solid ${RF_LEAF_GREEN}44`,
-              borderRadius: 20, overflow: 'hidden', display: 'flex', flexDirection: 'column'
+              background: isLight ? '#FFFFFF' : `linear-gradient(145deg, ${RF_DEEP_GREEN}99 0%, #05120B 100%)`,
+              border: isLight ? '1px solid rgba(15, 46, 30, 0.14)' : `1px solid ${RF_LEAF_GREEN}44`,
+              borderRadius: 20, overflow: 'hidden', display: 'flex', flexDirection: 'column',
+              boxShadow: isLight ? '0 12px 35px rgba(15, 46, 30, 0.06)' : 'none'
             }}>
               <div style={{ position: 'relative', width: '100%', aspectRatio: '16/11', overflow: 'hidden', background: '#020704' }}>
                 <img
@@ -291,10 +357,11 @@ export const StoryPage: React.FC<StoryPageProps> = ({ onNavigate }) => {
                 }} />
                 <div style={{
                   position: 'absolute', bottom: 14, left: 16,
-                  background: 'rgba(5, 18, 11, 0.85)', backdropFilter: 'blur(8px)',
-                  border: `1px solid ${RF_LEAF_GREEN}55`,
+                  background: isLight ? 'rgba(255, 255, 255, 0.92)' : 'rgba(5, 18, 11, 0.85)',
+                  backdropFilter: 'blur(8px)',
+                  border: isLight ? '1px solid rgba(21, 128, 61, 0.3)' : `1px solid ${RF_LEAF_GREEN}55`,
                   padding: '4px 12px', borderRadius: 100, fontSize: 11, fontWeight: 700,
-                  color: RF_MINT_ACCENT, letterSpacing: '0.08em', textTransform: 'uppercase'
+                  color: isLight ? '#15803D' : RF_MINT_ACCENT, letterSpacing: '0.08em', textTransform: 'uppercase'
                 }}>
                   Founder & Chief Architect
                 </div>
@@ -302,29 +369,32 @@ export const StoryPage: React.FC<StoryPageProps> = ({ onNavigate }) => {
 
               <div style={{ padding: '28px 24px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <div>
-                  <h3 style={{ fontSize: 24, fontWeight: 600, color: '#FFFFFF', marginBottom: 4 }}>
+                  <h3 style={{ fontSize: 24, fontWeight: 700, color: isLight ? '#0A1C12' : '#FFFFFF', marginBottom: 4 }}>
                     Tonye Taylor
                   </h3>
-                  <p style={{ fontSize: 13, color: RF_LEAF_GREEN, fontWeight: 500, marginBottom: 16 }}>
+                  <p style={{ fontSize: 13, color: isLight ? '#15803D' : RF_LEAF_GREEN, fontWeight: 600, marginBottom: 16 }}>
                     Founder & Protocol Architect • Refeir
                   </p>
 
-                  <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.75)', lineHeight: 1.65, marginBottom: 20 }}>
+                  <p style={{ fontSize: 14, color: isLight ? '#273E31' : 'rgba(255,255,255,0.75)', lineHeight: 1.65, marginBottom: 20 }}>
                     Systems thinker, product engineer, and community organizer. Tonye's work centers on unlocking high-trust human networks, removing institutional friction, and empowering African youth to earn sovereign incomes through verifiable proof-of-work.
                   </p>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10, paddingTop: 12, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                  <div style={{
+                    display: 'flex', flexDirection: 'column', gap: 10, paddingTop: 12,
+                    borderTop: isLight ? '1px solid rgba(15, 46, 30, 0.08)' : '1px solid rgba(255,255,255,0.08)'
+                  }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12.5 }}>
-                      <span style={{ color: 'rgba(255,255,255,0.45)' }}>Focus Area</span>
-                      <span style={{ color: '#FFFFFF', fontWeight: 500 }}>Referral Protocols, Sovereign Work & Escrow</span>
+                      <span style={{ color: isLight ? '#526E5E' : 'rgba(255,255,255,0.45)' }}>Focus Area</span>
+                      <span style={{ color: isLight ? '#0A1C12' : '#FFFFFF', fontWeight: 600 }}>Referral Protocols, Sovereign Work & Escrow</span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12.5 }}>
-                      <span style={{ color: 'rgba(255,255,255,0.45)' }}>Origin</span>
-                      <span style={{ color: '#FFFFFF', fontWeight: 500 }}>Nigeria • West Africa</span>
+                      <span style={{ color: isLight ? '#526E5E' : 'rgba(255,255,255,0.45)' }}>Origin</span>
+                      <span style={{ color: isLight ? '#0A1C12' : '#FFFFFF', fontWeight: 600 }}>Nigeria • West Africa</span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12.5 }}>
-                      <span style={{ color: 'rgba(255,255,255,0.45)' }}>Core Belief</span>
-                      <span style={{ color: RF_MINT_ACCENT, fontWeight: 500 }}>"Merit must always be verifiable."</span>
+                      <span style={{ color: isLight ? '#526E5E' : 'rgba(255,255,255,0.45)' }}>Core Belief</span>
+                      <span style={{ color: isLight ? '#15803D' : RF_MINT_ACCENT, fontWeight: 600 }}>"Merit must always be verifiable."</span>
                     </div>
                   </div>
                 </div>
@@ -334,41 +404,71 @@ export const StoryPage: React.FC<StoryPageProps> = ({ onNavigate }) => {
             {/* How & Why Tonye Founded Refeir */}
             <div id="why-refeir" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
               <div style={{
-                background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',
-                borderRadius: 18, padding: '26px 24px'
+                background: isLight ? '#FFFFFF' : 'rgba(255,255,255,0.03)',
+                border: isLight ? '1px solid rgba(15, 46, 30, 0.12)' : '1px solid rgba(255,255,255,0.08)',
+                borderRadius: 18, padding: '26px 24px',
+                boxShadow: isLight ? '0 6px 20px rgba(15, 46, 30, 0.04)' : 'none'
               }}>
-                <h4 style={{ fontSize: 18, fontWeight: 600, color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-                  <Target size={18} color={RF_MINT_ACCENT} />
+                <h4 style={{
+                  fontSize: 18, fontWeight: 700,
+                  color: isLight ? '#0A1C12' : '#FFFFFF',
+                  display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12
+                }}>
+                  <Target size={18} color={isLight ? '#15803D' : RF_MINT_ACCENT} />
                   Why Tonye Founded Refeir
                 </h4>
-                <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, margin: 0 }}>
-                  Witnessing firsthand how talented friends and colleagues struggled with unpaid client invoices, exploitative freelance fees, and the exhaustion of having to prove their credibility from scratch on every single project. Tonye realized that the core asset Africans possessed—<strong style={{ color: '#FFFFFF' }}>deep communal trust and mutual recommendation</strong>—was completely ignored by existing tech products. He founded Refeir to convert organic human recommendations into transparent, rewarding economic rails.
+                <p style={{
+                  fontSize: 14,
+                  color: isLight ? '#273E31' : 'rgba(255,255,255,0.75)',
+                  lineHeight: 1.7, margin: 0
+                }}>
+                  Witnessing firsthand how talented friends and colleagues struggled with unpaid client invoices, exploitative freelance fees, and the exhaustion of having to prove their credibility from scratch on every single project. Tonye realized that the core asset Africans possessed—<strong style={{ color: isLight ? '#0A1C12' : '#FFFFFF' }}>deep communal trust and mutual recommendation</strong>—was completely ignored by existing tech products. He founded Refeir to convert organic human recommendations into transparent, rewarding economic rails.
                 </p>
               </div>
 
               <div style={{
-                background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',
-                borderRadius: 18, padding: '26px 24px'
+                background: isLight ? '#FFFFFF' : 'rgba(255,255,255,0.03)',
+                border: isLight ? '1px solid rgba(15, 46, 30, 0.12)' : '1px solid rgba(255,255,255,0.08)',
+                borderRadius: 18, padding: '26px 24px',
+                boxShadow: isLight ? '0 6px 20px rgba(15, 46, 30, 0.04)' : 'none'
               }}>
-                <h4 style={{ fontSize: 18, fontWeight: 600, color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-                  <Zap size={18} color={RF_GOLD_YELLOW} />
+                <h4 style={{
+                  fontSize: 18, fontWeight: 700,
+                  color: isLight ? '#0A1C12' : '#FFFFFF',
+                  display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12
+                }}>
+                  <Zap size={18} color={isLight ? '#D97706' : RF_GOLD_YELLOW} />
                   How Tonye Built Refeir
                 </h4>
-                <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, margin: 0 }}>
+                <p style={{
+                  fontSize: 14,
+                  color: isLight ? '#273E31' : 'rgba(255,255,255,0.75)',
+                  lineHeight: 1.7, margin: 0
+                }}>
                   Tonye began by bootstrapping from first principles, rejecting venture terms that would have forced high take-rates on student freelancers. Instead, he conducted months of on-the-ground escrow trials across universities and co-working hubs, testing how referral payouts could be mathematically guaranteed. With that real-world feedback, he built the Refeir Pioneers architecture: multi-tiered divisions, proof-of-work submission consoles, and peer-verified progression.
                 </p>
               </div>
 
               <div style={{
-                background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',
-                borderRadius: 18, padding: '26px 24px'
+                background: isLight ? '#FFFFFF' : 'rgba(255,255,255,0.03)',
+                border: isLight ? '1px solid rgba(15, 46, 30, 0.12)' : '1px solid rgba(255,255,255,0.08)',
+                borderRadius: 18, padding: '26px 24px',
+                boxShadow: isLight ? '0 6px 20px rgba(15, 46, 30, 0.04)' : 'none'
               }}>
-                <h4 style={{ fontSize: 18, fontWeight: 600, color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-                  <Award size={18} color={RF_LEAF_GREEN} />
+                <h4 style={{
+                  fontSize: 18, fontWeight: 700,
+                  color: isLight ? '#0A1C12' : '#FFFFFF',
+                  display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12
+                }}>
+                  <Award size={18} color={isLight ? '#15803D' : RF_LEAF_GREEN} />
                   The Philosophy of Merit
                 </h4>
-                <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, margin: 0 }}>
-                  Tonye established the non-negotiable rule: <strong style={{ color: '#FFFFFF' }}>No automatic promotions.</strong> Every single title on Refeir—from Refeir Pioneer to Lead to Core Team—requires actual completed, verified missions. By eliminating superficial hype and rewarding delivered value, Refeir produces builders whose credentials are undisputed across the global market.
+                <p style={{
+                  fontSize: 14,
+                  color: isLight ? '#273E31' : 'rgba(255,255,255,0.75)',
+                  lineHeight: 1.7, margin: 0
+                }}>
+                  Tonye established the non-negotiable rule: <strong style={{ color: isLight ? '#0A1C12' : '#FFFFFF' }}>No automatic promotions.</strong> Every single title on Refeir—from Refeir Pioneer to Lead to Core Team—requires actual completed, verified missions. By eliminating superficial hype and rewarding delivered value, Refeir produces builders whose credentials are undisputed across the global market.
                 </p>
               </div>
             </div>
@@ -377,29 +477,42 @@ export const StoryPage: React.FC<StoryPageProps> = ({ onNavigate }) => {
       </section>
 
       {/* Chapter 3: Milestones & Chronological History */}
-      <section id="history" style={{ padding: '100px 24px', maxWidth: 1000, margin: '0 auto' }}>
+      <section id="history" style={{
+        padding: '100px 24px',
+        maxWidth: 1000,
+        margin: '0 auto',
+        background: 'transparent'
+      }}>
         <div style={{ textAlign: 'center', marginBottom: 54 }}>
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: 6,
-            color: RF_GOLD_YELLOW, fontSize: 11, fontWeight: 700, letterSpacing: '0.14em',
+            color: isLight ? '#B45309' : RF_GOLD_YELLOW, fontSize: 11, fontWeight: 700, letterSpacing: '0.14em',
             textTransform: 'uppercase', marginBottom: 12
           }}>
             <Milestone size={14} />
             Chapter III • The Journey
           </div>
           <h2 style={{
-            fontSize: 'clamp(32px, 4.5vw, 50px)', fontWeight: 500, lineHeight: 1.15,
-            letterSpacing: '-0.02em', fontFamily: 'Plus Jakarta Sans, sans-serif'
+            fontSize: 'clamp(32px, 4.5vw, 50px)', fontWeight: 600, lineHeight: 1.15,
+            letterSpacing: '-0.02em', fontFamily: 'Plus Jakarta Sans, sans-serif',
+            color: isLight ? '#0A1C12' : '#FFFFFF'
           }}>
             The History & Key Milestones
           </h2>
-          <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.7)', maxWidth: 640, margin: '14px auto 0', lineHeight: 1.6 }}>
+          <p style={{
+            fontSize: 16,
+            color: isLight ? '#273E31' : 'rgba(255,255,255,0.7)',
+            maxWidth: 640, margin: '14px auto 0', lineHeight: 1.6
+          }}>
             Every breakthrough begins with an unyielding conviction. Here is how Refeir evolved from an idea into a continent-wide movement.
           </p>
         </div>
 
         {/* Timeline Component */}
-        <div style={{ position: 'relative', paddingLeft: 28, borderLeft: `2px solid ${RF_LEAF_GREEN}44` }}>
+        <div style={{
+          position: 'relative', paddingLeft: 28,
+          borderLeft: `2px solid ${isLight ? 'rgba(21, 128, 61, 0.3)' : `${RF_LEAF_GREEN}44`}`
+        }}>
           {[
             {
               year: '2024 • Genesis & Problem Discovery',
@@ -430,33 +543,57 @@ export const StoryPage: React.FC<StoryPageProps> = ({ onNavigate }) => {
               {/* Timeline marker */}
               <div style={{
                 position: 'absolute', left: -36, top: 4, width: 14, height: 14,
-                borderRadius: '50%', background: idx === 2 ? RF_MINT_ACCENT : RF_LEAF_GREEN,
-                boxShadow: idx === 2 ? `0 0 12px ${RF_MINT_ACCENT}` : `0 0 8px ${RF_LEAF_GREEN}`,
-                border: '2px solid #05120B'
+                borderRadius: '50%',
+                background: idx === 2 ? (isLight ? '#15803D' : RF_MINT_ACCENT) : RF_LEAF_GREEN,
+                boxShadow: idx === 2
+                  ? (isLight ? '0 0 12px rgba(21, 128, 61, 0.5)' : `0 0 12px ${RF_MINT_ACCENT}`)
+                  : `0 0 8px ${RF_LEAF_GREEN}`,
+                border: isLight ? '2px solid #FFFFFF' : '2px solid #05120B'
               }} />
 
               <div style={{
-                background: idx === 2 ? `linear-gradient(135deg, ${RF_DEEP_GREEN}88 0%, #07180F 100%)` : 'rgba(255,255,255,0.025)',
-                border: idx === 2 ? `1px solid ${RF_LEAF_GREEN}66` : '1px solid rgba(255,255,255,0.08)',
-                borderRadius: 16, padding: '24px 26px', transition: 'all 0.2s'
+                background: idx === 2
+                  ? (isLight ? '#F0FDF4' : `linear-gradient(135deg, ${RF_DEEP_GREEN}88 0%, #07180F 100%)`)
+                  : (isLight ? '#FFFFFF' : 'rgba(255,255,255,0.025)'),
+                border: idx === 2
+                  ? (isLight ? '1px solid rgba(21, 128, 61, 0.3)' : `1px solid ${RF_LEAF_GREEN}66`)
+                  : (isLight ? '1px solid rgba(15, 46, 30, 0.1)' : '1px solid rgba(255,255,255,0.08)'),
+                borderRadius: 16, padding: '24px 26px', transition: 'all 0.2s',
+                boxShadow: isLight ? '0 4px 18px rgba(15, 46, 30, 0.04)' : 'none'
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8, marginBottom: 8 }}>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: idx === 2 ? RF_MINT_ACCENT : RF_GOLD_YELLOW, letterSpacing: '0.08em' }}>
+                  <span style={{
+                    fontSize: 12, fontWeight: 700,
+                    color: idx === 2 ? (isLight ? '#15803D' : RF_MINT_ACCENT) : (isLight ? '#B45309' : RF_GOLD_YELLOW),
+                    letterSpacing: '0.08em'
+                  }}>
                     {step.year}
                   </span>
                   <span style={{
                     fontSize: 10.5, fontWeight: 600, padding: '3px 10px', borderRadius: 100,
-                    background: idx === 2 ? 'rgba(24, 252, 92, 0.15)' : 'rgba(255,255,255,0.06)',
-                    color: idx === 2 ? RF_MINT_ACCENT : 'rgba(255,255,255,0.7)',
+                    background: idx === 2
+                      ? (isLight ? 'rgba(21, 128, 61, 0.12)' : 'rgba(24, 252, 92, 0.15)')
+                      : (isLight ? 'rgba(15, 46, 30, 0.06)' : 'rgba(255,255,255,0.06)'),
+                    color: idx === 2
+                      ? (isLight ? '#15803D' : RF_MINT_ACCENT)
+                      : (isLight ? '#526E5E' : 'rgba(255,255,255,0.7)'),
                     textTransform: 'uppercase'
                   }}>
                     {step.badge}
                   </span>
                 </div>
-                <h3 style={{ fontSize: 20, fontWeight: 600, color: '#FFFFFF', marginBottom: 10 }}>
+                <h3 style={{
+                  fontSize: 20, fontWeight: 700,
+                  color: isLight ? '#0A1C12' : '#FFFFFF',
+                  marginBottom: 10
+                }}>
                   {step.title}
                 </h3>
-                <p style={{ fontSize: 14.5, color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, margin: 0 }}>
+                <p style={{
+                  fontSize: 14.5,
+                  color: isLight ? '#273E31' : 'rgba(255,255,255,0.75)',
+                  lineHeight: 1.7, margin: 0
+                }}>
                   {step.desc}
                 </p>
               </div>
@@ -467,29 +604,36 @@ export const StoryPage: React.FC<StoryPageProps> = ({ onNavigate }) => {
 
       {/* Chapter 4: The Future of Refeir */}
       <section id="future" style={{
-        background: `linear-gradient(180deg, #05120B 0%, ${RF_DEEP_GREEN}55 50%, #07180F 100%)`,
+        background: isLight
+          ? 'linear-gradient(180deg, #F8FAF9 0%, #F1F6F3 100%)'
+          : `linear-gradient(180deg, #05120B 0%, ${RF_DEEP_GREEN}55 50%, #07180F 100%)`,
         padding: '100px 24px',
-        borderTop: '1px solid rgba(102, 187, 42, 0.15)',
-        borderBottom: '1px solid rgba(102, 187, 42, 0.15)'
+        borderTop: isLight ? '1px solid rgba(15, 46, 30, 0.1)' : '1px solid rgba(102, 187, 42, 0.15)',
+        borderBottom: isLight ? '1px solid rgba(15, 46, 30, 0.1)' : '1px solid rgba(102, 187, 42, 0.15)'
       }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 54 }}>
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
-              color: RF_MINT_ACCENT, fontSize: 11, fontWeight: 700, letterSpacing: '0.14em',
+              color: isLight ? '#15803D' : RF_MINT_ACCENT, fontSize: 11, fontWeight: 700, letterSpacing: '0.14em',
               textTransform: 'uppercase', marginBottom: 12
             }}>
               <Globe size={14} />
               Chapter IV • The Horizon
             </div>
             <h2 style={{
-              fontSize: 'clamp(32px, 4.5vw, 52px)', fontWeight: 500, lineHeight: 1.2,
-              letterSpacing: '-0.02em', fontFamily: 'Plus Jakarta Sans, sans-serif'
+              fontSize: 'clamp(32px, 4.5vw, 52px)', fontWeight: 600, lineHeight: 1.2,
+              letterSpacing: '-0.02em', fontFamily: 'Plus Jakarta Sans, sans-serif',
+              color: isLight ? '#0A1C12' : '#FFFFFF'
             }}>
               Where Refeir is Going:<br />
               The Sovereign Future
             </h2>
-            <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.7)', maxWidth: 680, margin: '14px auto 0', lineHeight: 1.6 }}>
+            <p style={{
+              fontSize: 16,
+              color: isLight ? '#273E31' : 'rgba(255,255,255,0.7)',
+              maxWidth: 680, margin: '14px auto 0', lineHeight: 1.6
+            }}>
               We are not building another transactional marketplace. We are constructing the definitive economic protocol for African digital labor.
             </p>
           </div>
@@ -533,30 +677,41 @@ export const StoryPage: React.FC<StoryPageProps> = ({ onNavigate }) => {
               const IconComp = card.icon;
               return (
                 <div key={i} style={{
-                  background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',
-                  borderRadius: 18, padding: '26px 24px', transition: 'all 0.25s'
+                  background: isLight ? '#FFFFFF' : 'rgba(255,255,255,0.03)',
+                  border: isLight ? '1px solid rgba(15, 46, 30, 0.12)' : '1px solid rgba(255,255,255,0.08)',
+                  borderRadius: 18, padding: '26px 24px', transition: 'all 0.25s',
+                  boxShadow: isLight ? '0 6px 20px rgba(15, 46, 30, 0.04)' : 'none'
                 }}
                 onMouseEnter={e => {
-                  e.currentTarget.style.borderColor = `${RF_LEAF_GREEN}66`;
+                  e.currentTarget.style.borderColor = isLight ? 'rgba(21, 128, 61, 0.4)' : `${RF_LEAF_GREEN}66`;
                   e.currentTarget.style.transform = 'translateY(-3px)';
-                  e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
+                  e.currentTarget.style.background = isLight ? '#FFFFFF' : 'rgba(255,255,255,0.05)';
                 }}
                 onMouseLeave={e => {
-                  e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)';
+                  e.currentTarget.style.borderColor = isLight ? 'rgba(15, 46, 30, 0.12)' : 'rgba(255,255,255,0.08)';
                   e.currentTarget.style.transform = '';
-                  e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
+                  e.currentTarget.style.background = isLight ? '#FFFFFF' : 'rgba(255,255,255,0.03)';
                 }}>
                   <div style={{
                     width: 44, height: 44, borderRadius: 12,
-                    background: 'rgba(102, 187, 42, 0.12)', border: `1px solid ${RF_LEAF_GREEN}44`,
+                    background: isLight ? 'rgba(21, 128, 61, 0.08)' : 'rgba(102, 187, 42, 0.12)',
+                    border: isLight ? '1px solid rgba(21, 128, 61, 0.2)' : `1px solid ${RF_LEAF_GREEN}44`,
                     display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16
                   }}>
-                    <IconComp size={20} color={RF_MINT_ACCENT} />
+                    <IconComp size={20} color={isLight ? '#15803D' : RF_MINT_ACCENT} />
                   </div>
-                  <h3 style={{ fontSize: 18, fontWeight: 600, color: '#FFFFFF', marginBottom: 10 }}>
+                  <h3 style={{
+                    fontSize: 18, fontWeight: 700,
+                    color: isLight ? '#0A1C12' : '#FFFFFF',
+                    marginBottom: 10
+                  }}>
                     {card.title}
                   </h3>
-                  <p style={{ fontSize: 13.5, color: 'rgba(255,255,255,0.7)', lineHeight: 1.65, margin: 0 }}>
+                  <p style={{
+                    fontSize: 13.5,
+                    color: isLight ? '#273E31' : 'rgba(255,255,255,0.7)',
+                    lineHeight: 1.65, margin: 0
+                  }}>
                     {card.desc}
                   </p>
                 </div>
@@ -567,30 +722,40 @@ export const StoryPage: React.FC<StoryPageProps> = ({ onNavigate }) => {
       </section>
 
       {/* Chapter 5: Founder's Letter & Manifesto */}
-      <section id="manifesto" style={{ padding: '100px 24px', maxWidth: 860, margin: '0 auto' }}>
+      <section id="manifesto" style={{
+        padding: '100px 24px',
+        maxWidth: 860,
+        margin: '0 auto',
+        background: 'transparent'
+      }}>
         <div style={{
-          background: `linear-gradient(145deg, ${RF_DEEP_GREEN}99 0%, #07180F 100%)`,
-          border: `1px solid ${RF_LEAF_GREEN}44`,
-          borderRadius: 24, padding: 'clamp(28px, 5vw, 56px)', position: 'relative'
+          background: isLight ? '#FFFFFF' : `linear-gradient(145deg, ${RF_DEEP_GREEN}99 0%, #07180F 100%)`,
+          border: isLight ? '1px solid rgba(21, 128, 61, 0.25)' : `1px solid ${RF_LEAF_GREEN}44`,
+          borderRadius: 24, padding: 'clamp(28px, 5vw, 56px)', position: 'relative',
+          boxShadow: isLight ? '0 16px 45px rgba(15, 46, 30, 0.08)' : 'none'
         }}>
-          <Quote size={48} color={RF_MINT_ACCENT} style={{ opacity: 0.25, position: 'absolute', top: 32, right: 36 }} />
+          <Quote size={48} color={isLight ? '#15803D' : RF_MINT_ACCENT} style={{ opacity: isLight ? 0.15 : 0.25, position: 'absolute', top: 32, right: 36 }} />
 
           <div style={{
             display: 'inline-block', fontSize: 11, fontWeight: 700, letterSpacing: '0.14em',
-            color: RF_GOLD_YELLOW, textTransform: 'uppercase', marginBottom: 20
+            color: isLight ? '#B45309' : RF_GOLD_YELLOW, textTransform: 'uppercase', marginBottom: 20
           }}>
             A Personal Note From The Founder
           </div>
 
           <h3 style={{
-            fontSize: 'clamp(24px, 3.5vw, 36px)', fontWeight: 500, lineHeight: 1.25,
+            fontSize: 'clamp(24px, 3.5vw, 36px)', fontWeight: 600, lineHeight: 1.25,
             letterSpacing: '-0.02em', marginBottom: 24, fontFamily: 'Plus Jakarta Sans, sans-serif',
-            color: '#FFFFFF'
+            color: isLight ? '#0A1C12' : '#FFFFFF'
           }}>
             "We refuse to let another generation of African talent beg for validation."
           </h3>
 
-          <div style={{ fontSize: 15.5, color: 'rgba(255,255,255,0.85)', lineHeight: 1.8, display: 'flex', flexDirection: 'column', gap: 18 }}>
+          <div style={{
+            fontSize: 15.5,
+            color: isLight ? '#273E31' : 'rgba(255,255,255,0.85)',
+            lineHeight: 1.8, display: 'flex', flexDirection: 'column', gap: 18
+          }}>
             <p style={{ margin: 0 }}>
               Growing up and building within the African tech ecosystem, I have watched the most brilliant minds I know spend years applying for distant jobs, competing against 5,000 other candidates on predatory bidding sites, or doing uncredited freelance work for clients who vanish when the invoice arrives.
             </p>
@@ -605,12 +770,16 @@ export const StoryPage: React.FC<StoryPageProps> = ({ onNavigate }) => {
             </p>
           </div>
 
-          <div style={{ marginTop: 36, paddingTop: 24, borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
+          <div style={{
+            marginTop: 36, paddingTop: 24,
+            borderTop: isLight ? '1px solid rgba(15, 46, 30, 0.08)' : '1px solid rgba(255,255,255,0.1)',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16
+          }}>
             <div>
-              <div style={{ fontSize: 18, fontWeight: 600, color: '#FFFFFF', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+              <div style={{ fontSize: 18, fontWeight: 700, color: isLight ? '#0A1C12' : '#FFFFFF', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
                 Tonye Taylor
               </div>
-              <div style={{ fontSize: 12.5, color: RF_LEAF_GREEN, fontWeight: 500 }}>
+              <div style={{ fontSize: 12.5, color: isLight ? '#15803D' : RF_LEAF_GREEN, fontWeight: 600 }}>
                 Founder & Protocol Architect • Refeir
               </div>
             </div>
@@ -640,18 +809,26 @@ export const StoryPage: React.FC<StoryPageProps> = ({ onNavigate }) => {
 
       {/* Final Action CTA Banner */}
       <section style={{
-        background: `linear-gradient(135deg, ${RF_DARK_GREEN} 0%, #030a06 100%)`,
-        padding: '70px 24px', borderTop: '1px solid rgba(102, 187, 42, 0.15)',
+        background: isLight
+          ? 'linear-gradient(180deg, #EDF5F0 0%, #E3EFE7 100%)'
+          : `linear-gradient(135deg, ${RF_DARK_GREEN} 0%, #030a06 100%)`,
+        padding: '70px 24px',
+        borderTop: isLight ? '1px solid rgba(15, 46, 30, 0.1)' : '1px solid rgba(102, 187, 42, 0.15)',
         textAlign: 'center'
       }}>
         <div style={{ maxWidth: 700, margin: '0 auto' }}>
           <h3 style={{
-            fontSize: 'clamp(26px, 3.5vw, 38px)', fontWeight: 500, color: '#FFFFFF',
+            fontSize: 'clamp(26px, 3.5vw, 38px)', fontWeight: 600,
+            color: isLight ? '#0A1C12' : '#FFFFFF',
             marginBottom: 16, fontFamily: 'Plus Jakarta Sans, sans-serif'
           }}>
             Write the next chapter with us.
           </h3>
-          <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.7)', lineHeight: 1.6, marginBottom: 28 }}>
+          <p style={{
+            fontSize: 15,
+            color: isLight ? '#273E31' : 'rgba(255,255,255,0.7)',
+            lineHeight: 1.6, marginBottom: 28
+          }}>
             Whether you are an engineer, community builder, writer, or strategist—there is a squad waiting for your skills in the Founding 100 Pioneers.
           </p>
           <div className="rp-responsive-btn-group" style={{ maxWidth: 640, margin: '0 auto' }}>
@@ -670,13 +847,21 @@ export const StoryPage: React.FC<StoryPageProps> = ({ onNavigate }) => {
             <button
               onClick={() => onNavigate('/rewards')}
               style={{
-                background: 'rgba(255,255,255,0.05)', color: '#FFFFFF',
-                border: '1px solid rgba(255,255,255,0.2)', padding: '13px 24px',
+                background: isLight ? 'rgba(15, 46, 30, 0.05)' : 'rgba(255,255,255,0.05)',
+                color: isLight ? '#0A1C12' : '#FFFFFF',
+                border: isLight ? '1px solid rgba(15, 46, 30, 0.2)' : '1px solid rgba(255,255,255,0.2)',
+                padding: '13px 24px',
                 borderRadius: 100, fontSize: 14, fontWeight: 500, cursor: 'pointer',
                 transition: 'all 0.2s'
               }}
-              onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.4)')}
-              onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)')}
+              onMouseEnter={e => {
+                e.currentTarget.style.borderColor = isLight ? 'rgba(15, 46, 30, 0.4)' : 'rgba(255,255,255,0.4)';
+                e.currentTarget.style.color = isLight ? '#15803D' : '#FFFFFF';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.borderColor = isLight ? 'rgba(15, 46, 30, 0.2)' : 'rgba(255,255,255,0.2)';
+                e.currentTarget.style.color = isLight ? '#0A1C12' : '#FFFFFF';
+              }}
             >
               View Contributor Ladder
             </button>

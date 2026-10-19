@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { useTheme } from '../context/ThemeContext';
 import { Search, ChevronDown, HelpCircle, ArrowRight, MessageSquare, Mail } from 'lucide-react';
 import {
   RF_DEEP_GREEN,
@@ -116,6 +117,8 @@ const FAQ_DATABASE: FAQItem[] = [
 ];
 
 export const FAQPage: React.FC<FAQPageProps> = ({ onNavigate }) => {
+  const { theme } = useTheme();
+  const isLight = theme === 'light';
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [openIndices, setOpenIndices] = useState<number[]>([0]);
@@ -144,13 +147,18 @@ export const FAQPage: React.FC<FAQPageProps> = ({ onNavigate }) => {
     <div className="rp-faq-page" style={{ minHeight: '100vh', background: 'var(--rp-bg-page)', color: 'var(--rp-text-main)' }}>
       {/* Hero Header */}
       <section style={{
-        background: `linear-gradient(135deg, ${RF_DEEP_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
-        padding: '130px 24px 70px', position: 'relative', overflow: 'hidden', color: '#FFFFFF', textAlign: 'center'
+        background: isLight
+          ? 'radial-gradient(ellipse at 50% -20%, #E8F5EE 0%, #F5FAF7 70%, #FFFFFF 100%)'
+          : `linear-gradient(135deg, ${RF_DEEP_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
+        padding: '130px 24px 70px', position: 'relative', overflow: 'hidden',
+        color: isLight ? '#0A1C12' : '#FFFFFF', textAlign: 'center'
       }}>
         <div style={{ maxWidth: 840, margin: '0 auto', position: 'relative', zIndex: 2 }}>
           <span style={{
             display: 'inline-block', fontSize: 11, fontWeight: 700, letterSpacing: '0.16em',
-            color: RF_MINT_ACCENT, background: 'rgba(24, 252, 92, 0.1)', border: `1px solid ${RF_LEAF_GREEN}33`,
+            color: isLight ? '#0F4829' : RF_MINT_ACCENT,
+            background: isLight ? 'rgba(102, 187, 42, 0.12)' : 'rgba(24, 252, 92, 0.1)',
+            border: `1px solid ${isLight ? 'rgba(15, 46, 30, 0.16)' : `${RF_LEAF_GREEN}33`}`,
             padding: '6px 16px', borderRadius: 100, textTransform: 'uppercase', marginBottom: 20
           }}>
             Help Center & Knowledge Base
@@ -158,12 +166,15 @@ export const FAQPage: React.FC<FAQPageProps> = ({ onNavigate }) => {
 
           <h1 style={{
             fontSize: 'clamp(34px, 5vw, 64px)', fontWeight: 500, lineHeight: 1.15,
-            letterSpacing: '-0.02em', marginBottom: 20, fontFamily: 'Plus Jakarta Sans, sans-serif'
+            letterSpacing: '-0.02em', marginBottom: 20, fontFamily: 'Plus Jakarta Sans, sans-serif',
+            color: isLight ? '#0A1C12' : '#FFFFFF'
           }}>
             Frequently asked<br />
             <span style={{
               fontStyle: 'italic', fontWeight: 400,
-              background: `linear-gradient(135deg, ${RF_MINT_ACCENT} 0%, ${RF_LEAF_GREEN} 60%, ${RF_GOLD_YELLOW} 100%)`,
+              background: isLight
+                ? `linear-gradient(135deg, #0F4829 0%, ${RF_LEAF_GREEN} 60%, #B8860B 100%)`
+                : `linear-gradient(135deg, ${RF_MINT_ACCENT} 0%, ${RF_LEAF_GREEN} 60%, ${RF_GOLD_YELLOW} 100%)`,
               WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'
             }}>
               questions & answers.
@@ -171,7 +182,8 @@ export const FAQPage: React.FC<FAQPageProps> = ({ onNavigate }) => {
           </h1>
 
           <p style={{
-            fontSize: 'clamp(15px, 1.8vw, 18px)', color: 'rgba(255,255,255,0.85)',
+            fontSize: 'clamp(15px, 1.8vw, 18px)',
+            color: isLight ? '#273E31' : 'rgba(255,255,255,0.85)',
             lineHeight: 1.7, maxWidth: 640, margin: '0 auto 32px'
           }}>
             Everything you need to know about admissions, squad deliverables, referral economics, and pioneer community participation.
@@ -189,8 +201,10 @@ export const FAQPage: React.FC<FAQPageProps> = ({ onNavigate }) => {
               onChange={e => setSearchTerm(e.target.value)}
               style={{
                 width: '100%', padding: '14px 20px 14px 48px', borderRadius: 100,
-                background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)',
-                color: '#FFFFFF', fontSize: 14, outline: 'none', transition: 'all 0.2s',
+                background: isLight ? '#FFFFFF' : 'rgba(255,255,255,0.08)',
+                border: `1px solid ${isLight ? 'rgba(15, 46, 30, 0.18)' : 'rgba(255,255,255,0.2)'}`,
+                color: isLight ? '#0A1C12' : '#FFFFFF', fontSize: 14, outline: 'none', transition: 'all 0.2s',
+                boxShadow: isLight ? '0 4px 16px rgba(15, 46, 30, 0.06)' : 'none',
                 backdropFilter: 'blur(8px)'
               }}
             />
@@ -199,7 +213,7 @@ export const FAQPage: React.FC<FAQPageProps> = ({ onNavigate }) => {
       </section>
 
       {/* Categories Bar */}
-      <section style={{ padding: '30px 24px 10px', background: '#F8FAF9', borderBottom: '1px solid #E2E8F0' }}>
+      <section style={{ padding: '30px 24px 10px', background: isLight ? '#F8FAF9' : 'transparent', borderBottom: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255,255,255,0.08)' }}>
         <div className="rp-category-pill-bar" style={{ maxWidth: 840, margin: '0 auto', display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
           {categories.map(cat => {
             const isSelected = selectedCategory === cat;
@@ -210,9 +224,9 @@ export const FAQPage: React.FC<FAQPageProps> = ({ onNavigate }) => {
                 style={{
                   padding: '8px 18px', borderRadius: 100, fontSize: 13,
                   fontWeight: isSelected ? 600 : 500, cursor: 'pointer', transition: 'all 0.2s',
-                  background: isSelected ? RF_DEEP_GREEN : '#FFFFFF',
-                  color: isSelected ? '#FFFFFF' : '#475569',
-                  border: `1px solid ${isSelected ? RF_DEEP_GREEN : '#E2E8F0'}`
+                  background: isSelected ? RF_DEEP_GREEN : (isLight ? '#FFFFFF' : 'rgba(255,255,255,0.05)'),
+                  color: isSelected ? '#FFFFFF' : (isLight ? '#475569' : 'rgba(255,255,255,0.7)'),
+                  border: `1px solid ${isSelected ? RF_DEEP_GREEN : (isLight ? '#E2E8F0' : 'rgba(255,255,255,0.1)')}`
                 }}
               >
                 {cat}
@@ -223,20 +237,20 @@ export const FAQPage: React.FC<FAQPageProps> = ({ onNavigate }) => {
       </section>
 
       {/* Accordion Questions List */}
-      <section style={{ padding: '60px 24px 90px', background: '#F8FAF9' }}>
+      <section style={{ padding: '60px 24px 90px', background: isLight ? '#F8FAF9' : 'transparent' }}>
         <div style={{ maxWidth: 840, margin: '0 auto' }}>
           {filteredFaqs.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '60px 20px', background: '#FFFFFF', borderRadius: 16, border: '1px solid #E2E8F0' }}>
+            <div style={{ textAlign: 'center', padding: '60px 20px', background: isLight ? '#FFFFFF' : '#0B1F15', borderRadius: 16, border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255,255,255,0.1)' }}>
               <HelpCircle size={40} color="#94A3B8" style={{ margin: '0 auto 12px' }} />
-              <h3 style={{ fontSize: 18, fontWeight: 600, color: '#334155', marginBottom: 6 }}>No matching questions found</h3>
-              <p style={{ fontSize: 14, color: '#64748B', marginBottom: 20 }}>
+              <h3 style={{ fontSize: 18, fontWeight: 600, color: isLight ? '#0A1C12' : '#FFFFFF', marginBottom: 6 }}>No matching questions found</h3>
+              <p style={{ fontSize: 14, color: isLight ? '#475569' : 'rgba(255,255,255,0.7)', marginBottom: 20 }}>
                 Try adjusting your search terms or view all categories.
               </p>
               <button
                 onClick={() => { setSearchTerm(''); setSelectedCategory('All'); }}
                 style={{
-                  background: '#F1F5F9', border: 'none', padding: '9px 18px', borderRadius: 100,
-                  fontSize: 13, fontWeight: 600, color: '#1E293B', cursor: 'pointer'
+                  background: isLight ? '#EDF5F0' : 'rgba(255,255,255,0.1)', border: 'none', padding: '9px 18px', borderRadius: 100,
+                  fontSize: 13, fontWeight: 600, color: isLight ? '#0A1C12' : '#FFFFFF', cursor: 'pointer'
                 }}
               >
                 Reset filters
@@ -250,10 +264,10 @@ export const FAQPage: React.FC<FAQPageProps> = ({ onNavigate }) => {
                   <div
                     key={idx}
                     style={{
-                      border: `1px solid ${isOpen ? RF_LEAF_GREEN : '#E2E8F0'}`,
+                      border: `1px solid ${isOpen ? RF_LEAF_GREEN : (isLight ? '#E2E8F0' : 'rgba(255,255,255,0.08)')}`,
                       borderRadius: 16, overflow: 'hidden', transition: 'all 0.2s',
-                      background: isOpen ? '#FFFFFF' : '#FFFFFF',
-                      boxShadow: isOpen ? '0 6px 24px rgba(0,0,0,0.04)' : 'none'
+                      background: isLight ? '#FFFFFF' : '#08170F',
+                      boxShadow: isOpen ? (isLight ? '0 6px 24px rgba(15,46,30,0.06)' : '0 6px 24px rgba(0,0,0,0.4)') : 'none'
                     }}
                   >
                     <button
@@ -265,7 +279,7 @@ export const FAQPage: React.FC<FAQPageProps> = ({ onNavigate }) => {
                         border: 'none', cursor: 'pointer', gap: 16, textAlign: 'left'
                       }}
                     >
-                      <span style={{ fontSize: 15.5, fontWeight: 600, color: RF_DEEP_GREEN, letterSpacing: '-0.01em' }}>
+                      <span style={{ fontSize: 15.5, fontWeight: 600, color: isLight ? '#0A1C12' : '#FFFFFF', letterSpacing: '-0.01em' }}>
                         {faq.q}
                       </span>
                       <div style={{
@@ -278,8 +292,8 @@ export const FAQPage: React.FC<FAQPageProps> = ({ onNavigate }) => {
                     </button>
 
                     {isOpen && (
-                      <div style={{ padding: '0 24px 22px', borderTop: '1px solid #F1F5F9' }}>
-                        <p style={{ fontSize: 14.5, color: '#475569', lineHeight: 1.75, margin: '14px 0 0' }}>
+                      <div style={{ padding: '0 24px 22px', borderTop: isLight ? '1px solid #F1F5F9' : '1px solid rgba(255,255,255,0.08)' }}>
+                        <p style={{ fontSize: 14.5, color: isLight ? '#334155' : 'rgba(255,255,255,0.75)', lineHeight: 1.75, margin: '14px 0 0' }}>
                           {faq.a}
                         </p>
                       </div>
@@ -292,15 +306,19 @@ export const FAQPage: React.FC<FAQPageProps> = ({ onNavigate }) => {
 
           {/* Still Have Questions Box */}
           <div style={{
-            marginTop: 60, background: '#FFFFFF', borderRadius: 20, padding: '36px 32px',
-            border: '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between',
+            marginTop: 60,
+            background: isLight ? '#FFFFFF' : '#0B1F15',
+            borderRadius: 20, padding: '36px 32px',
+            border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255,255,255,0.1)',
+            boxShadow: isLight ? '0 8px 30px rgba(15,46,30,0.04)' : 'none',
+            display: 'flex', justifyContent: 'space-between',
             alignItems: 'center', flexWrap: 'wrap', gap: 20
           }}>
             <div>
-              <h3 style={{ fontSize: 20, fontWeight: 500, fontFamily: 'Plus Jakarta Sans, sans-serif', color: RF_DEEP_GREEN, margin: '0 0 6px' }}>
+              <h3 style={{ fontSize: 20, fontWeight: 600, fontFamily: 'Plus Jakarta Sans, sans-serif', color: isLight ? '#0A1C12' : '#FFFFFF', margin: '0 0 6px' }}>
                 Still have a question?
               </h3>
-              <p style={{ fontSize: 14, color: '#64748B', margin: 0 }}>
+              <p style={{ fontSize: 14, color: isLight ? '#475569' : 'rgba(255,255,255,0.7)', margin: 0 }}>
                 Our team is always available to clarify any details about the Pioneer program.
               </p>
             </div>
@@ -309,7 +327,9 @@ export const FAQPage: React.FC<FAQPageProps> = ({ onNavigate }) => {
               <button
                 onClick={() => onNavigate('/contact')}
                 style={{
-                  background: RF_DEEP_GREEN, color: '#FFFFFF', border: 'none',
+                  background: isLight ? '#EDF5F0' : 'rgba(255,255,255,0.08)',
+                  color: isLight ? '#0A1C12' : '#FFFFFF',
+                  border: isLight ? '1px solid rgba(15,46,30,0.14)' : '1px solid rgba(255,255,255,0.2)',
                   padding: '11px 22px', borderRadius: 100, fontSize: 13.5, fontWeight: 600,
                   cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 7
                 }}
