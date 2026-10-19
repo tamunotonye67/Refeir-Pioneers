@@ -3016,7 +3016,7 @@ const ContributorLadder: React.FC<{ onNavigate: (path: string) => void }> = ({ o
             </button>
           </div>
 
-          <p style={{
+          <p className="rp-ladder-detail-tagline" style={{
             fontSize: 14.5,
             color: 'rgba(255,255,255,0.78)',
             fontStyle: 'italic',
@@ -3046,7 +3046,7 @@ const ContributorLadder: React.FC<{ onNavigate: (path: string) => void }> = ({ o
                   How to Qualify
                 </span>
               </div>
-              <p style={{ fontSize: 14.5, color: 'rgba(255,255,255,0.85)', lineHeight: 1.7, margin: 0 }}>
+              <p className="rp-ladder-detail-text" style={{ fontSize: 14.5, color: 'rgba(255,255,255,0.85)', lineHeight: 1.7, margin: 0 }}>
                 {active.criteria}
               </p>
             </div>
@@ -3070,7 +3070,7 @@ const ContributorLadder: React.FC<{ onNavigate: (path: string) => void }> = ({ o
                   Unlocked Rewards & Privileges
                 </span>
               </div>
-              <p style={{ fontSize: 14.5, color: 'rgba(255,255,255,0.85)', lineHeight: 1.7, margin: 0 }}>
+              <p className="rp-ladder-detail-text" style={{ fontSize: 14.5, color: 'rgba(255,255,255,0.85)', lineHeight: 1.7, margin: 0 }}>
                 {active.rewards}
               </p>
             </div>
@@ -3091,7 +3091,7 @@ const ContributorLadder: React.FC<{ onNavigate: (path: string) => void }> = ({ o
             }}>
               <Shield size={16} color={RF_MINT_ACCENT} style={{ display: 'block', flexShrink: 0 }} />
             </div>
-            <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.88)', lineHeight: 1.6, flex: 1 }}>
+            <span className="rp-ladder-execution-text" style={{ fontSize: 13, color: 'rgba(255,255,255,0.88)', lineHeight: 1.6, flex: 1 }}>
               <strong style={{ color: '#FFFFFF' }}>Execution Over Attendance:</strong> Merely joining WhatsApp does not qualify for Level 2 badges or bounty pools. Progression requires completing verified missions logged in your Pioneer profile.
             </span>
           </div>
