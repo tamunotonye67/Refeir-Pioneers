@@ -991,9 +991,9 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
               onClick={() => onNavigate('/signin')}
               className="rp-nav-signin"
               style={{
-                background: 'rgba(255, 255, 255, 0.08)',
-                border: '1px solid rgba(255, 255, 255, 0.18)',
-                color: '#FFFFFF',
+                background: theme === 'light' ? 'rgba(15, 46, 30, 0.06)' : 'rgba(255, 255, 255, 0.08)',
+                border: theme === 'light' ? '1px solid rgba(15, 46, 30, 0.18)' : '1px solid rgba(255, 255, 255, 0.18)',
+                color: theme === 'light' ? '#0A1C12' : '#FFFFFF',
                 fontSize: 12.5,
                 fontWeight: 600,
                 cursor: 'pointer',
@@ -1003,12 +1003,12 @@ export const PioneersNav: React.FC<PioneersNavProps> = ({ currentPath = '/', onN
                 whiteSpace: 'nowrap'
               }}
               onMouseEnter={e => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.14)';
-                e.currentTarget.style.color = RF_MINT_ACCENT;
+                e.currentTarget.style.background = theme === 'light' ? 'rgba(15, 46, 30, 0.12)' : 'rgba(255, 255, 255, 0.14)';
+                e.currentTarget.style.color = theme === 'light' ? '#15803D' : RF_MINT_ACCENT;
               }}
               onMouseLeave={e => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
-                e.currentTarget.style.color = '#FFFFFF';
+                e.currentTarget.style.background = theme === 'light' ? 'rgba(15, 46, 30, 0.06)' : 'rgba(255, 255, 255, 0.08)';
+                e.currentTarget.style.color = theme === 'light' ? '#0A1C12' : '#FFFFFF';
               }}
             >
               Sign In

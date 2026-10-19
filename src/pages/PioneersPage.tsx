@@ -13,6 +13,7 @@ import {
   Layers, Compass, MapPin, ChevronLeft, ChevronRight, Play, Pause,
   Volume2, VolumeX, Maximize2, Copy
 } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
 
 // ─── Official Refeir Brand Colors (Deep Green & Emerald Palette) ──────────────
 const RF_DEEP_GREEN   = '#0F2E1E';   // Primary Sovereign Dark Green
@@ -86,6 +87,8 @@ const AFRICAN_COUNTRIES = [
 
 // ─── Network Canvas ──────────────────────────────────────────────────────────
 const NetworkCanvas: React.FC = () => {
+  const { theme } = useTheme();
+  const isLight = theme === 'light';
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animRef = useRef<number>(0);
 
@@ -130,8 +133,8 @@ const NetworkCanvas: React.FC = () => {
           const dy = nodes[i].y - nodes[j].y;
           const dist = Math.sqrt(dx * dx + dy * dy);
           if (dist < 155) {
-            const alpha = (1 - dist / 155) * 0.32;
-            ctx.strokeStyle = `rgba(102, 187, 42, ${alpha})`;
+            const alpha = (1 - dist / 155) * (isLight ? 0.24 : 0.32);
+            ctx.strokeStyle = isLight ? `rgba(21, 128, 61, ${alpha})` : `rgba(102, 187, 42, ${alpha})`;
             ctx.lineWidth = 0.95;
             ctx.beginPath();
             ctx.moveTo(nodes[i].x, nodes[i].y);
@@ -144,20 +147,24 @@ const NetworkCanvas: React.FC = () => {
       // Glowing nodes
       for (const n of nodes) {
         const glow = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.r * 3.5);
-        glow.addColorStop(0, n.label ? 'rgba(102, 187, 42, 0.55)' : 'rgba(24, 252, 92, 0.2)');
+        glow.addColorStop(0, n.label 
+          ? (isLight ? 'rgba(21, 128, 61, 0.28)' : 'rgba(102, 187, 42, 0.55)') 
+          : (isLight ? 'rgba(21, 128, 61, 0.12)' : 'rgba(24, 252, 92, 0.2)'));
         glow.addColorStop(1, 'rgba(102, 187, 42, 0)');
         ctx.fillStyle = glow;
         ctx.beginPath();
         ctx.arc(n.x, n.y, n.r * 3.5, 0, Math.PI * 2);
         ctx.fill();
 
-        ctx.fillStyle = n.label ? RF_MINT_ACCENT : 'rgba(102, 187, 42, 0.75)';
+        ctx.fillStyle = n.label 
+          ? (isLight ? '#15803D' : RF_MINT_ACCENT) 
+          : (isLight ? 'rgba(21, 128, 61, 0.65)' : 'rgba(102, 187, 42, 0.75)');
         ctx.beginPath();
         ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
         ctx.fill();
 
         if (n.label) {
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+          ctx.fillStyle = isLight ? '#0A1C12' : 'rgba(255, 255, 255, 0.85)';
           ctx.font = '700 9px Plus Jakarta Sans, sans-serif';
           ctx.textAlign = 'center';
           ctx.fillText(n.label, n.x, n.y + 18);
@@ -196,6 +203,8 @@ const scrollToId = (id: string) => {
 
 // ─── HERO SECTION WITH VISUAL COMMUNITY SHOWCASE ──────────────────────────────
 const HeroSection: React.FC = () => {
+  const { theme } = useTheme();
+  const isLight = theme === 'light';
   const [isTurboSpinning, setIsTurboSpinning] = useState(false);
   const turboTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -221,19 +230,25 @@ const HeroSection: React.FC = () => {
 
   return (
     <section id="hero" style={{
-      minHeight: '100vh', background: `radial-gradient(ellipse 80% 80% at 50% -20%, ${RF_GREEN}33 0%, ${RF_DEEP_GREEN} 70%)`,
+      minHeight: '100vh',
+      background: isLight
+        ? `radial-gradient(ellipse 80% 80% at 50% -20%, rgba(102, 187, 42, 0.14) 0%, #F5FAF7 70%)`
+        : `radial-gradient(ellipse 80% 80% at 50% -20%, ${RF_GREEN}33 0%, ${RF_DEEP_GREEN} 70%)`,
       position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'center', paddingTop: 76, paddingBottom: 24
     }}>
       {/* Network Canvas */}
-      <div style={{ position: 'absolute', inset: 0, opacity: 0.65 }}>
+      <div style={{ position: 'absolute', inset: 0, opacity: isLight ? 0.8 : 0.65 }}>
         <NetworkCanvas />
       </div>
 
       {/* Refeir Brand Ambient Glow */}
       <div style={{
         position: 'absolute', inset: 0,
-        background: `radial-gradient(circle at 80% 40%, ${RF_LEAF_GREEN}12 0%, transparent 60%),
-                     radial-gradient(circle at 20% 80%, ${RF_GOLD_YELLOW}0a 0%, transparent 50%)`
+        background: isLight
+          ? `radial-gradient(circle at 80% 40%, rgba(102, 187, 42, 0.08) 0%, transparent 60%),
+             radial-gradient(circle at 20% 80%, rgba(246, 178, 26, 0.06) 0%, transparent 50%)`
+          : `radial-gradient(circle at 80% 40%, ${RF_LEAF_GREEN}12 0%, transparent 60%),
+             radial-gradient(circle at 20% 80%, ${RF_GOLD_YELLOW}0a 0%, transparent 50%)`
       }} />
 
       <div style={{
@@ -251,14 +266,16 @@ const HeroSection: React.FC = () => {
               className="rp-hero-headline"
               style={{
                 fontSize: 'clamp(36px, 5.4vw, 68px)', fontWeight: 800, lineHeight: 1.08,
-                color: '#FFFFFF', letterSpacing: '-0.035em', marginBottom: 20,
+                color: isLight ? '#0A1C12' : '#FFFFFF', letterSpacing: '-0.035em', marginBottom: 20,
                 fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif"
               }}
             >
               Don't wait for Africa's future.<br />
               <span style={{
                 fontWeight: 800,
-                background: `linear-gradient(135deg, ${RF_MINT_ACCENT} 0%, ${RF_LEAF_GREEN} 60%, ${RF_GOLD_YELLOW} 100%)`,
+                background: isLight
+                  ? `linear-gradient(135deg, #15803D 0%, #16A34A 50%, #B45309 100%)`
+                  : `linear-gradient(135deg, ${RF_MINT_ACCENT} 0%, ${RF_LEAF_GREEN} 60%, ${RF_GOLD_YELLOW} 100%)`,
                 WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'
               }}>
                 Help build it.
@@ -267,7 +284,8 @@ const HeroSection: React.FC = () => {
 
             {/* Subheading */}
             <p style={{
-              fontSize: 'clamp(15px, 1.8vw, 19px)', color: 'rgba(255,255,255,0.88)',
+              fontSize: 'clamp(15px, 1.8vw, 19px)',
+              color: isLight ? '#273E31' : 'rgba(255,255,255,0.88)',
               fontWeight: 500, marginBottom: 24, lineHeight: 1.55
             }}>
               Join the people helping build Refeir, Africa's referral-powered freelance economy.
@@ -279,14 +297,14 @@ const HeroSection: React.FC = () => {
                 onClick={() => scrollToId('apply')}
                 style={{
                   background: RF_LEAF_GREEN, color: RF_DEEP_GREEN, border: 'none',
-                  padding: '12px 28px', borderRadius: 100, fontSize: 13.5, fontWeight: 600,
+                  padding: '12px 28px', borderRadius: 100, fontSize: 13.5, fontWeight: 700,
                   cursor: 'pointer', letterSpacing: '0.01em', display: 'flex', alignItems: 'center', gap: 8,
                   transition: 'all 0.2s', boxShadow: `0 4px 18px ${RF_LEAF_GREEN}35`
                 }}
                 onMouseEnter={e => {
                   e.currentTarget.style.transform = 'translateY(-1px)';
-                  e.currentTarget.style.background = RF_MINT_ACCENT;
-                  e.currentTarget.style.boxShadow = `0 6px 24px ${RF_MINT_ACCENT}45`;
+                  e.currentTarget.style.background = isLight ? '#4ADE80' : RF_MINT_ACCENT;
+                  e.currentTarget.style.boxShadow = `0 6px 24px rgba(74, 222, 128, 0.45)`;
                 }}
                 onMouseLeave={e => {
                   e.currentTarget.style.transform = '';
@@ -299,21 +317,24 @@ const HeroSection: React.FC = () => {
 
               <button
                 onClick={() => scrollToId('how-it-works')}
+                className="rp-btn-ghost-hero"
                 style={{
-                  background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.9)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)', padding: '12px 24px',
-                  borderRadius: 100, fontSize: 13.5, fontWeight: 500, cursor: 'pointer',
+                  background: isLight ? 'rgba(15, 46, 30, 0.05)' : 'rgba(255,255,255,0.04)',
+                  color: isLight ? '#0A1C12' : 'rgba(255,255,255,0.9)',
+                  border: isLight ? '1px solid rgba(15, 46, 30, 0.22)' : '1px solid rgba(255, 255, 255, 0.2)',
+                  padding: '12px 24px',
+                  borderRadius: 100, fontSize: 13.5, fontWeight: 600, cursor: 'pointer',
                   letterSpacing: '0.01em', transition: 'all 0.2s'
                 }}
                 onMouseEnter={e => {
-                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.45)';
-                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
-                  e.currentTarget.style.color = '#FFFFFF';
+                  e.currentTarget.style.borderColor = isLight ? 'rgba(15, 46, 30, 0.4)' : 'rgba(255, 255, 255, 0.45)';
+                  e.currentTarget.style.background = isLight ? 'rgba(15, 46, 30, 0.1)' : 'rgba(255, 255, 255, 0.08)';
+                  e.currentTarget.style.color = isLight ? '#15803D' : '#FFFFFF';
                 }}
                 onMouseLeave={e => {
-                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-                  e.currentTarget.style.background = 'rgba(255,255,255,0.04)';
-                  e.currentTarget.style.color = 'rgba(255,255,255,0.9)';
+                  e.currentTarget.style.borderColor = isLight ? 'rgba(15, 46, 30, 0.22)' : 'rgba(255, 255, 255, 0.2)';
+                  e.currentTarget.style.background = isLight ? 'rgba(15, 46, 30, 0.05)' : 'rgba(255,255,255,0.04)';
+                  e.currentTarget.style.color = isLight ? '#0A1C12' : 'rgba(255,255,255,0.9)';
                 }}
               >
                 See how it works
@@ -327,7 +348,7 @@ const HeroSection: React.FC = () => {
               gap: 'clamp(8px, 2.5vw, 32px)',
               marginTop: 24,
               paddingTop: 18,
-              borderTop: '1px solid rgba(102, 187, 42, 0.2)',
+              borderTop: isLight ? '1px solid rgba(15, 46, 30, 0.14)' : '1px solid rgba(102, 187, 42, 0.2)',
               width: '100%'
             }}>
               {[
@@ -339,7 +360,7 @@ const HeroSection: React.FC = () => {
                   <div style={{
                     fontSize: 'clamp(14px, 3.8vw, 22px)',
                     fontWeight: 900,
-                    color: RF_MINT_ACCENT,
+                    color: isLight ? '#15803D' : RF_MINT_ACCENT,
                     letterSpacing: '-0.02em',
                     whiteSpace: 'nowrap',
                     textOverflow: 'ellipsis',
@@ -350,7 +371,7 @@ const HeroSection: React.FC = () => {
                   </div>
                   <div style={{
                     fontSize: 'clamp(8.5px, 2.2vw, 11px)',
-                    color: 'rgba(255,255,255,0.65)',
+                    color: isLight ? '#4A6354' : 'rgba(255,255,255,0.65)',
                     letterSpacing: '0.04em',
                     marginTop: 3,
                     lineHeight: 1.25,
@@ -525,6 +546,8 @@ declare global {
 }
 
 const FounderWelcomeSection: React.FC<FounderWelcomeSectionProps> = ({ onNavigate, onOpenStatus }) => {
+  const { theme } = useTheme();
+  const isLight = theme === 'light';
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [progress, setProgress] = useState(0);
@@ -773,12 +796,13 @@ const FounderWelcomeSection: React.FC<FounderWelcomeSectionProps> = ({ onNavigat
   return (
     <section
       id="founder-welcome"
+      className="rp-video-section"
       style={{
-        background: 'linear-gradient(180deg, #07180F 0%, #0B2417 50%, #07180F 100%)',
+        background: isLight ? '#EBF4EE' : 'linear-gradient(180deg, #07180F 0%, #0B2417 50%, #07180F 100%)',
         position: 'relative',
         padding: '80px 24px 92px',
-        borderTop: '1px solid rgba(102, 187, 42, 0.22)',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+        borderTop: isLight ? '1px solid rgba(15, 46, 30, 0.1)' : '1px solid rgba(102, 187, 42, 0.22)',
+        borderBottom: isLight ? '1px solid rgba(15, 46, 30, 0.08)' : '1px solid rgba(255, 255, 255, 0.08)',
         overflow: 'hidden'
       }}
     >
@@ -786,7 +810,9 @@ const FounderWelcomeSection: React.FC<FounderWelcomeSectionProps> = ({ onNavigat
       <div style={{
         position: 'absolute', top: '10%', left: '50%', transform: 'translateX(-50%)',
         width: '80%', height: 350,
-        background: 'radial-gradient(ellipse at center, rgba(24, 252, 92, 0.08) 0%, transparent 70%)',
+        background: isLight
+          ? 'radial-gradient(ellipse at center, rgba(102, 187, 42, 0.12) 0%, transparent 70%)'
+          : 'radial-gradient(ellipse at center, rgba(24, 252, 92, 0.08) 0%, transparent 70%)',
         filter: 'blur(60px)', pointerEvents: 'none'
       }} />
 
@@ -795,24 +821,30 @@ const FounderWelcomeSection: React.FC<FounderWelcomeSectionProps> = ({ onNavigat
         <div style={{ textAlign: 'center', maxWidth: 780, margin: '0 auto 40px' }}>
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: 6,
-            color: RF_MINT_ACCENT, fontSize: 11, fontWeight: 700, letterSpacing: '0.14em',
+            color: isLight ? '#15803D' : RF_MINT_ACCENT, fontSize: 11, fontWeight: 700, letterSpacing: '0.14em',
             textTransform: 'uppercase', marginBottom: 16
           }}>
             FOUNDER'S WELCOME NOTE
           </div>
 
-          <h2 style={{
-            fontSize: 'clamp(30px, 4.2vw, 52px)', fontWeight: 600,
-            lineHeight: 1.14, color: '#FFFFFF', letterSpacing: '-0.03em',
-            marginBottom: 16, fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif"
-          }}>
+          <h2
+            className="rp-video-title"
+            style={{
+              fontSize: 'clamp(30px, 4.2vw, 52px)', fontWeight: 600,
+              lineHeight: 1.14, color: isLight ? '#0A1C12' : '#FFFFFF', letterSpacing: '-0.03em',
+              marginBottom: 16, fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif"
+            }}
+          >
             Welcome to the ground floor of Africa's freelance economy.
           </h2>
 
-          <p style={{
-            fontSize: 'clamp(14.5px, 1.8vw, 16.5px)', color: 'rgba(255,255,255,0.7)',
-            margin: 0, fontWeight: 400, lineHeight: 1.7
-          }}>
+          <p
+            className="rp-video-desc"
+            style={{
+              fontSize: 'clamp(14.5px, 1.8vw, 16.5px)', color: isLight ? '#273E31' : 'rgba(255,255,255,0.7)',
+              margin: 0, fontWeight: 400, lineHeight: 1.7
+            }}
+          >
             A personal note from our founder to every builder, creator, and strategist considering joining Refeir Pioneers.
           </p>
         </div>
@@ -1042,9 +1074,9 @@ const FounderWelcomeSection: React.FC<FounderWelcomeSectionProps> = ({ onNavigat
             className="rp-video-btn-divisions"
             onClick={() => onNavigate('/divisions')}
             style={{
-              background: 'rgba(255,255,255,0.05)',
-              color: 'rgba(255,255,255,0.85)',
-              border: '1px solid rgba(255,255,255,0.16)',
+              background: isLight ? 'rgba(15, 46, 30, 0.05)' : 'rgba(255,255,255,0.05)',
+              color: isLight ? '#0A1C12' : 'rgba(255,255,255,0.85)',
+              border: isLight ? '1px solid rgba(15, 46, 30, 0.2)' : '1px solid rgba(255,255,255,0.16)',
               padding: '12px 24px',
               borderRadius: 100,
               fontSize: 13.5,
@@ -1056,12 +1088,12 @@ const FounderWelcomeSection: React.FC<FounderWelcomeSectionProps> = ({ onNavigat
               transition: 'all 0.2s'
             }}
             onMouseEnter={e => {
-              e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
-              e.currentTarget.style.color = '#FFFFFF';
+              e.currentTarget.style.background = isLight ? 'rgba(15, 46, 30, 0.1)' : 'rgba(255,255,255,0.1)';
+              e.currentTarget.style.color = isLight ? '#15803D' : '#FFFFFF';
             }}
             onMouseLeave={e => {
-              e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
-              e.currentTarget.style.color = 'rgba(255,255,255,0.85)';
+              e.currentTarget.style.background = isLight ? 'rgba(15, 46, 30, 0.05)' : 'rgba(255,255,255,0.05)';
+              e.currentTarget.style.color = isLight ? '#0A1C12' : 'rgba(255,255,255,0.85)';
             }}
           >
             <span>Explore Divisions</span>
@@ -1521,6 +1553,8 @@ const SquadFlatVectorArt: React.FC<{ squadId: string; color: string; title: stri
 };
 
 const WhoWeAreLookingFor: React.FC = () => {
+  const { theme } = useTheme();
+  const isLight = theme === 'light';
   const [activeSquadIndex, setActiveSquadIndex] = useState<number>(0);
   const [isDockExpanded, setIsDockExpanded] = useState<boolean>(false);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -1669,7 +1703,7 @@ const WhoWeAreLookingFor: React.FC = () => {
 
   return (
     <section id="divisions" style={{
-      background: `linear-gradient(180deg, ${RF_DEEP_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
+      background: isLight ? 'linear-gradient(180deg, #F5FAF7 0%, #EAF3EC 100%)' : `linear-gradient(180deg, ${RF_DEEP_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
       padding: '90px 0 48px',
       position: 'relative',
       overflow: 'visible'
@@ -1678,7 +1712,7 @@ const WhoWeAreLookingFor: React.FC = () => {
       <div style={{
         position: 'absolute', top: '20%', left: '50%', transform: 'translate(-50%, -50%)',
         width: 900, height: 500, borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(24, 252, 92, 0.06) 0%, transparent 70%)',
+        background: isLight ? 'radial-gradient(circle, rgba(102, 187, 42, 0.1) 0%, transparent 70%)' : 'radial-gradient(circle, rgba(24, 252, 92, 0.06) 0%, transparent 70%)',
         pointerEvents: 'none'
       }} />
 
@@ -1689,14 +1723,14 @@ const WhoWeAreLookingFor: React.FC = () => {
             display: 'inline-flex', alignItems: 'center', gap: 8,
             marginBottom: 14
           }}>
-            <div style={{ width: 6, height: 6, borderRadius: '50%', background: RF_MINT_ACCENT }} />
-            <span style={{ fontSize: 10.5, fontWeight: 700, color: RF_MINT_ACCENT, letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+            <div style={{ width: 6, height: 6, borderRadius: '50%', background: isLight ? '#15803D' : RF_MINT_ACCENT }} />
+            <span style={{ fontSize: 10.5, fontWeight: 700, color: isLight ? '#15803D' : RF_MINT_ACCENT, letterSpacing: '0.14em', textTransform: 'uppercase' }}>
               Squad Divisions
             </span>
           </div>
 
           <h2 style={{
-            fontSize: 'clamp(28px, 3.8vw, 46px)', fontWeight: 800, color: '#FFFFFF',
+            fontSize: 'clamp(28px, 3.8vw, 46px)', fontWeight: 800, color: isLight ? '#0A1C12' : '#FFFFFF',
             lineHeight: 1.15, letterSpacing: '-0.03em', fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif",
             marginBottom: 12
           }}>
@@ -1704,7 +1738,7 @@ const WhoWeAreLookingFor: React.FC = () => {
           </h2>
 
           <p style={{
-            fontSize: 14.5, color: 'rgba(255, 255, 255, 0.65)', maxWidth: 560, margin: '0 auto',
+            fontSize: 14.5, color: isLight ? '#273E31' : 'rgba(255, 255, 255, 0.65)', maxWidth: 560, margin: '0 auto',
             lineHeight: 1.6
           }}>
             Refeir is built across six specialized squads. Scroll down to see each squad emerge and stack into our sovereign roster.
@@ -1801,14 +1835,17 @@ const WhoWeAreLookingFor: React.FC = () => {
                     }}>
                       SQUAD {item.id} • {item.code}
                     </span>
-                    <span style={{
-                      fontSize: 12.5,
-                      fontWeight: 700,
-                      fontFamily: "'Plus Jakarta Sans', sans-serif",
-                      color: '#FFFFFF',
-                      letterSpacing: '-0.01em',
-                      opacity: 0.95
-                    }}>
+                    <span
+                      className="rp-tab-title"
+                      style={{
+                        fontSize: 12.5,
+                        fontWeight: 700,
+                        fontFamily: "'Plus Jakarta Sans', sans-serif",
+                        color: isLight ? '#0A1C12' : '#FFFFFF',
+                        letterSpacing: '-0.01em',
+                        opacity: 0.95
+                      }}
+                    >
                       {item.title}
                     </span>
                   </div>
@@ -1817,7 +1854,7 @@ const WhoWeAreLookingFor: React.FC = () => {
                     <span style={{
                       fontSize: 11,
                       fontWeight: 600,
-                      color: 'rgba(255, 255, 255, 0.45)',
+                      color: isLight ? '#526E5E' : 'rgba(255, 255, 255, 0.45)',
                       letterSpacing: '0.06em'
                     }}>
                       0{index + 1} OF 06
@@ -1833,7 +1870,7 @@ const WhoWeAreLookingFor: React.FC = () => {
                       fontFamily: "'Plus Jakarta Sans', sans-serif",
                       fontSize: 'clamp(24px, 3.2vw, 34px)',
                       fontWeight: 800,
-                      color: '#FFFFFF',
+                      color: isLight ? '#0A1C12' : '#FFFFFF',
                       letterSpacing: '-0.03em',
                       lineHeight: 1.15,
                       marginBottom: 6
@@ -1853,7 +1890,7 @@ const WhoWeAreLookingFor: React.FC = () => {
 
                     <p style={{
                       fontSize: 14.5,
-                      color: 'rgba(255, 255, 255, 0.75)',
+                      color: isLight ? '#273E31' : 'rgba(255, 255, 255, 0.75)',
                       lineHeight: 1.6,
                       marginBottom: 22,
                       maxWidth: 520
@@ -1866,14 +1903,15 @@ const WhoWeAreLookingFor: React.FC = () => {
                       {item.roles.map(r => (
                         <span
                           key={r}
+                          className="rp-card-role-pill"
                           style={{
-                            background: 'rgba(255, 255, 255, 0.04)',
-                            border: '1px solid rgba(255, 255, 255, 0.1)',
+                            background: isLight ? 'rgba(15, 46, 30, 0.05)' : 'rgba(255, 255, 255, 0.04)',
+                            border: isLight ? '1px solid rgba(15, 46, 30, 0.14)' : '1px solid rgba(255, 255, 255, 0.1)',
                             borderRadius: 100,
                             padding: '4px 12px',
                             fontSize: 12,
                             fontWeight: 500,
-                            color: 'rgba(255, 255, 255, 0.88)'
+                            color: isLight ? '#1A3425' : 'rgba(255, 255, 255, 0.88)'
                           }}
                         >
                           {r}
@@ -1916,10 +1954,11 @@ const WhoWeAreLookingFor: React.FC = () => {
                     {index < DIVISIONS_DATA.length - 1 && (
                       <button
                         onClick={() => handleJumpToSquad(index + 1)}
+                        className="rp-sticky-next-btn"
                         style={{
-                          background: 'rgba(255, 255, 255, 0.04)',
-                          border: '1px solid rgba(255, 255, 255, 0.12)',
-                          color: 'rgba(255, 255, 255, 0.7)',
+                          background: isLight ? 'rgba(15, 46, 30, 0.05)' : 'rgba(255, 255, 255, 0.04)',
+                          border: isLight ? '1px solid rgba(15, 46, 30, 0.16)' : '1px solid rgba(255, 255, 255, 0.12)',
+                          color: isLight ? '#0A1C12' : 'rgba(255, 255, 255, 0.7)',
                           padding: '10px 18px',
                           borderRadius: 100,
                           fontSize: 12,
@@ -1931,12 +1970,14 @@ const WhoWeAreLookingFor: React.FC = () => {
                           transition: 'all 0.2s ease'
                         }}
                         onMouseEnter={e => {
-                          e.currentTarget.style.color = '#FFFFFF';
-                          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+                          e.currentTarget.style.color = isLight ? '#15803D' : '#FFFFFF';
+                          e.currentTarget.style.borderColor = isLight ? 'rgba(15, 46, 30, 0.35)' : 'rgba(255, 255, 255, 0.3)';
+                          e.currentTarget.style.background = isLight ? 'rgba(15, 46, 30, 0.1)' : 'rgba(255, 255, 255, 0.08)';
                         }}
                         onMouseLeave={e => {
-                          e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)';
-                          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.12)';
+                          e.currentTarget.style.color = isLight ? '#0A1C12' : 'rgba(255, 255, 255, 0.7)';
+                          e.currentTarget.style.borderColor = isLight ? 'rgba(15, 46, 30, 0.16)' : 'rgba(255, 255, 255, 0.12)';
+                          e.currentTarget.style.background = isLight ? 'rgba(15, 46, 30, 0.05)' : 'rgba(255, 255, 255, 0.04)';
                         }}
                       >
                         <span>Next: {DIVISIONS_DATA[index + 1].shortTitle}</span>
@@ -2306,6 +2347,8 @@ const HowItWorks: React.FC = () => (
 
 // ─── THE FOUNDING 100 ─────────────────────────────────────────────────────────
 const Founding100: React.FC = () => {
+  const { theme } = useTheme();
+  const isLight = theme === 'light';
   const [count, setCount] = useState<number | null>(null);
 
   const updateCount = async () => {
@@ -2349,78 +2392,88 @@ const Founding100: React.FC = () => {
 
   return (
     <section className="rp-founding-section" style={{
-      background: `linear-gradient(135deg, ${RF_DEEP_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
+      background: isLight ? 'linear-gradient(135deg, #EAF4EE 0%, #DCECE1 100%)' : `linear-gradient(135deg, ${RF_DEEP_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
       padding: '100px 24px', position: 'relative', overflow: 'hidden'
     }}>
       <div style={{
-        position: 'absolute', inset: 0, opacity: 0.04,
-        backgroundImage: `radial-gradient(${RF_LEAF_GREEN} 1px, transparent 1px)`,
+        position: 'absolute', inset: 0, opacity: isLight ? 0.08 : 0.04,
+        backgroundImage: `radial-gradient(${isLight ? '#15803D' : RF_LEAF_GREEN} 1px, transparent 1px)`,
         backgroundSize: '22px 22px'
       }} />
 
       <div style={{ maxWidth: 840, margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 2 }}>
         <div style={{
           display: 'inline-block',
-          fontSize: 11, fontWeight: 900, color: RF_GOLD_YELLOW, letterSpacing: '0.22em', marginBottom: 32
+          fontSize: 11, fontWeight: 900, color: isLight ? '#B45309' : RF_GOLD_YELLOW, letterSpacing: '0.22em', marginBottom: 32
         }}>
           LIMITED OPPORTUNITY
         </div>
 
         <h2 style={{
-          fontSize: 'clamp(32px, 5vw, 60px)', fontWeight: 900, color: '#FFFFFF',
+          fontSize: 'clamp(32px, 5vw, 60px)', fontWeight: 900, color: isLight ? '#0A1C12' : '#FFFFFF',
           lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: 14,
           fontFamily: 'Plus Jakarta Sans, sans-serif'
         }}>
           <span className="rp-founding-p1">THE REFEIR </span>
-          <span className="rp-founding-p2">FOUNDING 100</span>
+          <span className="rp-founding-p2" style={{ color: isLight ? '#15803D' : RF_MINT_ACCENT }}>FOUNDING 100</span>
         </h2>
 
         <p style={{
-          fontSize: 'clamp(17px, 2.5vw, 22px)', fontWeight: 800, color: RF_GOLD_YELLOW,
+          fontSize: 'clamp(17px, 2.5vw, 22px)', fontWeight: 800, color: isLight ? '#B45309' : RF_GOLD_YELLOW,
           letterSpacing: '0.06em', marginBottom: 36
         }}>
           BE THERE BEFORE EVERYONE ELSE.
         </p>
 
-        <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.75)', lineHeight: 1.82, marginBottom: 16 }}>
+        <p style={{ fontSize: 16, color: isLight ? '#273E31' : 'rgba(255,255,255,0.75)', lineHeight: 1.82, marginBottom: 16 }}>
           We're opening the doors to the first 100 serious contributors who want to help shape Refeir from the beginning.
         </p>
-        <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.75)', lineHeight: 1.82, marginBottom: 48 }}>
+        <p style={{ fontSize: 16, color: isLight ? '#273E31' : 'rgba(255,255,255,0.75)', lineHeight: 1.82, marginBottom: 48 }}>
           The Founding 100 will become part of the early story of Refeir. They may receive special recognition, early access, leadership consideration and other community benefits based on meaningful contribution.
         </p>
 
         {/* Counter Box */}
         <div className="rp-founding-box" style={{
-          background: 'rgba(255,255,255,0.06)', border: `1.5px solid rgba(102, 187, 42, 0.35)`,
+          background: isLight ? '#FFFFFF' : 'rgba(255,255,255,0.06)',
+          border: isLight ? '1.5px solid rgba(15, 46, 30, 0.15)' : `1.5px solid rgba(102, 187, 42, 0.35)`,
           borderRadius: 24, padding: 'clamp(24px, 5vw, 40px) clamp(18px, 4vw, 48px)', marginBottom: 44,
           display: 'inline-block', width: '100%', maxWidth: 360, boxSizing: 'border-box',
-          boxShadow: '0 20px 50px rgba(0,0,0,0.5)'
+          boxShadow: isLight ? '0 16px 40px rgba(15, 46, 30, 0.08)' : '0 20px 50px rgba(0,0,0,0.5)'
         }}>
-          <p style={{ fontSize: 11, fontWeight: 800, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.18em', marginBottom: 14 }}>
+          <p style={{
+            fontSize: 11, fontWeight: 800,
+            color: isLight ? '#4A6354' : 'rgba(255,255,255,0.5)',
+            letterSpacing: '0.18em', marginBottom: 14
+          }}>
             FOUNDING PIONEERS
           </p>
           <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 8 }}>
-            <span style={{ fontSize: 72, fontWeight: 900, color: RF_MINT_ACCENT, lineHeight: 1, fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+            <span style={{
+              fontSize: 72, fontWeight: 900,
+              color: isLight ? '#15803D' : RF_MINT_ACCENT,
+              lineHeight: 1, fontFamily: 'Plus Jakarta Sans, sans-serif'
+            }}>
               {count !== null ? count : '—'}
             </span>
-            <span style={{ fontSize: 28, fontWeight: 700, color: 'rgba(255,255,255,0.35)' }}>/</span>
-            <span style={{ fontSize: 44, fontWeight: 900, color: 'rgba(255,255,255,0.55)' }}>100</span>
+            <span style={{ fontSize: 28, fontWeight: 700, color: isLight ? '#94A3B8' : 'rgba(255,255,255,0.35)' }}>/</span>
+            <span style={{ fontSize: 44, fontWeight: 900, color: isLight ? '#64748B' : 'rgba(255,255,255,0.55)' }}>100</span>
           </div>
 
           {/* Progress bar towards 100 Founding Seats */}
           <div style={{
             width: '100%', maxWidth: 260, height: 6, borderRadius: 100,
-            background: 'rgba(255,255,255,0.1)', margin: '16px auto 14px', overflow: 'hidden'
+            background: isLight ? 'rgba(15, 46, 30, 0.1)' : 'rgba(255,255,255,0.1)',
+            margin: '16px auto 14px', overflow: 'hidden'
           }}>
             <div style={{
               width: `${Math.min(100, count ? (count / 100) * 100 : 0)}%`,
               height: '100%', borderRadius: 100,
-              background: `linear-gradient(90deg, ${RF_LEAF_GREEN} 0%, ${RF_MINT_ACCENT} 100%)`,
+              background: `linear-gradient(90deg, ${RF_LEAF_GREEN} 0%, ${isLight ? '#15803D' : RF_MINT_ACCENT} 100%)`,
               transition: 'width 0.6s cubic-bezier(0.16, 1, 0.3, 1)'
             }} />
           </div>
 
-          <p style={{ fontSize: 13, color: RF_GOLD_YELLOW, margin: 0, fontWeight: 800 }}>
+          <p style={{ fontSize: 13, color: isLight ? '#B45309' : RF_GOLD_YELLOW, margin: 0, fontWeight: 800 }}>
             {count !== null ? (
               count >= 100
                 ? '0 seats remaining • Waitlist Active'
@@ -3050,6 +3103,8 @@ const ContributorLadder: React.FC<{ onNavigate: (path: string) => void }> = ({ o
 
 // ─── APPLICATION SECTION (MULTI-STEP FORM) ────────────────────────────────────
 const ApplicationSection: React.FC = () => {
+  const { theme } = useTheme();
+  const isLight = theme === 'light';
   const [step, setStep] = useState<AppStep>(1);
   const [form, setForm] = useState<FormData>(BLANK_FORM);
   const [status, setStatus] = useState<AppStatus>('idle');
@@ -3217,7 +3272,9 @@ const ApplicationSection: React.FC = () => {
   if (status === 'success') {
     return (
       <section id="apply" style={{
-        background: `linear-gradient(145deg, ${RF_DEEP_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
+        background: isLight
+          ? 'linear-gradient(180deg, #F0FDF4 0%, #E8F5E9 100%)'
+          : `linear-gradient(145deg, ${RF_DEEP_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
         padding: isMobile ? '44px 14px' : '88px 24px',
         minHeight: '60vh',
         display: 'flex',
@@ -3230,14 +3287,14 @@ const ApplicationSection: React.FC = () => {
             width: isMobile ? 54 : 64,
             height: isMobile ? 54 : 64,
             borderRadius: '50%',
-            background: 'rgba(24, 252, 92, 0.12)',
-            border: `1.5px solid ${RF_MINT_ACCENT}55`,
+            background: isLight ? 'rgba(21, 128, 61, 0.12)' : 'rgba(24, 252, 92, 0.12)',
+            border: `1.5px solid ${isLight ? '#15803D' : RF_MINT_ACCENT}55`,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             margin: '0 auto 16px',
-            color: RF_MINT_ACCENT,
-            boxShadow: '0 0 24px rgba(24, 252, 92, 0.25)'
+            color: isLight ? '#15803D' : RF_MINT_ACCENT,
+            boxShadow: isLight ? '0 0 24px rgba(21, 128, 61, 0.2)' : '0 0 24px rgba(24, 252, 92, 0.25)'
           }}>
             <Check size={isMobile ? 26 : 32} strokeWidth={3} />
           </div>
@@ -3245,7 +3302,7 @@ const ApplicationSection: React.FC = () => {
           <h2 style={{
             fontSize: isMobile ? 'clamp(22px, 5.5vw, 28px)' : 'clamp(28px, 3.5vw, 38px)',
             fontWeight: 900,
-            color: '#FFFFFF',
+            color: isLight ? '#0A1C12' : '#FFFFFF',
             lineHeight: 1.15,
             letterSpacing: '-0.02em',
             marginBottom: 10,
@@ -3256,7 +3313,7 @@ const ApplicationSection: React.FC = () => {
 
           <p style={{
             fontSize: isMobile ? 13.5 : 15,
-            color: 'rgba(255,255,255,0.72)',
+            color: isLight ? '#273E31' : 'rgba(255,255,255,0.72)',
             lineHeight: 1.6,
             maxWidth: 480,
             margin: '0 auto 24px'
@@ -3266,18 +3323,19 @@ const ApplicationSection: React.FC = () => {
 
           {/* Clean Glassmorphic ID Card */}
           <div style={{
-            background: 'rgba(255,255,255,0.04)',
-            border: '1px solid rgba(102, 187, 42, 0.3)',
+            background: isLight ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.04)',
+            border: isLight ? '1px solid rgba(21, 128, 61, 0.25)' : '1px solid rgba(102, 187, 42, 0.3)',
             borderRadius: isMobile ? 16 : 20,
             padding: isMobile ? '20px 14px' : '28px 32px',
             marginBottom: isMobile ? 20 : 28,
+            boxShadow: isLight ? '0 10px 30px rgba(10, 28, 18, 0.08)' : 'none',
             backdropFilter: 'blur(12px)',
             WebkitBackdropFilter: 'blur(12px)'
           }}>
             <p style={{
               fontSize: 10.5,
               fontWeight: 800,
-              color: 'rgba(255,255,255,0.5)',
+              color: isLight ? '#526E5E' : 'rgba(255,255,255,0.5)',
               letterSpacing: '0.14em',
               marginBottom: 8,
               textTransform: 'uppercase'
@@ -3297,7 +3355,7 @@ const ApplicationSection: React.FC = () => {
               <span style={{
                 fontSize: isMobile ? 'clamp(18px, 5vw, 24px)' : 26,
                 fontWeight: 900,
-                color: RF_MINT_ACCENT,
+                color: isLight ? '#15803D' : RF_MINT_ACCENT,
                 fontFamily: 'monospace, monospace',
                 letterSpacing: isMobile ? '0.04em' : '0.08em',
                 whiteSpace: 'nowrap'
@@ -3313,9 +3371,9 @@ const ApplicationSection: React.FC = () => {
                   height: 32,
                   padding: '0 10px',
                   borderRadius: 8,
-                  background: copiedId ? 'rgba(24, 252, 92, 0.2)' : 'rgba(255,255,255,0.08)',
-                  border: copiedId ? `1px solid ${RF_MINT_ACCENT}` : '1px solid rgba(255,255,255,0.15)',
-                  color: copiedId ? RF_MINT_ACCENT : '#FFFFFF',
+                  background: copiedId ? (isLight ? 'rgba(21, 128, 61, 0.15)' : 'rgba(24, 252, 92, 0.2)') : (isLight ? 'rgba(15, 46, 30, 0.06)' : 'rgba(255,255,255,0.08)'),
+                  border: copiedId ? `1px solid ${isLight ? '#15803D' : RF_MINT_ACCENT}` : `1px solid ${isLight ? 'rgba(15, 46, 30, 0.15)' : 'rgba(255,255,255,0.15)'}`,
+                  color: copiedId ? (isLight ? '#15803D' : RF_MINT_ACCENT) : (isLight ? '#0A1C12' : '#FFFFFF'),
                   fontSize: 11.5,
                   fontWeight: 600,
                   cursor: 'pointer',
@@ -3335,8 +3393,8 @@ const ApplicationSection: React.FC = () => {
               display: 'inline-flex',
               alignItems: 'center',
               gap: 7,
-              background: 'rgba(246, 178, 26, 0.12)',
-              border: '1px solid rgba(246, 178, 26, 0.28)',
+              background: isLight ? 'rgba(180, 83, 9, 0.1)' : 'rgba(246, 178, 26, 0.12)',
+              border: isLight ? '1px solid rgba(180, 83, 9, 0.25)' : '1px solid rgba(246, 178, 26, 0.28)',
               padding: '4px 12px',
               borderRadius: 100
             }}>
@@ -3344,14 +3402,14 @@ const ApplicationSection: React.FC = () => {
                 width: 7,
                 height: 7,
                 borderRadius: '50%',
-                background: RF_GOLD_YELLOW,
+                background: isLight ? '#B45309' : RF_GOLD_YELLOW,
                 animation: 'rp-pulse 2s infinite',
                 flexShrink: 0
               }} />
               <span style={{
                 fontSize: isMobile ? 10.5 : 11.5,
                 fontWeight: 800,
-                color: RF_GOLD_YELLOW,
+                color: isLight ? '#B45309' : RF_GOLD_YELLOW,
                 letterSpacing: '0.06em',
                 whiteSpace: 'nowrap'
               }}>
@@ -3403,9 +3461,9 @@ const ApplicationSection: React.FC = () => {
                 height: 40,
                 padding: isMobile ? '0 16px' : '0 20px',
                 borderRadius: 10,
-                background: 'rgba(255,255,255,0.06)',
-                color: '#FFFFFF',
-                border: '1px solid rgba(255,255,255,0.12)',
+                background: isLight ? 'rgba(15, 46, 30, 0.06)' : 'rgba(255,255,255,0.06)',
+                color: isLight ? '#0A1C12' : '#FFFFFF',
+                border: isLight ? '1px solid rgba(15, 46, 30, 0.15)' : '1px solid rgba(255,255,255,0.12)',
                 fontSize: 13,
                 fontWeight: 600,
                 cursor: 'pointer',
@@ -3421,7 +3479,7 @@ const ApplicationSection: React.FC = () => {
 
           <p style={{
             fontSize: isMobile ? 12 : 13,
-            color: 'rgba(255,255,255,0.48)',
+            color: isLight ? '#526E5E' : 'rgba(255,255,255,0.48)',
             lineHeight: 1.6,
             maxWidth: 460,
             margin: '0 auto'
@@ -3437,24 +3495,26 @@ const ApplicationSection: React.FC = () => {
 
   return (
     <section id="apply" style={{
-      background: `linear-gradient(145deg, ${RF_DEEP_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
+      background: isLight
+        ? 'linear-gradient(180deg, #F0FDF4 0%, #E8F5E9 100%)'
+        : `linear-gradient(145deg, ${RF_DEEP_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
       padding: isMobile ? '44px 14px' : '88px 24px'
     }}>
       <div style={{ maxWidth: 780, margin: '0 auto' }}>
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: isMobile ? 24 : 40 }}>
-          <p style={{ fontSize: 10.5, fontWeight: 900, color: RF_MINT_ACCENT, letterSpacing: '0.18em', marginBottom: 10 }}>
+          <p style={{ fontSize: 10.5, fontWeight: 900, color: isLight ? '#15803D' : RF_MINT_ACCENT, letterSpacing: '0.18em', marginBottom: 10 }}>
             APPLY NOW
           </p>
           <h2 style={{
             fontSize: isMobile ? 'clamp(22px, 6vw, 28px)' : 'clamp(28px, 4vw, 44px)',
-            fontWeight: 900, color: '#FFFFFF',
+            fontWeight: 900, color: isLight ? '#0A1C12' : '#FFFFFF',
             lineHeight: 1.15, letterSpacing: '-0.02em', marginBottom: 10,
             fontFamily: 'Plus Jakarta Sans, sans-serif'
           }}>
             READY TO HELP BUILD REFEIR?
           </h2>
-          <p style={{ fontSize: isMobile ? 13.5 : 15, color: 'rgba(255,255,255,0.7)', lineHeight: 1.6, margin: '0 auto', maxWidth: 540 }}>
+          <p style={{ fontSize: isMobile ? 13.5 : 15, color: isLight ? '#273E31' : 'rgba(255,255,255,0.7)', lineHeight: 1.6, margin: '0 auto', maxWidth: 540 }}>
             Tell us who you are, what you can contribute, and where you want to make an impact.
           </p>
         </div>
@@ -3471,18 +3531,18 @@ const ApplicationSection: React.FC = () => {
               <span style={{
                 fontSize: 11,
                 fontWeight: 800,
-                color: RF_MINT_ACCENT,
+                color: isLight ? '#15803D' : RF_MINT_ACCENT,
                 textTransform: 'uppercase',
                 letterSpacing: '0.06em'
               }}>
                 Step {step} of 4
               </span>
-              <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: 11 }}>•</span>
-              <span style={{ fontSize: isMobile ? 12.5 : 13.5, fontWeight: 600, color: '#FFFFFF' }}>
+              <span style={{ color: isLight ? 'rgba(15, 46, 30, 0.3)' : 'rgba(255,255,255,0.3)', fontSize: 11 }}>•</span>
+              <span style={{ fontSize: isMobile ? 12.5 : 13.5, fontWeight: 600, color: isLight ? '#0A1C12' : '#FFFFFF' }}>
                 {stepLabels[step - 1]}
               </span>
             </div>
-            <span style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)' }}>
+            <span style={{ fontSize: 11, fontWeight: 700, color: isLight ? '#526E5E' : 'rgba(255,255,255,0.5)' }}>
               {step * 25}%
             </span>
           </div>
@@ -3498,8 +3558,10 @@ const ApplicationSection: React.FC = () => {
                   style={{
                     height: 4,
                     borderRadius: 100,
-                    background: isPast || isCurr ? RF_MINT_ACCENT : 'rgba(255,255,255,0.14)',
-                    boxShadow: isCurr ? '0 0 8px rgba(24, 252, 92, 0.5)' : 'none',
+                    background: isPast || isCurr
+                      ? (isLight ? '#15803D' : RF_MINT_ACCENT)
+                      : (isLight ? 'rgba(15, 46, 30, 0.12)' : 'rgba(255,255,255,0.14)'),
+                    boxShadow: isCurr ? (isLight ? '0 0 8px rgba(21, 128, 61, 0.35)' : '0 0 8px rgba(24, 252, 92, 0.5)') : 'none',
                     transition: 'all 0.3s ease'
                   }}
                 />
@@ -4030,97 +4092,131 @@ const FAQSection: React.FC = () => {
 };
 
 // ─── FINAL CTA SECTION (DEEP REFEIR GREEN) ────────────────────────────────────
-const FinalCTA: React.FC<{ onNavigate: (path: string) => void }> = ({ onNavigate }) => (
-  <section style={{
-    background: `linear-gradient(135deg, ${RF_DEEP_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
-    padding: '120px 24px', position: 'relative', overflow: 'hidden'
-  }}>
-    <div style={{
-      position: 'absolute', inset: 0,
-      background: `radial-gradient(ellipse 50% 55% at 50% 100%, ${RF_LEAF_GREEN}14 0%, transparent 65%)`
-    }} />
+const FinalCTA: React.FC<{ onNavigate: (path: string) => void }> = ({ onNavigate }) => {
+  const { theme } = useTheme();
+  const isLight = theme === 'light';
 
-    <div style={{ maxWidth: 740, margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 2 }}>
-      <h2 style={{
-        fontSize: 'clamp(36px, 5.5vw, 68px)', fontWeight: 800, color: '#FFFFFF',
-        lineHeight: 1.08, letterSpacing: '-0.035em', marginBottom: 24,
-        fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif"
-      }}>
-        The future won't<br />
-        <span style={{
-          fontWeight: 800,
-          background: `linear-gradient(135deg, ${RF_MINT_ACCENT} 0%, ${RF_GOLD_YELLOW} 100%)`,
-          WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'
+  return (
+    <section className="rp-final-cta" style={{
+      background: isLight
+        ? 'linear-gradient(180deg, #F0FDF4 0%, #DCFCE7 100%)'
+        : `linear-gradient(135deg, ${RF_DEEP_GREEN} 0%, ${RF_FOREST_DARK} 100%)`,
+      padding: '120px 24px', position: 'relative', overflow: 'hidden'
+    }}>
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: isLight
+          ? 'radial-gradient(ellipse 50% 55% at 50% 100%, rgba(21, 128, 61, 0.12) 0%, transparent 65%)'
+          : `radial-gradient(ellipse 50% 55% at 50% 100%, ${RF_LEAF_GREEN}14 0%, transparent 65%)`
+      }} />
+
+      <div style={{ maxWidth: 740, margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 2 }}>
+        <h2 style={{
+          fontSize: 'clamp(36px, 5.5vw, 68px)', fontWeight: 800,
+          color: isLight ? '#0A1C12' : '#FFFFFF',
+          lineHeight: 1.08, letterSpacing: '-0.035em', marginBottom: 24,
+          fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif"
         }}>
-          build itself.
-        </span>
-      </h2>
+          The future won't<br />
+          <span style={{
+            fontWeight: 800,
+            background: isLight
+              ? 'linear-gradient(135deg, #15803D 0%, #D97706 100%)'
+              : `linear-gradient(135deg, ${RF_MINT_ACCENT} 0%, ${RF_GOLD_YELLOW} 100%)`,
+            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'
+          }}>
+            build itself.
+          </span>
+        </h2>
 
-      <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.75)', lineHeight: 1.8, marginBottom: 12 }}>
-        Refeir is still being built.
-      </p>
-      <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.75)', lineHeight: 1.8, marginBottom: 46 }}>
-        That means there is still time to be one of the people who helped shape it.
-      </p>
-
-      <div className="rp-responsive-btn-group" style={{ maxWidth: 640, margin: '0 auto' }}>
-        <button
-          onClick={() => scrollToId('apply')}
-          style={{
-            background: RF_LEAF_GREEN, color: RF_DEEP_GREEN, border: 'none', padding: '13px 32px',
-            borderRadius: 100, fontSize: 14, fontWeight: 600, cursor: 'pointer',
-            letterSpacing: '0.01em', transition: 'all 0.2s', boxShadow: `0 4px 18px ${RF_LEAF_GREEN}35`
-          }}
-          onMouseEnter={e => {
-            e.currentTarget.style.transform = 'translateY(-1px)';
-            e.currentTarget.style.background = RF_MINT_ACCENT;
-            e.currentTarget.style.boxShadow = `0 6px 24px ${RF_MINT_ACCENT}45`;
-          }}
-          onMouseLeave={e => {
-            e.currentTarget.style.transform = '';
-            e.currentTarget.style.background = RF_LEAF_GREEN;
-            e.currentTarget.style.boxShadow = `0 4px 18px ${RF_LEAF_GREEN}35`;
-          }}
-        >
-          Become a Refeir Pioneer
-        </button>
-
-        <button
-          onClick={() => onNavigate('/')}
-          style={{
-            background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.85)',
-            border: '1px solid rgba(255, 255, 255, 0.2)', padding: '13px 28px',
-            borderRadius: 100, fontSize: 14, fontWeight: 500, cursor: 'pointer',
-            transition: 'all 0.2s'
-          }}
-          onMouseEnter={e => {
-            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.4)';
-            e.currentTarget.style.color = '#FFFFFF';
-            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
-          }}
-          onMouseLeave={e => {
-            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-            e.currentTarget.style.color = 'rgba(255,255,255,0.85)';
-            e.currentTarget.style.background = 'rgba(255,255,255,0.04)';
-          }}
-        >
-          Explore Refeir
-        </button>
-      </div>
-
-      <div style={{ marginTop: 80, paddingTop: 48, borderTop: '1px solid rgba(102, 187, 42, 0.2)' }}>
-        <p style={{ fontSize: 20, fontWeight: 900, color: RF_MINT_ACCENT, letterSpacing: '0.12em', marginBottom: 16 }}>
-          REFEIR
+        <p style={{
+          fontSize: 17,
+          color: isLight ? '#273E31' : 'rgba(255,255,255,0.75)',
+          lineHeight: 1.8, marginBottom: 12
+        }}>
+          Refeir is still being built.
         </p>
-        <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.18em', lineHeight: 2.4 }}>
-          WHERE OPPORTUNITIES CONNECT.<br />
-          REFERRALS REWARD.<br />
-          EVERYONE GROWS.
+        <p style={{
+          fontSize: 17,
+          color: isLight ? '#273E31' : 'rgba(255,255,255,0.75)',
+          lineHeight: 1.8, marginBottom: 46
+        }}>
+          That means there is still time to be one of the people who helped shape it.
         </p>
+
+        <div className="rp-responsive-btn-group" style={{ maxWidth: 640, margin: '0 auto' }}>
+          <button
+            onClick={() => scrollToId('apply')}
+            style={{
+              background: RF_LEAF_GREEN, color: RF_DEEP_GREEN, border: 'none', padding: '13px 32px',
+              borderRadius: 100, fontSize: 14, fontWeight: 600, cursor: 'pointer',
+              letterSpacing: '0.01em', transition: 'all 0.2s', boxShadow: `0 4px 18px ${RF_LEAF_GREEN}35`
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.transform = 'translateY(-1px)';
+              e.currentTarget.style.background = RF_MINT_ACCENT;
+              e.currentTarget.style.boxShadow = `0 6px 24px ${RF_MINT_ACCENT}45`;
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.transform = '';
+              e.currentTarget.style.background = RF_LEAF_GREEN;
+              e.currentTarget.style.boxShadow = `0 4px 18px ${RF_LEAF_GREEN}35`;
+            }}
+          >
+            Become a Refeir Pioneer
+          </button>
+
+          <button
+            onClick={() => onNavigate('/')}
+            className="rp-btn-ghost-final"
+            style={{
+              background: isLight ? 'rgba(15, 46, 30, 0.05)' : 'rgba(255,255,255,0.04)',
+              color: isLight ? '#0A1C12' : 'rgba(255,255,255,0.85)',
+              border: isLight ? '1px solid rgba(15, 46, 30, 0.2)' : '1px solid rgba(255, 255, 255, 0.2)',
+              padding: '13px 28px',
+              borderRadius: 100, fontSize: 14, fontWeight: 500, cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.borderColor = isLight ? 'rgba(15, 46, 30, 0.4)' : 'rgba(255, 255, 255, 0.4)';
+              e.currentTarget.style.color = isLight ? '#15803D' : '#FFFFFF';
+              e.currentTarget.style.background = isLight ? 'rgba(15, 46, 30, 0.1)' : 'rgba(255, 255, 255, 0.08)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.borderColor = isLight ? 'rgba(15, 46, 30, 0.2)' : 'rgba(255, 255, 255, 0.2)';
+              e.currentTarget.style.color = isLight ? '#0A1C12' : 'rgba(255,255,255,0.85)';
+              e.currentTarget.style.background = isLight ? 'rgba(15, 46, 30, 0.05)' : 'rgba(255,255,255,0.04)';
+            }}
+          >
+            Explore Refeir
+          </button>
+        </div>
+
+        <div style={{
+          marginTop: 80, paddingTop: 48,
+          borderTop: isLight ? '1px solid rgba(21, 128, 61, 0.2)' : '1px solid rgba(102, 187, 42, 0.2)'
+        }}>
+          <p style={{
+            fontSize: 20, fontWeight: 900,
+            color: isLight ? '#15803D' : RF_MINT_ACCENT,
+            letterSpacing: '0.12em', marginBottom: 16
+          }}>
+            REFEIR
+          </p>
+          <p style={{
+            fontSize: 12,
+            color: isLight ? '#4A6354' : 'rgba(255,255,255,0.5)',
+            letterSpacing: '0.18em', lineHeight: 2.4
+          }}>
+            WHERE OPPORTUNITIES CONNECT.<br />
+            REFERRALS REWARD.<br />
+            EVERYONE GROWS.
+          </p>
+        </div>
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 
 // ─── STYLES & RESPONSIVENESS ──────────────────────────────────────────────────

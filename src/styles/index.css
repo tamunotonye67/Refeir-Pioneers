@@ -4490,3 +4490,146 @@ select.rp-has-custom-chevron {
 .theme-light footer button:hover {
   color: #15803D !important;
 }
+
+/* ─── 9. PIONEERS PAGE & COMPONENT-SPECIFIC LIGHT MODE REINFORCEMENTS ─── */
+[data-theme="light"] .rp-profile-flyout-desk,
+.theme-light .rp-profile-flyout-desk {
+  background: #FFFFFF !important;
+  border-color: rgba(15, 46, 30, 0.14) !important;
+  box-shadow: 0 16px 40px rgba(10, 28, 18, 0.12), 0 0 20px rgba(21, 128, 61, 0.06) !important;
+}
+
+[data-theme="light"] .rp-profile-flyout-header,
+.theme-light .rp-profile-flyout-header {
+  background: #F8FAF9 !important;
+  border-color: rgba(15, 46, 30, 0.08) !important;
+}
+
+[data-theme="light"] .rp-desk-flyout-btn,
+.theme-light .rp-desk-flyout-btn {
+  color: #0A1C12 !important;
+}
+
+[data-theme="light"] .rp-desk-flyout-btn:hover,
+.theme-light .rp-desk-flyout-btn:hover {
+  background: rgba(21, 128, 61, 0.08) !important;
+  border-color: rgba(21, 128, 61, 0.2) !important;
+  color: #15803D !important;
+}
+
+[data-theme="light"] .rp-desk-flyout-btn .rp-flyout-icon,
+.theme-light .rp-desk-flyout-btn .rp-flyout-icon {
+  color: #4A6354 !important;
+}
+
+[data-theme="light"] .rp-desk-flyout-btn:hover .rp-flyout-icon,
+.theme-light .rp-desk-flyout-btn:hover .rp-flyout-icon {
+  color: #15803D !important;
+}
+
+[data-theme="light"] .rp-desk-flyout-btn-danger,
+.theme-light .rp-desk-flyout-btn-danger {
+  color: #DC2626 !important;
+}
+
+[data-theme="light"] .rp-desk-flyout-btn-danger:hover,
+.theme-light .rp-desk-flyout-btn-danger:hover {
+  background: rgba(239, 68, 68, 0.08) !important;
+  border-color: rgba(239, 68, 68, 0.2) !important;
+  color: #B91C1C !important;
+}
+
+[data-theme="light"] .rp-desk-flyout-btn-danger .rp-flyout-icon,
+.theme-light .rp-desk-flyout-btn-danger .rp-flyout-icon {
+  color: #DC2626 !important;
+}
+
+/* Mobile profile menu drawer in light mode */
+@media (max-width: 768px) {
+  [data-theme="light"] .rp-profile-menu-box,
+  .theme-light .rp-profile-menu-box {
+    background: #FFFFFF !important;
+    border-color: rgba(15, 46, 30, 0.12) !important;
+    box-shadow: 0 -10px 40px rgba(10, 28, 18, 0.12) !important;
+  }
+
+  [data-theme="light"] .rp-docker-handle,
+  .theme-light .rp-docker-handle {
+    background: rgba(15, 46, 30, 0.25) !important;
+  }
+
+  [data-theme="light"] .rp-docker-btn,
+  .theme-light .rp-docker-btn {
+    color: #0A1C12 !important;
+  }
+
+  [data-theme="light"] .rp-docker-btn:hover,
+  .theme-light .rp-docker-btn:hover {
+    background: rgba(21, 128, 61, 0.08) !important;
+    color: #15803D !important;
+  }
+}
+
+/* Nav sign in button in light mode */
+[data-theme="light"] .rp-nav-signin,
+.theme-light .rp-nav-signin {
+  color: #0A1C12 !important;
+  background: rgba(15, 46, 30, 0.06) !important;
+  border-color: rgba(15, 46, 30, 0.15) !important;
+}
+
+[data-theme="light"] .rp-nav-signin:hover,
+.theme-light .rp-nav-signin:hover {
+  background: rgba(15, 46, 30, 0.1) !important;
+  border-color: rgba(15, 46, 30, 0.25) !important;
+  color: #15803D !important;
+}
+
+/* Ghost buttons on light hero & final CTA */
+[data-theme="light"] .rp-btn-ghost-hero,
+.theme-light .rp-btn-ghost-hero,
+[data-theme="light"] .rp-btn-ghost-final,
+.theme-light .rp-btn-ghost-final {
+  color: #0A1C12 !important;
+  background: rgba(15, 46, 30, 0.05) !important;
+  border-color: rgba(15, 46, 30, 0.18) !important;
+}
+
+[data-theme="light"] .rp-btn-ghost-hero:hover,
+.theme-light .rp-btn-ghost-hero:hover,
+[data-theme="light"] .rp-btn-ghost-final:hover,
+.theme-light .rp-btn-ghost-final:hover {
+  background: rgba(15, 46, 30, 0.1) !important;
+  border-color: rgba(15, 46, 30, 0.3) !important;
+  color: #15803D !important;
+}
+
+/* Sticky cards pills & next button */
+[data-theme="light"] .rp-card-role-pill,
+.theme-light .rp-card-role-pill {
+  color: #1A3425 !important;
+  background: rgba(21, 128, 61, 0.08) !important;
+  border-color: rgba(21, 128, 61, 0.2) !important;
+}
+
+[data-theme="light"] .rp-sticky-next-btn,
+.theme-light .rp-sticky-next-btn {
+  color: #0A1C12 !important;
+  background: rgba(15, 46, 30, 0.06) !important;
+  border-color: rgba(15, 46, 30, 0.14) !important;
+}
+
+[data-theme="light"] .rp-sticky-next-btn:hover,
+.theme-light .rp-sticky-next-btn:hover {
+  color: #15803D !important;
+  background: rgba(15, 46, 30, 0.1) !important;
+  border-color: rgba(21, 128, 61, 0.3) !important;
+}
+
+/* Founding 100 counter box */
+[data-theme="light"] .rp-founding-box,
+.theme-light .rp-founding-box {
+  background: #FFFFFF !important;
+  border-color: rgba(21, 128, 61, 0.22) !important;
+  box-shadow: 0 10px 30px rgba(10, 28, 18, 0.06) !important;
+}
